@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import ifcb.io
+from ifcb.io import Bin
 import re
 from sys import argv
 
@@ -21,4 +21,5 @@ if __name__ == '__main__':
             arg = arg + 1
         if(len(argv) > arg):
             format = string.upper(argv[arg])
-        ifcb.io.batch_convert(id, dir, outdir, format)
+        bin = Bin(id,dir)
+        bin.save_images(outdir, format)
