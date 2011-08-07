@@ -18,6 +18,7 @@ def rois2xml(bin,out):
     for roi_info in bin.all_rois():
         roi = SubElement(root,QName(ifcb.namespace, 'roi'))
         SubElement(roi,QName(dc,'identifier')).text = roi_info[PID]
+        # each roi is a dict. prepend the ifcb namespace to each dict key and make subtags
         for tag, value in roi_info.items():
             if tag != PID:
                 property = SubElement(roi,QName(ifcb.namespace,tag))
@@ -28,12 +29,5 @@ if __name__ == '__main__':
     if(len(argv) < 2):
         print 'usage: roi2xml [id] [dir: .]'
     else:
-        # allow id to be the ROI file name, strip off the .roi extension if it's there
-        id = re.sub('(.*)\\.[a-z]+','\\1',argv[1])
-        dir = '.'
-        arg = 2
-        if(len(argv) > arg):
-            dir = argv[arg]
-            arg = arg + 1
-        rois2xml(Bin(id,dir),stdout)
+        rois2xml(Bin(*argv[1:]),stdout)
         
