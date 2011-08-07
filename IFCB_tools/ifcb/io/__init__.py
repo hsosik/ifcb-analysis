@@ -131,8 +131,12 @@ class Bin:
         roi_file = open(self.roi_path(),'rb')
         return self.__get_image(self.nth_roi(index), roi_file)
     
-    def pid(self,roi_number):
-        return '%s%s_%05d' % (dataNamespace, self.id, roi_number)
+    def pid(self,roi_number=None):
+        pid = ''.join([dataNamespace, self.id])
+        if roi_number:
+            return '%s_%05d' % (pid, roi_number)
+        else:
+            return pid
     
     def save_images(self,outdir='.',format='PNG'):
         # read ROI info from the ADC file
