@@ -1,4 +1,5 @@
 import csv
+from ifcb import dataNamespace
 from PIL import Image
 from array import array
 import string
@@ -51,6 +52,7 @@ HDR_EXT = 'hdr'
 ROI_NUMBER = 'roiNumber' # 1-based index of ROI in bins
 BIN_ID = 'binID' # bin ID
 ROI_ID = 'roiID' # roi ID
+PID = 'pid'
 
 # useful functions
 def ext_path(id, ext, dir='.'):
@@ -84,13 +86,13 @@ class Bin:
     # generate all ROI's
     def all_rois(self):
         reader = csv.reader(open(self.adc_path(),'rb'))
-        count = 1
+        roi_number = 1
         for row in reader:
-            roi = { ROI_NUMBER: count, BIN_ID: self.id }
+            roi = { ROI_NUMBER: roi_number, BIN_ID: self.id, PID: self.pid(roi_number) }
             for (name, cast), value in zip(adc_schema, row):
                 roi[name] = cast(value)
             yield roi
-            count = count + 1
+            roi_number = roi_number + 1
 
     # retrieve the nth roi (0-based!)
     def nth_roi(self,n):
@@ -128,7 +130,10 @@ class Bin:
     def nth_image(self,n):
         roi_file = open(self.roi_path(),'rb')
         return self.__get_image(self.nth_roi(index), roi_file)
-
+    
+    def pid(self,roi_number):
+        return '%s%s_%05d' % (dataNamespace, self.id, roi_number)
+    
     def save_images(self,outdir='.',format='PNG'):
         # read ROI info from the ADC file
         roi_file = open(self.roi_path(),'rb')
