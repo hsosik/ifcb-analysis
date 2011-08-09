@@ -10,6 +10,9 @@
     <!-- suppress default rules -->
     <xsl:template match="*|@*|comment()|processing-instruction()|text()"/>
 
+    <!-- "pretty" output please -->
+    <xsl:output indent="yes"/>
+    
     <xsl:template match="ifcb:bin">
         <rdf:RDF>
             <ifcb:Bin rdf:about="{dc:identifier}">
