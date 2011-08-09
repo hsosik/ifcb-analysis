@@ -1,5 +1,5 @@
 import ifcb
-from ifcb.io import Bin, PID
+from ifcb.io import Bin, PID, adc_schema
 from lxml import etree
 from lxml.etree import ElementTree, QName, Element, SubElement
 
@@ -17,9 +17,9 @@ def rois2xml(bin,out):
         roi_number = roi_number + 1
         SubElement(roi,QName(dc,'identifier')).text = roi_info[PID]
         # each roi is a dict. prepend the ifcb namespace to each dict key and make subtags
-        for tag, value in roi_info.items():
+        for tag in [column for column,type in adc_schema]:
             if tag != PID:
                 property = SubElement(roi,QName(ifcb.namespace,tag))
-                property.text = str(value)
+                property.text = str(roi_info[tag])
     return ElementTree(root).write(out, pretty_print=True)
 
