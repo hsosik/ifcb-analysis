@@ -5,7 +5,7 @@
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:dc="http://purl.org/dc/elements/1.1/">
     
-    <!-- convert output of roi2xml to nicely-formatted RDF/XML -->
+    <!-- convert output of bin2xml to nicely-formatted RDF/XML -->
     
     <!-- suppress default rules -->
     <xsl:template match="*|@*|comment()|processing-instruction()|text()"/>
@@ -16,6 +16,12 @@
     <xsl:template match="ifcb:Bin">
         <rdf:RDF>
             <ifcb:Bin rdf:about="{dc:identifier}">
+                <dc:date><xsl:value-of select="dc:date"/></dc:date>
+                <xsl:for-each select="ifcb:*[name(.)!='Target']">
+                    <xsl:element name="ifcb:{name()}">
+                        <xsl:value-of select="."/>
+                    </xsl:element>
+                </xsl:for-each>
                 <ifcb:hasRois>
                     <rdf:Seq rdf:about="{dc:identifier}/targets">
                         <xsl:apply-templates/>

@@ -1,11 +1,12 @@
 import csv
 from ifcb import dataNamespace
-from ifcb.io import adc_path, roi_path, hdr_path, ADC_SCHEMA, TARGET_NUMBER, BIN_ID, PID, WIDTH, HEIGHT, BYTE_OFFSET
+from ifcb.io import adc_path, roi_path, hdr_path, ADC_SCHEMA, HDR_SCHEMA, HDR_COLUMNS, TARGET_NUMBER, BIN_ID, PID, WIDTH, HEIGHT, BYTE_OFFSET
 from PIL import Image
 from array import array
 import string
 import re
 import os
+import time
 
 # one bin's worth of data
 class BinFile:
@@ -24,6 +25,21 @@ class BinFile:
     
     def hdr_path(self):
         return hdr_path(self.id,self.dir)
+    
+    def time(self):
+        return time.strptime(re.sub('^IFCB\\d+_','',self.id),'%Y_%j_%H%M%S')
+    
+    def iso8601time(self):
+        return time.strftime('%Y-%m-%dT%H:%M:%SZ',self.time())
+    
+    def headers(self):
+        lines = [line.rstrip() for line in open(self.hdr_path(), 'r').readlines()]
+        columns = re.split(' +',re.sub('"','',lines[4]))
+        values = re.split(' +',re.sub('[",]','',lines[5]).strip())
+        props = { 'context': [lines[n].strip('"') for n in range(3)] }
+        for (column, (name, cast), value) in zip(HDR_COLUMNS, HDR_SCHEMA, values):
+            props[name] = cast(value)
+        return props
     
     # generate all target's
     def all_targets(self):
@@ -93,3 +109,4 @@ class BinFile:
                 outfile = os.path.join(outdir,'%s_%05d.%s' % (self.id, target_number, string.lower(format)))
                 im.save(outfile, format)
             target_number = target_number + 1 # increment this number *outside* of the loop that skips 0x0 targets!
+        

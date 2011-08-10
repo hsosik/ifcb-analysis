@@ -40,6 +40,24 @@ ADC_SCHEMA = [(TRIGGER, int),
           (BYTE_OFFSET, int),
           (VALVE_STATUS, float)]
 
+# hdr values
+TEMPERATURE = 'temperature'
+HUMIDITY = 'humidity'
+BINARIZE_THRESHOLD = 'binarizeThreshold'
+SCATTERING_PMT_SETTING = 'scatteringPhotomultiplierSetting'
+FLUORESCENCE_PMT_SETTING = 'fluorescencePhotomultiplierSetting'
+BLOB_SIZE_THRESHOLD = 'blobSizeThreshold' 
+
+HDR_SCHEMA = [(TEMPERATURE, float),
+              (HUMIDITY, float),
+              (BINARIZE_THRESHOLD, int),
+              (SCATTERING_PMT_SETTING, float),
+              (FLUORESCENCE_PMT_SETTING, float),
+              (BLOB_SIZE_THRESHOLD, int)]
+HDR_COLUMNS = ['Temp', 'Humidity', 'BinarizeThresh', 'PMT1hv(ssc)', 'PMT2hv(chl)', 'BlobSizeThresh']
+
+CONTEXT = 'context'
+
 ADC_EXT = 'adc'
 ROI_EXT = 'roi'
 HDR_EXT = 'hdr'
