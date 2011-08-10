@@ -13,11 +13,11 @@
     <!-- "pretty" output please -->
     <xsl:output indent="yes"/>
     
-    <xsl:template match="ifcb:bin">
+    <xsl:template match="ifcb:Bin">
         <rdf:RDF>
             <ifcb:Bin rdf:about="{dc:identifier}">
                 <ifcb:hasRois>
-                    <rdf:Seq rdf:about="{dc:identifier}/rois">
+                    <rdf:Seq rdf:about="{dc:identifier}/targets">
                         <xsl:apply-templates/>
                     </rdf:Seq>
                 </ifcb:hasRois>
@@ -25,15 +25,15 @@
          </rdf:RDF>
     </xsl:template>
     
-    <xsl:template match="ifcb:roi">
+    <xsl:template match="ifcb:Target">
         <rdf:li>
-            <ifcb:Roi rdf:about="{dc:identifier}">
+            <ifcb:Target rdf:about="{dc:identifier}">
                 <xsl:for-each select="*[local-name() != 'identifier']">
                     <xsl:element name="ifcb:{local-name(.)}">
                         <xsl:value-of select="."/>
                     </xsl:element>
                 </xsl:for-each>
-            </ifcb:Roi>
+            </ifcb:Target>
         </rdf:li>
     </xsl:template>
 </xsl:stylesheet>

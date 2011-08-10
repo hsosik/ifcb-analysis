@@ -24,7 +24,7 @@ VALVE_STATUS = 'valveStatus'
 
 # TODO define each schema element
 # TODO units of measure
-adc_schema = [(TRIGGER, int),
+ADC_SCHEMA = [(TRIGGER, int),
           (PROCESSING_END_TIME, float),
           (FLUORESENCE_HIGH, float),
           (FLUORESCENCE_LOW, float),
@@ -45,9 +45,9 @@ ROI_EXT = 'roi'
 HDR_EXT = 'hdr'
 
 # other handy property names
-ROI_NUMBER = 'roiNumber' # 1-based index of ROI in bins
+TARGET_NUMBER = 'targetNumber' # 1-based index of ROI in bins
 BIN_ID = 'binID' # bin ID
-ROI_ID = 'roiID' # roi ID
+TARGET_ID = 'targetID' # target ID
 PID = 'pid'
 
 # useful functions
