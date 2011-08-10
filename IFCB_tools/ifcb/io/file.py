@@ -34,11 +34,12 @@ class BinFile:
     
     def headers(self):
         lines = [line.rstrip() for line in open(self.hdr_path(), 'r').readlines()]
-        columns = re.split(' +',re.sub('"','',lines[4]))
-        values = re.split(' +',re.sub('[",]','',lines[5]).strip())
         props = { 'context': [lines[n].strip('"') for n in range(3)] }
-        for (column, (name, cast), value) in zip(HDR_COLUMNS, HDR_SCHEMA, values):
-            props[name] = cast(value)
+        if len(lines) >= 6: # don't fail on original header format
+            columns = re.split(' +',re.sub('"','',lines[4]))
+            values = re.split(' +',re.sub('[",]','',lines[5]).strip())
+            for (column, (name, cast), value) in zip(HDR_COLUMNS, HDR_SCHEMA, values):
+                props[name] = cast(value)
         return props
     
     # generate all target's
