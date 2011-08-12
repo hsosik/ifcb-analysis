@@ -2,9 +2,10 @@ import ifcb
 from ifcb.io import PID, ADC_SCHEMA, HDR_SCHEMA, CONTEXT
 from lxml import etree
 from lxml.etree import ElementTree, QName, Element, SubElement
+import sys
 
 # turn a bin of target's into an xml representation
-def bin2xml(bin,out):
+def bin2xml(bin,out=sys.stdout):
     dc = 'http://purl.org/dc/elements/1.1/'
     # ifcb namespace is the default
     nsmap = { None: ifcb.namespace, 'dc': dc }

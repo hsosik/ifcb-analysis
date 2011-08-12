@@ -7,5 +7,5 @@ if __name__ == '__main__':
     if(len(argv) < 2):
         print 'usage: bin2xml [id] [dir: .]'
     else:
-        bin2xml(BinFile(*argv[1:]),stdout)
+        bin2xml(BinFile(*argv[1:]))
         
