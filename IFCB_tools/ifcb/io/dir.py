@@ -1,4 +1,5 @@
 import os
+import ifcb
 from file import BinFile
 import re
 from ifcb.io import Timestamped
@@ -17,6 +18,9 @@ class DayDir(Timestamped):
 	
 	def time_string(self):
 		return re.sub('^IFCB\\d+_','',self.dir)
+	
+	def pid(self):
+		return ifcb.pid(os.path.basename(self.dir))
 	
 	@gen2list
 	def all_bins(self):

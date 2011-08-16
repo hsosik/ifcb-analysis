@@ -1,6 +1,6 @@
 import csv
 import ifcb
-from ifcb.io import adc_path, roi_path, hdr_path, ADC_SCHEMA, HDR_SCHEMA, HDR_COLUMNS, TARGET_NUMBER, BIN_ID, PID, WIDTH, HEIGHT, BYTE_OFFSET
+from ifcb.io import adc_path, roi_path, hdr_path, ADC_SCHEMA, HDR_SCHEMA, HDR_COLUMNS, TARGET_NUMBER, BIN_ID, PID, WIDTH, HEIGHT, BYTE_OFFSET, Timestamped
 from PIL import Image
 from array import array
 import string
@@ -9,9 +9,10 @@ import os
 import time
 
 # one bin's worth of data
-class BinFile:
+class BinFile(Timestamped):
     id = ''
     dir = ''
+    time_format = '%Y_%j_%H%M%S'
     
     def __init__(self, id, dir='.'):
         self.id = id
@@ -29,15 +30,16 @@ class BinFile:
     def hdr_path(self):
         return hdr_path(self.id,self.dir)
     
-    def time(self):
-        return time.strptime(re.sub('^IFCB\\d+_','',self.id),'%Y_%j_%H%M%S')
-    
-    def iso8601time(self):
-        return time.strftime('%Y-%m-%dT%H:%M:%SZ',self.time())
+    def time_string(self):
+        return re.sub('^IFCB\\d+_','',self.id)
+
+    def instrument(self):
+        return re.sub(r'^IFCB(\d+)_.*',r'\1',self.id)
     
     def headers(self):
         lines = [line.rstrip() for line in open(self.hdr_path(), 'r').readlines()]
         props = { 'context': [lines[n].strip('"') for n in range(3)] }
+        props['instrument'] = self.instrument()
         if len(lines) >= 6: # don't fail on original header format
             columns = re.split(' +',re.sub('"','',lines[4]))
             values = re.split(' +',re.sub('[",]','',lines[5]).strip())

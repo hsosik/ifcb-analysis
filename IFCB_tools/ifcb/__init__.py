@@ -5,10 +5,10 @@ TERM_NAMESPACE = 'http://ifcb.whoi.edu/terms#'
 DATA_NAMESPACE = 'http://ifcb-data.whoi.edu/'
 
 def pid(local_id):
-    ''.join([DATA_NAMESPACE, local_id])
+    return ''.join([DATA_NAMESPACE, local_id])
     
 def term(local_id):
-    ''.join([TERM_NAMESPACE, local_id])
+    return ''.join([TERM_NAMESPACE, local_id])
 
 def lid(pid):
     return pid.replace(DATA_NAMESPACE,'',1)
