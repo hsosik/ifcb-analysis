@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
     xmlns:ifcb="http://ifcb.whoi.edu/terms#"
-    xmlns:data="http://ifcb.whoi.edu/data/"
+    xmlns:data="http://ifcb-data.whoi.edu/"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:dc="http://purl.org/dc/elements/1.1/">
     

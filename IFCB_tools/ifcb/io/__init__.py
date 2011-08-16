@@ -1,4 +1,5 @@
 import os
+import time
 
 # define constants for use with ROI structs
 
@@ -79,3 +80,16 @@ def roi_path(id,dir='.'):
 def hdr_path(id,dir='.'):
     return ext_path(id,HDR_EXT,dir)
 
+ISO_8601_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
+class Timestamped:
+    time_format = ISO_8601_FORMAT
+
+    def time_string(self):
+        return '1970-01-01T00:00:00Z'
+        
+    def time(self):
+        return time.strptime(self.time_string(), self.time_format)
+    
+    def iso8601time(self):
+        return time.strftime(ISO_8601_FORMAT,self.time())

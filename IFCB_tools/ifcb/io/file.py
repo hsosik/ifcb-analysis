@@ -1,5 +1,5 @@
 import csv
-from ifcb import dataNamespace
+import ifcb
 from ifcb.io import adc_path, roi_path, hdr_path, ADC_SCHEMA, HDR_SCHEMA, HDR_COLUMNS, TARGET_NUMBER, BIN_ID, PID, WIDTH, HEIGHT, BYTE_OFFSET
 from PIL import Image
 from array import array
@@ -17,6 +17,9 @@ class BinFile:
         self.id = id
         self.dir = dir
     
+    def __repr__(self):
+        return 'BinFile:' + self.id
+        
     def adc_path(self):
         return adc_path(self.id,self.dir)
     
@@ -91,7 +94,7 @@ class BinFile:
         return self.__get_image(self.target(index), roi_file)
     
     def pid(self,target_number=None):
-        pid = ''.join([dataNamespace, self.id])
+        pid = ifcb.pid(self.id)
         if target_number:
             return '%s_%05d' % (pid, target_number)
         else:
