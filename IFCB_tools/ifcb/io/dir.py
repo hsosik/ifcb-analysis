@@ -4,6 +4,7 @@ from file import BinFile
 import re
 from ifcb.io import Timestamped
 from ifcb.util import gen2list
+import os.path
 
 # represents a directory containing a single day's worth of data for a single instrument
 class DayDir(Timestamped):
@@ -17,15 +18,16 @@ class DayDir(Timestamped):
 		return 'DayDir:' + self.dir
 	
 	def time_string(self):
-		return re.sub('^IFCB\\d+_','',self.dir)
+		return re.sub('^IFCB\\d+_','',ifcb.lid(self.pid()))
 	
 	def pid(self):
 		return ifcb.pid(os.path.basename(self.dir))
 	
 	def __iter__(self):
-		for f in sorted(os.listdir(self.dir)):
+		for item in sorted(os.listdir(self.dir)):
+			f = os.path.join(self.dir, item)
 			if re.search(r'\.adc$',f):
-				yield BinFile(re.sub(r'\.adc','',f),self.dir)
+				yield BinFile(os.path.abspath(f))
 	
 	def all_bins(self):
 		list(self)

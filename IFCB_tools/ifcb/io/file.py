@@ -31,7 +31,8 @@ class BinFile(Timestamped):
     time_format = '%Y_%j_%H%M%S'
     
     def __init__(self, path):
-        (self.dir, file) = os.path.split(path)
+        self.dir = os.path.dirname(os.path.abspath(path))
+        file = os.path.basename(path)
         (self.id, ext) = os.path.splitext(file)
     
     def __repr__(self):

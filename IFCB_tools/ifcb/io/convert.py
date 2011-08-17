@@ -21,10 +21,14 @@ def rdf_term(local_id):
 DC_IDENTIFIER = dc_term('identifier')
 DC_DATE = dc_term('date')
 
+IFCB_DAY = ifcb_term('Day')
+IFCB_BINS = ifcb_term('bins')
 IFCB_BIN = ifcb_term('Bin')
 IFCB_TARGET = ifcb_term('Target')
+IFCB_TARGETS = ifcb_term('targets')
 IFCB_CONTEXT = ifcb_term(CONTEXT)
 IFCB_HAS_TARGETS = ifcb_term('hasTargets')
+IFCB_HAS_BINS = ifcb_term('hasBins')
 
 RDF_RDF = rdf_term('RDF')
 RDF_SEQ = rdf_term('Seq')
@@ -33,6 +37,41 @@ RDF_LI = rdf_term('li')
 
 # TODO generate links to images
 
+def __rdf():
+    nsmap = { None: ifcb.TERM_NAMESPACE,
+             'dc': DUBLIN_CORE_NAMESPACE,
+             'rdf': RDF_NAMESPACE }
+    return Element(RDF_RDF, nsmap=nsmap)
+
+def day2rdf(day,out=sys.stdout):
+    rdf = __rdf()
+    root = SubElement(rdf, IFCB_DAY)
+    root.set(RDF_ABOUT, day.pid())
+    SubElement(root, DC_DATE).text = day.iso8601time()
+    bins = SubElement(root, IFCB_HAS_BINS)
+    seq = SubElement(bins, RDF_SEQ)
+    seq.set(RDF_ABOUT, day.pid()+'/bins')
+    for bin in day:
+        li = SubElement(seq, RDF_LI)
+        elt = SubElement(li, IFCB_BIN)
+        elt.set(RDF_ABOUT, bin.pid())
+    return ElementTree(rdf).write(out, pretty_print=True)
+
+def day2xml(day,out=sys.stdout):
+    nsmap = { None: ifcb.TERM_NAMESPACE,
+             'dc': DUBLIN_CORE_NAMESPACE }
+    root = Element(IFCB_DAY, nsmap=nsmap)
+    SubElement(root, DC_DATE).text = day.iso8601time()
+    for bin in day:
+        elt = SubElement(root, IFCB_BIN)
+        elt.set(DC_IDENTIFIER, bin.pid())
+    return ElementTree(root).write(out, pretty_print=True)
+
+def day2json(day,out=sys.stdout):
+    j = { 'date': day.iso8601time() }
+    j['bins'] = [bin.pid() for bin in day]
+    return simplejson.dump(j,out)
+    
 # some shared code for XML and RDF representations
 def __add_headers(bin,root):
     SubElement(root, DC_DATE).text = bin.iso8601time()    
@@ -76,12 +115,6 @@ def bin2xml(bin,out=sys.stdout):
         __target2xml(target, root)
     return ElementTree(root).write(out, pretty_print=True)
 
-def __rdf():
-    nsmap = { None: ifcb.TERM_NAMESPACE,
-             'dc': DUBLIN_CORE_NAMESPACE,
-             'rdf': RDF_NAMESPACE }
-    return Element(RDF_RDF, nsmap=nsmap)
-    
 def __target2rdf(target,parent):
     elt = SubElement(parent, IFCB_TARGET)
     elt.set(RDF_ABOUT, target.info[PID])
