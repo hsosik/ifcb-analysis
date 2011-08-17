@@ -1,11 +1,12 @@
 import csv
 import ifcb
-from ifcb.io import adc_path, roi_path, hdr_path, ADC_SCHEMA, HDR_SCHEMA, HDR_COLUMNS, TARGET_NUMBER, BIN_ID, PID, WIDTH, HEIGHT, BYTE_OFFSET, Timestamped
+from ifcb.io import adc_path, roi_path, hdr_path, ADC_SCHEMA, HDR_SCHEMA, HDR_COLUMNS, TARGET_NUMBER, BIN_ID, PID, WIDTH, HEIGHT, BYTE_OFFSET, Timestamped, CONTEXT
 from PIL import Image
 from array import array
 import string
 import re
 import os
+import os.path
 import time
 
 # one bin's worth of data
@@ -14,9 +15,9 @@ class BinFile(Timestamped):
     dir = ''
     time_format = '%Y_%j_%H%M%S'
     
-    def __init__(self, id, dir='.'):
-        self.id = id
-        self.dir = dir
+    def __init__(self, path):
+        (self.dir, file) = os.path.split(path)
+        (self.id, ext) = os.path.splitext(file)
     
     def __repr__(self):
         return 'BinFile:' + self.id
@@ -38,7 +39,7 @@ class BinFile(Timestamped):
     
     def headers(self):
         lines = [line.rstrip() for line in open(self.hdr_path(), 'r').readlines()]
-        props = { 'context': [lines[n].strip('"') for n in range(3)] }
+        props = { CONTEXT: [lines[n].strip('"') for n in range(3)] }
         props['instrument'] = self.instrument()
         if len(lines) >= 6: # don't fail on original header format
             columns = re.split(' +',re.sub('"','',lines[4]))
@@ -47,8 +48,8 @@ class BinFile(Timestamped):
                 props[name] = cast(value)
         return props
     
-    # generate all target's
-    def all_targets(self):
+    # generate all targets
+    def __iter__(self):
         reader = csv.reader(open(self.adc_path(),'rb'))
         target_number = 1
         for row in reader:
@@ -57,8 +58,12 @@ class BinFile(Timestamped):
                 target[name] = cast(value)
             yield target
             target_number = target_number + 1
+            
+    def all_targets(self):
+        return list(self)
 
     # retrieve the nth target (0-based!)
+    # more efficient than subscripting the result of all_targets
     def target(self,n):
         targets = self.all_targets()
         while(n > 0):

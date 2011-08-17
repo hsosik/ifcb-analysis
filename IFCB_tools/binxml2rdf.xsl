@@ -22,11 +22,11 @@
                         <xsl:value-of select="."/>
                     </xsl:element>
                 </xsl:for-each>
-                <ifcb:hasRois>
+                <ifcb:hasTargets>
                     <rdf:Seq rdf:about="{dc:identifier}/targets">
                         <xsl:apply-templates/>
                     </rdf:Seq>
-                </ifcb:hasRois>
+                </ifcb:hasTargets>
             </ifcb:Bin>
          </rdf:RDF>
     </xsl:template>

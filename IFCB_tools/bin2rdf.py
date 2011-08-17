@@ -1,11 +1,11 @@
 #!/usr/bin/python
 from sys import argv, stdout
 from ifcb.io.file import BinFile
-from ifcb.io.convert import bin2xml
+from ifcb.io.convert import bin2rdf
 
 if __name__ == '__main__':
     if(len(argv) < 2):
-        print 'usage: bin2xml [file]'
+        print 'usage: bin2rdf [file]'
     else:
-        bin2xml(BinFile(argv[1]))
+        bin2rdf(BinFile(argv[1]))
         

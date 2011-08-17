@@ -22,11 +22,13 @@ class DayDir(Timestamped):
 	def pid(self):
 		return ifcb.pid(os.path.basename(self.dir))
 	
-	@gen2list
-	def all_bins(self):
+	def __iter__(self):
 		for f in sorted(os.listdir(self.dir)):
 			if re.search(r'\.adc$',f):
 				yield BinFile(re.sub(r'\.adc','',f),self.dir)
+	
+	def all_bins(self):
+		list(self)
 	
 # represents a directory containing day directories
 class YearsDir:
@@ -37,8 +39,11 @@ class YearsDir:
 		self.dir = dir
 		self.instrument = instrument
 
-	@gen2list		
-	def all_days(self):
+	def __iter__(self):
 		for f in sorted(os.listdir(self.dir)):
 			if re.match(r'IFCB'+str(self.instrument)+r'_\d\d\d\d_\d\d\d',f):
 				yield DayDir(f)
+				
+	def all_days(self):
+		list(self)
+	
