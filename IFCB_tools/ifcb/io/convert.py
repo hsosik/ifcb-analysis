@@ -30,6 +30,8 @@ RDF_SEQ = rdf_term('Seq')
 RDF_ABOUT = rdf_term('about')
 RDF_LI = rdf_term('li')
 
+# TODO generate links to images
+
 # some shared code for XML and RDF representations
 def __add_headers(bin,root):
     SubElement(root, DC_DATE).text = bin.iso8601time()    

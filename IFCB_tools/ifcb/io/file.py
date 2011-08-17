@@ -53,7 +53,7 @@ class BinFile(Timestamped):
         reader = csv.reader(open(self.adc_path(),'rb'))
         target_number = 1
         for row in reader:
-            target = { TARGET_NUMBER: target_number, BIN_ID: self.id, PID: self.pid(target_number) }
+            target = { TARGET_NUMBER: target_number, BIN_ID: ifcb.pid(self.id), PID: self.pid(target_number) }
             for (name, cast), value in zip(ADC_SCHEMA, row):
                 target[name] = cast(value)
             yield target
@@ -62,15 +62,14 @@ class BinFile(Timestamped):
     def all_targets(self):
         return list(self)
 
-    # retrieve the nth target (0-based!)
+    # retrieve the nth target (1-based!)
     # more efficient than subscripting the result of all_targets
     def target(self,n):
-        targets = self.all_targets()
-        while(n > 0):
-            targets.next()
+        for target in self:
             n = n - 1
-            return targets.next()
-
+            if n == 0:
+                return target
+    
     # return number of targets
     def length(self):
         count = 0
