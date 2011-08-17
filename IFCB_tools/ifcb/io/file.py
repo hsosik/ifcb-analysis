@@ -12,12 +12,17 @@ import time
 # a target
 class Target():
     info = {}
+    bin = None
 
-    def __init__(self,target_info):
+    def __init__(self,target_info,bin):
+        self.bin = bin
         self.info = target_info
     
     def pid(self):
         return target_info[PID]
+    
+    def image(self):
+        return self.bin.image(self.info[TARGET_NUMBER])
     
 # one bin's worth of data
 class BinFile(Timestamped):
@@ -63,10 +68,10 @@ class BinFile(Timestamped):
         reader = csv.reader(open(self.adc_path(),'rb'))
         target_number = 1
         for row in reader:
-            target = { TARGET_NUMBER: target_number, BIN_ID: ifcb.pid(self.id), PID: self.pid(target_number) }
+            target_info = { TARGET_NUMBER: target_number, BIN_ID: ifcb.pid(self.id), PID: self.pid(target_number) }
             for (name, cast), value in zip(ADC_SCHEMA, row):
-                target[name] = cast(value)
-            yield Target(target)
+                target_info[name] = cast(value)
+            yield Target(target_info,self)
             target_number = target_number + 1
             
     def all_targets(self):
@@ -83,7 +88,7 @@ class BinFile(Timestamped):
     # return number of targets
     def length(self):
         count = 0
-        for target in self.all_targets():
+        for target in self:
             count = count + 1
         return count
     
@@ -100,14 +105,14 @@ class BinFile(Timestamped):
     
     ## image access
     def all_images(self):
-        roi_file = open(self.target_path(),'rb')
+        roi_file = open(self.roi_path(),'rb')
         for target in self:
             yield self.__get_image(target.info, roi_file)
         
     # convenience method for getting a specific image
     def image(self,n):
-        roi_file = open(self.target_path(),'rb')
-        return self.__get_image(self.target(index), roi_file)
+        roi_file = open(self.roi_path(),'rb')
+        return self.__get_image(self.target(n), roi_file)
     
     def pid(self,target_number=None):
         pid = ifcb.pid(self.id)

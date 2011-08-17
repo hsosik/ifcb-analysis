@@ -4,6 +4,7 @@ from lxml import etree
 from lxml.etree import ElementTree, QName, Element, SubElement
 import sys
 import simplejson
+import string
 
 DUBLIN_CORE_NAMESPACE = 'http://purl.org/dc/elements/1.1/'
 RDF_NAMESPACE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
@@ -89,7 +90,7 @@ def __target2rdf(target,parent):
 def target2rdf(target,out=sys.stdout):
     rdf = __rdf()
     __target2rdf(target,rdf)
-    return ElementTree(root).write(out, pretty_print=True)
+    return ElementTree(rdf).write(out, pretty_print=True)
     
 def bin2rdf(bin,out=sys.stdout):
     rdf = __rdf()
@@ -112,3 +113,25 @@ def bin2json(bin,out=sys.stdout):
 
 def target2json(target,out=sys.stdout):
     return simplejson.dump(target.info,out)
+
+def target2image(target,format='PNG',out=sys.stdout):
+    format = string.upper(format)
+    target.image().save(out,format)
+    
+def target2png(target,out=sys.stdout):
+    target2image(target,'PNG',out)
+
+def target2jpg(target,out=sys.stdout):
+    target2image(target,'JPEG',out)
+
+def target2bmp(target,out=sys.stdout):
+    target2image(target,'BMP',out)
+
+def target2gif(target,out=sys.stdout):
+    target2image(target,'GIF',out)
+    
+def target2tiff(target,out=sys.stdout):
+    target2image(target,'TIFF',out)
+
+    
+    
