@@ -19,7 +19,7 @@ class Target():
         self.info = target_info
     
     def pid(self):
-        return target_info[PID]
+        return self.info[PID]
     
     def image(self):
         return self.bin.image(self.info[TARGET_NUMBER])

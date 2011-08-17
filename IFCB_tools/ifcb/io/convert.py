@@ -112,7 +112,8 @@ def bin2xml(bin,out=sys.stdout):
     __add_headers(bin,root)
     target_number = 1
     for target in bin:
-        __target2xml(target, root)
+        elt = SubElement(root, IFCB_TARGET)
+        elt.set(DC_IDENTIFIER, target.pid())
     return ElementTree(root).write(out, pretty_print=True)
 
 def __target2rdf(target,parent):
@@ -135,13 +136,14 @@ def bin2rdf(bin,out=sys.stdout):
     seq = SubElement(targets, RDF_SEQ)
     for target in bin:
         li = SubElement(seq, RDF_LI)
-        __target2rdf(target, li)
+        t = SubElement(li, IFCB_TARGET)
+        t.set(RDF_ABOUT, target.pid())
     return ElementTree(rdf).write(out, pretty_print=True)
     
 # turn a bin of targets into a json representation
 def bin2json(bin,out=sys.stdout):
     result = bin.headers()
-    result['targets'] = [target.info for target in bin];
+    result['targets'] = [target.pid() for target in bin];
     return simplejson.dump(result,out)
 
 def target2json(target,out=sys.stdout):
