@@ -55,6 +55,15 @@ class Filesystem:
         (target, bin_lid, target_no) = re.match(r'((IFCB\d+_\d{4}_\d{3}_\d{6})_(\d+))',ifcb.lid(pid)).groups()
         bin = self.bin(ifcb.pid(bin_lid))
         return bin.target(int(target_no)) # bin.target is 0-based
-         
+    
+    def resolve(self,pid):
+        lid = ifcb.lid(pid)
+        if re.match(r'^IFCB\d+_\d{4}_\d{3}$',lid): # day
+            return self.day(pid)
+        elif re.match(r'^IFCB\d+_\d{4}_\d{3}_\d{6}$',lid): # bin
+            return self.bin(pid)
+        elif re.match(r'^IFCB\d+_\d{4}_\d{3}_\d{6}_\d+$',lid):
+            return self.target(pid)
+        
     # TODO way of finding bins within a given time range
             

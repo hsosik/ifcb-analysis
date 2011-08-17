@@ -1,5 +1,5 @@
 import ifcb
-from ifcb.io import PID, ADC_SCHEMA, HDR_SCHEMA, CONTEXT
+from ifcb.io import PID, ADC_SCHEMA, HDR_SCHEMA, CONTEXT, TARGET_NUMBER
 from lxml import etree
 from lxml.etree import ElementTree, QName, Element, SubElement
 import sys
@@ -41,13 +41,27 @@ def __add_headers(bin,root):
     for name in [name for name,cast in HDR_SCHEMA if headers.has_key(name)]:
         SubElement(root,ifcb_term(name)).text = str(headers[name])
 
-def __target_properties(target_info, target):
+def __target_properties(target, elt):
     # each target is a dict. prepend the ifcb namespace to each dict key and make subtags
     for tag in [column for column,type in ADC_SCHEMA]:
          if tag != PID:
-            property = SubElement(target, ifcb_term(tag))
-            property.text = str(target_info[tag])
-    
+            property = SubElement(elt, ifcb_term(tag))
+            property.text = str(target.info[tag])
+
+def __target2xml(target, root=None):
+    elt = None
+    if root is not None:
+        elt = SubElement(root, IFCB_TARGET, number=str(target.info[TARGET_NUMBER]))
+    else:
+        nsmap = { None: ifcb.TERM_NAMESPACE, 'dc': DUBLIN_CORE_NAMESPACE }
+        elt = Element(IFCB_TARGET, nsmap=nsmap, number=str(target.info[TARGET_NUMBER]))
+    SubElement(elt, DC_IDENTIFIER).text = target.info[PID]
+    __target_properties(target, elt)
+    return elt
+
+def target2xml(target,out=sys.stdout):
+    ElementTree(__target2xml(target)).write(out, pretty_print=True)
+       
 # turn a bin of targets into an xml representation; outputs to given output stream
 def bin2xml(bin,out=sys.stdout):
     # ifcb namespace is the default
@@ -57,11 +71,8 @@ def bin2xml(bin,out=sys.stdout):
     SubElement(root, DC_IDENTIFIER).text = bin.pid()
     __add_headers(bin,root)
     target_number = 1
-    for target_info in bin.all_targets():
-        target = SubElement(root, IFCB_TARGET, number=str(target_number))
-        target_number = target_number + 1
-        SubElement(target, DC_IDENTIFIER).text = target_info[PID]
-        __target_properties(target_info, target)
+    for target in bin:
+        __target2xml(target, root)
     return ElementTree(root).write(out, pretty_print=True)
 
 def __rdf():
@@ -70,14 +81,14 @@ def __rdf():
              'rdf': RDF_NAMESPACE }
     return Element(RDF_RDF, nsmap=nsmap)
     
-def __target2rdf(target_info,parent):
-    target = SubElement(parent, IFCB_TARGET)
-    target.set(RDF_ABOUT, target_info[PID])
-    __target_properties(target_info, target)
+def __target2rdf(target,parent):
+    elt = SubElement(parent, IFCB_TARGET)
+    elt.set(RDF_ABOUT, target.info[PID])
+    __target_properties(target, elt)
 
-def target2rdf(target_info,out=sys.stdout):
+def target2rdf(target,out=sys.stdout):
     rdf = __rdf()
-    __target2rdf(target_info,rdf)
+    __target2rdf(target,rdf)
     return ElementTree(root).write(out, pretty_print=True)
     
 def bin2rdf(bin,out=sys.stdout):
@@ -88,13 +99,16 @@ def bin2rdf(bin,out=sys.stdout):
     targets = SubElement(root, IFCB_HAS_TARGETS)
     targets.set(RDF_ABOUT, bin.pid() + '/targets')
     seq = SubElement(targets, RDF_SEQ)
-    for target_info in bin.all_targets():
+    for target in bin:
         li = SubElement(seq, RDF_LI)
-        __target2rdf(target_info, li)
+        __target2rdf(target, li)
     return ElementTree(rdf).write(out, pretty_print=True)
     
 # turn a bin of targets into a json representation
 def bin2json(bin,out=sys.stdout):
     result = bin.headers()
-    result['targets'] = list(bin)
+    result['targets'] = [target.info for target in bin];
     return simplejson.dump(result,out)
+
+def target2json(target,out=sys.stdout):
+    return simplejson.dump(target.info,out)

@@ -9,6 +9,16 @@ import os
 import os.path
 import time
 
+# a target
+class Target():
+    info = {}
+
+    def __init__(self,target_info):
+        self.info = target_info
+    
+    def pid(self):
+        return target_info[PID]
+    
 # one bin's worth of data
 class BinFile(Timestamped):
     id = ''
@@ -56,7 +66,7 @@ class BinFile(Timestamped):
             target = { TARGET_NUMBER: target_number, BIN_ID: ifcb.pid(self.id), PID: self.pid(target_number) }
             for (name, cast), value in zip(ADC_SCHEMA, row):
                 target[name] = cast(value)
-            yield target
+            yield Target(target)
             target_number = target_number + 1
             
     def all_targets(self):
@@ -77,13 +87,13 @@ class BinFile(Timestamped):
             count = count + 1
         return count
     
-    def __get_image(self, target_info, target_file):
-        width = target_info[WIDTH]
-        height = target_info[HEIGHT]
-        offset = target_info[BYTE_OFFSET]
-        target_file.seek(offset+1) # byte offsets in target file are 1-based (Matlab legacy)
+    def __get_image(self, target, roi_file):
+        width = target.info[WIDTH]
+        height = target.info[HEIGHT]
+        offset = target.info[BYTE_OFFSET]
+        roi_file.seek(offset+1) # byte offsets in target file are 1-based (Matlab legacy)
         data = array('B')
-        data.fromfile(target_file, width * height)
+        data.fromfile(roi_file, width * height)
         im = Image.new('L', (height, width)) # rotate 90 degrees
         im.putdata(data)
         return im
@@ -91,8 +101,8 @@ class BinFile(Timestamped):
     ## image access
     def all_images(self):
         roi_file = open(self.target_path(),'rb')
-        for target_info in self.all_targets():
-            yield self.__get_image(target_info, roi_file)
+        for target in self:
+            yield self.__get_image(target.info, roi_file)
         
     # convenience method for getting a specific image
     def image(self,n):
@@ -110,11 +120,11 @@ class BinFile(Timestamped):
         # read target info from the ADC file
         roi_file = open(self.roi_path(),'rb')
         target_number = 1
-        for target_info in self.all_targets():
-            width = target_info[WIDTH]
-            height = target_info[HEIGHT]
+        for target in self:
+            width = target.info[WIDTH]
+            height = target.info[HEIGHT]
             if(width > 0 and height > 0): # IFCB writes (or used to write) some 0x0 target's; skip them
-                im = self.__get_image(target_info, roi_file)
+                im = self.__get_image(target, roi_file)
                 # output filename is {id}_ddddd where ddddd is target number in file
                 outfile = os.path.join(outdir,'%s_%05d.%s' % (self.id, target_number, string.lower(format)))
                 im.save(outfile, format)
