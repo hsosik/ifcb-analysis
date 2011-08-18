@@ -6,6 +6,8 @@ from ifcb.io import Timestamped
 from ifcb.util import gen2list
 import os.path
 
+"""Interpretation and traversal of IFCB directory structure"""
+
 # represents a directory containing a single day's worth of data for a single instrument
 class DayDir(Timestamped):
 	dir = '.'

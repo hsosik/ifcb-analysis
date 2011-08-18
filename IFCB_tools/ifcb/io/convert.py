@@ -6,6 +6,8 @@ import sys
 import simplejson
 import string
 
+"""Conversions between IFCB data and standard formats"""
+
 DUBLIN_CORE_NAMESPACE = 'http://purl.org/dc/elements/1.1/'
 RDF_NAMESPACE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 
@@ -103,7 +105,7 @@ def target2xml(target,out=sys.stdout):
     ElementTree(__target2xml(target)).write(out, pretty_print=True)
        
 # turn a bin of targets into an xml representation; outputs to given output stream
-def bin2xml(bin,out=sys.stdout):
+def bin2xml(bin,out=sys.stdout,full=False):
     # ifcb namespace is the default
     nsmap = { None: ifcb.TERM_NAMESPACE, 'dc': DUBLIN_CORE_NAMESPACE }
     # top level is called "bin"
@@ -112,8 +114,11 @@ def bin2xml(bin,out=sys.stdout):
     __add_headers(bin,root)
     target_number = 1
     for target in bin:
-        elt = SubElement(root, IFCB_TARGET)
-        elt.set(DC_IDENTIFIER, target.pid())
+        if full:
+            __target2xml(target, root)
+        else:
+            elt = SubElement(root, IFCB_TARGET)
+            elt.set(DC_IDENTIFIER, target.pid())
     return ElementTree(root).write(out, pretty_print=True)
 
 def __target2rdf(target,parent):
@@ -126,7 +131,7 @@ def target2rdf(target,out=sys.stdout):
     __target2rdf(target,rdf)
     return ElementTree(rdf).write(out, pretty_print=True)
     
-def bin2rdf(bin,out=sys.stdout):
+def bin2rdf(bin,out=sys.stdout,full=False):
     rdf = __rdf()
     root = SubElement(rdf, IFCB_BIN)
     root.set(RDF_ABOUT, bin.pid())
@@ -136,14 +141,20 @@ def bin2rdf(bin,out=sys.stdout):
     seq = SubElement(targets, RDF_SEQ)
     for target in bin:
         li = SubElement(seq, RDF_LI)
-        t = SubElement(li, IFCB_TARGET)
-        t.set(RDF_ABOUT, target.pid())
+        if full:
+            __target2rdf(target,li)
+        else:
+            t = SubElement(li, IFCB_TARGET)
+            t.set(RDF_ABOUT, target.pid())
     return ElementTree(rdf).write(out, pretty_print=True)
     
 # turn a bin of targets into a json representation
-def bin2json(bin,out=sys.stdout):
+def bin2json(bin,out=sys.stdout,full=True):
     result = bin.headers()
-    result['targets'] = [target.pid() for target in bin];
+    if full:
+        result['targets'] = [target.info for target in bin];
+    else:
+        result['targets'] = [target.pid() for target in bin];
     return simplejson.dump(result,out)
 
 def target2json(target,out=sys.stdout):

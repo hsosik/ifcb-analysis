@@ -9,6 +9,8 @@ import os
 import os.path
 import time
 
+"""Parsing of IFCB data formats including header files, metadata, and imagery"""
+
 # a target
 class Target():
     info = {}

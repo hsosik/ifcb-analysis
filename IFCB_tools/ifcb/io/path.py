@@ -5,6 +5,8 @@ import ifcb
 import re
 import os.path
 
+"""Resolution of IFCB global identifiers to local filesystem paths"""
+
 class Filesystem:
     years_dirs = []
     

@@ -1,7 +1,7 @@
 import os
 import time
 
-# define constants for use with ROI structs
+"""Utilities for reading and converting IFCB data"""
 
 # adc columns, 0-based. "x" is horizontal, "y" is vertical, x left to right, y bottom to top
 TRIGGER = 'trigger'
