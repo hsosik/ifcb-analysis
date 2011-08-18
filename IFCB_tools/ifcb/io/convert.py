@@ -39,11 +39,15 @@ RDF_LI = rdf_term('li')
 
 # TODO generate links to images
 
-def __rdf():
-    nsmap = { None: ifcb.TERM_NAMESPACE,
+XML_NSMAP = { None: ifcb.TERM_NAMESPACE,
+             'dc': DUBLIN_CORE_NAMESPACE }
+
+RDF_NSMAP = { None: ifcb.TERM_NAMESPACE,
              'dc': DUBLIN_CORE_NAMESPACE,
              'rdf': RDF_NAMESPACE }
-    return Element(RDF_RDF, nsmap=nsmap)
+
+def __rdf():
+    return Element(RDF_RDF, nsmap=RDF_NSMAP)
 
 def day2rdf(day,out=sys.stdout):
     rdf = __rdf()
@@ -60,9 +64,7 @@ def day2rdf(day,out=sys.stdout):
     return ElementTree(rdf).write(out, pretty_print=True)
 
 def day2xml(day,out=sys.stdout):
-    nsmap = { None: ifcb.TERM_NAMESPACE,
-             'dc': DUBLIN_CORE_NAMESPACE }
-    root = Element(IFCB_DAY, nsmap=nsmap)
+    root = Element(IFCB_DAY, nsmap=XML_NSMAP)
     SubElement(root, DC_DATE).text = day.iso8601time()
     for bin in day:
         elt = SubElement(root, IFCB_BIN)
@@ -95,8 +97,8 @@ def __target2xml(target, root=None):
     if root is not None:
         elt = SubElement(root, IFCB_TARGET, number=str(target.info[TARGET_NUMBER]))
     else:
-        nsmap = { None: ifcb.TERM_NAMESPACE, 'dc': DUBLIN_CORE_NAMESPACE }
-        elt = Element(IFCB_TARGET, nsmap=nsmap, number=str(target.info[TARGET_NUMBER]))
+        elt = Element(IFCB_TARGET, nsmap=XML_NSMAP, number=str(target.info[TARGET_NUMBER]))
+    pid = target.info[PID]
     SubElement(elt, DC_IDENTIFIER).text = target.info[PID]
     __target_properties(target, elt)
     return elt
@@ -106,11 +108,10 @@ def target2xml(target,out=sys.stdout):
        
 # turn a bin of targets into an xml representation; outputs to given output stream
 def bin2xml(bin,out=sys.stdout,full=False):
-    # ifcb namespace is the default
-    nsmap = { None: ifcb.TERM_NAMESPACE, 'dc': DUBLIN_CORE_NAMESPACE }
     # top level is called "bin"
-    root = Element(IFCB_BIN, nsmap=nsmap)
-    SubElement(root, DC_IDENTIFIER).text = bin.pid()
+    root = Element(IFCB_BIN, nsmap=XML_NSMAP)
+    pid = bin.pid()
+    SubElement(root, DC_IDENTIFIER).text = pid
     __add_headers(bin,root)
     target_number = 1
     for target in bin:
@@ -134,10 +135,11 @@ def target2rdf(target,out=sys.stdout):
 def bin2rdf(bin,out=sys.stdout,full=False):
     rdf = __rdf()
     root = SubElement(rdf, IFCB_BIN)
-    root.set(RDF_ABOUT, bin.pid())
+    pid = bin.pid()
+    root.set(RDF_ABOUT, pid)
     __add_headers(bin,root)
     targets = SubElement(root, IFCB_HAS_TARGETS)
-    targets.set(RDF_ABOUT, bin.pid() + '/targets')
+    targets.set(RDF_ABOUT, pid + '/targets')
     seq = SubElement(targets, RDF_SEQ)
     for target in bin:
         li = SubElement(seq, RDF_LI)

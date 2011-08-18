@@ -7,4 +7,4 @@ if __name__ == '__main__':
     if(len(argv) < 2):
         print 'usage: bin2xml [file]'
     else:
-        bin2json(BinFile(argv[1]))
+        bin2json(BinFile(argv[1]),stdout,True)

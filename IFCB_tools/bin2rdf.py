@@ -7,5 +7,5 @@ if __name__ == '__main__':
     if(len(argv) < 2):
         print 'usage: bin2rdf [file]'
     else:
-        bin2rdf(BinFile(argv[1]))
+        bin2rdf(BinFile(argv[1]),stdout,True)
         

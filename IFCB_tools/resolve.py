@@ -10,7 +10,7 @@ import os.path
 import re
 from config import FS
 
-# script for returning a bin in JSON format given the PID
+"""RESTful service resolving an IFCB permanent ID (pid) + optional extension to an appropriate representation"""
 
 if __name__ == '__main__':
     cgitb.enable()
