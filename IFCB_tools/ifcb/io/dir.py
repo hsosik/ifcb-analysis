@@ -17,7 +17,7 @@ class DayDir(Timestamped):
 		self.dir = dir
 				
 	def __repr__(self):
-		return 'DayDir:' + self.dir
+		return '{DayDir ' + self.pid() +'}'
 	
 	def time_string(self):
 		return re.sub('^IFCB\\d+_','',ifcb.lid(self.pid()))
@@ -29,10 +29,10 @@ class DayDir(Timestamped):
 		for item in sorted(os.listdir(self.dir)):
 			f = os.path.join(self.dir, item)
 			if re.search(r'\.adc$',f):
-				yield BinFile(os.path.abspath(f))
+				yield BinFile(f)
 	
 	def all_bins(self):
-		list(self)
+		return list(self)
 	
 # represents a directory containing day directories
 class YearsDir:
@@ -44,10 +44,11 @@ class YearsDir:
 		self.instrument = instrument
 
 	def __iter__(self):
-		for f in sorted(os.listdir(self.dir)):
-			if re.match(r'IFCB'+str(self.instrument)+r'_\d\d\d\d_\d\d\d',f):
-				yield DayDir(f)
+		for item in sorted(os.listdir(self.dir)):
+			f = os.path.join(self.dir, item)
+			if re.search(r'IFCB'+str(self.instrument)+r'_\d\d\d\d_\d\d\d',f):
+				yield DayDir(os.path.abspath(f))
 				
 	def all_days(self):
-		list(self)
+		return list(self)
 	

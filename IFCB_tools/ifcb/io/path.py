@@ -11,10 +11,10 @@ class Filesystem:
     years_dirs = []
     
     def __init__(self,years_dirs):
-        self.years_dirs = [YearsDir(d) for d in years_dirs]
+        self.years_dirs = [YearsDir(os.path.abspath(d)) for d in years_dirs]
 
     def all_days(self):
-        for years in years_dirs:
+        for years in self.years_dirs:
             for day in years:
                 yield day
                 
@@ -23,6 +23,10 @@ class Filesystem:
             for bin in day:
                 yield bin
     
+    def latest_bin(self):
+        latest_day = sorted(list(self.all_days()), key=lambda day: day.time())[-1]
+        return sorted(latest_day.all_bins(), key=lambda bin: bin.time())[-1]
+                
     def all_targets(self):
         for bin in self.all_bins():
             for target in bin:
@@ -68,4 +72,3 @@ class Filesystem:
             return self.target(pid)
         
     # TODO way of finding bins within a given time range
-            

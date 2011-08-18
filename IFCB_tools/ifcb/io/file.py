@@ -1,6 +1,6 @@
 import csv
 import ifcb
-from ifcb.io import adc_path, roi_path, hdr_path, ADC_SCHEMA, HDR_SCHEMA, HDR_COLUMNS, TARGET_NUMBER, BIN_ID, PID, WIDTH, HEIGHT, BYTE_OFFSET, Timestamped, CONTEXT
+from ifcb.io import adc_path, roi_path, hdr_path, ADC_SCHEMA, HDR_SCHEMA, HDR_COLUMNS, TARGET_NUMBER, BIN_ID, PID, WIDTH, HEIGHT, BYTE_OFFSET, Timestamped, CONTEXT, FRAME_GRAB_TIME, ISO_8601_FORMAT
 from PIL import Image
 from array import array
 import string
@@ -8,6 +8,7 @@ import re
 import os
 import os.path
 import time
+import calendar
 
 """Parsing of IFCB data formats including header files, metadata, and imagery"""
 
@@ -22,6 +23,16 @@ class Target():
     
     def pid(self):
         return self.info[PID]
+    
+    def __repr__(self):
+        return '{Target '+self.pid() + '}'
+    
+    def time(self):
+        bin_time = calendar.timegm(self.bin.time()) # bin seconds since epoch
+        return time.gmtime(bin_time + self.info[FRAME_GRAB_TIME])
+    
+    def iso8601time(self):
+        return time.strftime(ISO_8601_FORMAT, self.time())
     
     def image(self):
         return self.bin.image(self.info[TARGET_NUMBER])
@@ -38,7 +49,7 @@ class BinFile(Timestamped):
         (self.id, ext) = os.path.splitext(file)
     
     def __repr__(self):
-        return 'BinFile:' + self.id
+        return '{Bin ' + self.pid() + '}'
         
     def adc_path(self):
         return adc_path(self.id,self.dir)

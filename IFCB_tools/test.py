@@ -3,8 +3,10 @@ from sys import argv, stdout
 from ifcb.io.file import BinFile
 from ifcb.io.dir import DayDir, YearsDir
 from ifcb.io.path import Filesystem
-from ifcb.io.convert import bin2xml
+from ifcb.io.convert import bin2xml, bin2atom
 import ifcb
+
+J = Filesystem(['/Volumes/J_IFCB/ifcb_data_MVCO_jun06'])
 
 def test1():
     for sfx in ['157_181359', '188_200152', '214_150922', '237_000054']:
@@ -20,14 +22,15 @@ def test3():
     print [d.pid() for d in yd.all_days()]
 
 def test4():
-    fs = Filesystem(['/Volumes/J_IFCB/ifcb_data_MVCO_jun06'])
     pid = ifcb.pid('IFCB5_2011_056_024112')
-    print fs.bin(pid)
+    print J.bin(pid)
 
 def test5():
-    fs = Filesystem(['/Volumes/J_IFCB/ifcb_data_MVCO_jun06'])
     pid = ifcb.pid('IFCB5_2011_056_024112_000001')
-    print fs.target(pid)
+    print J.target(pid)
+    
+def test6():
+    bin2atom(J.latest_bin())
     
 if __name__ == '__main__':
-    test5()
+    test6()
