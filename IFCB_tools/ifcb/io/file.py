@@ -72,7 +72,8 @@ class BinFile(Timestamped):
             target_info = { TARGET_NUMBER: target_number, BIN_ID: ifcb.pid(self.id), PID: self.pid(target_number) }
             for (name, cast), value in zip(ADC_SCHEMA, row):
                 target_info[name] = cast(value)
-            yield Target(target_info,self)
+            if target_info[HEIGHT] > 0 and target_info[WIDTH] > 0:
+                yield Target(target_info,self)
             target_number = target_number + 1
             
     def all_targets(self):

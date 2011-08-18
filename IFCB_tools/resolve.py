@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import ifcb
 import cgi
-#import cgitb
+import cgitb
 from ifcb.io.path import Filesystem
 from ifcb.io.convert import bin2json, bin2xml, bin2rdf, target2rdf, target2xml, target2json, target2png, target2jpg, target2gif, target2bmp, target2tiff, day2rdf, day2xml, day2json
 from ifcb.io.file import BinFile, Target
@@ -13,13 +13,13 @@ from config import FS
 # script for returning a bin in JSON format given the PID
 
 if __name__ == '__main__':
-    #cgitb.enable()
+    cgitb.enable()
     (pid, ext) = os.path.splitext(cgi.FieldStorage().getvalue('pid'))
     format = 'rdf' # default
     if ext != '':
         format = re.sub('^.','',ext)
     object = FS.resolve(pid)
-    print 'Content-type: '+{ 'rdf': 'application/rdf+xml',
+    print 'Content-type: '+{ 'rdf': 'text/xml',
                 'json': 'application/json',
                 'xml': 'text/xml',
                 'png': 'image/png',
