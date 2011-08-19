@@ -131,6 +131,7 @@ def bin2xml(bin,out=sys.stdout,full=False):
     return ElementTree(root).write(out, pretty_print=True)
 
 ATOM_NAMESPACE = 'http://www.w3.org/2005/Atom'
+XHTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
 
 def fs2atom(fs,link,out=sys.stdout):
     nsmap = { None: ATOM_NAMESPACE }
@@ -138,6 +139,7 @@ def fs2atom(fs,link,out=sys.stdout):
     bins = list(reversed(fs.latest_bins(20)))
     feed = Element('feed', nsmap=nsmap)
     SubElement(feed, 'title').text = 'Imaging FlowCytobot most recent data'
+    SubElement(feed, 'subtitle').text = 'Live marine phytoplankton cytometry with imagery'
     author = SubElement(feed, 'author')
     SubElement(author, 'name').text = 'Imaging FlowCytobot'
     SubElement(feed, 'link', href=link, rel='self')
@@ -146,15 +148,16 @@ def fs2atom(fs,link,out=sys.stdout):
     for bin in bins:
         t = SubElement(feed, 'entry')
         SubElement(t, 'title').text = 'Syringe sampled @ ' + bin.iso8601time()
-        SubElement(t, 'link', href=bin.pid(), rel='alternate')
-        SubElement(t, 'link', href=bin.pid()+'.xml', rel='alternate')
-        SubElement(t, 'link', href=bin.pid()+'.json', rel='alternate')
+        SubElement(t, 'link', href=bin.pid(), rel='alternate', type='application/rdf+xml')
+        SubElement(t, 'link', href=bin.pid()+'.xml', rel='alternate', type='text/xml')
+        SubElement(t, 'link', href=bin.pid()+'.json', rel='alternate', type='application/json')
         SubElement(t, 'id').text = bin.pid()
         SubElement(t, 'updated').text = bin.iso8601time()
-        content = SubElement(t, 'content', nsmap=xhtml, type='xhtml')
+        content = SubElement(t, 'content', type='xhtml')
+        div = SubElement(content, QName(XHTML_NAMESPACE, 'div'), nsmap=xhtml)
         headers = bin.headers()
         for header in sorted(headers.keys()):
-            SubElement(content, 'div').text = header + ': ' + str(headers[header])
+            SubElement(div, 'div').text = header + ': ' + str(headers[header])
     ElementTree(feed).write(out, pretty_print=True)
 
 def bin2atom(bin,out=sys.stdout):
