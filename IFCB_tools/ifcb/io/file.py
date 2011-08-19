@@ -96,8 +96,7 @@ class BinFile(Timestamped):
     # more efficient than subscripting the result of all_targets
     def target(self,n):
         for target in self:
-            n = n - 1
-            if n == 0:
+            if n == target.info[TARGET_NUMBER]:
                 return target
     
     # return number of targets
