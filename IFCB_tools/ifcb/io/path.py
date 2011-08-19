@@ -22,7 +22,23 @@ class Filesystem:
         for day in self.all_days():
             for bin in day:
                 yield bin
-    
+
+    def latest_days(self,n=10):
+        return sorted(list(self.all_days()), key=lambda day: day.time())[-n:]
+
+    def latest_day(self):
+        return self.latest_days(1)[0]
+
+    def latest_bins(self,n=10):
+        bins = []
+        for day in self.latest_days(2):
+            for bin in day:
+                bins.append(bin)
+        return sorted(bins, key=lambda bin: bin.time())[-n:]
+
+    def latest_bin(self):
+        return self.latest_bins(1)[0]
+                
     def latest_bin(self):
         latest_day = sorted(list(self.all_days()), key=lambda day: day.time())[-1]
         return sorted(latest_day.all_bins(), key=lambda bin: bin.time())[-1]

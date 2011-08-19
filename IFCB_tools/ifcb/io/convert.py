@@ -9,6 +9,7 @@ import string
 """Conversions between IFCB data and standard formats"""
 
 DUBLIN_CORE_NAMESPACE = 'http://purl.org/dc/elements/1.1/'
+DC_TERMS_NAMESPACE = 'http://purl.org/dc/terms/'
 RDF_NAMESPACE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 
 def ifcb_term(local_id):
@@ -22,6 +23,8 @@ def rdf_term(local_id):
 
 DC_IDENTIFIER = dc_term('identifier')
 DC_DATE = dc_term('date')
+
+DC_TERMS_HAS_FORMAT = QName(DC_TERMS_NAMESPACE, 'hasFormat')
 
 IFCB_DAY = ifcb_term('Day')
 IFCB_BINS = ifcb_term('bins')
@@ -40,11 +43,13 @@ RDF_LI = rdf_term('li')
 # TODO generate links to images
 
 XML_NSMAP = { None: ifcb.TERM_NAMESPACE,
-             'dc': DUBLIN_CORE_NAMESPACE }
+             'dc': DUBLIN_CORE_NAMESPACE,
+              'dcterms' : DC_TERMS_NAMESPACE }
 
 RDF_NSMAP = { None: ifcb.TERM_NAMESPACE,
              'dc': DUBLIN_CORE_NAMESPACE,
-             'rdf': RDF_NAMESPACE }
+             'rdf': RDF_NAMESPACE,
+             'dcterms' : DC_TERMS_NAMESPACE }
 
 def __rdf():
     return Element(RDF_RDF, nsmap=RDF_NSMAP)
@@ -54,6 +59,8 @@ def day2rdf(day,out=sys.stdout):
     root = SubElement(rdf, IFCB_DAY)
     root.set(RDF_ABOUT, day.pid())
     SubElement(root, DC_DATE).text = day.iso8601time()
+    SubElement(root, DC_TERMS_HAS_FORMAT).text = day.pid() + '.xml'
+    SubElement(root, DC_TERMS_HAS_FORMAT).text = day.pid() + '.json'
     bins = SubElement(root, IFCB_HAS_BINS)
     seq = SubElement(bins, RDF_SEQ)
     seq.set(RDF_ABOUT, day.pid()+'/bins')
@@ -101,6 +108,7 @@ def __target2xml(target, root=None):
     pid = target.info[PID]
     SubElement(elt, DC_IDENTIFIER).text = target.info[PID]
     __target_properties(target, elt)
+    SubElement(elt, DC_TERMS_HAS_FORMAT).text = target.info[PID] + '.png'
     return elt
 
 def target2xml(target,out=sys.stdout):
@@ -123,6 +131,31 @@ def bin2xml(bin,out=sys.stdout,full=False):
     return ElementTree(root).write(out, pretty_print=True)
 
 ATOM_NAMESPACE = 'http://www.w3.org/2005/Atom'
+
+def fs2atom(fs,link,out=sys.stdout):
+    nsmap = { None: ATOM_NAMESPACE }
+    xhtml = { None: 'http://www.w3.org/1999/xhtml' }
+    bins = list(reversed(fs.latest_bins(20)))
+    feed = Element('feed', nsmap=nsmap)
+    SubElement(feed, 'title').text = 'Imaging FlowCytobot most recent data'
+    author = SubElement(feed, 'author')
+    SubElement(author, 'name').text = 'Imaging FlowCytobot'
+    SubElement(feed, 'link', href=link, rel='self')
+    SubElement(feed, 'id').text = link
+    SubElement(feed, 'updated').text = bins[0].iso8601time()
+    for bin in bins:
+        t = SubElement(feed, 'entry')
+        SubElement(t, 'title').text = 'Syringe sampled @ ' + bin.iso8601time()
+        SubElement(t, 'link', href=bin.pid(), rel='alternate')
+        SubElement(t, 'link', href=bin.pid()+'.xml', rel='alternate')
+        SubElement(t, 'link', href=bin.pid()+'.json', rel='alternate')
+        SubElement(t, 'id').text = bin.pid()
+        SubElement(t, 'updated').text = bin.iso8601time()
+        content = SubElement(t, 'content', nsmap=xhtml, type='xhtml')
+        headers = bin.headers()
+        for header in sorted(headers.keys()):
+            SubElement(content, 'div').text = header + ': ' + str(headers[header])
+    ElementTree(feed).write(out, pretty_print=True)
 
 def bin2atom(bin,out=sys.stdout):
     nsmap = { None: ATOM_NAMESPACE }
@@ -148,6 +181,7 @@ def __target2rdf(target,parent):
     elt = SubElement(parent, IFCB_TARGET)
     elt.set(RDF_ABOUT, target.info[PID])
     __target_properties(target, elt)
+    SubElement(elt, DC_TERMS_HAS_FORMAT).text = target.pid() + '.png'
 
 def target2rdf(target,out=sys.stdout):
     rdf = __rdf()
@@ -160,6 +194,8 @@ def bin2rdf(bin,out=sys.stdout,full=False):
     pid = bin.pid()
     root.set(RDF_ABOUT, pid)
     __add_headers(bin,root)
+    SubElement(root, DC_TERMS_HAS_FORMAT).text = bin.pid() + '.xml'
+    SubElement(root, DC_TERMS_HAS_FORMAT).text = bin.pid() + '.json'
     targets = SubElement(root, IFCB_HAS_TARGETS)
     targets.set(RDF_ABOUT, pid + '/targets')
     seq = SubElement(targets, RDF_SEQ)

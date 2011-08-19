@@ -30,8 +30,7 @@ if __name__ == '__main__':
     if isinstance(object,BinFile):
         { 'rdf': bin2rdf,
           'xml': bin2xml,
-          'json': bin2json,
-          'atom': bin2atom }[format](object)
+          'json': bin2json }[format](object)
     elif isinstance(object,Target):
         { 'rdf': target2rdf,
           'xml': target2xml,
