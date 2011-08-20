@@ -24,12 +24,13 @@ $(document).ready(function() {
         datatype : 'json',
         success : function(r, status) {
             targets = r['targets']
-            alert('got ' + targets.length + ' targets');
-            for (index = 0; index < targets.length; index++) {
+            for (index = 0; index < 20; index++) {
                 entry = targets[index];
                 pid = entry['pid'];
-                $('#targets').append('<li><a href="target.html?pid='+pid+'">' + pid + '</a></li>');
+                targetNumber = entry['targetNumber'];
+                $('#targets').append('<li>'+targetNumber+'<a href="target.html?pid='+pid+'"><img src="'+pid+'.png"></a></li>');
             }
+            $('#targets').append('More ...');
         }
     });
 });
