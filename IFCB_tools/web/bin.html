@@ -17,15 +17,16 @@ function gup(name) {
         return results[1];
 }
 $(document).ready(function() {
+    pid = gup('pid');
     $.ajax({
-        url : '/feed.json',
+        url : pid+'.json',
         type : 'GET',
         datatype : 'json',
         success : function(r, status) {
         for (index = 0; index < r.length; index++) {
             entry = r[index];
             pid = entry['pid'];
-            $('#bins').append('<li><a href="bin.html?pid='+pid+'">' + pid + '</a></li>');
+            $('#targets').append('<li><a href="target.html?pid='+pid+'">' + pid + '</a></li>');
         });
     });
 });
@@ -33,7 +34,7 @@ $(document).ready(function() {
 </head>
 <body>
     <div id="all">
-        <ul id="bins"></ul>
+        <ul id="targets"></ul>
     </div>
 </body>
 </html>
