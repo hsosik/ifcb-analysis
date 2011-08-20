@@ -18,12 +18,23 @@ function gup( name )
     return results[1];
 }
 $(document).ready(function() {
-	value = gup('key');
-	$('#all').html(value)
+	$.ajax({
+		url: 'http://ifcb-data.whoi.edu/feed.json'
+		type: 'GET',
+		datatype: 'json',
+		success: function(r,status) {
+	        for(index = 0; index < r.length; index++) {
+	        	entry = r[index];
+	        	pid = entry['pid'];
+	        	$('#bins').append('<li><a href="'+pid+'.xml">'+pid+'</a></li>');
+			}
+		});
 });
 </script>
 </head>
 <body>
-<div id="all"></div>
+<div id="all">
+<ul id="bins"></ul>
+</div>
 </body>
 </html>
