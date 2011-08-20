@@ -19,7 +19,7 @@ function gup( name )
 }
 $(document).ready(function() {
 	$.ajax({
-		url: 'http://ifcb-data.whoi.edu/feed.json'
+		url: '/feed.json',
 		type: 'GET',
 		datatype: 'json',
 		success: function(r,status) {
