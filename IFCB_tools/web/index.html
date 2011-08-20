@@ -22,11 +22,12 @@ $(document).ready(function() {
         type : 'GET',
         datatype : 'json',
         success : function(r, status) {
-        for (index = 0; index < r.length; index++) {
-            entry = r[index];
-            pid = entry['pid'];
-            $('#bins').append('<li><a href="bin.html?pid='+pid+'">' + pid + '</a></li>');
-        });
+            for (index = 0; index < r.length; index++) {
+                entry = r[index];
+                pid = entry['pid'];
+                $('#bins').append('<li><a href="bin.html?pid='+pid+'">' + pid + '</a></li>');
+            }
+         }
     });
 });
 </script>
