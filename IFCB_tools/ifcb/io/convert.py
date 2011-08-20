@@ -133,10 +133,10 @@ def bin2xml(bin,out=sys.stdout,full=False):
 ATOM_NAMESPACE = 'http://www.w3.org/2005/Atom'
 XHTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
 
-def fs2atom(fs,link,out=sys.stdout):
+def fs2atom(fs,link,n=20,out=sys.stdout):
     nsmap = { None: ATOM_NAMESPACE }
     xhtml = { None: 'http://www.w3.org/1999/xhtml' }
-    bins = list(reversed(fs.latest_bins(20)))
+    bins = list(reversed(fs.latest_bins(n)))
     feed = Element('feed', nsmap=nsmap)
     SubElement(feed, 'title').text = 'Imaging FlowCytobot most recent data'
     SubElement(feed, 'subtitle').text = 'Live marine phytoplankton cytometry with imagery'
@@ -160,10 +160,11 @@ def fs2atom(fs,link,out=sys.stdout):
             SubElement(div, 'div').text = header + ': ' + str(headers[header])
     ElementTree(feed).write(out, pretty_print=True)
 
-def fs2json(fs,link,out=sys.stdout):
-    simplejson.dump([bin.headers() for bin in reversed(fs.latest_bins(20))],out)
-    
-def bin2atom(bin,out=sys.stdout):
+def fs2json_feed(fs,link,n=20,out=sys.stdout):
+    simplejson.dump([bin.properties(True) for bin in reversed(fs.latest_bins(n))],out)
+
+# TODO deprecate
+def bin2atom(bin,n=20,out=sys.stdout):
     nsmap = { None: ATOM_NAMESPACE }
     xhtml = { None: 'http://www.w3.org/1999/xhtml' }
     feed = Element('feed', nsmap=nsmap)
@@ -213,14 +214,18 @@ def bin2rdf(bin,out=sys.stdout,full=False):
             t = SubElement(li, IFCB_TARGET)
             t.set(RDF_ABOUT, target.pid())
     return ElementTree(rdf).write(out, pretty_print=True)
-    
-# turn a bin of targets into a json representation
-def bin2json(bin,out=sys.stdout,full=True):
+
+def bin_as_json(bin,full=True):
     result = bin.headers()
     if full:
         result['targets'] = [target.info for target in bin];
     else:
         result['targets'] = [target.pid() for target in bin];
+    return result
+
+# turn a bin of targets into a json representation
+def bin2json(bin,out=sys.stdout,full=True):
+    result = bin_as_json(bin,full)
     return simplejson.dump(result,out)
 
 def target2json(target,out=sys.stdout):

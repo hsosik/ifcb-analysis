@@ -8,4 +8,5 @@ if __name__ == '__main__':
         print 'usage: roi2images [file] [outdir: .] [format: png]'
     else:
         bin = BinFile(argv[1]) # file
+        print 'Converting %d images from %s...' % (bin.length(), bin)
         bin.save_images(*argv[2:4]) # outdir, format

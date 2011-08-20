@@ -65,6 +65,13 @@ class BinFile(Timestamped):
 
     def instrument(self):
         return re.sub(r'^IFCB(\d+)_.*',r'\1',self.id)
+
+    def properties(self,include_pid=False):
+        props = self.headers()
+        props['instrument'] = self.instrument()
+        if include_pid:
+            props['pid'] = self.pid()
+        return props
     
     def headers(self):
         lines = [line.rstrip() for line in open(self.hdr_path(), 'r').readlines()]

@@ -3,14 +3,15 @@ from sys import argv, stdout
 from ifcb.io.file import BinFile
 from ifcb.io.dir import DayDir, YearsDir
 from ifcb.io.path import Filesystem
-from ifcb.io.convert import bin2xml, bin2atom
+from ifcb.io.convert import bin2xml, bin2atom, target2image, fs2json_feed
 import ifcb
 
 J = Filesystem(['/Volumes/J_IFCB/ifcb_data_MVCO_jun06'])
+E = Filesystem(['../exampleData'])
 
 def test1():
     for sfx in ['157_181359', '188_200152', '214_150922', '237_000054']:
-        bin = BinFile('IFCB1_2006_'+sfx,r'../exampleData/')
+        bin = BinFile('IFCB1_2006_'+sfx,r'../exampleData/headerFiles')
         print bin.headers()
 
 def test2():
@@ -30,7 +31,14 @@ def test5():
     print J.target(pid)
     
 def test6():
-    bin2atom(J.latest_bin())
+    bin = BinFile('../exampleData/IFCB1_2011_231_182610.adc')
+    #bin2xml(BinFile('../exampleData/IFCB1_2011_231_182610.adc'))
+    for target in bin:
+        print target.info
+        target2image(target,'PNG','/tmp/foo.png')
+
+def test7():
+    fs2json_feed(E,'foo')
     
 if __name__ == '__main__':
-    test6()
+    test7()
