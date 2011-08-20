@@ -160,6 +160,9 @@ def fs2atom(fs,link,out=sys.stdout):
             SubElement(div, 'div').text = header + ': ' + str(headers[header])
     ElementTree(feed).write(out, pretty_print=True)
 
+def fs2json(fs,link,out=sys.stdout):
+    simplejson.dump([bin.headers() for bin in reversed(fs.latest_bins(20))],out)
+    
 def bin2atom(bin,out=sys.stdout):
     nsmap = { None: ATOM_NAMESPACE }
     xhtml = { None: 'http://www.w3.org/1999/xhtml' }
