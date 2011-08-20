@@ -8,5 +8,6 @@ from config import FS, ATOM
 if __name__ == '__main__':
     cgitb.enable()
     format = cgi.FieldStorage().getvalue('format','atom')
-    print 'Content-type: application/atom+xml\n'
+    mime = dict(atom='application/atom+xml', json='application/json')[format]
+    print 'Content-type: %s\n' % (mime)
     dict(atom=fs2atom, json=fs2json)[format](FS,ATOM)
