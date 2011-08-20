@@ -216,7 +216,7 @@ def bin2rdf(bin,out=sys.stdout,full=False):
     return ElementTree(rdf).write(out, pretty_print=True)
 
 def bin_as_json(bin,full=True):
-    result = bin.headers()
+    result = bin.properties()
     if full:
         result['targets'] = [target.info for target in bin];
     else:

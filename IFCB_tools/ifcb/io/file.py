@@ -69,6 +69,7 @@ class BinFile(Timestamped):
     def properties(self,include_pid=False):
         props = self.headers()
         props['instrument'] = self.instrument()
+        props['time'] = self.iso8601time()
         if include_pid:
             props['pid'] = self.pid()
         return props
@@ -76,7 +77,7 @@ class BinFile(Timestamped):
     def headers(self):
         lines = [line.rstrip() for line in open(self.hdr_path(), 'r').readlines()]
         props = { CONTEXT: [lines[n].strip('"') for n in range(3)] }
-        props['instrument'] = self.instrument()
+        props['instrument'] = self.instrument() # FIXME move to properties
         if len(lines) >= 6: # don't fail on original header format
             columns = re.split(' +',re.sub('"','',lines[4]))
             values = re.split(' +',re.sub('[",]','',lines[5]).strip())
