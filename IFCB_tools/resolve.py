@@ -3,7 +3,7 @@ import ifcb
 import cgi
 import cgitb
 from ifcb.io.path import Filesystem
-from ifcb.io.convert import bin2json, bin2xml, bin2rdf, target2rdf, target2xml, target2json, target2png, target2jpg, target2gif, target2bmp, target2tiff, day2rdf, day2xml, day2json
+from ifcb.io.convert import bin2json, bin2xml, bin2rdf, target2rdf, target2xml, target2json, target2png, target2jpg, target2gif, target2bmp, target2tiff, day2rdf, day2xml, day2json, day2html, bin2html, target2html
 from ifcb.io.file import BinFile, Target
 from ifcb.io.dir import DayDir
 import os.path
@@ -22,6 +22,7 @@ if __name__ == '__main__':
     print 'Content-type: '+{ 'rdf': 'text/xml',
                 'json': 'application/json',
                 'xml': 'text/xml',
+                'html': 'text/html',
                 'png': 'image/png',
                 'jpg': 'image/jpeg',
                 'gif': 'image/gif',
@@ -30,10 +31,12 @@ if __name__ == '__main__':
     if isinstance(object,BinFile):
         { 'rdf': bin2rdf,
           'xml': bin2xml,
+          'html': bin2html,
           'json': bin2json }[format](object)
     elif isinstance(object,Target):
         { 'rdf': target2rdf,
           'xml': target2xml,
+          'html': target2html,
           'json': target2json,
           'png': target2png,
           'jpg': target2jpg,
@@ -43,5 +46,6 @@ if __name__ == '__main__':
     elif isinstance(object,DayDir):
         { 'rdf': day2rdf,
           'xml': day2xml,
+          'html': day2html,
           'json': day2json }[format](object)
     

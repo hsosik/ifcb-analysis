@@ -3,7 +3,7 @@ from sys import argv, stdout
 from ifcb.io.file import BinFile
 from ifcb.io.dir import DayDir, YearsDir
 from ifcb.io.path import Filesystem
-from ifcb.io.convert import bin2xml, bin2atom, target2image, fs2json_feed
+from ifcb.io.convert import bin2xml, target2image, fs2json_feed, fs2html_feed, day2html, bin2html, target2html
 import ifcb
 
 J = Filesystem(['/Volumes/J_IFCB/ifcb_data_MVCO_jun06'])
@@ -38,7 +38,9 @@ def test6():
         target2image(target,'PNG','/tmp/foo.png')
 
 def test7():
-    fs2json_feed(E,'foo')
+    target2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2009_216_075913_00249'))
+    bin2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2009_216_075913'))
+    day2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2009_216'))
     
 if __name__ == '__main__':
     test7()

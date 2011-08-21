@@ -1,5 +1,5 @@
 import ifcb
-from ifcb.io import PID, ADC_SCHEMA, HDR_SCHEMA, CONTEXT, TARGET_NUMBER
+from ifcb.io import PID, ADC_SCHEMA, HDR_SCHEMA, CONTEXT, TARGET_NUMBER, FRAME_GRAB_TIME
 from lxml import etree
 from lxml.etree import ElementTree, QName, Element, SubElement
 import sys
@@ -77,6 +77,29 @@ def day2xml(day,out=sys.stdout):
         elt = SubElement(root, IFCB_BIN)
         elt.set(DC_IDENTIFIER, bin.pid())
     return ElementTree(root).write(out, pretty_print=True)
+
+def __html(title,heading=True):
+    html = Element('html')
+    head = SubElement(html, 'head')
+    SubElement(head, 'title').text = title
+    body = SubElement(html, 'body')
+    if heading:
+        SubElement(body, 'h1').text = title
+    return (html, body)
+
+def bin_title(bin):
+    return 'Syringe sampled @ ' + bin.iso8601time()
+
+def target_title(target):
+    return 'Target #%d @ %fs' % (target.info[TARGET_NUMBER], target.info[FRAME_GRAB_TIME])
+
+def day2html(day,out=sys.stdout):
+    (html, body) = __html(day.iso8601time())
+    ul = SubElement(body, 'ul')
+    for bin in day:
+        li = SubElement(ul, 'li')
+        SubElement(li, 'a', href=bin.pid()+'.html').text = bin_title(bin)
+    return ElementTree(html).write(out, pretty_print=True)
 
 def day2json(day,out=sys.stdout):
     j = { 'date': day.iso8601time() }
@@ -160,30 +183,44 @@ def fs2atom(fs,link,n=20,out=sys.stdout):
             SubElement(div, 'div').text = header + ': ' + str(headers[header])
     ElementTree(feed).write(out, pretty_print=True)
 
+def fs2html_feed(fs,link,n=20,out=sys.stdout):
+    bins = list(reversed(fs.latest_bins(n)))
+    (html, body) = __html('Imaging FlowCytobot most recent data')
+    ul = SubElement(body, 'ul')
+    for bin in bins:
+        t = SubElement(ul, 'li')
+        SubElement(t, 'a', href=bin.pid()+'.html').text = bin_title(bin)
+    ElementTree(html).write(out, pretty_print=True)
+    
 def fs2json_feed(fs,link,n=20,out=sys.stdout):
     simplejson.dump([bin.properties(True) for bin in reversed(fs.latest_bins(n))],out)
 
-# TODO deprecate
-def bin2atom(bin,n=20,out=sys.stdout):
-    nsmap = { None: ATOM_NAMESPACE }
-    xhtml = { None: 'http://www.w3.org/1999/xhtml' }
-    feed = Element('feed', nsmap=nsmap)
-    SubElement(feed, 'title').text = 'Imaging FlowCytobot most recent data'
-    author = SubElement(feed, 'author')
-    SubElement(author, 'name').text = 'Imaging FlowCytobot #' + bin.instrument()
-    SubElement(feed, 'link', href=bin.pid()+'.atom', rel='self')
-    SubElement(feed, 'id').text = bin.pid()
-    SubElement(feed, 'updated').text = bin.iso8601time()
-    for target in list(bin):
-        t = SubElement(feed, 'entry')
-        SubElement(t, 'title').text = 'Target #' + str(target.info[TARGET_NUMBER]) + ' from ' + bin.pid()
-        SubElement(t, 'link', href=target.pid(), rel='alternate')
-        SubElement(t, 'id').text = target.pid()
-        SubElement(t, 'updated').text = target.iso8601time()
-        content = SubElement(t, 'content', nsmap=xhtml, type='xhtml')
-        img = SubElement(content, 'img', src=target.pid()+'.png')
-    ElementTree(feed).write(out, pretty_print=True)
-    
+def bin2html(bin,out=sys.stdout):
+    (html, body) = __html(bin_title(bin))
+    properties = SubElement(body, 'div')
+    for k,v in bin.properties().items():
+        prop = SubElement(properties, 'div')
+        SubElement(prop, 'span').text = k
+        SubElement(prop, 'span').text = str(v)
+    ul = SubElement(body,'ul')
+    for target in bin:
+        t = SubElement(ul, 'li', href=target.pid()+'.html').text = target_title(target)
+    ElementTree(html).write(out, pretty_print=True)
+
+def target2html(target,out=sys.stdout):
+    (html, body) = __html(target_title(target))
+    properties = SubElement(body, 'div')
+    parent_link = SubElement(properties, 'div')
+    SubElement(parent_link, 'span').text = 'bin'
+    link = SubElement(parent_link, 'span')
+    SubElement(link, 'a', href=target.bin.pid()+'.html').text = bin_title(target.bin)
+    for k,v in target.info.items():
+        prop = SubElement(properties, 'div')
+        SubElement(prop, 'span').text = k
+        SubElement(prop, 'span').text = str(v)
+    SubElement(body, 'img', src=target.pid()+'.png')
+    ElementTree(html).write(out, pretty_print=True)
+        
 def __target2rdf(target,parent):
     elt = SubElement(parent, IFCB_TARGET)
     elt.set(RDF_ABOUT, target.info[PID])
@@ -249,6 +286,3 @@ def target2gif(target,out=sys.stdout):
     
 def target2tiff(target,out=sys.stdout):
     target2image(target,'TIFF',out)
-
-    
-    
