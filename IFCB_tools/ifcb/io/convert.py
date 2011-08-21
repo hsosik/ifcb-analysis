@@ -204,7 +204,8 @@ def bin2html(bin,out=sys.stdout):
         SubElement(prop, 'span').text = str(v)
     ul = SubElement(body,'ul')
     for target in bin:
-        t = SubElement(ul, 'li', href=target.pid()+'.html').text = target_title(target)
+        li = SubElement(ul, 'li')
+        SubElement(li, 'a', href=target.pid()+'.html').text = target_title(target)
     ElementTree(html).write(out, pretty_print=True)
 
 def target2html(target,out=sys.stdout):
