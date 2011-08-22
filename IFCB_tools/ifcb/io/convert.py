@@ -51,6 +51,13 @@ RDF_NSMAP = { None: ifcb.TERM_NAMESPACE,
              'rdf': RDF_NAMESPACE,
              'dcterms' : DC_TERMS_NAMESPACE }
 
+def Sub(parent, name, clazz, text=None):
+    child = SubElement(parent, name)
+    child.set('class',clazz)
+    if text is not None:
+        child.text = str(text)
+    return child
+
 def __rdf():
     return Element(RDF_RDF, nsmap=RDF_NSMAP)
 
@@ -82,6 +89,7 @@ def __html(title,heading=True):
     html = Element('html')
     head = SubElement(html, 'head')
     SubElement(head, 'title').text = title
+    SubElement(head, 'link', type='text/css', href='ifcb.css', rel='Stylesheet')
     body = SubElement(html, 'body')
     if heading:
         SubElement(body, 'h1').text = title
@@ -95,9 +103,9 @@ def target_title(target):
 
 def day2html(day,out=sys.stdout):
     (html, body) = __html(day.iso8601time())
-    ul = SubElement(body, 'ul')
+    ul = Sub(body, 'ul', 'bins')
     for bin in day:
-        li = SubElement(ul, 'li')
+        li = Sub(ul, 'li', 'bin')
         SubElement(li, 'a', href=bin.pid()+'.html').text = bin_title(bin)
     return ElementTree(html).write(out, pretty_print=True)
 
@@ -186,9 +194,9 @@ def fs2atom(fs,link,n=20,out=sys.stdout):
 def fs2html_feed(fs,link,n=20,out=sys.stdout):
     bins = list(reversed(fs.latest_bins(n)))
     (html, body) = __html('Imaging FlowCytobot most recent data')
-    ul = SubElement(body, 'ul')
+    ul = Sub(body, 'ul', 'bins')
     for bin in bins:
-        t = SubElement(ul, 'li')
+        t = Sub(ul, 'li', 'bin')
         SubElement(t, 'a', href=bin.pid()+'.html').text = bin_title(bin)
     ElementTree(html).write(out, pretty_print=True)
     
@@ -197,29 +205,30 @@ def fs2json_feed(fs,link,n=20,out=sys.stdout):
 
 def bin2html(bin,out=sys.stdout):
     (html, body) = __html(bin_title(bin))
-    properties = SubElement(body, 'div')
+    properties = Sub(body, 'div', 'properties')
     for k,v in bin.properties().items():
-        prop = SubElement(properties, 'div')
-        SubElement(prop, 'span').text = k
-        SubElement(prop, 'span').text = str(v)
-    ul = SubElement(body,'ul')
+        prop = Sub(properties, 'div', 'property')
+        Sub(prop, 'div', 'label').text = k
+        Sub(prop, 'div', 'value').text = str(v)
+    ul = Sub(body,'ul','bins')
     for target in bin:
-        li = SubElement(ul, 'li')
+        li = Sub(ul, 'li', 'bin')
         SubElement(li, 'a', href=target.pid()+'.html').text = target_title(target)
     ElementTree(html).write(out, pretty_print=True)
 
 def target2html(target,out=sys.stdout):
     (html, body) = __html(target_title(target))
-    properties = SubElement(body, 'div')
-    parent_link = SubElement(properties, 'div')
-    SubElement(parent_link, 'span').text = 'bin'
-    link = SubElement(parent_link, 'span')
+    properties = Sub(body, 'div', 'properties')
+    parent_link = Sub(properties, 'div', 'property')
+    Sub(parent_link, 'div', 'label').text = 'bin'
+    link = Sub(parent_link, 'div', 'bin value')
     SubElement(link, 'a', href=target.bin.pid()+'.html').text = bin_title(target.bin)
     for k,v in target.info.items():
-        prop = SubElement(properties, 'div')
-        SubElement(prop, 'span').text = k
-        SubElement(prop, 'span').text = str(v)
-    SubElement(body, 'img', src=target.pid()+'.png')
+        prop = Sub(properties, 'div', 'property')
+        Sub(prop, 'div', 'label').text = k
+        Sub(prop, 'div', 'value').text = str(v)
+    img = SubElement(body, 'img', src=target.pid()+'.png')
+    img.set('class','image')
     ElementTree(html).write(out, pretty_print=True)
         
 def __target2rdf(target,parent):
