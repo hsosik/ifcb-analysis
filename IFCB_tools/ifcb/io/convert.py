@@ -92,21 +92,25 @@ def __html(title,heading=True):
     SubElement(head, 'link', type='text/css', href='ifcb.css', rel='Stylesheet')
     body = SubElement(html, 'body')
     if heading:
-        SubElement(body, 'h1').text = title
+        Sub(body, 'div', 'title').text = title
     return (html, body)
 
 def bin_title(bin):
-    return 'Syringe sampled @ ' + bin.iso8601time()
+    return 'Sample @ ' + bin.iso8601time()
 
 def target_title(target):
     return 'Target #%d @ %fs' % (target.info[TARGET_NUMBER], target.info[FRAME_GRAB_TIME])
 
-def day2html(day,out=sys.stdout):
-    (html, body) = __html(day.iso8601time())
-    ul = Sub(body, 'ul', 'bins')
-    for bin in day:
+def __bins2html(parent,bins):
+    div = Sub(parent, 'div', 'bins')
+    ul = Sub(div, 'ul', 'bins')
+    for bin in bins:
         li = Sub(ul, 'li', 'bin')
         SubElement(li, 'a', href=bin.pid()+'.html').text = bin_title(bin)
+        
+def day2html(day,out=sys.stdout):
+    (html, body) = __html(day.iso8601time())
+    __bins2html(body,day)
     return ElementTree(html).write(out, pretty_print=True)
 
 def day2json(day,out=sys.stdout):
@@ -194,10 +198,7 @@ def fs2atom(fs,link,n=20,out=sys.stdout):
 def fs2html_feed(fs,link,n=20,out=sys.stdout):
     bins = list(reversed(fs.latest_bins(n)))
     (html, body) = __html('Imaging FlowCytobot most recent data')
-    ul = Sub(body, 'ul', 'bins')
-    for bin in bins:
-        t = Sub(ul, 'li', 'bin')
-        SubElement(t, 'a', href=bin.pid()+'.html').text = bin_title(bin)
+    __bins2html(body, bins)
     ElementTree(html).write(out, pretty_print=True)
     
 def fs2json_feed(fs,link,n=20,out=sys.stdout):
@@ -210,9 +211,10 @@ def bin2html(bin,out=sys.stdout):
         prop = Sub(properties, 'div', 'property')
         Sub(prop, 'div', 'label').text = k
         Sub(prop, 'div', 'value').text = str(v)
-    ul = Sub(body,'ul','bins')
+    targets = Sub(body, 'div', 'targets')
+    ul = Sub(targets,'ul','targets')
     for target in bin:
-        li = Sub(ul, 'li', 'bin')
+        li = Sub(ul, 'li', 'target')
         SubElement(li, 'a', href=target.pid()+'.html').text = target_title(target)
     ElementTree(html).write(out, pretty_print=True)
 
@@ -227,7 +229,8 @@ def target2html(target,out=sys.stdout):
         prop = Sub(properties, 'div', 'property')
         Sub(prop, 'div', 'label').text = k
         Sub(prop, 'div', 'value').text = str(v)
-    img = SubElement(body, 'img', src=target.pid()+'.png')
+    id = Sub(body, 'div', 'image')
+    img = SubElement(id, 'img', src=target.pid()+'.png')
     img.set('class','image')
     ElementTree(html).write(out, pretty_print=True)
         
