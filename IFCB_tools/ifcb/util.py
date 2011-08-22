@@ -13,3 +13,12 @@ def gen2list(gen):
     def patched(*args, **kwargs):
         return list(gen(*args, **kwargs))
     return patched
+
+# order the keys of a dict according to a sequence
+# any keys in the sequence that are not present in the dict will not be listed
+# any keys in the dict that are not in the sequence will be listed in alpha order
+def order_keys(d,s):
+    sk = [key for key in s if key in d.keys()]
+    dk = sorted([key for key in d.keys() if key not in s])
+    return sk + dk
+    

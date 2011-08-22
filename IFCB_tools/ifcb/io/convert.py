@@ -5,6 +5,7 @@ from lxml.etree import ElementTree, QName, Element, SubElement
 import sys
 import simplejson
 import string
+from ifcb.util import order_keys 
 
 """Conversions between IFCB data and standard formats"""
 
@@ -129,7 +130,7 @@ def __add_headers(bin,root):
 
 def __target_properties(target, elt):
     # each target is a dict. prepend the ifcb namespace to each dict key and make subtags
-    for tag in [column for column,type in ADC_SCHEMA]:
+    for tag in order_keys(target.info, [column for column,type in ADC_SCHEMA]):
          if tag != PID:
             property = SubElement(elt, ifcb_term(tag))
             property.text = str(target.info[tag])
@@ -207,10 +208,10 @@ def fs2json_feed(fs,link,n=20,out=sys.stdout):
 def bin2html(bin,out=sys.stdout):
     (html, body) = __html(bin_title(bin))
     properties = Sub(body, 'div', 'properties')
-    for k,v in bin.properties().items():
+    for k in order_keys(bin.properties(), [column for column,type in HDR_SCHEMA]):
         prop = Sub(properties, 'div', 'property')
         Sub(prop, 'div', 'label').text = k
-        Sub(prop, 'div', 'value').text = str(v)
+        Sub(prop, 'div', 'value').text = str(bin.properties()[k])
     targets = Sub(body, 'div', 'targets')
     ul = Sub(targets,'ul','targets')
     for target in bin:
@@ -225,10 +226,10 @@ def target2html(target,out=sys.stdout):
     Sub(parent_link, 'div', 'label').text = 'bin'
     link = Sub(parent_link, 'div', 'bin value')
     SubElement(link, 'a', href=target.bin.pid()+'.html').text = bin_title(target.bin)
-    for k,v in target.info.items():
+    for k in order_keys(target.info, [column for column,type in ADC_SCHEMA]):
         prop = Sub(properties, 'div', 'property')
         Sub(prop, 'div', 'label').text = k
-        Sub(prop, 'div', 'value').text = str(v)
+        Sub(prop, 'div', 'value').text = str(target.info[k])
     id = Sub(body, 'div', 'image')
     img = SubElement(id, 'img', src=target.pid()+'.png')
     img.set('class','image')
