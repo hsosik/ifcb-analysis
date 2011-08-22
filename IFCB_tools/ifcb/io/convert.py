@@ -205,12 +205,15 @@ def fs2html_feed(fs,link,n=20,out=sys.stdout):
 def fs2json_feed(fs,link,n=20,out=sys.stdout):
     simplejson.dump([bin.properties(True) for bin in reversed(fs.latest_bins(n))],out)
 
+def pretty_property_name(propName):
+    return decamel(propName)
+
 def bin2html(bin,out=sys.stdout):
     (html, body) = __html(bin_title(bin))
     properties = Sub(body, 'div', 'properties')
     for k in order_keys(bin.properties(), [column for column,type in HDR_SCHEMA]):
         prop = Sub(properties, 'div', 'property')
-        Sub(prop, 'div', 'label').text = decamel(k)
+        Sub(prop, 'div', 'label').text = pretty_property_name(k)
         Sub(prop, 'div', 'value').text = str(bin.properties()[k])
     targets = Sub(body, 'div', 'targets')
     ul = Sub(targets,'ul','targets')
@@ -228,7 +231,7 @@ def target2html(target,out=sys.stdout):
     SubElement(link, 'a', href=target.bin.pid()+'.html').text = bin_title(target.bin)
     for k in order_keys(target.info, [column for column,type in ADC_SCHEMA]):
         prop = Sub(properties, 'div', 'property')
-        Sub(prop, 'div', 'label').text = decamel(k)
+        Sub(prop, 'div', 'label').text = pretty_property_name(k)
         Sub(prop, 'div', 'value').text = str(target.info[k])
     id = Sub(body, 'div', 'image')
     img = SubElement(id, 'img', src=target.pid()+'.png')
