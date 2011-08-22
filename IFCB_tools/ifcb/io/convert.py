@@ -5,7 +5,7 @@ from lxml.etree import ElementTree, QName, Element, SubElement
 import sys
 import simplejson
 import string
-from ifcb.util import order_keys 
+from ifcb.util import order_keys, decamel
 
 """Conversions between IFCB data and standard formats"""
 
@@ -210,7 +210,7 @@ def bin2html(bin,out=sys.stdout):
     properties = Sub(body, 'div', 'properties')
     for k in order_keys(bin.properties(), [column for column,type in HDR_SCHEMA]):
         prop = Sub(properties, 'div', 'property')
-        Sub(prop, 'div', 'label').text = k
+        Sub(prop, 'div', 'label').text = decamel(k)
         Sub(prop, 'div', 'value').text = str(bin.properties()[k])
     targets = Sub(body, 'div', 'targets')
     ul = Sub(targets,'ul','targets')
@@ -228,7 +228,7 @@ def target2html(target,out=sys.stdout):
     SubElement(link, 'a', href=target.bin.pid()+'.html').text = bin_title(target.bin)
     for k in order_keys(target.info, [column for column,type in ADC_SCHEMA]):
         prop = Sub(properties, 'div', 'property')
-        Sub(prop, 'div', 'label').text = k
+        Sub(prop, 'div', 'label').text = decamel(k)
         Sub(prop, 'div', 'value').text = str(target.info[k])
     id = Sub(body, 'div', 'image')
     img = SubElement(id, 'img', src=target.pid()+'.png')
