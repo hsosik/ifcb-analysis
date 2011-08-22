@@ -107,9 +107,7 @@ def __bins2html(parent,bins):
     ul = Sub(div, 'ul', 'bins')
     for bin in bins:
         li = Sub(ul, 'li', 'bin')
-        a = SubElement(li, 'a', href=bin.pid()+'.html')
-        a.text = bin_title(bin)
-        a.tail = ' %d target(s)' % bin.length()
+        SubElement(li, 'a', href=bin.pid()+'.html').text = bin_title(bin)
         
 def day2html(day,out=sys.stdout):
     (html, body) = __html(day.iso8601time())
