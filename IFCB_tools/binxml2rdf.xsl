@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!-- note: this is a proof-of-concept and may not work with current output of bin2xml -->
+
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
     xmlns:ifcb="http://ifcb.whoi.edu/terms#"
     xmlns:data="http://ifcb-data.whoi.edu/"
