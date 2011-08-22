@@ -107,7 +107,9 @@ def __bins2html(parent,bins):
     ul = Sub(div, 'ul', 'bins')
     for bin in bins:
         li = Sub(ul, 'li', 'bin')
-        SubElement(li, 'a', href=bin.pid()+'.html').text = bin_title(bin)
+        a = SubElement(li, 'a', href=bin.pid()+'.html')
+        a.text = bin_title(bin)
+        a.tail = ' %d target(s)' % bin.length()
         
 def day2html(day,out=sys.stdout):
     (html, body) = __html(day.iso8601time())
@@ -183,7 +185,7 @@ def fs2atom(fs,link,n=20,out=sys.stdout):
     SubElement(feed, 'updated').text = bins[0].iso8601time()
     for bin in bins:
         t = SubElement(feed, 'entry')
-        SubElement(t, 'title').text = 'Syringe sampled @ ' + bin.iso8601time()
+        SubElement(t, 'title').text = bin_title(bin)
         SubElement(t, 'link', href=bin.pid(), rel='alternate', type='application/rdf+xml')
         SubElement(t, 'link', href=bin.pid()+'.xml', rel='alternate', type='text/xml')
         SubElement(t, 'link', href=bin.pid()+'.json', rel='alternate', type='application/json')
