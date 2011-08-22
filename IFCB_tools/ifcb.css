@@ -1,0 +1,21 @@
+body {
+  font-family: sans-serif;
+}
+.properties {
+  float: right;
+}
+.property {
+  clear: both;
+  margin: 0.3em;
+}
+.label {
+  font-size: small;
+  padding: 0.2em;
+  background: lightgray;
+}
+.value {
+  padding: 0.2em;
+  font-size: large;
+  margin-bottom: 0.5em;
+  border: 0.1em lightgray solid;
+}
