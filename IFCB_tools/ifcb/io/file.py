@@ -93,11 +93,18 @@ class BinFile(Timestamped):
                 props[name] = cast(value)
         return props
     
-    def __cache_key(self,target_number):
-        return self.id + '_' + str(target_number)
+    def __cache_key(self,subkey):
+        return self.id + '_' + str(subkey)
     
     # generate all targets
     def __iter__(self):
+        count = cache().get(self.__cache_key('count'))
+        if count is not None:
+            for i in range(count):
+                target_info = cache().get(self.__cache_key(i+1))
+                if target_info is not None:
+                    yield Target(target_info,self)
+            return
         reader = csv.reader(open(self.adc_path(),'rb'))
         target_number = 1
         for row in reader:
@@ -109,6 +116,7 @@ class BinFile(Timestamped):
                 cache().add(self.__cache_key(target_number), target.info)
                 yield target
             target_number = target_number + 1
+        cache().add(self.__cache_key('count'), target_number - 1)
             
     def all_targets(self):
         return list(self)
@@ -125,6 +133,9 @@ class BinFile(Timestamped):
     
     # return number of targets
     def length(self):
+        count = cache().get(self.__cache_key('count'))
+        if count is not None:
+            return count
         count = 0
         for target in self:
             count = count + 1
