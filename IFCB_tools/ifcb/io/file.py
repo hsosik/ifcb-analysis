@@ -153,8 +153,15 @@ class BinFile(Timestamped):
         
     # convenience method for getting a specific image
     def image(self,n):
-        roi_file = open(self.roi_path(),'rb')
-        return self.__get_image(self.target(n), roi_file)
+        ck = self.__cache_key('i'+str(n))
+        cached = cache.get(ck)
+        if cached is not None:
+            return pickle.loads(cached)
+        else:
+            roi_file = open(self.roi_path(),'rb')
+            image = self.__get_image(self.target(n), roi_file)
+            cache.put(ck, pickle.dumps(image,2))
+            return image
     
     def pid(self,target_number=None):
         pid = ifcb.pid(self.id)
