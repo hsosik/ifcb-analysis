@@ -9,6 +9,14 @@ import os
 import os.path
 import time
 import calendar
+import pylibmc
+
+__mc = None
+
+def cache():
+    if __mc is None:
+        mc = pylibmc.Client(['127.0.0.1'], binary=True)
+    return mc
 
 """Parsing of IFCB data formats including header files, metadata, and imagery"""
 
@@ -85,6 +93,9 @@ class BinFile(Timestamped):
                 props[name] = cast(value)
         return props
     
+    def __cache_key(self,target_number):
+        return self.id + '_' + str(target_number)
+    
     # generate all targets
     def __iter__(self):
         reader = csv.reader(open(self.adc_path(),'rb'))
@@ -94,7 +105,9 @@ class BinFile(Timestamped):
             for (name, cast), value in zip(ADC_SCHEMA, row):
                 target_info[name] = cast(value)
             if target_info[HEIGHT] > 0 and target_info[WIDTH] > 0:
-                yield Target(target_info,self)
+                target = Target(target_info,self)
+                cache().add(self.__cache_key(target_number), target.info)
+                yield target
             target_number = target_number + 1
             
     def all_targets(self):
@@ -103,6 +116,9 @@ class BinFile(Timestamped):
     # retrieve the nth target (1-based!)
     # more efficient than subscripting the result of all_targets
     def target(self,n):
+        cached_info = cache().get(self.__cache_key(n))
+        if cached_info is not None:
+            return Target(cached_info,self)
         for target in self:
             if n == target.info[TARGET_NUMBER]:
                 return target
