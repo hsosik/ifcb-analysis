@@ -139,14 +139,16 @@ class BinFile(Timestamped):
         height = target.info[HEIGHT]
         offset = target.info[BYTE_OFFSET]
         ck = self.__cache_key('i'+str(target.info[TARGET_NUMBER]))
-        data = cache.get(ck)
-        if data is None:
+        p = cache.get(ck)
+        if pickle is None:
             if roi_file is None:
                 roi_file = open(self.roi_path(),'rb')
             roi_file.seek(offset+1) # byte offsets in target file are 1-based (Matlab legacy)
             data = array('B')
             data.fromfile(roi_file, width * height)
-            cache.set(ck,data,2)
+            cache.add(ck,pickle.dumps(data,2))
+        else:
+            data = pickle.loads(p)
         im = Image.new('L', (height, width)) # rotate 90 degrees
         im.putdata(data)
         return im
