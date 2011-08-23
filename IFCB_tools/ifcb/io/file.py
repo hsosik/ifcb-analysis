@@ -134,13 +134,19 @@ class BinFile(Timestamped):
             count = count + 1
         return count
     
-    def __get_image(self, target, roi_file):
+    def __get_image(self, target, roi_file=None):
         width = target.info[WIDTH]
         height = target.info[HEIGHT]
         offset = target.info[BYTE_OFFSET]
-        roi_file.seek(offset+1) # byte offsets in target file are 1-based (Matlab legacy)
-        data = array('B')
-        data.fromfile(roi_file, width * height)
+        ck = self.__cache_key('i'+str(target.info[TARGET_NUMBER]))
+        data = cache.get(ck)
+        if data is None:
+            if roi_file is None:
+                roi_file = open(self.roi_path(),'rb')
+            roi_file.seek(offset+1) # byte offsets in target file are 1-based (Matlab legacy)
+            data = array('B')
+            data.fromfile(roi_file, width * height)
+            cache.set(ck,data,2)
         im = Image.new('L', (height, width)) # rotate 90 degrees
         im.putdata(data)
         return im
@@ -153,15 +159,8 @@ class BinFile(Timestamped):
         
     # convenience method for getting a specific image
     def image(self,n):
-        ck = self.__cache_key('i'+str(n))
-        cached = cache.get(ck)
-        if cached is not None:
-            return pickle.loads(cached)
-        else:
-            roi_file = open(self.roi_path(),'rb')
-            image = self.__get_image(self.target(n), roi_file)
-            cache.put(ck, pickle.dumps(image,2))
-            return image
+        image = self.__get_image(self.target(n))
+        return image
     
     def pid(self,target_number=None):
         pid = ifcb.pid(self.id)
