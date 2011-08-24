@@ -1,12 +1,20 @@
 body {
   font-family: sans-serif;
 }
+.title {
+  font-size: large;
+  font-weight: bold;
+  margin-bottom: 1em;
+}
 .properties {
-  float: right;
+  position: absolute;
+  right: 0.3em;
+  max-width: 30em;
 }
 .property {
   clear: both;
   margin: 0.3em;
+  word-wrap: break-word;
 }
 .label {
   font-size: small;
@@ -18,4 +26,8 @@ body {
   font-size: large;
   margin-bottom: 0.5em;
   border: 0.1em lightgray solid;
+  background: white;
+}
+div.image {
+  margin-left: 0.5em;
 }

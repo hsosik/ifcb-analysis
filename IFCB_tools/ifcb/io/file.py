@@ -98,7 +98,7 @@ class BinFile(Timestamped):
     def __read_adc(self):
         reader = csv.reader(open(self.adc_path(),'rb'))
         target_number = 1
-        for row in reader:
+        for row in csv.reader(open(self.adc_path(),'rb')):
             target_info = { TARGET_NUMBER: target_number, BIN_ID: ifcb.pid(self.id), PID: self.pid(target_number) }
             for (name, cast), value in zip(ADC_SCHEMA, row):
                 target_info[name] = cast(value)
@@ -114,7 +114,10 @@ class BinFile(Timestamped):
         if result is not None:
             return iter(pickle.loads(result))
         result = list(self.__read_adc())
-        cache.add(ck, pickle.dumps(result,2))
+        try:
+            cache.add(ck, pickle.dumps(result,2))
+        except pylibmc.Error:
+            ck = None
         return iter(result)
             
     def all_targets(self):
@@ -138,17 +141,11 @@ class BinFile(Timestamped):
         width = target.info[WIDTH]
         height = target.info[HEIGHT]
         offset = target.info[BYTE_OFFSET]
-        ck = self.__cache_key('i'+str(target.info[TARGET_NUMBER]))
-        p = cache.get(ck)
-        if pickle is None:
-            if roi_file is None:
-                roi_file = open(self.roi_path(),'rb')
-            roi_file.seek(offset+1) # byte offsets in target file are 1-based (Matlab legacy)
-            data = array('B')
-            data.fromfile(roi_file, width * height)
-            cache.add(ck,pickle.dumps(data,2))
-        else:
-            data = pickle.loads(p)
+        if roi_file is None:
+            roi_file = open(self.roi_path(),'rb')
+        roi_file.seek(offset+1) # byte offsets in target file are 1-based (Matlab legacy)
+        data = array('B')
+        data.fromfile(roi_file, width * height)
         im = Image.new('L', (height, width)) # rotate 90 degrees
         im.putdata(data)
         return im
@@ -161,8 +158,7 @@ class BinFile(Timestamped):
         
     # convenience method for getting a specific image
     def image(self,n):
-        image = self.__get_image(self.target(n))
-        return image
+        return self.__get_image(self.target(n))
     
     def pid(self,target_number=None):
         pid = ifcb.pid(self.id)

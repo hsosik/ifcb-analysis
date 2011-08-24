@@ -1,5 +1,5 @@
 import ifcb
-from ifcb.io import PID, ADC_SCHEMA, HDR_SCHEMA, CONTEXT, TARGET_NUMBER, FRAME_GRAB_TIME
+from ifcb.io import PID, ADC_SCHEMA, HDR_SCHEMA, CONTEXT, TARGET_NUMBER, FRAME_GRAB_TIME, HEIGHT, WIDTH
 from lxml import etree
 from lxml.etree import ElementTree, QName, Element, SubElement
 import sys
@@ -219,7 +219,9 @@ def bin2html(bin,out=sys.stdout):
     ul = Sub(targets,'ul','targets')
     for target in bin:
         li = Sub(ul, 'li', 'target')
-        SubElement(li, 'a', href=target.pid()+'.html').text = target_title(target)
+        a = SubElement(li, 'a', href=target.pid()+'.html')
+        a.text = target_title(target)
+        a.tail = ' %dB' % (target.info[HEIGHT] * target.info[WIDTH])
     ElementTree(html).write(out, pretty_print=True)
 
 def target2html(target,out=sys.stdout):

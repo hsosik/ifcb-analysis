@@ -7,6 +7,14 @@ import os.path
 
 """Resolution of IFCB global identifiers to local filesystem paths"""
 
+mc = None
+
+def memcached():
+    if mc is None:
+        mc = pylibmc.Client(["127.0.0.1"], binary=True)
+    return mc
+        
+
 class Filesystem:
     years_dirs = []
     
