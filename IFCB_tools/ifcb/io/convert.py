@@ -1,4 +1,5 @@
 import ifcb
+from ifcb import lid
 import io
 from ifcb.io import PID, ADC_SCHEMA, HDR_SCHEMA, CONTEXT, TARGET_NUMBER, FRAME_GRAB_TIME, HEIGHT, WIDTH
 from lxml import etree
@@ -294,7 +295,7 @@ def target2json(target,out=sys.stdout):
 
 def target2image(target,format='PNG',out=sys.stdout):
     format = string.upper(format)
-    cache_key = target.pid() + '.' + string.lower(format)
+    cache_key = lid(target.pid()) + '.' + string.lower(format)
     bytes = cache.get(cache_key)
     if bytes is None:
         o = io.BytesIO()
