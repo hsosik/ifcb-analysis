@@ -10,10 +10,9 @@ import string
 from ifcb.util import order_keys, decamel
 from array import array
 import pylibmc
+from cache import cache_io
 
 """Conversions between IFCB data and standard formats"""
-
-cache = pylibmc.Client(['127.0.0.1'],binary=True)
 
 DUBLIN_CORE_NAMESPACE = 'http://purl.org/dc/elements/1.1/'
 DC_TERMS_NAMESPACE = 'http://purl.org/dc/terms/'
@@ -296,13 +295,7 @@ def target2json(target,out=sys.stdout):
 def target2image(target,format='PNG',out=sys.stdout):
     format = string.upper(format)
     cache_key = lid(target.pid()) + '.' + string.lower(format)
-    bytes = cache.get(cache_key)
-    if bytes is None:
-        o = io.BytesIO()
-        target.image().save(o,format)
-        bytes = o.getvalue()
-        cache.set(cache_key,bytes)
-    array('B',bytes).tofile(out)
+    cache_io(cache_key, lambda o: target.image().save(o,format), out)
     
 def target2png(target,out=sys.stdout):
     target2image(target,'PNG',out)

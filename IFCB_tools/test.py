@@ -1,10 +1,13 @@
 #!/usr/bin/python
 from sys import argv, stdout
+import io
+from array import array
 from ifcb.io.file import BinFile
 from ifcb.io.dir import DayDir, YearsDir
 from ifcb.io.path import Filesystem
-from ifcb.io.convert import bin2xml, target2image, fs2json_feed, fs2html_feed, day2html, bin2html, target2html
+from ifcb.io.convert import bin2xml, target2image, fs2json_feed, fs2html_feed, day2html, bin2html, target2html, target2xml
 import ifcb
+import pickle
 
 J = Filesystem(['/Volumes/J_IFCB/ifcb_data_MVCO_jun06'])
 E = Filesystem(['../exampleData'])
@@ -41,6 +44,21 @@ def test7():
     target2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2009_216_075913_00249'))
     bin2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2009_216_075913'))
     day2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2009_216'))
+    print len(pickle.dumps(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2011_231_182610').all_targets(),2))
+    pid = 'http://ifcb-data.whoi.edu/IFCB1_2009_216_075913_00248'
+    target_png = E.resolve(pid)
+    with open('/tmp/foo.png','w') as f:
+        target2image(target_png,'png', f)
+
+def doit(s,f,out=stdout):
+    if s is None:
+        buf = io.BytesIO()
+        f(buf)
+        bytes = buf.getvalue()
+        array('B',bytes).tofile(out)
+        
+def test9():
+    doit(None,lambda(out): out.write('foo'))
     
 if __name__ == '__main__':
     test7()

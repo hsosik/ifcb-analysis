@@ -9,12 +9,10 @@ import os
 import os.path
 import time
 import calendar
-import pylibmc
 import pickle
+from cache import cache_io, cache_obj
 
 """Parsing of IFCB data formats including header files, metadata, and imagery"""
-
-cache = pylibmc.Client(['127.0.0.1'],binary=True)
 
 # a target
 class Target():
@@ -106,19 +104,11 @@ class BinFile(Timestamped):
                 target = Target(target_info,self)
                 yield target
             target_number = target_number + 1
-        
+            
     # generate all targets
     def __iter__(self):
         ck = self.__cache_key('t')
-        result = cache.get(self.__cache_key('t'))
-        if result is not None:
-            return iter(pickle.loads(result))
-        result = list(self.__read_adc())
-        try:
-            cache.add(ck, pickle.dumps(result,2))
-        except pylibmc.Error:
-            ck = None
-        return iter(result)
+        return iter(cache_obj(ck, lambda: list(self.__read_adc)))
             
     def all_targets(self):
         return list(self)

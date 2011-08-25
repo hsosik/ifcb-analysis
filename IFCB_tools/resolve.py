@@ -8,7 +8,7 @@ from ifcb.io.file import BinFile, Target
 from ifcb.io.dir import DayDir
 import os.path
 import re
-from config import FS
+from config import FS_ROOTS
 
 """RESTful service resolving an IFCB permanent ID (pid) + optional extension to an appropriate representation"""
 
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     format = 'rdf' # default
     if ext != '':
         format = re.sub('^.','',ext)
-    object = FS.resolve(pid)
+    object = Filesystem(FS_ROOTS).resolve(pid)
     print 'Content-type: '+{ 'rdf': 'text/xml',
                 'json': 'application/json',
                 'xml': 'text/xml',
