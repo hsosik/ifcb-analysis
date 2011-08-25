@@ -20,7 +20,7 @@ def cache_io(cache_key,f,out=sys.stdout):
                 cache.add(cache_key,bytes)
             except pylibmc.Error:
                 # do nothing
-                noop
+                noop = None
         array('B',bytes).tofile(out)
     else:
         f(out)
