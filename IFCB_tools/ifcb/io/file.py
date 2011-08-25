@@ -108,7 +108,7 @@ class BinFile(Timestamped):
     # generate all targets
     def __iter__(self):
         ck = self.__cache_key('t')
-        return iter(cache_obj(ck, lambda: list(self.__read_adc)))
+        return iter(cache_obj(ck, lambda: list(self.__read_adc())))
             
     def all_targets(self):
         return list(self)
