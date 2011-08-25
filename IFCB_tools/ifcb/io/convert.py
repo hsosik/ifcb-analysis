@@ -301,6 +301,7 @@ def target2image(target,format='PNG',out=sys.stdout):
         o = io.BytesIO()
         target.image().save(o,format)
         bytes = o.getvalue()
+        cache.set(cache_key,bytes)
     array('B',bytes).tofile(out)
     
 def target2png(target,out=sys.stdout):
