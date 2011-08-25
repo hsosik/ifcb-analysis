@@ -39,7 +39,7 @@ def cache_obj(cache_key,f):
                 cache.add(cache_key,bytes)
             except pylibmc.Error:
                 # do nothing
-                noop
+                noop = None
             return obj
         else:
             return pickle.loads(bytes)
