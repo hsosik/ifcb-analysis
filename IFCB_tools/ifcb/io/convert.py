@@ -1,4 +1,5 @@
 import ifcb
+import io
 from ifcb.io import PID, ADC_SCHEMA, HDR_SCHEMA, CONTEXT, TARGET_NUMBER, FRAME_GRAB_TIME, HEIGHT, WIDTH
 from lxml import etree
 from lxml.etree import ElementTree, QName, Element, SubElement
@@ -6,8 +7,12 @@ import sys
 import simplejson
 import string
 from ifcb.util import order_keys, decamel
+from array import array
+import pylibmc
 
 """Conversions between IFCB data and standard formats"""
+
+cache = pylibmc.Client(['127.0.0.1'],binary=True)
 
 DUBLIN_CORE_NAMESPACE = 'http://purl.org/dc/elements/1.1/'
 DC_TERMS_NAMESPACE = 'http://purl.org/dc/terms/'
@@ -289,7 +294,13 @@ def target2json(target,out=sys.stdout):
 
 def target2image(target,format='PNG',out=sys.stdout):
     format = string.upper(format)
-    target.image().save(out,format)
+    cache_key = target.pid() + '.' + string.lower(format)
+    bytes = cache.get(cache_key)
+    if bytes is None:
+        o = io.BytesIO()
+        target.image().save(o,format)
+        bytes = o.getvalue()
+    array('B',bytes).tofile(out)
     
 def target2png(target,out=sys.stdout):
     target2image(target,'PNG',out)
