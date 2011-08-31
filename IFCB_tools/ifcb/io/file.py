@@ -127,7 +127,7 @@ class BinFile(Timestamped):
             count = count + 1
         return count
     
-    def __get_image(self, target, roi_file=None):
+    def __get_image_bytes(self, target, roi_file=None):
         width = target.info[WIDTH]
         height = target.info[HEIGHT]
         offset = target.info[BYTE_OFFSET]
@@ -136,6 +136,12 @@ class BinFile(Timestamped):
         roi_file.seek(offset+1) # byte offsets in target file are 1-based (Matlab legacy)
         data = array('B')
         data.fromfile(roi_file, width * height)
+        roi_file.close()
+        return data
+        
+    def __get_image(self, target, roi_file=None):
+        lid = ifcb.lid(target.info[PID])
+        data = cache_obj(lid, lambda: __get_image_bytes(target, roi_file))
         im = Image.new('L', (height, width)) # rotate 90 degrees
         im.putdata(data)
         return im
