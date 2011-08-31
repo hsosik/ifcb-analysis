@@ -54,7 +54,7 @@ class Filesystem:
     # would be located at
     # {some years dir}/IFCB1_2010_025
     def day(self,pid):
-        return cache_obj(ifcb.lid(pid),lambda: self.__day(pid))
+        return cache_obj(ifcb.lid(pid)+'_path',lambda: self.__day(pid))
     
     def __day(self,pid):
         lid = ifcb.lid(pid)
@@ -68,7 +68,7 @@ class Filesystem:
     # would be located at
     # {some years dir}/IFCB1_2010_025/IFCB1_2010_025_134056
     def bin(self, pid):
-        bin_path = cache_obj(ifcb.lid(pid), lambda: self.bin_path(pid))
+        bin_path = cache_obj(ifcb.lid(pid)+'_path', lambda: self.bin_path(pid))
         if bin_path is not None:
             return BinFile(bin_path)
         
@@ -84,7 +84,7 @@ class Filesystem:
             
     # given the pid of a target, return the target_info
     def target(self,pid):
-        return cache_obj(ifcb.lid(pid), lambda: self.__target(pid))
+        return cache_obj(ifcb.lid(pid)+'_target_info', lambda: self.__target(pid))
     
     def __target(self,pid):
         (target, bin_lid, target_no) = re.match(r'((IFCB\d+_\d{4}_\d{3}_\d{6})_(\d+))',ifcb.lid(pid)).groups()

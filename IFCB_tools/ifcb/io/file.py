@@ -141,8 +141,8 @@ class BinFile(Timestamped):
         
     def __get_image(self, target, roi_file=None):
         lid = ifcb.lid(target.info[PID])
-        data = cache_obj(lid, lambda: __get_image_bytes(target, roi_file))
-        im = Image.new('L', (height, width)) # rotate 90 degrees
+        data = cache_obj(lid, lambda: self.__get_image_bytes(target, roi_file))
+        im = Image.new('L', (target.info[HEIGHT], target.info[WIDTH])) # rotate 90 degrees
         im.putdata(data)
         return im
     
