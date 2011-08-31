@@ -10,7 +10,7 @@ import os.path
 import time
 import calendar
 import pickle
-from cache import cache_io, cache_obj
+from cache import cache_io, cache_obj, cache_file
 
 """Parsing of IFCB data formats including header files, metadata, and imagery"""
 
@@ -77,7 +77,8 @@ class BinFile(Timestamped):
         return props
     
     def headers(self):
-        lines = [line.rstrip() for line in open(self.hdr_path(), 'r').readlines()]
+        cache_key = self.__cache_key('hdr')
+        lines = [line.rstrip() for line in cache_file(cache_key, self.hdr_path()).readlines()]
         props = { CONTEXT: [lines[n].strip('"') for n in range(3)] }
         props['instrument'] = self.instrument() # FIXME move to properties
         if len(lines) >= 6: # don't fail on original header format
@@ -94,9 +95,9 @@ class BinFile(Timestamped):
             return '_'.join([self.id,str(subkey)])
     
     def __read_adc(self):
-        reader = csv.reader(open(self.adc_path(),'rb'))
+        cache_key = self.__cache_key('adc')
         target_number = 1
-        for row in csv.reader(open(self.adc_path(),'rb')):
+        for row in csv.reader(cache_file(cache_key, self.adc_path())):
             target_info = { TARGET_NUMBER: target_number, BIN_ID: ifcb.pid(self.id), PID: self.pid(target_number) }
             for (name, cast), value in zip(ADC_SCHEMA, row):
                 target_info[name] = cast(value)
