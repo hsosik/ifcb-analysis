@@ -11,6 +11,7 @@ from ifcb.util import order_keys, decamel
 from array import array
 import pylibmc
 from cache import cache_io
+import shutil
 
 """Conversions between IFCB data and standard formats"""
 
@@ -123,6 +124,22 @@ def day2json(day,out=sys.stdout):
     j = { 'date': day.iso8601time() }
     j['bins'] = [bin.pid() for bin in day]
     return simplejson.dump(j,out)
+
+# raw data
+
+def __copy_file(path,out):
+    f = open(path,'rb')
+    shutil.copyfileobj(f, out)
+    f.close()
+    
+def bin2hdr(bin,out=sys.stdout):
+    __copy_file(bin.hdr_path(),out)
+    
+def bin2adc(bin,out=sys.stdout):
+    __copy_file(bin.adc_path(),out)
+    
+def bin2roi(bin,out=sys.stdout):
+    __copy_file(bin.roi_path(),out)
     
 # some shared code for XML and RDF representations
 def __add_headers(bin,root):
