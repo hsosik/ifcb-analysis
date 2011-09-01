@@ -26,10 +26,13 @@ class DayDir(Timestamped):
 		return ifcb.pid(os.path.basename(self.dir))
 	
 	def __iter__(self):
-		for item in sorted(os.listdir(self.dir)):
-			f = os.path.join(self.dir, item)
-			if re.search(r'\.adc$',f):
-				yield BinFile(f)
+		try:
+			for item in sorted(os.listdir(self.dir)):
+				f = os.path.join(self.dir, item)
+				if re.search(r'\.adc$',f):
+					yield BinFile(f)
+		except OSError:
+			noop = None # FIXME log
 	
 	def all_bins(self):
 		return list(self)
@@ -44,10 +47,13 @@ class YearsDir:
 		self.instrument = instrument
 
 	def __iter__(self):
-		for item in sorted(os.listdir(self.dir)):
-			f = os.path.join(self.dir, item)
-			if re.search(r'IFCB'+str(self.instrument)+r'_\d\d\d\d_\d\d\d',f):
-				yield DayDir(os.path.abspath(f))
+		try:
+			for item in sorted(os.listdir(self.dir)):
+				f = os.path.join(self.dir, item)
+				if re.search(r'IFCB'+str(self.instrument)+r'_\d\d\d\d_\d\d\d',f):
+					yield DayDir(os.path.abspath(f))
+		except OSError:
+			noop = None # FIXME log
 				
 	def all_days(self):
 		return list(self)

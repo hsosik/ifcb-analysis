@@ -88,11 +88,12 @@ class BinFile(Timestamped):
                 props[name] = cast(value)
         return props
     
-    def __cache_key(self,subkey=None):
-        if subkey is None:
-            return self.id
-        else:
-            return '_'.join([self.id,str(subkey)])
+    def __cache_key(self,subkey=None,id=None):
+        if id is None:
+            id = self.id
+        if subkey is not None:
+            id = '_'.join([id,str(subkey)])
+        return id
     
     def __read_adc(self):
         cache_key = self.__cache_key('adc')
@@ -108,8 +109,7 @@ class BinFile(Timestamped):
             
     # generate all targets
     def __iter__(self):
-        ck = self.__cache_key('t')
-        return iter(cache_obj(ck, lambda: list(self.__read_adc())))
+        return iter(self.__read_adc())
             
     def all_targets(self):
         return list(self)
@@ -141,8 +141,8 @@ class BinFile(Timestamped):
         return data
         
     def __get_image(self, target, roi_file=None):
-        lid = ifcb.lid(target.info[PID])
-        data = cache_obj(lid, lambda: self.__get_image_bytes(target, roi_file))
+        cache_key = self.__cache_key('img',ifcb.lid(target.pid()))
+        data = cache_obj(cache_key, lambda: self.__get_image_bytes(target, roi_file))
         im = Image.new('L', (target.info[HEIGHT], target.info[WIDTH])) # rotate 90 degrees
         im.putdata(data)
         return im
@@ -152,6 +152,7 @@ class BinFile(Timestamped):
         roi_file = open(self.roi_path(),'rb')
         for target in self:
             yield self.__get_image(target.info, roi_file)
+        roi_file.close()
         
     # convenience method for getting a specific image
     def image(self,n):
@@ -177,4 +178,5 @@ class BinFile(Timestamped):
                 outfile = os.path.join(outdir,'%s_%05d.%s' % (self.id, target_number, string.lower(format)))
                 im.save(outfile, format)
             target_number = target_number + 1 # increment this number *outside* of the loop that skips 0x0 targets!
+        roi_file.close()
         

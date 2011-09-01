@@ -44,8 +44,11 @@ def test7():
     target2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2009_216_075913_00249'))
     bin2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2009_216_075913'))
     day2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2009_216'))
+    bin2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2011_231_182610'))
     print len(pickle.dumps(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2011_231_182610').all_targets(),2))
-    pid = 'http://ifcb-data.whoi.edu/IFCB1_2009_216_075913_00248'
+    
+def test8():
+    pid = 'http://ifcb-data.whoi.edu/IFCB1_2009_216_075913_00250'
     target_png = E.resolve(pid)
     with open('/tmp/foo.png','w') as f:
         target2image(target_png,'png', f)
@@ -61,4 +64,4 @@ def test9():
     doit(None,lambda(out): out.write('foo'))
     
 if __name__ == '__main__':
-    test7()
+    test8()

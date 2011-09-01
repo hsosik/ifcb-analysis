@@ -12,6 +12,7 @@ from array import array
 import pylibmc
 from cache import cache_io
 import shutil
+import config
 
 """Conversions between IFCB data and standard formats"""
 
@@ -108,12 +109,15 @@ def bin_title(bin):
 def target_title(target):
     return 'Target #%d @ %fs' % (target.info[TARGET_NUMBER], target.info[FRAME_GRAB_TIME])
 
+def href(pid,extension='html'):
+    return ''.join([config.URL_BASE, pid, '.', extension])
+
 def __bins2html(parent,bins):
     div = Sub(parent, 'div', 'bins')
     ul = Sub(div, 'ul', 'bins')
     for bin in bins:
         li = Sub(ul, 'li', 'bin')
-        SubElement(li, 'a', href=bin.pid()+'.html').text = bin_title(bin)
+        SubElement(li, 'a', href=href(bin.pid())).text = bin_title(bin)
         
 def day2html(day,out=sys.stdout):
     (html, body) = __html(day.iso8601time())
@@ -241,7 +245,7 @@ def bin2html(bin,out=sys.stdout):
     ul = Sub(targets,'ul','targets')
     for target in bin:
         li = Sub(ul, 'li', 'target')
-        a = SubElement(li, 'a', href=target.pid()+'.html')
+        a = SubElement(li, 'a', href=href(target.pid()))
         a.text = target_title(target)
         a.tail = ' %dB' % (target.info[HEIGHT] * target.info[WIDTH])
     ElementTree(html).write(out, pretty_print=True)
@@ -252,13 +256,13 @@ def target2html(target,out=sys.stdout):
     parent_link = Sub(properties, 'div', 'property')
     Sub(parent_link, 'div', 'label').text = 'bin'
     link = Sub(parent_link, 'div', 'bin value')
-    SubElement(link, 'a', href=target.bin.pid()+'.html').text = bin_title(target.bin)
+    SubElement(link, 'a', href=href(target.bin.pid())).text = bin_title(target.bin)
     for k in order_keys(target.info, [column for column,type in ADC_SCHEMA]):
         prop = Sub(properties, 'div', 'property')
         Sub(prop, 'div', 'label').text = pretty_property_name(k)
         Sub(prop, 'div', 'value').text = str(target.info[k])
     id = Sub(body, 'div', 'image')
-    img = SubElement(id, 'img', src=target.pid()+'.png')
+    img = SubElement(id, 'img', src=href(target.pid(),'png'))
     img.set('class','image')
     ElementTree(html).write(out, pretty_print=True)
         
