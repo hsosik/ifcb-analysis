@@ -133,7 +133,7 @@ class BinFile(Timestamped):
         height = target.info[HEIGHT]
         offset = target.info[BYTE_OFFSET]
         if roi_file is None:
-            roi_file = open(self.roi_path(),'rb')
+            roi_file = open(self.roi_path(),'rb',1)
         roi_file.seek(offset+1) # byte offsets in target file are 1-based (Matlab legacy)
         data = array('B')
         data.fromfile(roi_file, width * height)
@@ -149,7 +149,7 @@ class BinFile(Timestamped):
     
     ## image access
     def all_images(self):
-        roi_file = open(self.roi_path(),'rb')
+        roi_file = open(self.roi_path(),'rb',1)
         for target in self:
             yield self.__get_image(target.info, roi_file)
         roi_file.close()
@@ -167,7 +167,7 @@ class BinFile(Timestamped):
     
     def save_images(self,outdir='.',format='PNG'):
         # read target info from the ADC file
-        roi_file = open(self.roi_path(),'rb')
+        roi_file = open(self.roi_path(),'rb',1)
         target_number = 1
         for target in self:
             width = target.info[WIDTH]

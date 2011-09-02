@@ -18,11 +18,22 @@ class Filesystem:
         for years in self.years_dirs:
             for day in years:
                 yield day
-                
-    def all_bins(self):
+    
+    def __matches_date(self,date,timestamped):
+        if date is None:
+            return True
+        else:
+            if getattr(timestamped.time(),'tm_year') != getattr(date,'tm_year'):
+                return False
+            if getattr(timestamped.time(),'tm_yday') != getattr(date,'tm_yday'):
+                return False
+        return True
+    
+    def all_bins(self,date=None):
         for day in self.all_days():
-            for bin in day:
-                yield bin
+            if self.__matches_date(date, day):
+                for bin in day:
+                    yield bin
 
     def latest_days(self,n=10):
         return sorted(list(self.all_days()), key=lambda day: day.time())[-n:]

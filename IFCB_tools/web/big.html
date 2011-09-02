@@ -8,9 +8,10 @@
 <script type="text/javascript" src="js/ifcb-util.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    size_thresh = query_param('size',40000)
+    size_thresh = query_param('size',40000);
+    date = query_param('date','now');
     $.ajax({
-        url : '/feed.json',
+        url : '../rss.py?format=json&date='+date,
         type : 'GET',
         datatype : 'json',
         success : function(r, status) {
@@ -41,7 +42,7 @@ $(document).ready(function() {
 });
 </script>
 </head>
-<body>
+<body bgcolor="999999">
     <div id="all">
         <div id="status">Please wait ...</div>
         <ul id="targets"></ul>

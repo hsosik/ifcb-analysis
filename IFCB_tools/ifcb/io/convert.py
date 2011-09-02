@@ -195,10 +195,16 @@ def bin2xml(bin,out=sys.stdout,full=False):
 ATOM_NAMESPACE = 'http://www.w3.org/2005/Atom'
 XHTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
 
-def fs2atom(fs,link,n=20,out=sys.stdout):
+def __feed_bins(fs,n=20,date=None):
+    if date is None:
+        return list(reversed(fs.latest_bins(n)))
+    else:
+        return reversed(list(fs.all_bins(date)))
+    
+def fs2atom(fs,link,n=20,date=None,out=sys.stdout):
     nsmap = { None: ATOM_NAMESPACE }
     xhtml = { None: 'http://www.w3.org/1999/xhtml' }
-    bins = list(reversed(fs.latest_bins(n)))
+    bins = __feed_bins(fs,n,date)
     feed = Element('feed', nsmap=nsmap)
     SubElement(feed, 'title').text = 'Imaging FlowCytobot most recent data'
     SubElement(feed, 'subtitle').text = 'Live marine phytoplankton cytometry with imagery'
@@ -222,14 +228,14 @@ def fs2atom(fs,link,n=20,out=sys.stdout):
             SubElement(div, 'div').text = header + ': ' + str(headers[header])
     ElementTree(feed).write(out, pretty_print=True)
 
-def fs2html_feed(fs,link,n=20,out=sys.stdout):
-    bins = list(reversed(fs.latest_bins(n)))
+def fs2html_feed(fs,link,n=20,date=None,out=sys.stdout):
+    bins = __feed_bins(fs,n,date)
     (html, body) = __html('Imaging FlowCytobot most recent data')
     __bins2html(body, bins)
     ElementTree(html).write(out, pretty_print=True)
     
-def fs2json_feed(fs,link,n=20,out=sys.stdout):
-    simplejson.dump([bin.properties(True) for bin in reversed(fs.latest_bins(n))],out)
+def fs2json_feed(fs,link,n=20,date=None,out=sys.stdout):
+    simplejson.dump([bin.properties(True) for bin in __feed_bins(fs,n,date)],out)
 
 def pretty_property_name(propName):
     return decamel(propName)
