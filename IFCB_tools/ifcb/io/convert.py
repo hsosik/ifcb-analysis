@@ -13,6 +13,7 @@ import pylibmc
 from cache import cache_io
 import shutil
 import config
+import tempfile
 
 """Conversions between IFCB data and standard formats"""
 
@@ -337,4 +338,7 @@ def target2gif(target,out=sys.stdout):
     target.image().save(out,'GIF')
     
 def target2tiff(target,out=sys.stdout):
-    target.image().save(out,'TIFF')
+    with tempfile.SpooledTemporaryFile() as flo:
+        target.image().save(flo,'TIFF')
+        flo.seek(0)
+        shutil.copyfileobj(flo, out)
