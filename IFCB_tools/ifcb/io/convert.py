@@ -328,13 +328,13 @@ def target2png(target,out=sys.stdout):
     target2image(target,'PNG',out)
 
 def target2jpg(target,out=sys.stdout):
-    target2image(target,'JPEG',out)
+    target.image().save(out,'JPEG')
 
 def target2bmp(target,out=sys.stdout):
-    target2image(target,'BMP',out)
+    target.image().save(out,'BMP')
 
 def target2gif(target,out=sys.stdout):
-    target2image(target,'GIF',out)
+    target.image().save(out,'GIF')
     
 def target2tiff(target,out=sys.stdout):
-    target2image(target,'TIFF',out)
+    target.image().save(out,'TIFF')
