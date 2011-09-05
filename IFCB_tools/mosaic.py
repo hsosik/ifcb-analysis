@@ -1,13 +1,19 @@
+#!/usr/bin/python
 # create a mosaic image containing multiple ROI's from the given bin
 from PIL import Image
 from ifcb.binpacking import JimScottRectanglePacker
-from ifcb.io import HEIGHT, WIDTH, TARGET_NUMBER
-from ifcb.io.file import BinFile
-import math
 
+import ifcb
+from ifcb.io.file import BinFile
+from ifcb.io.path import Filesystem
+from ifcb.io import HEIGHT, WIDTH, TARGET_NUMBER
 from config import FS_ROOTS
+from ifcb.io.cache import cache_io
+
+import sys
+import os.path
+import cgi
 import cgitb
-import ifcb.io.cache
 
 def mosaic(bin, width, height, size=0):
     mosaic = Image.new('L', (width, height))
@@ -49,5 +55,5 @@ if __name__=='__main__':
     print 'Content-type: image/png\n'
     bin = Filesystem(FS_ROOTS).resolve(pid)
     cache_key = ifcb.lid(pid) + '_thumb.png'
-    cache.cache_io(cache_key, lambda o: thumbnail(mosaic(bin, 2000, 1500, 2500),800,600).save(o,format), sys.stdout)
+    cache_io(cache_key, lambda o: thumbnail(mosaic(bin, 2000, 1500, 2500),800,600).save(o,'png'), sys.stdout)
     
