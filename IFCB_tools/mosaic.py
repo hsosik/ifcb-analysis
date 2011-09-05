@@ -38,7 +38,7 @@ def mosaic(bin, width, height, size=0):
     return mosaic
            
 def thumbnail(image, wh):
-    image.thumbnail(wh)
+    image.thumbnail(wh, Image.ANTIALIAS)
     return image
 
 def stream(image,out,format):
@@ -50,14 +50,13 @@ def stream(image,out,format):
 if __name__=='__main__':
     cgitb.enable()
     size = cgi.FieldStorage().getvalue('size','medium')
-    width = dict(small=800, medium=1280, large=1920)[size]
-    height = int(width * 0.5625)
-    (pid, ext) = os.path.splitext(cgi.FieldStorage().getvalue('pid'))
-    if ext != '':
-        format = re.sub('^.','',ext)
+    format = cgi.FieldStorage().getvalue('format','jpg')
+    tw = dict(small=800, medium=1024, large=1280, hd=1920)[size]
+    wh = (tw, int(tw * 0.5625))
+    pid = cgi.FieldStorage().getvalue('pid')
     format = dict(png='png', jpg='jpeg', gif='gif')[format] # validate
     print 'Content-type: image/'+format+'\n'
     bin = Filesystem(FS_ROOTS).resolve(pid)
     cache_key = ifcb.lid(pid) + '_thumb_'+size+'.'+format
-    cache_io(cache_key, lambda o: stream(thumbnail(mosaic(bin, 2000, 1500, 2500),(width,height)),o,format), sys.stdout)
+    cache_io(cache_key, lambda o: stream(thumbnail(mosaic(bin, 2400, 1350, 2500),wh),o,format), sys.stdout)
     
