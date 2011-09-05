@@ -14,6 +14,9 @@ import sys
 import os.path
 import cgi
 import cgitb
+import re
+import shutil
+import tempfile
 
 def mosaic(bin, width, height, size=0):
     mosaic = Image.new('L', (width, height))
@@ -34,26 +37,27 @@ def mosaic(bin, width, height, size=0):
                 bad = bad + 1
     return mosaic
            
-def thumbnail(image, width, height):
-    image.thumbnail((width, height))
+def thumbnail(image, wh):
+    image.thumbnail(wh)
     return image
 
-def test():
-    width = 2000
-    height = 1500
-    #bin = BinFile('../exampleData/IFCB1_2011_231/IFCB1_2011_231_182610.roi')
-    #bin = BinFile('../exampleData/IFCB1_2009_216/IFCB1_2009_216_075913.roi')
-    #bin = BinFile('/Users/jfutrelle/Downloads/IFCB1_2011_248_160637.roi')
-    m = mosaic(bin, width, height, 2500)
-    m.thumbnail((800,600))
-    with open('/Users/jfutrelle/Pictures/bar.png','wb') as f:
-        m.save(f,'png')
+def stream(image,out,format):
+    with tempfile.SpooledTemporaryFile() as flo:
+        image.save(flo,format)
+        flo.seek(0)
+        shutil.copyfileobj(flo, out)
 
 if __name__=='__main__':
     cgitb.enable()
+    size = cgi.FieldStorage().getvalue('size','medium')
+    width = dict(small=800, medium=1280, large=1920)[size]
+    height = int(width * 0.5625)
     (pid, ext) = os.path.splitext(cgi.FieldStorage().getvalue('pid'))
-    print 'Content-type: image/png\n'
+    if ext != '':
+        format = re.sub('^.','',ext)
+    format = dict(png='png', jpg='jpeg', gif='gif')[format] # validate
+    print 'Content-type: image/'+format+'\n'
     bin = Filesystem(FS_ROOTS).resolve(pid)
-    cache_key = ifcb.lid(pid) + '_thumb.png'
-    cache_io(cache_key, lambda o: thumbnail(mosaic(bin, 2000, 1500, 2500),800,600).save(o,'png'), sys.stdout)
+    cache_key = ifcb.lid(pid) + '_thumb_'+size+'.'+format
+    cache_io(cache_key, lambda o: stream(thumbnail(mosaic(bin, 2000, 1500, 2500),(width,height)),o,format), sys.stdout)
     

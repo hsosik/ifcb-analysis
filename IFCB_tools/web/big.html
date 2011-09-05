@@ -31,7 +31,7 @@ $(document).ready(function() {
                             if(size > size_thresh) {
                                 href = target['pid'] + '.html';
                                 img = target['pid'] + '.png';
-                                $('#targets').append('<li><a href="'+href+'"><img src="'+img+'"></a><br><a href="'+href+'">'+href+'</a></li>');
+                                $('#targets').append('<a href="'+href+'"><img src="'+img+'"></a>');
                             }
                        }
                     }
@@ -45,7 +45,7 @@ $(document).ready(function() {
 <body bgcolor="999999">
     <div id="all">
         <div id="status">Please wait ...</div>
-        <ul id="targets"></ul>
+        <div id="targets"></div>
     </div>
 </body>
 </html>
