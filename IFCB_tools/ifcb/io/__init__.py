@@ -63,6 +63,10 @@ ADC_EXT = 'adc'
 ROI_EXT = 'roi'
 HDR_EXT = 'hdr'
 
+DETAIL_FULL = 'full'
+DETAIL_SHORT = 'short'
+DETAIL_HEAD = 'head'
+
 # other handy property names
 TARGET_NUMBER = 'targetNumber' # 1-based index of ROI in bins
 BIN_ID = 'binID' # bin ID

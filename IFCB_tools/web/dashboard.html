@@ -10,10 +10,11 @@
 <script type="text/javascript">
 function render(entry,width,tag) {
     $.ajax({
-        url: entry['pid']+'.json',
+        url: entry['pid']+'/head.json',
         type: 'GET',
         datatype: 'json',
         success: function(r, status) {
+            $('#'+tag).append('<br>IFCB'+r['instrument']+' @ '+r['time']);
         }
     });
     $.ajax({

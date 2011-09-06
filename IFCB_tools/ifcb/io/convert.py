@@ -1,7 +1,7 @@
 import ifcb
 from ifcb import lid
 import io
-from ifcb.io import PID, ADC_SCHEMA, HDR_SCHEMA, CONTEXT, TARGET_NUMBER, FRAME_GRAB_TIME, HEIGHT, WIDTH
+from ifcb.io import PID, ADC_SCHEMA, HDR_SCHEMA, CONTEXT, TARGET_NUMBER, FRAME_GRAB_TIME, HEIGHT, WIDTH, DETAIL_FULL, DETAIL_SHORT, DETAIL_HEAD
 from lxml import etree
 from lxml.etree import ElementTree, QName, Element, SubElement
 import sys
@@ -137,13 +137,13 @@ def __copy_file(path,out):
     shutil.copyfileobj(f, out)
     f.close()
     
-def bin2hdr(bin,out=sys.stdout):
+def bin2hdr(bin,out=sys.stdout,detail=DETAIL_HEAD):
     __copy_file(bin.hdr_path(),out)
     
-def bin2adc(bin,out=sys.stdout):
+def bin2adc(bin,out=sys.stdout,detail=DETAIL_FULL):
     __copy_file(bin.adc_path(),out)
     
-def bin2roi(bin,out=sys.stdout):
+def bin2roi(bin,out=sys.stdout,detail=DETAIL_FULL):
     __copy_file(bin.roi_path(),out)
     
 # some shared code for XML and RDF representations
@@ -178,19 +178,20 @@ def target2xml(target,out=sys.stdout):
     ElementTree(__target2xml(target)).write(out, pretty_print=True)
        
 # turn a bin of targets into an xml representation; outputs to given output stream
-def bin2xml(bin,out=sys.stdout,full=False):
+def bin2xml(bin,out=sys.stdout,detail=DETAIL_SHORT):
     # top level is called "bin"
     root = Element(IFCB_BIN, nsmap=XML_NSMAP)
     pid = bin.pid()
     SubElement(root, DC_IDENTIFIER).text = pid
     __add_headers(bin,root)
-    target_number = 1
-    for target in bin:
-        if full:
-            __target2xml(target, root)
-        else:
-            elt = SubElement(root, IFCB_TARGET)
-            elt.set(DC_IDENTIFIER, target.pid())
+    if detail != DETAIL_HEAD:
+        target_number = 1
+        for target in bin:
+            if detail == DETAIL_FULL:
+                __target2xml(target, root)
+            else:
+                elt = SubElement(root, IFCB_TARGET)
+                elt.set(DC_IDENTIFIER, target.pid())
     return ElementTree(root).write(out, pretty_print=True)
 
 ATOM_NAMESPACE = 'http://www.w3.org/2005/Atom'
@@ -241,20 +242,21 @@ def fs2json_feed(fs,link,n=20,date=None,out=sys.stdout):
 def pretty_property_name(propName):
     return decamel(propName)
 
-def bin2html(bin,out=sys.stdout):
+def bin2html(bin,out=sys.stdout,detail=DETAIL_SHORT):
     (html, body) = __html(bin_title(bin))
     properties = Sub(body, 'div', 'properties')
     for k in order_keys(bin.properties(), [column for column,type in HDR_SCHEMA]):
         prop = Sub(properties, 'div', 'property')
         Sub(prop, 'div', 'label').text = pretty_property_name(k)
         Sub(prop, 'div', 'value').text = str(bin.properties()[k])
-    targets = Sub(body, 'div', 'targets')
-    ul = Sub(targets,'ul','targets')
-    for target in bin:
-        li = Sub(ul, 'li', 'target')
-        a = SubElement(li, 'a', href=href(target.pid()))
-        a.text = target_title(target)
-        a.tail = ' %dB' % (target.info[HEIGHT] * target.info[WIDTH])
+    if detail != DETAIL_HEAD:
+        targets = Sub(body, 'div', 'targets')
+        ul = Sub(targets,'ul','targets')
+        for target in bin:
+            li = Sub(ul, 'li', 'target')
+            a = SubElement(li, 'a', href=href(target.pid()))
+            a.text = target_title(target)
+            a.tail = ' %dB' % (target.info[HEIGHT] * target.info[WIDTH])
     ElementTree(html).write(out, pretty_print=True)
 
 def target2html(target,out=sys.stdout):
@@ -284,7 +286,7 @@ def target2rdf(target,out=sys.stdout):
     __target2rdf(target,rdf)
     return ElementTree(rdf).write(out, pretty_print=True)
     
-def bin2rdf(bin,out=sys.stdout,full=False):
+def bin2rdf(bin,out=sys.stdout,detail=DETAIL_SHORT):
     rdf = __rdf()
     root = SubElement(rdf, IFCB_BIN)
     pid = bin.pid()
@@ -292,29 +294,30 @@ def bin2rdf(bin,out=sys.stdout,full=False):
     __add_headers(bin,root)
     SubElement(root, DC_TERMS_HAS_FORMAT).text = bin.pid() + '.xml'
     SubElement(root, DC_TERMS_HAS_FORMAT).text = bin.pid() + '.json'
-    targets = SubElement(root, IFCB_HAS_TARGETS)
-    targets.set(RDF_ABOUT, pid + '/targets')
-    seq = SubElement(targets, RDF_SEQ)
-    for target in bin:
-        li = SubElement(seq, RDF_LI)
-        if full:
-            __target2rdf(target,li)
-        else:
-            t = SubElement(li, IFCB_TARGET)
-            t.set(RDF_ABOUT, target.pid())
+    if detail != DETAIL_HEAD:
+        targets = SubElement(root, IFCB_HAS_TARGETS)
+        targets.set(RDF_ABOUT, pid + '/targets')
+        seq = SubElement(targets, RDF_SEQ)
+        for target in bin:
+            li = SubElement(seq, RDF_LI)
+            if detail == DETAIL_FULL:
+                __target2rdf(target,li)
+            else:
+                t = SubElement(li, IFCB_TARGET)
+                t.set(RDF_ABOUT, target.pid())
     return ElementTree(rdf).write(out, pretty_print=True)
 
-def bin_as_json(bin,full=True):
+def bin_as_json(bin,detail=DETAIL_SHORT):
     result = bin.properties()
-    if full:
+    if detail == DETAIL_FULL:
         result['targets'] = [target.info for target in bin];
-    else:
+    elif detail != DETAIL_HEAD:
         result['targets'] = [target.pid() for target in bin];
     return result
 
 # turn a bin of targets into a json representation
-def bin2json(bin,out=sys.stdout,full=True):
-    result = bin_as_json(bin,full)
+def bin2json(bin,out=sys.stdout,detail=DETAIL_FULL):
+    result = bin_as_json(bin,detail)
     return simplejson.dump(result,out)
 
 def target2json(target,out=sys.stdout):
