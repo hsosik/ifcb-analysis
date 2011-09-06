@@ -1,0 +1,8 @@
+.small {
+  display: inline;
+  padding: 10px;
+}
+body {
+  font-size: small;
+  font-family: sans-serif;
+}
