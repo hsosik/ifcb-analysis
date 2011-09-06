@@ -5,7 +5,7 @@ from array import array
 from ifcb.io.file import BinFile
 from ifcb.io.dir import DayDir, YearsDir
 from ifcb.io.path import Filesystem
-from ifcb.io.convert import bin2xml, target2image, fs2json_feed, fs2html_feed, day2html, bin2html, target2html, target2xml
+from ifcb.io.convert import bin2xml, target2image, fs2json_feed, fs2html_feed, day2html, bin2html, target2html, target2xml, target2json
 import ifcb
 import pickle
 
@@ -41,10 +41,9 @@ def test6():
         target2image(target,'PNG','/tmp/foo.png')
 
 def test7():
-    target2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2009_216_075913_00249'))
-    bin2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2009_216_075913'))
     day2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2009_216'))
     bin2html(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2011_231_182610'))
+    target2json(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2009_216_075913_00249'))
     print len(pickle.dumps(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2011_231_182610').all_targets(),2))
     
 def test8():
@@ -64,4 +63,5 @@ def test9():
     doit(None,lambda(out): out.write('foo'))
     
 if __name__ == '__main__':
+    test7()
     test8()

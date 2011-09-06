@@ -10,5 +10,5 @@ MEMCACHED_SERVERS = ['127.0.0.1']
 
 URL_BASE = ''
 # uncomment for debugging
-# URL_BASE = 'http://localhost/~jfutrelle/sandbox/ifcb/resolve.py?pid='
+#URL_BASE = 'http://localhost/~jfutrelle/sandbox/ifcb/resolve.py?pid='
 
