@@ -9,9 +9,6 @@
 <script type="text/javascript" src="js/ifcb-util.js"></script>
 <script type="text/javascript">
 function render(entry,width,tag) {
-    $('#'+tag+'c').bind('click', function() {
-        location.href = entry['pid']+'.html';
-    });
     $.ajax({
         url: entry['pid']+'/head.json',
         type: 'GET',
@@ -29,7 +26,13 @@ function render(entry,width,tag) {
         datatype: 'json',
         success: function(r, status) {
             var scale = width / r['width'];
-            var ctx = document.getElementById(tag+'c').getContext('2d');
+            var canvas = $('#'+tag+'c')[0];
+            var ctx = undefined;
+            if(canvas.getContext == undefined) {
+                alert('This browser does not support canvas.');
+            } else {
+                ctx = canvas.getContext('2d');
+            }
             ctx.fillStyle = '#999'; // gray
             ctx.fillRect(0,0,r['width'] * scale,r['height'] * scale);
             var tiles = r['tiles']
@@ -39,7 +42,16 @@ function render(entry,width,tag) {
                 var y = tile['y'] * scale;
                 var w = tile['width'] * scale;
                 var h = tile['height'] * scale;
+                var pid = tile['pid'];
                 ctx.strokeRect(x+1,y+1,w-2,h-2);
+                $('#'+tag+'c').bind('click',{left:x, top:y, right:x+w, bottom:y+h, pid:pid},function(event) {
+                    mx = event.pageX - $(this).offset().left;
+                    my = event.pageY - $(this).offset().top;
+                    if(mx >= event.data.left && mx <= event.data.right &&
+                       my >= event.data.top && my <= event.data.bottom) {
+                        location.href = event.data.pid+'.html';
+                    }
+                });
                 var img = new Image();
                 $(img).bind('load', {x:x, y:y, w:w, h:h}, function(event) {
                     ctx.drawImage(this, event.data.x, event.data.y, event.data.w, event.data.h);
@@ -83,5 +95,6 @@ $(document).ready(function() {
 	<canvas width="264" height="149" id="s3c"/>
       </td>
   </table>
+  <div id="status"></div>
 </body>
 </html>
