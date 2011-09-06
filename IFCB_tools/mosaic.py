@@ -18,7 +18,7 @@ import re
 import shutil
 import tempfile
 
-def mosaic(bin, width, height, size=0):
+def mosaic(bin, (width, height), size=0):
     mosaic = Image.new('L', (width, height))
     mosaic.paste(160,(0,0,width,height))
     packer = JimScottRectanglePacker(width, height)
@@ -47,16 +47,20 @@ def stream(image,out,format):
         flo.seek(0)
         shutil.copyfileobj(flo, out)
 
+def box(w,aspectratio):
+    return (w, int(w * aspectratio))
+
 if __name__=='__main__':
     cgitb.enable()
     size = cgi.FieldStorage().getvalue('size','medium')
     format = cgi.FieldStorage().getvalue('format','jpg')
-    tw = dict(small=800, medium=1024, large=1280, hd=1920)[size]
-    wh = (tw, int(tw * 0.5625))
+    aspectratio = 0.5625 # 16:9
+    tw = {'icon':48, 'thumb':128, 'small':320, 'medium':800, 'large':1024, '720p':1280, '1080p':1920}[size]
+    wh = box(tw,aspectratio)
     pid = cgi.FieldStorage().getvalue('pid')
     format = dict(png='png', jpg='jpeg', gif='gif')[format] # validate
     print 'Content-type: image/'+format+'\n'
     bin = Filesystem(FS_ROOTS).resolve(pid)
-    cache_key = ifcb.lid(pid) + '_thumb_'+size+'.'+format
-    cache_io(cache_key, lambda o: stream(thumbnail(mosaic(bin, 2400, 1350, 2500),wh),o,format), sys.stdout)
-    
+    cache_key = ifcb.lid(pid) + '/badge/'+str(tw)+'.'+format
+    fullarea = box(2400,aspectratio)
+    cache_io(cache_key, lambda o: stream(thumbnail(mosaic(bin, fullarea, 2500),wh),o,format), sys.stdout)
