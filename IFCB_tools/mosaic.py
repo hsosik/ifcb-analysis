@@ -6,7 +6,7 @@ from ifcb.binpacking import JimScottRectanglePacker
 import ifcb
 from ifcb.io.file import BinFile
 from ifcb.io.path import Filesystem
-from ifcb.io import HEIGHT, WIDTH, TARGET_NUMBER
+from ifcb.io import HEIGHT, WIDTH, TARGET_NUMBER, PID
 from config import FS_ROOTS
 from ifcb.io.cache import cache_io
 
@@ -17,24 +17,24 @@ import cgitb
 import re
 import shutil
 import tempfile
+import json
 
-def mosaic(bin, (width, height), size=0):
-    mosaic = Image.new('L', (width, height))
-    mosaic.paste(160,(0,0,width,height))
+def layout(bin, (width, height), size=0):
     packer = JimScottRectanglePacker(width, height)
     targets = sorted(bin.all_targets(), key=lambda t: 0 - (t.info[HEIGHT] * t.info[WIDTH]))
-    good = 0
-    bad = 0
     for target in targets:
         h = target.info[WIDTH] # rotate 90 degrees
         w = target.info[HEIGHT] # rotate 90 degrees
         if w * h > size:
             p = packer.TryPack(w, h)
             if p is not None:
-                good = good + 1
-                mosaic.paste(target.image(), (p.x, p.y))
-            else:
-                bad = bad + 1
+                yield {'x':p.x, 'y':p.y, PID:target.info[PID], TARGET_NUMBER:target.info[TARGET_NUMBER]}
+    
+def mosaic(bin, (width, height), size=0):
+    mosaic = Image.new('L', (width, height))
+    mosaic.paste(160,(0,0,width,height))
+    for entry in layout(bin, (width, height), size):
+        mosaic.paste(bin.image(entry[TARGET_NUMBER]), (entry['x'], entry['y']))
     return mosaic
            
 def thumbnail(image, wh):
@@ -50,17 +50,25 @@ def stream(image,out,format):
 def box(w,aspectratio):
     return (w, int(w * aspectratio))
 
-if __name__=='__main__':
-    cgitb.enable()
-    size = cgi.FieldStorage().getvalue('size','medium')
-    format = cgi.FieldStorage().getvalue('format','jpg')
+def doit(pid,size='medium',format='jpg',fs_roots=FS_ROOTS):
+    format = dict(png='png', jpg='jpeg', gif='gif', json='json')[format] # validate
     aspectratio = 0.5625 # 16:9
     tw = {'icon':48, 'thumb':128, 'small':320, 'medium':800, 'large':1024, '720p':1280, '1080p':1920}[size]
     wh = box(tw,aspectratio)
+    size_thresh = 2500
+    bin = Filesystem(fs_roots).resolve(pid)
+    if format == 'json':
+        print 'Content-type: application/json\n'
+        json.dump(list(layout(bin, wh, size_thresh)),sys.stdout)
+    else:
+        print 'Content-type: image/'+format+'\n'
+        cache_key = ifcb.lid(pid) + '/badge/'+str(tw)+'.'+format
+        fullarea = box(2400,aspectratio)
+        cache_io(cache_key, lambda o: stream(thumbnail(mosaic(bin, fullarea, 2500),wh),o,format), sys.stdout)
+
+if __name__=='__main__':
+    cgitb.enable()
     pid = cgi.FieldStorage().getvalue('pid')
-    format = dict(png='png', jpg='jpeg', gif='gif')[format] # validate
-    print 'Content-type: image/'+format+'\n'
-    bin = Filesystem(FS_ROOTS).resolve(pid)
-    cache_key = ifcb.lid(pid) + '/badge/'+str(tw)+'.'+format
-    fullarea = box(2400,aspectratio)
-    cache_io(cache_key, lambda o: stream(thumbnail(mosaic(bin, fullarea, 2500),wh),o,format), sys.stdout)
+    size = cgi.FieldStorage().getvalue('size','medium')
+    format = cgi.FieldStorage().getvalue('format','jpg')
+    doit(pid,size,format)
