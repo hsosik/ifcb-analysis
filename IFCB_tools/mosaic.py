@@ -8,7 +8,7 @@ from ifcb.io.file import BinFile
 from ifcb.io.path import Filesystem
 from ifcb.io import HEIGHT, WIDTH, TARGET_NUMBER, PID
 from config import FS_ROOTS
-from ifcb.io.cache import cache_io
+from ifcb.io.cache import cache_io, cache_obj
 
 import sys
 import os.path
@@ -19,7 +19,7 @@ import shutil
 import tempfile
 import json
 
-def layout(bin, (width, height), size=0):
+def __layout(bin, (width, height), size=0):
     packer = JimScottRectanglePacker(width, height)
     targets = sorted(bin.all_targets(), key=lambda t: 0 - (t.info[HEIGHT] * t.info[WIDTH]))
     for target in targets:
@@ -28,12 +28,17 @@ def layout(bin, (width, height), size=0):
         if w * h > size:
             p = packer.TryPack(w, h)
             if p is not None:
-                yield {'x':p.x, 'y':p.y, PID:target.info[PID], TARGET_NUMBER:target.info[TARGET_NUMBER]}
+                yield {'x':p.x, 'y':p.y, WIDTH:w, HEIGHT:h, PID:target.info[PID], TARGET_NUMBER:target.info[TARGET_NUMBER]}
+
+def layout(bin, (width, height), size=0):
+    cache_key = ifcb.lid(pid) + '/badge/'+str(width)+'.json'
+    tiles = cache_obj(cache_key, lambda: list(__layout(bin, (width, height), size)))
+    return {'width':width, 'height':height, 'tiles':tiles}
     
 def mosaic(bin, (width, height), size=0):
     mosaic = Image.new('L', (width, height))
     mosaic.paste(160,(0,0,width,height))
-    for entry in layout(bin, (width, height), size):
+    for entry in layout(bin, (width, height), size)['tiles']:
         mosaic.paste(bin.image(entry[TARGET_NUMBER]), (entry['x'], entry['y']))
     return mosaic
            
@@ -57,14 +62,14 @@ def doit(pid,size='medium',format='jpg',fs_roots=FS_ROOTS):
     wh = box(tw,aspectratio)
     size_thresh = 2500
     bin = Filesystem(fs_roots).resolve(pid)
+    fullarea = box(2400,aspectratio)
     if format == 'json':
         print 'Content-type: application/json\n'
-        json.dump(list(layout(bin, wh, size_thresh)),sys.stdout)
+        json.dump(layout(bin, fullarea, size_thresh),sys.stdout)
     else:
         print 'Content-type: image/'+format+'\n'
         cache_key = ifcb.lid(pid) + '/badge/'+str(tw)+'.'+format
-        fullarea = box(2400,aspectratio)
-        cache_io(cache_key, lambda o: stream(thumbnail(mosaic(bin, fullarea, 2500),wh),o,format), sys.stdout)
+        cache_io(cache_key, lambda o: stream(thumbnail(mosaic(bin, fullarea, size_thresh),wh),o,format), sys.stdout)
 
 if __name__=='__main__':
     cgitb.enable()
