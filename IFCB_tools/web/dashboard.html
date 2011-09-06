@@ -9,12 +9,18 @@
 <script type="text/javascript" src="js/ifcb-util.js"></script>
 <script type="text/javascript">
 function render(entry,width,tag) {
+    $('#'+tag+'c').bind('click', function() {
+        location.href = entry['pid']+'.html';
+    });
     $.ajax({
         url: entry['pid']+'/head.json',
         type: 'GET',
         datatype: 'json',
         success: function(r, status) {
-            $('#'+tag).append('<br>IFCB'+r['instrument']+' @ '+r['time']);
+            var instrument = r['instrument']
+            var time = r['time'];
+            var temp = Math.round(r['temperature'])+'&deg;C';
+            $('#'+tag).append('<br>IFCB#'+r['instrument']+' @ '+r['time']+' '+temp);
         }
     });
     $.ajax({
@@ -52,7 +58,7 @@ $(document).ready(function() {
         success : function(r, status) {
             render(r[0],800,'top')
             for (index = 1; index < 4; index++) {
-		render(r[index],266,'s'+index);
+		render(r[index],264,'s'+index);
             }
          }
     });
@@ -68,13 +74,13 @@ $(document).ready(function() {
     </tr>
     <tr>
       <td width="33%" id="s1">
-	<canvas width="266" height="150" id="s1c"/>
+	<canvas width="264" height="149" id="s1c"/>
       </td>
       <td width="33%" id="s2">
-	<canvas width="266" height="150" id="s2c"/>
+	<canvas width="264" height="149" id="s2c"/>
       </td>
       <td width="33%" id="s3">
-	<canvas width="266" height="150" id="s3c"/>
+	<canvas width="264" height="149" id="s3c"/>
       </td>
   </table>
 </body>
