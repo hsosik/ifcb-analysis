@@ -5,9 +5,10 @@ from array import array
 from ifcb.io.file import BinFile
 from ifcb.io.dir import DayDir, YearsDir
 from ifcb.io.path import Filesystem
-from ifcb.io.convert import bin2xml, target2image, fs2json_feed, fs2html_feed, day2html, bin2html, target2html, target2xml, target2json
+from ifcb.io.convert import bin2xml, target2image, fs2json_feed, fs2html_feed, fs2atom, fs2rss, day2html, bin2html, target2html, target2xml, target2json
 import ifcb
 import pickle
+from config import FEED
 
 J = Filesystem(['/Volumes/J_IFCB/ifcb_data_MVCO_jun06'])
 E = Filesystem(['../exampleData'])
@@ -60,8 +61,9 @@ def doit(s,f,out=stdout):
         array('B',bytes).tofile(out)
         
 def test9():
-    doit(None,lambda(out): out.write('foo'))
+    fs2atom(E,FEED+'.atom')
+    fs2rss(E,FEED+'.rss')
     
 if __name__ == '__main__':
-    test7()
-    test8()
+    test9()
+    

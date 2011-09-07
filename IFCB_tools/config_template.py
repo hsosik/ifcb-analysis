@@ -1,5 +1,5 @@
 # Self-link included in ATOM feed
-ATOM = 'http://ifcb-data.whoi.edu/ifcb.atom'
+FEED = 'http://ifcb-data.whoi.edu/feed'
 
 # Where the data is mounted
 FS_ROOTS = ['/mnt/ifcb_g/IFCB/ifcb_data_MVCO_jun06', '/mnt/ifcb_j/ifcb_data_MVCO_jun06']

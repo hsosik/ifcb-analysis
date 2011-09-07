@@ -85,6 +85,7 @@ def hdr_path(id,dir='.'):
     return ext_path(id,HDR_EXT,dir)
 
 ISO_8601_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+RFC_822_FORMAT = '%a, %d %b %Y %H:%M:%S +0000'
 
 class Timestamped:
     time_format = ISO_8601_FORMAT
@@ -97,3 +98,6 @@ class Timestamped:
     
     def iso8601time(self):
         return time.strftime(ISO_8601_FORMAT,self.time())
+    
+    def rfc822time(self):
+        return time.strftime(RFC_822_FORMAT,self.time())

@@ -230,6 +230,29 @@ def fs2atom(fs,link,n=20,date=None,out=sys.stdout):
             SubElement(div, 'div').text = header + ': ' + str(headers[header])
     ElementTree(feed).write(out, pretty_print=True)
 
+def fs2rss(fs,link,n=20,date=None,out=sys.stdout):
+    xhtml = { None: 'http://www.w3.org/1999/xhtml' }
+    bins = __feed_bins(fs,n,date)
+    rss = Element('rss')
+    feed = SubElement(rss, 'feed')
+    SubElement(feed, 'title').text = 'Imaging FlowCytobot most recent data'
+    SubElement(feed, 'description').text = 'Live marine phytoplankton cytometry with imagery'
+    SubElement(feed, 'author').text = 'Imaging FlowCytobot'
+    SubElement(feed, 'link').text = link
+    SubElement(feed, 'pubDate').text = bins[0].rfc822time()
+    SubElement(feed, 'ttl').text = '20'
+    for bin in bins:
+        t = SubElement(feed, 'entry')
+        SubElement(t, 'title').text = bin_title(bin)
+        SubElement(t, 'guid').text = bin.pid()
+        SubElement(t, 'link').text = bin.pid() + '.html'
+        SubElement(t, 'pubDate').text = bin.rfc822time()
+        content = SubElement(t, 'description')
+        headers = bin.headers()
+        body = '\n'.join(['<div>%s: %s</div>' % (header, headers[header]) for header in sorted(headers.keys())])
+        content.text = '<div>%s</div>' % body
+    ElementTree(rss).write(out, pretty_print=True)
+
 def fs2html_feed(fs,link,n=20,date=None,out=sys.stdout):
     bins = __feed_bins(fs,n,date)
     (html, body) = __html('Imaging FlowCytobot most recent data')
