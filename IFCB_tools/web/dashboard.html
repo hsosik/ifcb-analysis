@@ -57,7 +57,7 @@ function render(entry,width,tag) {
                 $(img).bind('load', {x:x, y:y, w:w, h:h}, function(event) {
                     ctx.drawImage(this, event.data.x, event.data.y, event.data.w, event.data.h);
                 });
-                img.src = tile['pid'] + '.jpg';
+                img.src = '../resolve.py?pid=' + tile['pid'] + '&format=jpg' + '&scale=' + scale;
             }
         }
     });

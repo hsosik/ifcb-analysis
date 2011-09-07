@@ -14,6 +14,7 @@ from cache import cache_io
 import shutil
 import config
 import tempfile
+from PIL import Image
 
 """Conversions between IFCB data and standard formats"""
 
@@ -347,25 +348,31 @@ def bin2json(bin,out=sys.stdout,detail=DETAIL_FULL):
 def target2json(target,out=sys.stdout):
     return simplejson.dump(target.info,out)
 
-def target2image(target,format='PNG',out=sys.stdout):
-    format = string.upper(format)
-    cache_key = lid(target.pid()) + '.' + string.lower(format)
-    cache_io(cache_key, lambda o: target.image().save(o,format), out)
-    
-def target2png(target,out=sys.stdout):
-    target2image(target,'PNG',out)
-
-def target2jpg(target,out=sys.stdout):
-    target.image().save(out,'JPEG')
-
-def target2bmp(target,out=sys.stdout):
-    target.image().save(out,'BMP')
-
-def target2gif(target,out=sys.stdout):
-    target.image().save(out,'GIF')
-    
-def target2tiff(target,out=sys.stdout):
+def stream_image(target,format,out,scale=1.0):
+    image = target.image()
+    if scale != 1.0:
+        image = image.resize((int(target.info[HEIGHT] * scale), int(target.info[WIDTH] * scale)), Image.ANTIALIAS)
     with tempfile.SpooledTemporaryFile() as flo:
-        target.image().save(flo,'TIFF')
+        image.save(flo,format)
         flo.seek(0)
         shutil.copyfileobj(flo, out)
+
+def target2image(target,format='PNG',out=sys.stdout,scale=1.0):
+    format = string.upper(format)
+    cache_key = '%s/%d.%s' % (lid(target.pid()), int(scale * 1000), string.lower(format)) 
+    cache_io(cache_key, lambda o: stream_image(target,format,o,scale), out)
+    
+def target2png(target,out=sys.stdout,scale=1.0):
+    target2image(target,'PNG',out,scale)
+
+def target2jpg(target,out=sys.stdout,scale=1.0):
+    target2image(target,'JPEG',out,scale)
+
+def target2bmp(target,out=sys.stdout,scale=1.0):
+    target2image(target,'BMP',out,scale)
+
+def target2gif(target,out=sys.stdout,scale=1.0):
+    target2image(target,'GIF',out)
+    
+def target2tiff(target,out=sys.stdout,scale=1.0):
+    target2image(target,'TIFF',out)
