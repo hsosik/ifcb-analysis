@@ -6,6 +6,7 @@
 <link type="text/css" href="dashboard.css" rel="Stylesheet"/>
 <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
+<script type="text/javascript" src="js/jquery.timeago.js"></script>
 <script type="text/javascript" src="js/ifcb-util.js"></script>
 <script type="text/javascript">
 function render(entry,width,tag) {
@@ -17,7 +18,7 @@ function render(entry,width,tag) {
             var instrument = r['instrument']
             var time = r['time'];
             var temp = Math.round(r['temperature'])+'&deg;C';
-            $('#'+tag).append('<br>IFCB#'+r['instrument']+' @ '+r['time']+' '+temp);
+            $('#'+tag).append('<br>IFCB#'+r['instrument']+' @ <abbr class="timeago" title="'+r['time']+'">'+r['time']+'</abbr>, '+temp);
         }
     });
     $.ajax({
@@ -63,6 +64,10 @@ function render(entry,width,tag) {
 }
 $(document).ready(function() {
     date = query_param('date','now');
+    $('.timeago').live('load', function() {
+        alert('loaded');
+        $(this).timeago();
+    });
     $.ajax({
         url : '../rss.py?format=json&date='+date,
         type : 'GET',
