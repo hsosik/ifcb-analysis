@@ -18,7 +18,7 @@ function render(entry,width,tag) {
             var instrument = r['instrument']
             var time = r['time'];
             var temp = Math.round(r['temperature'])+'&deg;C';
-            $('#'+tag).append('<br>IFCB#'+r['instrument']+' @ <abbr class="timeago" title="'+r['time']+'">'+r['time']+'</abbr>, '+temp);
+            $('#'+tag).append('<br>IFCB#'+instrument+' '+time+' (<abbr class="timeago" title="'+time+'"></abbr>), '+temp).find('abbr').timeago();
         }
     });
     $.ajax({
@@ -64,10 +64,6 @@ function render(entry,width,tag) {
 }
 $(document).ready(function() {
     date = query_param('date','now');
-    $('.timeago').live('load', function() {
-        alert('loaded');
-        $(this).timeago();
-    });
     $.ajax({
         url : '../rss.py?format=json&date='+date,
         type : 'GET',

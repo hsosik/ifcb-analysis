@@ -233,16 +233,17 @@ def fs2atom(fs,link,n=20,date=None,out=sys.stdout):
 def fs2rss(fs,link,n=20,date=None,out=sys.stdout):
     xhtml = { None: 'http://www.w3.org/1999/xhtml' }
     bins = __feed_bins(fs,n,date)
-    rss = Element('rss')
-    feed = SubElement(rss, 'feed')
+    rss = Element('rss', version='2.0')
+    feed = SubElement(rss, 'channel', nsmap=dict(atom=ATOM_NAMESPACE))
     SubElement(feed, 'title').text = 'Imaging FlowCytobot most recent data'
     SubElement(feed, 'description').text = 'Live marine phytoplankton cytometry with imagery'
-    SubElement(feed, 'author').text = 'Imaging FlowCytobot'
+    #SubElement(feed, 'author').text = 'Imaging FlowCytobot'
     SubElement(feed, 'link').text = link
+    SubElement(feed, '{%s}link' % ATOM_NAMESPACE, rel='self', href=link)
     SubElement(feed, 'pubDate').text = bins[0].rfc822time()
     SubElement(feed, 'ttl').text = '20'
     for bin in bins:
-        t = SubElement(feed, 'entry')
+        t = SubElement(feed, 'item')
         SubElement(t, 'title').text = bin_title(bin)
         SubElement(t, 'guid').text = bin.pid()
         SubElement(t, 'link').text = bin.pid() + '.html'
