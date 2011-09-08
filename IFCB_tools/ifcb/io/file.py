@@ -140,7 +140,7 @@ class BinFile(Timestamped):
         data = array('B')
         data.fromfile(roi_file, width * height)
         if open_roi_file is None:
-            close(roi_file)
+            roi_file.close()
         return data
         
     def __get_image(self, target, roi_file=None):
