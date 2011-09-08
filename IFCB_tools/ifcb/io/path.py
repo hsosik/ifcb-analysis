@@ -24,7 +24,7 @@ class Filesystem(Resolver):
             for day in years:
                 yield day
     
-    def __matches_date(self,date,timestamped):
+    def __no_later_than(self,date,timestamped):
         if date is None:
             return True
         else:
