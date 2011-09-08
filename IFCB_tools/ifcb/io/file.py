@@ -95,7 +95,7 @@ class BinFile(Timestamped):
             id = '_'.join([id,str(subkey)])
         return id
     
-    def __read_adc(self):
+    def __read_adc(self, open_adc_file=None):
         cache_key = self.__cache_key('adc')
         target_number = 1
         for row in csv.reader(cache_file(cache_key, self.adc_path())):
@@ -128,16 +128,19 @@ class BinFile(Timestamped):
             count = count + 1
         return count
     
-    def __get_image_bytes(self, target, roi_file=None):
+    def __get_image_bytes(self, target, open_roi_file=None):
         width = target.info[WIDTH]
         height = target.info[HEIGHT]
         offset = target.info[BYTE_OFFSET]
-        if roi_file is None:
+        if open_roi_file is None:
             roi_file = open(self.roi_path(),'rb',1)
+        else:
+            roi_file = open_roi_file
         roi_file.seek(offset+1) # byte offsets in target file are 1-based (Matlab legacy)
         data = array('B')
         data.fromfile(roi_file, width * height)
-        roi_file.close()
+        if open_roi_file is None:
+            close(roi_file)
         return data
         
     def __get_image(self, target, roi_file=None):
@@ -149,15 +152,14 @@ class BinFile(Timestamped):
     
     ## image access
     def all_images(self):
-        roi_file = open(self.roi_path(),'rb',1)
-        for target in self:
-            yield self.__get_image(target.info, roi_file)
-        roi_file.close()
+        with open(self.roi_path(),'rb',1) as roi_file:
+            for target in self:
+                yield self.__get_image(target.info, roi_file)
         
     # convenience method for getting a specific image
-    def image(self,n):
-        return self.__get_image(self.target(n))
-    
+    def image(self,n,roi_file=None):
+        return self.__get_image(self.target(n),roi_file)
+
     def pid(self,target_number=None):
         pid = ifcb.pid(self.id)
         if target_number:
@@ -167,16 +169,15 @@ class BinFile(Timestamped):
     
     def save_images(self,outdir='.',format='PNG'):
         # read target info from the ADC file
-        roi_file = open(self.roi_path(),'rb',1)
-        target_number = 1
-        for target in self:
-            width = target.info[WIDTH]
-            height = target.info[HEIGHT]
-            if(width > 0 and height > 0): # IFCB writes (or used to write) some 0x0 target's; skip them
-                im = self.__get_image(target, roi_file)
-                # output filename is {id}_ddddd where ddddd is target number in file
-                outfile = os.path.join(outdir,'%s_%05d.%s' % (self.id, target_number, string.lower(format)))
-                im.save(outfile, format)
-            target_number = target_number + 1 # increment this number *outside* of the loop that skips 0x0 targets!
-        roi_file.close()
+        with open(self.roi_path(),'rb',1) as roi_file:
+            target_number = 1
+            for target in self:
+                width = target.info[WIDTH]
+                height = target.info[HEIGHT]
+                if(width > 0 and height > 0): # IFCB writes (or used to write) some 0x0 target's; skip them
+                    im = self.__get_image(target, roi_file)
+                    # output filename is {id}_ddddd where ddddd is target number in file
+                    outfile = os.path.join(outdir,'%s_%05d.%s' % (self.id, target_number, string.lower(format)))
+                    im.save(outfile, format)
+                    target_number = target_number + 1 # increment this number *outside* of the loop that skips 0x0 targets!
         

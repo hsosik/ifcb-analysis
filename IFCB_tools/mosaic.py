@@ -31,15 +31,16 @@ def __layout(bin, (width, height), size=0):
                 yield {'x':p.x, 'y':p.y, WIDTH:w, HEIGHT:h, PID:target.info[PID], TARGET_NUMBER:target.info[TARGET_NUMBER]}
 
 def layout(bin, (width, height), size=0):
-    cache_key = ifcb.lid(pid) + '/badge/'+str(width)+'.json'
+    cache_key = ifcb.lid(bin.pid()) + '/mosaic/'+str(width)+'.json'
     tiles = cache_obj(cache_key, lambda: list(__layout(bin, (width, height), size)))
     return {'width':width, 'height':height, 'tiles':tiles}
     
 def mosaic(bin, (width, height), size=0):
     mosaic = Image.new('L', (width, height))
     mosaic.paste(160,(0,0,width,height))
-    for entry in layout(bin, (width, height), size)['tiles']:
-        mosaic.paste(bin.image(entry[TARGET_NUMBER]), (entry['x'], entry['y']))
+    with open(bin.roi_path(), 'rb') as roi_file:
+        for entry in layout(bin, (width, height), size)['tiles']:
+            mosaic.paste(bin.image(entry[TARGET_NUMBER], roi_file), (entry['x'], entry['y']))
     return mosaic
            
 def thumbnail(image, wh):
@@ -55,7 +56,7 @@ def stream(image,out,format):
 def box(w,aspectratio):
     return (w, int(w * aspectratio))
 
-def doit(pid,size='medium',format='jpg',fs_roots=FS_ROOTS):
+def doit(pid,size='medium',format='jpg',out=sys.stdout, fs_roots=FS_ROOTS):
     format = dict(png='png', jpg='jpeg', gif='gif', json='json')[format] # validate
     aspectratio = 0.5625 # 16:9
     tw = {'icon':48, 'thumb':128, 'small':320, 'medium':800, 'large':1024, '720p':1280, '1080p':1920}[size]
@@ -65,11 +66,11 @@ def doit(pid,size='medium',format='jpg',fs_roots=FS_ROOTS):
     fullarea = box(2400,aspectratio)
     if format == 'json':
         print 'Content-type: application/json\n'
-        json.dump(layout(bin, fullarea, size_thresh),sys.stdout)
+        json.dump(layout(bin, fullarea, size_thresh),out)
     else:
         print 'Content-type: image/'+format+'\n'
-        cache_key = ifcb.lid(pid) + '/badge/'+str(tw)+'.'+format
-        cache_io(cache_key, lambda o: stream(thumbnail(mosaic(bin, fullarea, size_thresh),wh),o,format), sys.stdout)
+        cache_key = ifcb.lid(pid) + '/mosaic/'+str(tw)+'.'+format
+        cache_io(cache_key, lambda o: stream(thumbnail(mosaic(bin, fullarea, size_thresh),wh),o,format), out)
 
 if __name__=='__main__':
     cgitb.enable()

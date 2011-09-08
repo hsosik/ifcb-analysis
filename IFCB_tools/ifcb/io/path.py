@@ -8,7 +8,11 @@ from cache import cache_obj
 
 """Resolution of IFCB global identifiers to local filesystem paths"""
 
-class Filesystem:
+class Resolver:
+    def resolve(self,pid):
+        return None
+    
+class Filesystem(Resolver):
     years_dirs = []
     
     def __init__(self,years_dirs):

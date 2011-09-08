@@ -28,18 +28,28 @@ def cache_io(cache_key,f,out=sys.stdout):
     else:
         f(out)
 
-def __file2bytes(path):
-    f = open(path,'rb')
+def __fp2bytes(fp):
     buffer = io.BytesIO()
-    copyfileobj(f,buffer)
-    f.close()
+    copyfileobj(fp,buffer)
     return buffer.getvalue()
+    
+def __file2bytes(path):
+    with open(path,'rb') as fp:
+        return __fp2bytes(fp)
 
 # cache_key the cache key of the desired file
 # the pathname
-# returns an open file
+# returns an open file-like on the data
 def cache_file(cache_key,pathname):
     bytes = cache_obj(cache_key,lambda: __file2bytes(pathname))
+    f = io.BytesIO(bytes)
+    return f
+
+# cache_key the cache key of the desired file
+# the pathname
+# returns an open file-like on the data
+def cache_fp(cache_key,fp):
+    bytes = cache_obj(cache_key,lambda: __fp2bytes(fp))
     f = io.BytesIO(bytes)
     return f
     
