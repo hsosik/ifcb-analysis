@@ -5,6 +5,7 @@ import ifcb
 import re
 import os.path
 from cache import cache_obj
+import calendar
 
 """Resolution of IFCB global identifiers to local filesystem paths"""
 
@@ -27,17 +28,15 @@ class Filesystem(Resolver):
         if date is None:
             return True
         else:
-            if getattr(timestamped.time(),'tm_year') != getattr(date,'tm_year'):
-                return False
-            if getattr(timestamped.time(),'tm_yday') != getattr(date,'tm_yday'):
-                return False
+            return timestamped.epoch_time() <= calendar.timegm(date)
         return True
     
     def all_bins(self,date=None):
         for day in self.all_days():
-            if self.__matches_date(date, day):
+            if self.__no_later_than(date, day):
                 for bin in day:
-                    yield bin
+                    if self.__no_later_than(date, bin):
+                        yield bin
 
     def latest_days(self,n=10):
         return sorted(list(self.all_days()), key=lambda day: day.time())[-n:]

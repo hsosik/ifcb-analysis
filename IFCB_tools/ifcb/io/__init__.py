@@ -1,5 +1,6 @@
 import os
 import time
+import calendar
 
 """Utilities for reading and converting IFCB data"""
 
@@ -101,3 +102,6 @@ class Timestamped:
     
     def rfc822time(self):
         return time.strftime(RFC_822_FORMAT,self.time())
+    
+    def epoch_time(self):
+        return calendar.gmtime(time())
