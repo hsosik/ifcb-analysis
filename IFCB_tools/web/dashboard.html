@@ -9,7 +9,7 @@
 <script type="text/javascript" src="js/jquery.timeago.js"></script>
 <script type="text/javascript" src="js/ifcb-util.js"></script>
 <script type="text/javascript">
-function render(entry,width,tag) {
+function describe(entry,tag) {
     $.ajax({
         url: entry['pid']+'/head.json',
         type: 'GET',
@@ -21,6 +21,9 @@ function render(entry,width,tag) {
             $('#'+tag).append('<br>IFCB#'+instrument+' '+time+' (<abbr class="timeago" title="'+time+'"></abbr>), '+temp).find('abbr').timeago();
         }
     });
+}
+function render(entry,width,tag) {
+    describe(entry,tag);
     $.ajax({
         url: '../mosaic.py?format=json&pid='+entry['pid'],
         type: 'GET',
@@ -57,7 +60,7 @@ function render(entry,width,tag) {
                 $(img).bind('load', {x:x, y:y, w:w, h:h}, function(event) {
                     ctx.drawImage(this, event.data.x, event.data.y, event.data.w, event.data.h);
                 });
-                img.src = '../resolve.py?pid=' + tile['pid'] + '&format=jpg' + '&scale=' + scale;
+                img.src = tile['pid'] + '.jpg';
             }
         }
     });
@@ -70,8 +73,14 @@ $(document).ready(function() {
         datatype : 'json',
         success : function(r, status) {
             render(r[0],800,'top')
-            for (index = 1; index < 4; index++) {
-		render(r[index],264,'s'+index);
+            for (index = 1; index <= 6; index++) {
+                var tag = 's' + index;
+                var entry = r[index];
+                $('#'+tag).append('<img width="264" height="149" src="' + entry['pid'] + '/mosaic/small.jpg">')
+                          .bind('click', { time: entry['time'] }, function(event) {
+                    location.href = 'dashboard.html?date='+event.data.time;
+                });
+                describe(entry,tag);
             }
          }
     });
@@ -87,14 +96,20 @@ $(document).ready(function() {
     </tr>
     <tr>
       <td width="33%" id="s1">
-	<canvas width="264" height="149" id="s1c"/>
       </td>
       <td width="33%" id="s2">
-	<canvas width="264" height="149" id="s2c"/>
       </td>
       <td width="33%" id="s3">
-	<canvas width="264" height="149" id="s3c"/>
       </td>
+    </tr>
+    <tr>
+      <td width="33%" id="s4">
+      </td>
+      <td width="33%" id="s5">
+      </td>
+      <td width="33%" id="s6">
+      </td>
+    </tr>
   </table>
   <div id="status"></div>
 </body>

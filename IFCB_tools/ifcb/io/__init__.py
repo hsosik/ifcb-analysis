@@ -104,4 +104,4 @@ class Timestamped:
         return time.strftime(RFC_822_FORMAT,self.time())
     
     def epoch_time(self):
-        return calendar.gmtime(time())
+        return calendar.timegm(self.time())

@@ -15,6 +15,8 @@ import shutil
 import config
 import tempfile
 from PIL import Image
+import time
+import calendar
 
 """Conversions between IFCB data and standard formats"""
 
@@ -202,7 +204,8 @@ def __feed_bins(fs,n=20,date=None):
     if date is None:
         return list(reversed(fs.latest_bins(n)))
     else:
-        return reversed(list(fs.all_bins(date)))
+        two_days_before = time.gmtime(calendar.timegm(date) - 172800)
+        return reversed(list(fs.all_bins(two_days_before,date)))
     
 def fs2atom(fs,link,n=20,date=None,out=sys.stdout):
     nsmap = { None: ATOM_NAMESPACE }

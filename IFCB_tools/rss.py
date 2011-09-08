@@ -17,8 +17,8 @@ if __name__ == '__main__':
     if dates is not None and dates != 'now':
         if re.match(r'^\d{4}-\d{2}-\d{2}$',dates):
             date = time.strptime(dates+'UTC','%Y-%m-%d%Z')
-        elif re.match(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$',dates):
-            date = time.strptime(dates+'UTC','%Y-%m-%dT%H:%M:%S%Z')
+        elif re.match(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$',dates):
+            date = time.strptime(re.sub('Z$','UTC',dates),'%Y-%m-%dT%H:%M:%S%Z')
     mime = dict(atom='application/atom+xml', json='application/json', html='text/html', rss='application/rss+xml')[format]
     print 'Content-type: %s\n' % (mime)
     link = '.'.join([FEED,format])

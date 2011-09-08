@@ -23,19 +23,20 @@ class Filesystem(Resolver):
         for years in self.years_dirs:
             for day in years:
                 yield day
-    
-    def __no_later_than(self,date,timestamped):
-        if date is None:
+
+    def __within(self,start,end,timestamped):    
+        if start is None and end is None:
             return True
         else:
-            return timestamped.epoch_time() <= calendar.timegm(date)
+            t = timestamped.epoch_time()
+            return t <= calendar.timegm(end) and t >= calendar.timegm(start)
         return True
     
-    def all_bins(self,date=None):
+    def all_bins(self,start=None,end=None):
         for day in self.all_days():
-            if self.__no_later_than(date, day):
+            if self.__within(start,end,day):
                 for bin in day:
-                    if self.__no_later_than(date, bin):
+                    if self.__within(start,end,bin):
                         yield bin
 
     def latest_days(self,n=10):
