@@ -37,9 +37,15 @@ function render(entry,width,tag) {
             } else {
                 ctx = canvas.getContext('2d');
             }
+            var img = new Image();
+            $(img).bind('load', function(event) {
+                ctx.drawImage(this, 0, 0, 800, 450);
+            });
+            img.src = entry['pid'] + '/mosaic/medium.jpg';
             ctx.fillStyle = '#999'; // gray
             ctx.fillRect(0,0,r['width'] * scale,r['height'] * scale);
             var tiles = r['tiles']
+            ctx.fillStyle = '#bbb'; // light gray
             for(i = 0; i < tiles.length; i++) {
                 var tile = tiles[i];
                 var x = tile['x'] * scale;
@@ -47,7 +53,7 @@ function render(entry,width,tag) {
                 var w = tile['width'] * scale;
                 var h = tile['height'] * scale;
                 var pid = tile['pid'];
-                ctx.strokeRect(x+1,y+1,w-2,h-2);
+                ctx.fillRect(x+1,y+1,w-2,h-2);
                 $('#'+tag+'c').bind('click',{left:x, top:y, right:x+w, bottom:y+h, pid:pid},function(event) {
                     mx = event.pageX - $(this).offset().left;
                     my = event.pageY - $(this).offset().top;
@@ -56,11 +62,6 @@ function render(entry,width,tag) {
                         location.href = event.data.pid+'.html';
                     }
                 });
-                var img = new Image();
-                $(img).bind('load', {x:x, y:y, w:w, h:h}, function(event) {
-                    ctx.drawImage(this, event.data.x, event.data.y, event.data.w, event.data.h);
-                });
-                img.src = tile['pid'] + '.jpg';
             }
         }
     });
