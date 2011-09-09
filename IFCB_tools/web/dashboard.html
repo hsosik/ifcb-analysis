@@ -11,7 +11,7 @@
 <script type="text/javascript">
 function describe(entry,tag) {
     $.ajax({
-        url: entry['pid']+'/head.json',
+        url: '../resolve.py?detail=head&format=json&pid='+entry['pid'],
         type: 'GET',
         datatype: 'json',
         success: function(r, status) {
@@ -22,10 +22,10 @@ function describe(entry,tag) {
         }
     });
 }
-function render(entry,width,tag) {
+function render(entry,width,size,tag,targetLinks) {
     describe(entry,tag);
     $.ajax({
-        url: '../mosaic.py?format=json&pid='+entry['pid'],
+        url: '../mosaic.py?format=json&size='+size+'&pid='+entry['pid'],
         type: 'GET',
         datatype: 'json',
         success: function(r, status) {
@@ -39,9 +39,14 @@ function render(entry,width,tag) {
             }
             var img = new Image();
             $(img).bind('load', function(event) {
-                ctx.drawImage(this, 0, 0, 800, 450);
+                ctx.drawImage(this, 0, 0, width, width * 0.5625); // 16:9
             });
-            img.src = entry['pid'] + '/mosaic/medium.jpg';
+            img.src = '../mosaic.py?format=jpg&size='+size+'&pid='+entry['pid'];
+            if(!targetLinks) {
+                $(canvas).bind('click', {href:'dashboard.html?date='+entry['time']}, function(event) {
+                    location.href = event.data.href;
+                });
+            }
             ctx.fillStyle = '#999'; // gray
             ctx.fillRect(0,0,r['width'] * scale,r['height'] * scale);
             var tiles = r['tiles']
@@ -54,14 +59,16 @@ function render(entry,width,tag) {
                 var h = tile['height'] * scale;
                 var pid = tile['pid'];
                 ctx.fillRect(x+1,y+1,w-2,h-2);
-                $('#'+tag+'c').bind('click',{left:x, top:y, right:x+w, bottom:y+h, pid:pid},function(event) {
-                    mx = event.pageX - $(this).offset().left;
-                    my = event.pageY - $(this).offset().top;
-                    if(mx >= event.data.left && mx <= event.data.right &&
-                       my >= event.data.top && my <= event.data.bottom) {
-                        location.href = event.data.pid+'.html';
-                    }
-                });
+                if(targetLinks) {
+                    $('#'+tag+'c').bind('click',{left:x, top:y, right:x+w, bottom:y+h, pid:pid},function(event) {
+                        mx = event.pageX - $(this).offset().left;
+                        my = event.pageY - $(this).offset().top;
+                        if(mx >= event.data.left && mx <= event.data.right &&
+                           my >= event.data.top && my <= event.data.bottom) {
+                            location.href = event.data.pid+'.html';
+                        }
+                    });
+                }
             }
         }
     });
@@ -73,15 +80,9 @@ $(document).ready(function() {
         type : 'GET',
         datatype : 'json',
         success : function(r, status) {
-            render(r[0],800,'top')
+            render(r[0],800,'medium','top',true)
             for (index = 1; index <= 6; index++) {
-                var tag = 's' + index;
-                var entry = r[index];
-                $('#'+tag).append('<img width="264" height="149" src="' + entry['pid'] + '/mosaic/small.jpg">')
-                          .bind('click', { time: entry['time'] }, function(event) {
-                    location.href = 'dashboard.html?date='+event.data.time;
-                });
-                describe(entry,tag);
+                render(r[index],264,'small','s'+index,false);
             }
          }
     });
@@ -92,23 +93,29 @@ $(document).ready(function() {
   <table width="800px">
     <tr>
       <td colspan="3" id="top">
-	<canvas id="topc" width="800" height="450"/>
+	    <canvas id="topc" width="800" height="450"/>
       </td>
     </tr>
     <tr>
       <td width="33%" id="s1">
+        <canvas id="s1c" width="266" height="148"/>
       </td>
       <td width="33%" id="s2">
+        <canvas id="s2c" width="266" height="148"/>
       </td>
       <td width="33%" id="s3">
+        <canvas id="s3c" width="266" height="148"/>
       </td>
     </tr>
     <tr>
       <td width="33%" id="s4">
+        <canvas id="s4c" width="266" height="148"/>
       </td>
       <td width="33%" id="s5">
+        <canvas id="s5c" width="266" height="148"/>
       </td>
       <td width="33%" id="s6">
+        <canvas id="s6c" width="266" height="148"/>
       </td>
     </tr>
   </table>
