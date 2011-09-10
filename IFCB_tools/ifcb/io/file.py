@@ -83,7 +83,7 @@ class BinFile(Timestamped):
         props['instrument'] = self.instrument() # FIXME move to properties
         if len(lines) >= 6: # don't fail on original header format
             columns = re.split(' +',re.sub('"','',lines[4]))
-            values = re.split(' +',re.sub('[",]','',lines[5]).strip())
+            values = re.split(' *[ -]',re.sub('[",]','',lines[5]).strip())
             for (column, (name, cast), value) in zip(HDR_COLUMNS, HDR_SCHEMA, values):
                 props[name] = cast(value)
         return props
