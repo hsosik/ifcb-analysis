@@ -205,7 +205,7 @@ def __feed_bins(fs,n=20,date=None):
         return list(reversed(fs.latest_bins(n)))
     else:
         two_days_before = time.gmtime(calendar.timegm(date) - 172800)
-        return reversed(list(fs.all_bins(two_days_before,date)))
+        return list(reversed(list(fs.all_bins(two_days_before,date))))[:n]
     
 def fs2atom(fs,link,n=20,date=None,out=sys.stdout):
     nsmap = { None: ATOM_NAMESPACE }

@@ -2,7 +2,7 @@ import os
 import ifcb
 from file import BinFile
 import re
-from ifcb.io import Timestamped
+from ifcb.io import Timestamped, ADC_EXT, HDR_EXT, ROI_EXT
 from ifcb.util import gen2list
 import os.path
 
@@ -25,14 +25,21 @@ class DayDir(Timestamped):
 	def pid(self):
 		return ifcb.pid(os.path.basename(self.dir))
 	
+	def __all_exist(self,path):
+		(n,ext) = os.path.splitext(path)
+		for e in [ADC_EXT, HDR_EXT, ROI_EXT]:
+			if not os.path.exists('.'.join([n,e])):
+				return False
+		return True
+	
 	def __iter__(self):
 		try:
 			for item in sorted(os.listdir(self.dir)):
 				f = os.path.join(self.dir, item)
-				if re.search(r'\.adc$',f):
+				if re.search(r'\.adc$',f) and self.__all_exist(f):
 					yield BinFile(f)
 		except OSError:
-			noop = None # FIXME log
+			pass
 	
 	def all_bins(self):
 		return list(self)
