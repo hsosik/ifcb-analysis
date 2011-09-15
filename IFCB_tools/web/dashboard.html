@@ -8,117 +8,49 @@
 <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
 <script type="text/javascript" src="js/jquery.timeago.js"></script>
 <script type="text/javascript" src="js/ifcb-util.js"></script>
+<script type="text/javascript" src="dashboard.js"></script>
 <script type="text/javascript">
-function describe(entry,tag) {
-    $.ajax({
-        url: '../resolve.py?detail=head&format=json&pid='+entry['pid'],
-        type: 'GET',
-        datatype: 'json',
-        success: function(r, status) {
-            var instrument = r['instrument']
-            var time = r['time'];
-            var temp = Math.round(r['temperature'])+'&deg;C';
-            $('#'+tag).append('<br>IFCB#'+instrument+' '+time+' (<abbr class="timeago" title="'+time+'"></abbr>), '+temp).find('abbr').timeago();
-        }
-    });
+function cell(id,width,colspan) {
+    if(colspan == undefined) {
+        cs = 1;
+    } else {
+        cs = colspan;
+    }
+    return '<td colspan="'+colspan+' id="'+id+'" width="'+width+'px">' +
+        '<canvas id="'+id+'c" width="'+width+'" height="'+ ((width * 0.5625) | 0) + '"></canvas>' +
+        '<span id="'+id+'d"></span>' +
+        '</td>';
 }
-function render(entry,width,size,tag,targetLinks) {
-    describe(entry,tag);
-    $.ajax({
-        url: '../mosaic.py?format=json&size='+size+'&pid='+entry['pid'],
-        type: 'GET',
-        datatype: 'json',
-        success: function(r, status) {
-            var scale = width / r['width'];
-            var canvas = $('#'+tag+'c')[0];
-            var ctx = undefined;
-            if(canvas.getContext == undefined) {
-                alert('This browser does not support canvas.');
-            } else {
-                ctx = canvas.getContext('2d');
-            }
-            var img = new Image();
-            $(img).bind('load', function(event) {
-                ctx.drawImage(this, 0, 0, width, width * 0.5625); // 16:9
-            });
-            img.src = '../mosaic.py?format=jpg&size='+size+'&pid='+entry['pid'];
-            if(!targetLinks) {
-                $(canvas).bind('click', {href:'dashboard.html?date='+entry['time']}, function(event) {
-                    location.href = event.data.href;
-                });
-            }
-            ctx.fillStyle = '#999'; // gray
-            ctx.fillRect(0,0,r['width'] * scale,r['height'] * scale);
-            var tiles = r['tiles']
-            ctx.fillStyle = '#bbb'; // light gray
-            for(i = 0; i < tiles.length; i++) {
-                var tile = tiles[i];
-                var x = tile['x'] * scale;
-                var y = tile['y'] * scale;
-                var w = tile['width'] * scale;
-                var h = tile['height'] * scale;
-                var pid = tile['pid'];
-                ctx.fillRect(x+1,y+1,w-2,h-2);
-                if(targetLinks) {
-                    $('#'+tag+'c').bind('click',{left:x, top:y, right:x+w, bottom:y+h, pid:pid},function(event) {
-                        mx = event.pageX - $(this).offset().left;
-                        my = event.pageY - $(this).offset().top;
-                        if(mx >= event.data.left && mx <= event.data.right &&
-                           my >= event.data.top && my <= event.data.bottom) {
-                            location.href = event.data.pid+'.html';
-                        }
-                    });
-                }
-            }
-        }
-    });
+function go_to_date_param() {
+    /* make the feed query */
+    date = query_param('date','now');
+    asof(date);
 }
 $(document).ready(function() {
-    date = query_param('date','now');
-    $.ajax({
-        url : '../rss.py?format=json&date='+date,
-        type : 'GET',
-        datatype : 'json',
-        success : function(r, status) {
-            render(r[0],800,'medium','top',true)
-            for (index = 1; index <= 6; index++) {
-                render(r[index],264,'small','s'+index,false);
-            }
-         }
-    });
+    /* construct the html */
+    mosaic_width = 800;
+    total_width = 1280;
+    metadata_width = total_width - mosaic_width;
+    html = '<table width="'+total_width+'px">';
+    /* top row */
+    html += '<tr>' + cell('top',800,3) + '<td width="'+metadata_width+'px" rowspan="3" id="metadata" valign="top"></div></td>' + '</tr>';
+    /* two rows */
+    for(row = 0; row < 2; row++) {
+        html += '<tr>';
+        for(n = (row * 3) + 1; n <= (row+1) * 3; n++) {
+            html += cell('s'+n,266);
+        }
+        html += '</tr>';
+    }
+    $('#root').html(html);
+    go_to_date_param();
+    window.onpopstate = function() {
+        go_to_date_param();
+    };
 });
 </script>
 </head>
 <body>
-  <table width="800px">
-    <tr>
-      <td colspan="3" id="top">
-	    <canvas id="topc" width="800" height="450"/>
-      </td>
-    </tr>
-    <tr>
-      <td width="33%" id="s1">
-        <canvas id="s1c" width="266" height="148"/>
-      </td>
-      <td width="33%" id="s2">
-        <canvas id="s2c" width="266" height="148"/>
-      </td>
-      <td width="33%" id="s3">
-        <canvas id="s3c" width="266" height="148"/>
-      </td>
-    </tr>
-    <tr>
-      <td width="33%" id="s4">
-        <canvas id="s4c" width="266" height="148"/>
-      </td>
-      <td width="33%" id="s5">
-        <canvas id="s5c" width="266" height="148"/>
-      </td>
-      <td width="33%" id="s6">
-        <canvas id="s6c" width="266" height="148"/>
-      </td>
-    </tr>
-  </table>
-  <div id="status"></div>
+  <div id="root"></div>
 </body>
 </html>
