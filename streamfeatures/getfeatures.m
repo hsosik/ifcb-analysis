@@ -2,6 +2,7 @@ function [features1, perimeter1, pixidx1, FrDescp1, Centroid1, featitles] = getf
 %function [features1, perimeter1, pixidx1, FrDescp1, Centroid1, featitles] = getfeatures(img, imgname)
 %Heidi, Oct. 17, 2006 updated to correct index errors in calculations of HD90/HD180, HDupd/HD180, T, and E
 %Heidi, Oct. 27, 2009 updated to correct minor bug ('sy <=' should be 'sy <' on line "if sx >= toolong & sy <= toolong")
+%Joe Futrelle modified to use getRW_fast
 warning('off')
 se5 = strel('square', 5);  %used 20 with sedge, etc.
 se2 = strel('square', 2);
@@ -134,7 +135,7 @@ if ~isempty(t),  %this is case with a detectable blob
 %end;
 
 %keyboard
-        rwfea = getRW(z2im);  %56 elements: wedge total, 32 wedges, 23 rings
+        rwfea = getRW_fast(z2im);  %56 elements: wedge total, 32 wedges, 23 rings
         %    rwtitles = ['wedge sum'; cellstr([repmat('Wedge:',32,1) num2str((1:32)')]); cellstr([repmat('Ring:',23,1) num2str((1:23)')])];
         rwtitles = ['wedge sum'; 'center/total'; cellstr([repmat('Wedge:',48,1) num2str((1:48)')]); cellstr([repmat('Ring:',50,1) num2str((1:50)')])];
 
