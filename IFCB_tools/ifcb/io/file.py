@@ -16,6 +16,7 @@ from cache import cache_io, cache_obj, cache_file
 
 # a target
 class Target():
+    """Represents a Target (e.g., an image and metadata from a single ROI)"""
     info = {}
     bin = None
 
@@ -41,6 +42,8 @@ class Target():
     
 # one bin's worth of data
 class BinFile(Timestamped):
+    """Represents a 20-minute bin of data including all targets. This is where the code for
+    parsing the raw data files lives"""
     id = ''
     dir = ''
     time_format = '%Y_%j_%H%M%S'

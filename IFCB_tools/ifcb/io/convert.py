@@ -20,17 +20,30 @@ import calendar
 
 """Conversions between IFCB data and standard formats"""
 
+# XML/RDF namespaces
 DUBLIN_CORE_NAMESPACE = 'http://purl.org/dc/elements/1.1/'
 DC_TERMS_NAMESPACE = 'http://purl.org/dc/terms/'
 RDF_NAMESPACE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 
 def ifcb_term(local_id):
+    """Output a term in the IFCB term namespace.
+    
+    Parameters:
+    local_id - the local ID of the term"""
     return QName(ifcb.TERM_NAMESPACE, local_id)
 
 def dc_term(local_id):
+    """Output a term in the Dublin Core namespace.
+    
+    Parameters:
+    local_id - the local ID of the term"""
     return QName(DUBLIN_CORE_NAMESPACE, local_id)
 
 def rdf_term(local_id):
+    """Output a term in the RDF namespace.
+    
+    Parameters:
+    local_id - the local ID of the term"""
     return QName(RDF_NAMESPACE, local_id)
 
 DC_IDENTIFIER = dc_term('identifier')
@@ -51,6 +64,7 @@ RDF_RDF = rdf_term('RDF')
 RDF_SEQ = rdf_term('Seq')
 RDF_ABOUT = rdf_term('about')
 RDF_LI = rdf_term('li')
+RDF_TYPE = rdf_term('type')
 
 # TODO generate links to images
 
@@ -74,6 +88,12 @@ def __rdf():
     return Element(RDF_RDF, nsmap=RDF_NSMAP)
 
 def day2rdf(day,out=sys.stdout):
+    """Output RDF representing a day directory.
+    
+    Parameters:
+    day - the day directory (instance of DayDir)
+    out - where to write the representation (default: stdout)
+    """
     rdf = __rdf()
     root = SubElement(rdf, IFCB_DAY)
     root.set(RDF_ABOUT, day.pid())
@@ -90,6 +110,12 @@ def day2rdf(day,out=sys.stdout):
     return ElementTree(rdf).write(out, pretty_print=True)
 
 def day2xml(day,out=sys.stdout):
+    """Output XML representing a day directory.
+    
+    Parameters:
+    day - the day directory (instance of DayDir)
+    out - where to write the representation (default: stdout)
+    """
     root = Element(IFCB_DAY, nsmap=XML_NSMAP)
     SubElement(root, DC_DATE).text = day.iso8601time()
     for bin in day:
@@ -108,12 +134,20 @@ def __html(title,heading=True):
     return (html, body)
 
 def bin_title(bin):
+    """The title of a Bin instance in text representations"""
     return 'Sample @ ' + bin.iso8601time()
 
 def target_title(target):
+    """The title of a Target instance in text representations"""
     return 'Target #%d @ %fs' % (target.info[TARGET_NUMBER], target.info[FRAME_GRAB_TIME])
 
 def href(pid,extension='html'):
+    """A link to an object of any type given its PID. Uses config.URL_BASE as the base URL.
+    
+    Parameters:
+    pid - the pid of the object
+    extension - the extension to add to the end (default: "html")
+    """
     return ''.join([config.URL_BASE, pid, '.', extension])
 
 def __bins2html(parent,bins):
@@ -124,11 +158,23 @@ def __bins2html(parent,bins):
         SubElement(li, 'a', href=href(bin.pid())).text = bin_title(bin)
         
 def day2html(day,out=sys.stdout):
+    """Output HTML representing a day directory.
+    
+    Parameters:
+    day - the day directory (instance of DayDir)
+    out - where to write the representation (default: stdout)
+    """
     (html, body) = __html(day.iso8601time())
     __bins2html(body,day)
     return ElementTree(html).write(out, pretty_print=True)
 
 def day2json(day,out=sys.stdout):
+    """Output JSON representing a day directory.
+    
+    Parameters:
+    day - the day directory (instance of DayDir)
+    out - where to write the representation (default: stdout)
+    """
     j = { 'date': day.iso8601time() }
     j['bins'] = [bin.pid() for bin in day]
     return simplejson.dump(j,out)
@@ -141,12 +187,33 @@ def __copy_file(path,out):
     f.close()
     
 def bin2hdr(bin,out=sys.stdout,detail=DETAIL_HEAD):
+    """Output the raw hdr data for a given bin.
+    
+    Parameters:
+    bin - the bin (instance of Bin)
+    out - where to write the data default: stdout)
+    detail - level of detail (ignored)
+    """
     __copy_file(bin.hdr_path(),out)
     
 def bin2adc(bin,out=sys.stdout,detail=DETAIL_FULL):
+    """Output the raw adc data for a given bin.
+    
+    Parameters:
+    bin - the bin (instance of Bin)
+    out - where to write the data default: stdout)
+    detail - level of detail (ignored)
+    """
     __copy_file(bin.adc_path(),out)
     
 def bin2roi(bin,out=sys.stdout,detail=DETAIL_FULL):
+    """Output the raw roi data for a given bin.
+    
+    Parameters:
+    bin - the bin (instance of Bin)
+    out - where to write the data default: stdout)
+    detail - level of detail (ignored)
+    """
     __copy_file(bin.roi_path(),out)
     
 # some shared code for XML and RDF representations
@@ -178,10 +245,22 @@ def __target2xml(target, root=None):
     return elt
 
 def target2xml(target,out=sys.stdout):
+    """Output XML representing a given target.
+    
+    Parameters:
+    target - instance of Target
+    out - where to write the representation (default: stdout)
+    """
     ElementTree(__target2xml(target)).write(out, pretty_print=True)
        
 # turn a bin of targets into an xml representation; outputs to given output stream
 def bin2xml(bin,out=sys.stdout,detail=DETAIL_SHORT):
+    """Output XML representing a given bin.
+    
+    Parameters:
+    bin - instance of Bin
+    out - where to write the representation (default: stdout)
+    """
     # top level is called "bin"
     root = Element(IFCB_BIN, nsmap=XML_NSMAP)
     pid = bin.pid()
@@ -208,6 +287,15 @@ def __feed_bins(fs,n=20,date=None):
         return list(reversed(list(fs.all_bins(two_days_before,date))))[:n]
     
 def fs2atom(fs,link,n=20,date=None,out=sys.stdout):
+    """Output an Atom feed of recent bins from the given filesystem.
+    
+    Parameters:
+    fs - the filesystem (instance of Filesystem)
+    link - the feed's self-link
+    n - the number of recent entries to include (default: 20)
+    date - the latest date to return (default: now)
+    out - where to write the feed (default: stdout)
+    """
     nsmap = { None: ATOM_NAMESPACE }
     xhtml = { None: 'http://www.w3.org/1999/xhtml' }
     bins = __feed_bins(fs,n,date)
@@ -235,6 +323,15 @@ def fs2atom(fs,link,n=20,date=None,out=sys.stdout):
     ElementTree(feed).write(out, pretty_print=True)
 
 def fs2rss(fs,link,n=20,date=None,out=sys.stdout):
+    """Output an RSS 2.0 feed of recent bins from the given filesystem.
+    
+    Parameters:
+    fs - the filesystem (instance of Filesystem)
+    link - the feed's self-link
+    n - the number of recent entries to include (default: 20)
+    date - the latest date to return (default: now)
+    out - where to write the feed (default: stdout)
+    """
     xhtml = { None: 'http://www.w3.org/1999/xhtml' }
     bins = __feed_bins(fs,n,date)
     rss = Element('rss', version='2.0')
@@ -259,18 +356,44 @@ def fs2rss(fs,link,n=20,date=None,out=sys.stdout):
     ElementTree(rss).write(out, pretty_print=True)
 
 def fs2html_feed(fs,link,n=20,date=None,out=sys.stdout):
+    """Output an HTML-formatted "feed" of recent bins from the given filesystem.
+    
+    Parameters:
+    fs - the filesystem (instance of Filesystem)
+    link - the feed's self-link
+    n - the number of recent entries to include (default: 20)
+    date - the latest date to return (default: now)
+    out - where to write the feed (default: stdout)
+    """
     bins = __feed_bins(fs,n,date)
     (html, body) = __html('Imaging FlowCytobot most recent data')
     __bins2html(body, bins)
     ElementTree(html).write(out, pretty_print=True)
     
 def fs2json_feed(fs,link,n=20,date=None,out=sys.stdout):
+    """Output an JSON-formatted "feed" of recent bins from the given filesystem.
+    
+    Parameters:
+    fs - the filesystem (instance of Filesystem)
+    link - the feed's self-link
+    n - the number of recent entries to include (default: 20)
+    date - the latest date to return (default: now)
+    out - where to write the feed (default: stdout)
+    """
     simplejson.dump([bin.properties(True) for bin in __feed_bins(fs,n,date)],out)
 
 def pretty_property_name(propName):
+    """Decamelize a property name"""
     return decamel(propName)
 
 def bin2html(bin,out=sys.stdout,detail=DETAIL_SHORT):
+    """Output HTML representing a given bin.
+    
+    Parameters:
+    bin - instance of Bin
+    out - where to write the representation (default: stdout)
+    detail - level of detail (default: DETAIL_SHORT)
+    """
     (html, body) = __html(bin_title(bin))
     properties = Sub(body, 'div', 'properties')
     for k in order_keys(bin.properties(), [column for column,type in HDR_SCHEMA]):
@@ -288,6 +411,12 @@ def bin2html(bin,out=sys.stdout,detail=DETAIL_SHORT):
     ElementTree(html).write(out, pretty_print=True)
 
 def target2html(target,out=sys.stdout):
+    """Output HTML representing a given target
+    
+    Parameters:
+    target - instance of Target
+    out - where to write the representation (default: stdout)
+    """
     (html, body) = __html(target_title(target))
     properties = Sub(body, 'div', 'properties')
     parent_link = Sub(properties, 'div', 'property')
@@ -310,11 +439,24 @@ def __target2rdf(target,parent):
     SubElement(elt, DC_TERMS_HAS_FORMAT).text = target.pid() + '.png'
 
 def target2rdf(target,out=sys.stdout):
+    """Output RDF representing a given target
+    
+    Parameters:
+    target - instance of Target
+    out - where to write the representation (default: stdout)
+    """
     rdf = __rdf()
     __target2rdf(target,rdf)
     return ElementTree(rdf).write(out, pretty_print=True)
     
 def bin2rdf(bin,out=sys.stdout,detail=DETAIL_SHORT):
+    """Output RDF representing a given bin
+    
+    Parameters:
+    bin - instance of Bin
+    out - where to write the representation (default: stdout)
+    detail - level of detail (default: DETAIL_SHORT)
+    """
     rdf = __rdf()
     root = SubElement(rdf, IFCB_BIN)
     pid = bin.pid()
@@ -336,6 +478,12 @@ def bin2rdf(bin,out=sys.stdout,detail=DETAIL_SHORT):
     return ElementTree(rdf).write(out, pretty_print=True)
 
 def bin_as_json(bin,detail=DETAIL_SHORT):
+    """Generate JSON representation of bin
+    
+    Parameters:
+    bin - instance of Bin
+    detail - level of detail (default: DETAIL_SHORT)
+    """
     result = bin.properties()
     if detail == DETAIL_FULL:
         result['targets'] = [target.info for target in bin];
@@ -345,13 +493,35 @@ def bin_as_json(bin,detail=DETAIL_SHORT):
 
 # turn a bin of targets into a json representation
 def bin2json(bin,out=sys.stdout,detail=DETAIL_FULL):
+    """Output JSON representing a given bin
+    
+    Parameters:
+    bin - instance of Bin
+    out - where to write the representation (default: stdout)
+    detail - level of detail (default: DETAIL_SHORT)
+    """
     result = bin_as_json(bin,detail)
     return simplejson.dump(result,out)
 
 def target2json(target,out=sys.stdout):
+    """Output JSON representing a given target
+    
+    Parameters:
+    target - instance of Target
+    out - where to write the representation (default: stdout)
+    """
     return simplejson.dump(target.info,out)
 
-def stream_image(target,format,out,scale=1.0):
+# this is the only method of writing images that works for all of PIL's formats
+def __stream_image(target,format,out,scale=1.0):
+    """Output the image of a target in any format to an output stream (resizing if desired).
+    
+    Parameters:
+    target - instance of Taret
+    format - an image format supported by PIL
+    out - where to write the data to
+    scale - scaling factor for image dimensions (default: 1.0)
+    """
     image = target.image()
     if scale != 1.0:
         image = image.resize((int(target.info[HEIGHT] * scale), int(target.info[WIDTH] * scale)), Image.ANTIALIAS)
@@ -361,21 +531,64 @@ def stream_image(target,format,out,scale=1.0):
         shutil.copyfileobj(flo, out)
 
 def target2image(target,format='PNG',out=sys.stdout,scale=1.0):
+    """Output the image of a target in any format to an output stream (resizing if desired).
+    
+    Parameters:
+    target - instance of Target
+    format - an image format supported by PIL (default: png)
+    out - where to write the data to (default: stdout)
+    scale - scaling factor for image dimensions (default: 1.0)
+    """
     format = string.upper(format)
     cache_key = '%s/%d.%s' % (lid(target.pid()), int(scale * 1000), string.lower(format)) 
-    cache_io(cache_key, lambda o: stream_image(target,format,o,scale), out)
+    cache_io(cache_key, lambda o: __stream_image(target,format,o,scale), out)
     
 def target2png(target,out=sys.stdout,scale=1.0):
+    """Output the image of a target in png format to an output stream (resizing if desired).
+    
+    Parameters:
+    target - instance of Target
+    out - where to write the data to (default: stdout)
+    scale - scaling factor for image dimensions (default: 1.0)
+    """
     target2image(target,'PNG',out,scale)
 
 def target2jpg(target,out=sys.stdout,scale=1.0):
+    """Output the image of a target in jpg format to an output stream (resizing if desired).
+    
+    Parameters:
+    target - instance of Target
+    out - where to write the data to (default: stdout)
+    scale - scaling factor for image dimensions (default: 1.0)
+    """
     target2image(target,'JPEG',out,scale)
 
 def target2bmp(target,out=sys.stdout,scale=1.0):
+    """Output the image of a target in bmp format to an output stream (resizing if desired).
+    
+    Parameters:
+    target - instance of Target
+    out - where to write the data to (default: stdout)
+    scale - scaling factor for image dimensions (default: 1.0)
+    """
     target2image(target,'BMP',out,scale)
 
 def target2gif(target,out=sys.stdout,scale=1.0):
+    """Output the image of a target in gif format to an output stream (resizing if desired).
+    
+    Parameters:
+    target - instance of Target
+    out - where to write the data to (default: stdout)
+    scale - scaling factor for image dimensions (default: 1.0)
+    """
     target2image(target,'GIF',out)
     
 def target2tiff(target,out=sys.stdout,scale=1.0):
+    """Output the image of a target in tiff format to an output stream (resizing if desired).
+    
+    Parameters:
+    target - instance of Target
+    out - where to write the data to (default: stdout)
+    scale - scaling factor for image dimensions (default: 1.0)
+    """
     target2image(target,'TIFF',out)

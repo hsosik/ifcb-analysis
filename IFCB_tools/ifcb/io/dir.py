@@ -10,6 +10,9 @@ import os.path
 
 # represents a directory containing a single day's worth of data for a single instrument
 class DayDir(Timestamped):
+	"""Represents an instrument/day directory (e.g., IFCB5_2011_0132)
+	
+	Iterable: returns all bins"""
 	dir = '.'
 	time_format = '%Y_%j'
 	
@@ -42,10 +45,14 @@ class DayDir(Timestamped):
 			pass
 	
 	def all_bins(self):
+		"""Return all bins in this day"""
 		return list(self)
 	
 # represents a directory containing day directories
 class YearsDir:
+	"""Represents a directory containing day directories.
+	
+	Iterable: returns all instrument/day directories in the years directory"""
 	dir = '.'
 	instrument = '.' # regex matching the IFCB{instrument}_ part of the dir name
 	
@@ -63,5 +70,6 @@ class YearsDir:
 			noop = None # FIXME log
 				
 	def all_days(self):
+		"""Return all day dirs in this directory"""
 		return list(self)
 	
