@@ -67,51 +67,48 @@ function render(bin,width,size,tag,targetLinks) {
                         location.href = event.data.pid+'.html';
                     }
                 });
-                $('#'+tag+'c').bind('mousemove',{left:x, top:y, w:w, h:h, right:x+w, bottom:y+h, pid:pid, tag:tag},function(event) {
-                    mx = event.pageX - $(this).offset().left;
-                    my = event.pageY - $(this).offset().top;
-                    if(mx >= event.data.left && mx <= event.data.right &&
-                       my >= event.data.top && my <= event.data.bottom) {
-                        if(selected != event.data.pid) {
-                            ctx.drawImage(img, 0, 0, width, width * 0.5625);
-                            ctx.strokeStyle = '#f00'; // red
-                            ctx.strokeRect(event.data.left+1, event.data.top+1, event.data.w-2, event.data.h-2);
-                            selected = event.data.pid;
-                            // TODO show metadata for the thang
-                            showTheMetadataForTheThang(event.data.pid);
-                            // TODO remove the highlights from previous selection
-                        }
+	    }
+            $('#'+tag+'c').bind('mousemove',{left:x, top:y, w:w, h:h, right:x+w, bottom:y+h, pid:pid, tag:tag},function(event) {
+                mx = event.pageX - $(this).offset().left;
+                my = event.pageY - $(this).offset().top;
+                if(mx >= event.data.left && mx <= event.data.right &&
+                   my >= event.data.top && my <= event.data.bottom) {
+                    if(selected != event.data.pid) {
+                        ctx.drawImage(img, 0, 0, width, width * 0.5625);
+                        ctx.strokeStyle = '#f00'; // red
+                        ctx.strokeRect(event.data.left+1, event.data.top+1, event.data.w-2, event.data.h-2);
+                        selected = event.data.pid;
+                        showTheMetadataForTheThang(event.data.pid);
                     }
-                });
-            }
-       }
+                }
+            });
+            $('#'+tag+'c').bind('mouseleave',function(event) {
+                ctx.drawImage(img, 0, 0, width, width * 0.5625);
+            });
+	}
     });
 }
 function asof(date,fn) {
     $('#topc').unbind('click');
     $('#topc').unbind('mousemove');
+    $('#topc').unbind('mouseleave');
     with_json_request('../rss.py?format=json&date='+date, function(bin) {
         render(bin[0],800,'medium','top',true);
         for (index = 1; index <= 6; index++) {
+	    $('#s'+index+'c').unbind('mousemove');
+	    $('#s'+index+'c').unbind('mouseleave');
             render(bin[index],264,'small','s'+index,false);
         }
     });
-}
-function keys(obj) {
-    var keys = [];
-    for(var key in obj) {
-        if(obj.hasOwnProperty(key)) {
-            keys.push(key);
-        }
-    }
-    return keys;
 }
 function showTheMetadataForTheThang(pid) {
     if(pid in target_html) {
         $('#metadata').html(target_html[pid]);
     } else {
         with_metadata(pid, function(target) {
-		html = '<img width="224px" src="'+pid+'.jpg">';
+		var h = target['width'] * 0.5;
+		var w = target['height'] * 0.5;
+		html = '<img width="'+w+'px" height="'+h+'" src="'+pid+'.jpg">';
 		for(var key in target) {
 		    if(target.hasOwnProperty(key)) {
 			var text = key + ': ' + target[key];
