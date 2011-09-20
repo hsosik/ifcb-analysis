@@ -10,16 +10,31 @@ import calendar
 """Resolution of IFCB global identifiers to local filesystem paths"""
 
 class Resolver:
+    """Resolve a pid to some object"""
     def resolve(self,pid):
         return None
-    
+
 class Filesystem(Resolver):
+    """Represents a filesystem containing one or more "years" directories which themselves
+    contain zero or more day directories. The hierarchy is
+    
+    /{year directory}/{day directory}/{bin}.[adc,hdr,roi]
+    
+    and the corresponding object hierarchy is
+    
+    Filesystem -> YearsDir -> DayDir -> Bin -> Target
+    """
     years_dirs = []
     
     def __init__(self,years_dirs):
+        """
+        Parameters:
+        years_dirs - 'root' directories containing day directories
+        """
         self.years_dirs = [YearsDir(os.path.abspath(d)) for d in years_dirs]
 
     def all_days(self):
+        """Yield all day directories (returns DayDir instances)"""
         for years in self.years_dirs:
             for day in years:
                 yield day
@@ -33,6 +48,13 @@ class Filesystem(Resolver):
         return True
     
     def all_bins(self,start=None,end=None):
+        """Yield all bins
+        
+        Parameters:
+        start - return bins no earlier than this date (default: None)
+        end - return bins no later than this date (default: None)
+        
+        yields Bin instances"""
         for day in self.all_days():
             if self.__within(start,end,day):
                 for bin in day:
@@ -40,12 +62,27 @@ class Filesystem(Resolver):
                         yield bin
 
     def latest_days(self,n=10):
+        """Return latest days as of now.
+        
+        Parameters:
+        n - number of days to return
+        
+        Returns DayDir instances"""
         return sorted(list(self.all_days()), key=lambda day: day.time)[-n:]
 
     def latest_day(self):
+        """Return latest day.
+        
+        Return a DayDir instance"""
         return self.latest_days(1)[0]
 
     def latest_bins(self,n=10):
+        """Return latest bins as of now.
+        
+        Parameters:
+        n - number of bins to return
+        
+        Returns Bin instances"""
         bins = []
         for day in self.latest_days(2):
             for bin in day:
@@ -53,45 +90,47 @@ class Filesystem(Resolver):
         return sorted(bins, key=lambda bin: bin.time)[-n:]
 
     def latest_bin(self):
+        """Return latest bin"""
         return self.latest_bins(1)[0]
                 
-    def latest_bin(self):
-        latest_day = sorted(list(self.all_days()), key=lambda day: day.time())[-1]
-        return sorted(latest_day.all_bins(), key=lambda bin: bin.time())[-1]
-                
     def all_targets(self):
+        """Yield all targets.
+        
+        Warning: this is a very, very, very expensive operation"""
         for bin in self.all_bins():
             for target in bin:
                 yield target
     
-    # given the pid of a day, return the day e.g.,
-    # http://ifcb-data.whoi.edu/IFCB1_2010_025
-    # would be located at
-    # {some years dir}/IFCB1_2010_025
     def day(self,pid):
+        """given the pid of a day, return the day e.g.,
+        http://ifcb-data.whoi.edu/IFCB1_2010_025
+        would be located at
+        {some years dir}/IFCB1_2010_025"""
         return cache_obj(ifcb.lid(pid)+'_path',lambda: self.__day(pid))
     
+    # search for a day in the filesystem
     def __day(self,pid):
-        lid = ifcb.lid(pid)
-        for years in self.years_dirs:
-            day_path = os.path.join(years.dir, lid)
-            if os.path.exists(day_path):
-                return DayDir(day_path)
+        lid = ifcb.lid(pid) # local id
+        for years in self.years_dirs: # search the years dirs
+            day_path = os.path.join(years.dir, lid) # compute the day path
+            if os.path.exists(day_path): # if it exists
+                return DayDir(day_path) # construct a DayDir to represent it
         raise KeyError('day '+pid+' not found')
             
-    # given the pid of a bin, return the bin, e.g.,
-    # http://ifcb-data.whoi.edu/IFCB1_2010_025_134056
-    # would be located at
-    # {some years dir}/IFCB1_2010_025/IFCB1_2010_025_134056
     def bin(self, pid):
-        bin_path = cache_obj(ifcb.lid(pid)+'_path', lambda: self.bin_path(pid))
+        """given the pid of a bin, return the bin, e.g.,
+        http://ifcb-data.whoi.edu/IFCB1_2010_025_134056
+        would be located at
+        {some years dir}/IFCB1_2010_025/IFCB1_2010_025_134056"""
+        bin_path = cache_obj(ifcb.lid(pid)+'_path', lambda: self.bin_path(pid)) # path is cached
         if bin_path is not None:
             return BinFile(bin_path)
-        
+    
+    # search for a bin in the filesystem
     def bin_path(self,pid):
-        lid = ifcb.lid(pid)
-        (bin, day) = re.match(r'((IFCB\d+_\d{4}_\d{3})_\d{6})',lid).groups() 
-        for years in self.years_dirs:
+        # the names of the day directory and bin file are in the pid
+        (bin, day) = re.match(r'.*((IFCB\d+_\d{4}_\d{3})_\d{6})',pid).groups() 
+        for years in self.years_dirs: # search the years dirs
             bin_path = os.path.join(years.dir, day, bin) + '.' + ADC_EXT
             # test for existence of ADC path, should check other paths too
             if os.path.exists(bin_path):
@@ -108,12 +147,13 @@ class Filesystem(Resolver):
         return bin.target(int(target_no)) # bin.target is 0-based
     
     def resolve(self,pid):
+        """Resolve a pid in this filesystem"""
         lid = ifcb.lid(pid)
-        if re.match(r'^IFCB\d+_\d{4}_\d{3}$',lid): # day
+        if re.match(r'^IFCB\d+_\d{4}_\d{3}$',lid): # day pattern
             return self.day(pid)
-        elif re.match(r'^IFCB\d+_\d{4}_\d{3}_\d{6}$',lid): # bin
+        elif re.match(r'^IFCB\d+_\d{4}_\d{3}_\d{6}$',lid): # bin pattern
             return self.bin(pid)
-        elif re.match(r'^IFCB\d+_\d{4}_\d{3}_\d{6}_\d+$',lid):
+        elif re.match(r'^IFCB\d+_\d{4}_\d{3}_\d{6}_\d+$',lid): # target pattern
             return self.target(pid)
         raise KeyError('unrecognized pid '+pid)
         

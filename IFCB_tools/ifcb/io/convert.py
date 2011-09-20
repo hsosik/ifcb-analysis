@@ -95,11 +95,23 @@ def day2rdf(day,out=sys.stdout):
     out - where to write the representation (default: stdout)
     """
     rdf = __rdf()
+    # emit
+    # <ifcb:Day rdf:about="{day.pid}">
+    #   <dc:date>{day.iso8601time}</dc:date>
+    #   <dcterms:hasFormat>{day.pid}.xml</dcterms:hasFormat>
+    #   <dcterms:hasFormat>{day.pid}.json</dcterms:hasFormat>
+    #   ...
     root = SubElement(rdf, IFCB_DAY)
     root.set(RDF_ABOUT, day.pid)
     SubElement(root, DC_DATE).text = day.iso8601time
     SubElement(root, DC_TERMS_HAS_FORMAT).text = day.pid + '.xml'
     SubElement(root, DC_TERMS_HAS_FORMAT).text = day.pid + '.json'
+    # emit
+    # ...
+    #   <ifcb:hasBins>
+    #     <rdf:Seq rdf:about="{day.pid}/bins">
+    #       <rdf:li rdf:about="{bin.pid}"/>
+    #       ...
     bins = SubElement(root, IFCB_HAS_BINS)
     seq = SubElement(bins, RDF_SEQ)
     seq.set(RDF_ABOUT, day.pid+'/bins')
@@ -116,6 +128,11 @@ def day2xml(day,out=sys.stdout):
     day - the day directory (instance of DayDir)
     out - where to write the representation (default: stdout)
     """
+    # emit
+    # <ifcb:Day>
+    #   <dc:date>{day.iso8601time}</dc:date>
+    #   <ifcb:Bin dc:identifier="{bin.pid}"/>
+    #   ...
     root = Element(IFCB_DAY, nsmap=XML_NSMAP)
     SubElement(root, DC_DATE).text = day.iso8601time
     for bin in day:
