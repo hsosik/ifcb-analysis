@@ -41,7 +41,11 @@ if __name__ == '__main__':
     cgitb.enable()
     out = sys.stdout
     pid = cgi.FieldStorage().getvalue('pid')
-    format = cgi.FieldStorage().getvalue('format','rdf')
+    format = 'rdf'
+    if re.search(r'\.[a-z]+$',pid):
+        (pid, ext) = os.path.splitext(pid)
+        format = re.sub(r'^\.','',ext)
+    format = cgi.FieldStorage().getvalue('format',format)
     detail = cgi.FieldStorage().getvalue('detail', DETAIL_SHORT)
     scale = float(cgi.FieldStorage().getvalue('scale','1.0'))
     object = Filesystem(FS_ROOTS).resolve(pid)

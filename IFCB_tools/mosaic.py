@@ -31,14 +31,14 @@ def __layout(bin, (width, height), size=0):
                 yield {'x':p.x, 'y':p.y, WIDTH:w, HEIGHT:h, PID:target.info[PID], TARGET_NUMBER:target.info[TARGET_NUMBER]}
 
 def layout(bin, (width, height), size=0):
-    cache_key = ifcb.lid(bin.pid()) + '/mosaic/'+str(width)+'.json'
+    cache_key = ifcb.lid(bin.pid) + '/mosaic/'+str(width)+'.json'
     tiles = cache_obj(cache_key, lambda: list(__layout(bin, (width, height), size)))
     return {'width':width, 'height':height, 'tiles':tiles}
     
 def mosaic(bin, (width, height), size=0):
     mosaic = Image.new('L', (width, height))
     mosaic.paste(160,(0,0,width,height))
-    with open(bin.roi_path(), 'rb') as roi_file:
+    with open(bin.roi_path, 'rb') as roi_file:
         for entry in layout(bin, (width, height), size)['tiles']:
             mosaic.paste(bin.image(entry[TARGET_NUMBER], roi_file), (entry['x'], entry['y']))
     return mosaic
