@@ -20,6 +20,7 @@ roidaypath = '\\Cheese\G on K\IFCB\ifcb_data_MVCO_jun06\ ';
 feapath = 'd:\work\IFCB1\ifcb_data_MVCO_jun06\features2009\';
 stitchpath = 'd:\work\IFCB1\ifcb_data_MVCO_jun06\stitch2009s\';
 path_separator = '\';
+
 %roidaypath = '/Volumes/J_IFCB/ifcb_data_MVCO_jun06/';
 %stitchpath = '/Users/jfutrelle/dev/heidiCode1/scratch/stitch/';
 %feapath = '/Users/jfutrelle/dev/heidiCode1/scratch/features/fastRW/';
