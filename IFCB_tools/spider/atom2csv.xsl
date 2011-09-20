@@ -9,6 +9,7 @@
     
     <xsl:output method="text"/>
     
+    <!-- for each feed entry emit the "id" and "updated" fields as a two-column CSV row -->
     <xsl:template match="atom:feed">
         <xsl:for-each select="atom:entry">
             <xsl:value-of select="atom:id"/>

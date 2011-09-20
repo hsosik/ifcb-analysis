@@ -1,3 +1,4 @@
+<!-- here's an example Atom feed for testing -->
 <feed xmlns="http://www.w3.org/2005/Atom">
     <title>Imaging FlowCytobot most recent data</title>
     <subtitle>Live marine phytoplankton cytometry with imagery</subtitle>
