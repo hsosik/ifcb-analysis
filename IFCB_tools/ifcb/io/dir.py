@@ -18,13 +18,12 @@ class DayDir(Timestamped):
 	
 	def __init__(self, dir='.'):
 		self.dir = dir
+		self.time_string = re.sub('^IFCB\\d+_','',ifcb.lid(self.pid)) 
 				
 	def __repr__(self):
-		return '{DayDir ' + self.pid() +'}'
+		return '{DayDir ' + self.pid +'}'
 	
-	def time_string(self):
-		return re.sub('^IFCB\\d+_','',ifcb.lid(self.pid()))
-	
+	@property
 	def pid(self):
 		return ifcb.pid(os.path.basename(self.dir))
 	

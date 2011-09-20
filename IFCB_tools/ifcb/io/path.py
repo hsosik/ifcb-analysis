@@ -28,7 +28,7 @@ class Filesystem(Resolver):
         if start is None and end is None:
             return True
         else:
-            t = timestamped.epoch_time()
+            t = timestamped.epoch_time
             return t <= calendar.timegm(end) and t >= calendar.timegm(start)
         return True
     
@@ -40,7 +40,7 @@ class Filesystem(Resolver):
                         yield bin
 
     def latest_days(self,n=10):
-        return sorted(list(self.all_days()), key=lambda day: day.time())[-n:]
+        return sorted(list(self.all_days()), key=lambda day: day.time)[-n:]
 
     def latest_day(self):
         return self.latest_days(1)[0]
@@ -50,7 +50,7 @@ class Filesystem(Resolver):
         for day in self.latest_days(2):
             for bin in day:
                 bins.append(bin)
-        return sorted(bins, key=lambda bin: bin.time())[-n:]
+        return sorted(bins, key=lambda bin: bin.time)[-n:]
 
     def latest_bin(self):
         return self.latest_bins(1)[0]
@@ -77,6 +77,7 @@ class Filesystem(Resolver):
             day_path = os.path.join(years.dir, lid)
             if os.path.exists(day_path):
                 return DayDir(day_path)
+        raise KeyError('day '+pid+' not found')
             
     # given the pid of a bin, return the bin, e.g.,
     # http://ifcb-data.whoi.edu/IFCB1_2010_025_134056
@@ -95,7 +96,7 @@ class Filesystem(Resolver):
             # test for existence of ADC path, should check other paths too
             if os.path.exists(bin_path):
                 return bin_path
-        return None
+        raise KeyError('no path to bin '+pid)
             
     # given the pid of a target, return the target_info
     def target(self,pid):
@@ -114,5 +115,6 @@ class Filesystem(Resolver):
             return self.bin(pid)
         elif re.match(r'^IFCB\d+_\d{4}_\d{3}_\d{6}_\d+$',lid):
             return self.target(pid)
+        raise KeyError('unrecognized pid '+pid)
         
     # TODO way of finding bins within a given time range

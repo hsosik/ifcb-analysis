@@ -96,17 +96,17 @@ def day2rdf(day,out=sys.stdout):
     """
     rdf = __rdf()
     root = SubElement(rdf, IFCB_DAY)
-    root.set(RDF_ABOUT, day.pid())
-    SubElement(root, DC_DATE).text = day.iso8601time()
-    SubElement(root, DC_TERMS_HAS_FORMAT).text = day.pid() + '.xml'
-    SubElement(root, DC_TERMS_HAS_FORMAT).text = day.pid() + '.json'
+    root.set(RDF_ABOUT, day.pid)
+    SubElement(root, DC_DATE).text = day.iso8601time
+    SubElement(root, DC_TERMS_HAS_FORMAT).text = day.pid + '.xml'
+    SubElement(root, DC_TERMS_HAS_FORMAT).text = day.pid + '.json'
     bins = SubElement(root, IFCB_HAS_BINS)
     seq = SubElement(bins, RDF_SEQ)
-    seq.set(RDF_ABOUT, day.pid()+'/bins')
+    seq.set(RDF_ABOUT, day.pid+'/bins')
     for bin in day:
         li = SubElement(seq, RDF_LI)
         elt = SubElement(li, IFCB_BIN)
-        elt.set(RDF_ABOUT, bin.pid())
+        elt.set(RDF_ABOUT, bin.pid)
     return ElementTree(rdf).write(out, pretty_print=True)
 
 def day2xml(day,out=sys.stdout):
@@ -117,10 +117,10 @@ def day2xml(day,out=sys.stdout):
     out - where to write the representation (default: stdout)
     """
     root = Element(IFCB_DAY, nsmap=XML_NSMAP)
-    SubElement(root, DC_DATE).text = day.iso8601time()
+    SubElement(root, DC_DATE).text = day.iso8601time
     for bin in day:
         elt = SubElement(root, IFCB_BIN)
-        elt.set(DC_IDENTIFIER, bin.pid())
+        elt.set(DC_IDENTIFIER, bin.pid)
     return ElementTree(root).write(out, pretty_print=True)
 
 def __html(title,heading=True):
@@ -135,11 +135,11 @@ def __html(title,heading=True):
 
 def bin_title(bin):
     """The title of a Bin instance in text representations"""
-    return 'Sample @ ' + bin.iso8601time()
+    return 'Sample @ ' + bin.iso8601time
 
 def target_title(target):
     """The title of a Target instance in text representations"""
-    return 'Target #%d @ %fs' % (target.info[TARGET_NUMBER], target.info[FRAME_GRAB_TIME])
+    return 'Target #%d @ %fs' % (target.targetNumber, target.frameGrabTime)
 
 def href(pid,extension='html'):
     """A link to an object of any type given its PID. Uses config.URL_BASE as the base URL.
@@ -155,7 +155,7 @@ def __bins2html(parent,bins):
     ul = Sub(div, 'ul', 'bins')
     for bin in bins:
         li = Sub(ul, 'li', 'bin')
-        SubElement(li, 'a', href=href(bin.pid())).text = bin_title(bin)
+        SubElement(li, 'a', href=href(bin.pid)).text = bin_title(bin)
         
 def day2html(day,out=sys.stdout):
     """Output HTML representing a day directory.
@@ -164,7 +164,7 @@ def day2html(day,out=sys.stdout):
     day - the day directory (instance of DayDir)
     out - where to write the representation (default: stdout)
     """
-    (html, body) = __html(day.iso8601time())
+    (html, body) = __html(day.iso8601time)
     __bins2html(body,day)
     return ElementTree(html).write(out, pretty_print=True)
 
@@ -175,8 +175,8 @@ def day2json(day,out=sys.stdout):
     day - the day directory (instance of DayDir)
     out - where to write the representation (default: stdout)
     """
-    j = { 'date': day.iso8601time() }
-    j['bins'] = [bin.pid() for bin in day]
+    j = { 'date': day.iso8601time }
+    j['bins'] = [bin.pid for bin in day]
     return simplejson.dump(j,out)
 
 # raw data
@@ -194,7 +194,7 @@ def bin2hdr(bin,out=sys.stdout,detail=DETAIL_HEAD):
     out - where to write the data default: stdout)
     detail - level of detail (ignored)
     """
-    __copy_file(bin.hdr_path(),out)
+    __copy_file(bin.hdr_path,out)
     
 def bin2adc(bin,out=sys.stdout,detail=DETAIL_FULL):
     """Output the raw adc data for a given bin.
@@ -204,7 +204,7 @@ def bin2adc(bin,out=sys.stdout,detail=DETAIL_FULL):
     out - where to write the data default: stdout)
     detail - level of detail (ignored)
     """
-    __copy_file(bin.adc_path(),out)
+    __copy_file(bin.adc_path,out)
     
 def bin2roi(bin,out=sys.stdout,detail=DETAIL_FULL):
     """Output the raw roi data for a given bin.
@@ -214,11 +214,11 @@ def bin2roi(bin,out=sys.stdout,detail=DETAIL_FULL):
     out - where to write the data default: stdout)
     detail - level of detail (ignored)
     """
-    __copy_file(bin.roi_path(),out)
+    __copy_file(bin.roi_path,out)
     
 # some shared code for XML and RDF representations
 def __add_headers(bin,root):
-    SubElement(root, DC_DATE).text = bin.iso8601time()    
+    SubElement(root, DC_DATE).text = bin.iso8601time
     headers = bin.headers()
     for c in headers[CONTEXT]:
         SubElement(root,IFCB_CONTEXT).text = str(c)
@@ -235,13 +235,13 @@ def __target_properties(target, elt):
 def __target2xml(target, root=None):
     elt = None
     if root is not None:
-        elt = SubElement(root, IFCB_TARGET, number=str(target.info[TARGET_NUMBER]))
+        elt = SubElement(root, IFCB_TARGET, number=str(target.targetNumber))
     else:
-        elt = Element(IFCB_TARGET, nsmap=XML_NSMAP, number=str(target.info[TARGET_NUMBER]))
-    pid = target.info[PID]
-    SubElement(elt, DC_IDENTIFIER).text = target.info[PID]
+        elt = Element(IFCB_TARGET, nsmap=XML_NSMAP, number=str(target.targetNumber))
+    pid = target.pid
+    SubElement(elt, DC_IDENTIFIER).text = target.pid
     __target_properties(target, elt)
-    SubElement(elt, DC_TERMS_HAS_FORMAT).text = target.info[PID] + '.png'
+    SubElement(elt, DC_TERMS_HAS_FORMAT).text = target.pid + '.png'
     return elt
 
 def target2xml(target,out=sys.stdout):
@@ -263,8 +263,7 @@ def bin2xml(bin,out=sys.stdout,detail=DETAIL_SHORT):
     """
     # top level is called "bin"
     root = Element(IFCB_BIN, nsmap=XML_NSMAP)
-    pid = bin.pid()
-    SubElement(root, DC_IDENTIFIER).text = pid
+    SubElement(root, DC_IDENTIFIER).text = bin.pid
     __add_headers(bin,root)
     if detail != DETAIL_HEAD:
         target_number = 1
@@ -273,7 +272,7 @@ def bin2xml(bin,out=sys.stdout,detail=DETAIL_SHORT):
                 __target2xml(target, root)
             else:
                 elt = SubElement(root, IFCB_TARGET)
-                elt.set(DC_IDENTIFIER, target.pid())
+                elt.set(DC_IDENTIFIER, target.pid)
     return ElementTree(root).write(out, pretty_print=True)
 
 ATOM_NAMESPACE = 'http://www.w3.org/2005/Atom'
@@ -306,15 +305,15 @@ def fs2atom(fs,link,n=20,date=None,out=sys.stdout):
     SubElement(author, 'name').text = 'Imaging FlowCytobot'
     SubElement(feed, 'link', href=link, rel='self')
     SubElement(feed, 'id').text = link
-    SubElement(feed, 'updated').text = bins[0].iso8601time()
+    SubElement(feed, 'updated').text = bins[0].iso8601time
     for bin in bins:
         t = SubElement(feed, 'entry')
         SubElement(t, 'title').text = bin_title(bin)
-        SubElement(t, 'link', href=bin.pid(), rel='alternate', type='application/rdf+xml')
-        SubElement(t, 'link', href=bin.pid()+'.xml', rel='alternate', type='text/xml')
-        SubElement(t, 'link', href=bin.pid()+'.json', rel='alternate', type='application/json')
-        SubElement(t, 'id').text = bin.pid()
-        SubElement(t, 'updated').text = bin.iso8601time()
+        SubElement(t, 'link', href=bin.pid, rel='alternate', type='application/rdf+xml')
+        SubElement(t, 'link', href=bin.pid+'.xml', rel='alternate', type='text/xml')
+        SubElement(t, 'link', href=bin.pid+'.json', rel='alternate', type='application/json')
+        SubElement(t, 'id').text = bin.pid
+        SubElement(t, 'updated').text = bin.iso8601time
         content = SubElement(t, 'content', type='xhtml')
         div = SubElement(content, QName(XHTML_NAMESPACE, 'div'), nsmap=xhtml)
         headers = bin.headers()
@@ -341,14 +340,14 @@ def fs2rss(fs,link,n=20,date=None,out=sys.stdout):
     #SubElement(feed, 'author').text = 'Imaging FlowCytobot'
     SubElement(feed, 'link').text = link
     SubElement(feed, '{%s}link' % ATOM_NAMESPACE, rel='self', href=link)
-    SubElement(feed, 'pubDate').text = bins[0].rfc822time()
+    SubElement(feed, 'pubDate').text = bins[0].rfc822time
     SubElement(feed, 'ttl').text = '20'
     for bin in bins:
         t = SubElement(feed, 'item')
         SubElement(t, 'title').text = bin_title(bin)
-        SubElement(t, 'guid').text = bin.pid()
-        SubElement(t, 'link').text = bin.pid() + '.html'
-        SubElement(t, 'pubDate').text = bin.rfc822time()
+        SubElement(t, 'guid').text = bin.pid
+        SubElement(t, 'link').text = bin.pid + '.html'
+        SubElement(t, 'pubDate').text = bin.rfc822time
         content = SubElement(t, 'description')
         headers = bin.headers()
         body = '\n'.join(['<div>%s: %s</div>' % (header, headers[header]) for header in sorted(headers.keys())])
@@ -405,9 +404,9 @@ def bin2html(bin,out=sys.stdout,detail=DETAIL_SHORT):
         ul = Sub(targets,'ul','targets')
         for target in bin:
             li = Sub(ul, 'li', 'target')
-            a = SubElement(li, 'a', href=href(target.pid()))
+            a = SubElement(li, 'a', href=href(target.pid))
             a.text = target_title(target)
-            a.tail = ' %dB' % (target.info[HEIGHT] * target.info[WIDTH])
+            a.tail = ' %dB' % (target.height * target.width)
     ElementTree(html).write(out, pretty_print=True)
 
 def target2html(target,out=sys.stdout):
@@ -422,21 +421,21 @@ def target2html(target,out=sys.stdout):
     parent_link = Sub(properties, 'div', 'property')
     Sub(parent_link, 'div', 'label').text = 'bin'
     link = Sub(parent_link, 'div', 'bin value')
-    SubElement(link, 'a', href=href(target.bin.pid())).text = bin_title(target.bin)
+    SubElement(link, 'a', href=href(target.bin.pid)).text = bin_title(target.bin)
     for k in order_keys(target.info, [column for column,type in ADC_SCHEMA]):
         prop = Sub(properties, 'div', 'property')
         Sub(prop, 'div', 'label').text = pretty_property_name(k)
         Sub(prop, 'div', 'value').text = str(target.info[k])
     id = Sub(body, 'div', 'image')
-    img = SubElement(id, 'img', src=href(target.pid(),'png'))
+    img = SubElement(id, 'img', src=href(target.pid,'png'))
     img.set('class','image')
     ElementTree(html).write(out, pretty_print=True)
         
 def __target2rdf(target,parent):
     elt = SubElement(parent, IFCB_TARGET)
-    elt.set(RDF_ABOUT, target.info[PID])
+    elt.set(RDF_ABOUT, target.pid)
     __target_properties(target, elt)
-    SubElement(elt, DC_TERMS_HAS_FORMAT).text = target.pid() + '.png'
+    SubElement(elt, DC_TERMS_HAS_FORMAT).text = target.pid + '.png'
 
 def target2rdf(target,out=sys.stdout):
     """Output RDF representing a given target
@@ -459,11 +458,11 @@ def bin2rdf(bin,out=sys.stdout,detail=DETAIL_SHORT):
     """
     rdf = __rdf()
     root = SubElement(rdf, IFCB_BIN)
-    pid = bin.pid()
+    pid = bin.pid
     root.set(RDF_ABOUT, pid)
     __add_headers(bin,root)
-    SubElement(root, DC_TERMS_HAS_FORMAT).text = bin.pid() + '.xml'
-    SubElement(root, DC_TERMS_HAS_FORMAT).text = bin.pid() + '.json'
+    SubElement(root, DC_TERMS_HAS_FORMAT).text = bin.pid + '.xml'
+    SubElement(root, DC_TERMS_HAS_FORMAT).text = bin.pid + '.json'
     if detail != DETAIL_HEAD:
         targets = SubElement(root, IFCB_HAS_TARGETS)
         targets.set(RDF_ABOUT, pid + '/targets')
@@ -474,7 +473,7 @@ def bin2rdf(bin,out=sys.stdout,detail=DETAIL_SHORT):
                 __target2rdf(target,li)
             else:
                 t = SubElement(li, IFCB_TARGET)
-                t.set(RDF_ABOUT, target.pid())
+                t.set(RDF_ABOUT, target.pid)
     return ElementTree(rdf).write(out, pretty_print=True)
 
 def bin_as_json(bin,detail=DETAIL_SHORT):
@@ -488,7 +487,7 @@ def bin_as_json(bin,detail=DETAIL_SHORT):
     if detail == DETAIL_FULL:
         result['targets'] = [target.info for target in bin];
     elif detail != DETAIL_HEAD:
-        result['targets'] = [target.pid() for target in bin];
+        result['targets'] = [target.pid for target in bin];
     return result
 
 # turn a bin of targets into a json representation
@@ -524,7 +523,7 @@ def __stream_image(target,format,out,scale=1.0):
     """
     image = target.image()
     if scale != 1.0:
-        image = image.resize((int(target.info[HEIGHT] * scale), int(target.info[WIDTH] * scale)), Image.ANTIALIAS)
+        image = image.resize((int(target.height * scale), int(target.width * scale)), Image.ANTIALIAS)
     with tempfile.SpooledTemporaryFile() as flo:
         image.save(flo,format)
         flo.seek(0)
@@ -540,7 +539,7 @@ def target2image(target,format='PNG',out=sys.stdout,scale=1.0):
     scale - scaling factor for image dimensions (default: 1.0)
     """
     format = string.upper(format)
-    cache_key = '%s/%d.%s' % (lid(target.pid()), int(scale * 1000), string.lower(format)) 
+    cache_key = '%s/%d.%s' % (lid(target.pid), int(scale * 1000), string.lower(format)) 
     cache_io(cache_key, lambda o: __stream_image(target,format,o,scale), out)
     
 def target2png(target,out=sys.stdout,scale=1.0):

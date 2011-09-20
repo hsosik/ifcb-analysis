@@ -45,6 +45,7 @@ ADC_SCHEMA = [(TRIGGER, int),
           (WIDTH, int),
           (BYTE_OFFSET, int),
           (VALVE_STATUS, float)]
+ADC_COLUMNS = [col for (col,ignore) in ADC_SCHEMA]
 
 # hdr attributes. these are camel-case, mapped to column names below
 TEMPERATURE = 'temperature'
@@ -101,26 +102,28 @@ def hdr_path(id,dir='.'):
 ISO_8601_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 RFC_822_FORMAT = '%a, %d %b %Y %H:%M:%S +0000'
 
-class Timestamped:
-    """Base class for entities with timestamps derived from a string in some format"""
+class Timestamped(object):
+    """Base class for entities with timestamps derived from a string in some format, stored in the time_string property.
+    To set the time, set the time_string property."""
     time_format = ISO_8601_FORMAT
-
-    """Return a string representation of the entity's timestamp"""
-    def time_string(self):
-        return '1970-01-01T00:00:00Z'
+    time_string = '1970-01-01T00:00:00Z'
 
     """Parse the time string"""
+    @property
     def time(self):
-        return time.strptime(self.time_string(), self.time_format)
+        return time.strptime(self.time_string, self.time_format)
     
     """Render the time in ISO 8601"""
+    @property
     def iso8601time(self):
-        return time.strftime(ISO_8601_FORMAT,self.time())
+        return time.strftime(ISO_8601_FORMAT,self.time)
     
     """Render the time in RFC 822"""
+    @property
     def rfc822time(self):
-        return time.strftime(RFC_822_FORMAT,self.time())
+        return time.strftime(RFC_822_FORMAT,self.time)
     
     """ Return the time as milliseconds since the *NIX epoch"""
+    @property
     def epoch_time(self):
-        return calendar.timegm(self.time())
+        return calendar.timegm(self.time)
