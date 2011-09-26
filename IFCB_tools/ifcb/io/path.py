@@ -6,6 +6,7 @@ import re
 import os.path
 from cache import cache_obj
 import calendar
+import math
 
 """Resolution of IFCB global identifiers to local filesystem paths"""
 
@@ -44,9 +45,30 @@ class Filesystem(Resolver):
             return True
         else:
             t = timestamped.epoch_time
-            return t <= calendar.timegm(end) and t >= calendar.timegm(start)
+            if start is None:
+                return t <= calendar.timegm(end)
+            elif end is None:
+                return t >= calendar.timegm(start)
+            else:
+                return t <= calendar.timegm(end) and t >= calendar.timegm(start)
         return True
     
+    def __nearest_thing(self,things,date):
+        nearest_thing = None
+        min_delta = 31622400000000 # 1,000 years
+        epoch_time = calendar.timegm(date)
+        for thing in things:
+            delta = math.fabs(thing.epoch_time - epoch_time)
+            if delta < min_delta:
+                min_delta = delta
+                nearest_thing = thing
+        return nearest_thing
+            
+    def nearest_bin(self,date):
+        """Return the bin whose timestamp is nearest to this date"""
+        nearest_day = self.__nearest_thing(self.all_days(), date)
+        return self.__nearest_thing(nearest_day.all_bins(), date)
+        
     def all_bins(self,start=None,end=None):
         """Yield all bins
         
