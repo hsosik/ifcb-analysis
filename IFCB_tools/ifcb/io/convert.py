@@ -300,9 +300,13 @@ def __feed_bins(fs,n=20,date=None):
         return list(reversed(fs.latest_bins(n)))
     else:
         # two day window from closest bin
-        end_date = fs.nearest_bin(date).time
-        two_days_before = time.gmtime(calendar.timegm(end_date) - 172800)
-        return list(reversed(list(fs.all_bins(two_days_before,end_date))))[:n]
+        for end_date_fn in [lambda: date, lambda: fs.nearest_bin(date).time]:
+            end_date = end_date_fn()
+            two_days_before = time.gmtime(calendar.timegm(end_date) - 172800)
+            result = list(reversed(list(fs.all_bins(two_days_before,end_date))))[:n]
+            if len(result) != 0:
+                return result
+        return []
     
 def fs2atom(fs,link,n=20,date=None,out=sys.stdout):
     """Output an Atom feed of recent bins from the given filesystem.
