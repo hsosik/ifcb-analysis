@@ -4,16 +4,20 @@ import org.xml.sax.InputSource
 import java.io.StringReader
 import javax.xml.parsers.DocumentBuilderFactory
 
-dbf = DocumentBuilderFactory.newInstance;
-dbf.setNamespaceAware(1);
-db = dbf.newDocumentBuilder;
+persistent ifcb_xml_db;
+
+if isempty(ifcb_xml_db)
+    dbf = DocumentBuilderFactory.newInstance;
+    dbf.setNamespaceAware(1);
+    ifcb_xml_db = dbf.newDocumentBuilder;
+end
 
 url = char(url);
 [content, status] = urlread(url);
 if not(status), return; end
 is = InputSource();
 is.setCharacterStream(StringReader(content));
-feed = xmlread(is,db);
+feed = xmlread(is,ifcb_xml_db);
 document_element = feed.getDocumentElement;
 
 end

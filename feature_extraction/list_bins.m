@@ -1,7 +1,5 @@
 function [ bins, next_date ] = list_bins( date )
 
-clear;
-
 if nargin < 1 || isempty(date)
     date = 'now';
 end
