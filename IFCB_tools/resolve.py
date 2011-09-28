@@ -26,6 +26,7 @@ MIME_MAP = {
   'tiff': 'image/tiff',
   'hdr': 'text/plain',
   'adc': 'text/csv',
+  'csv': 'text/csv',
   'roi': 'application/octet-stream'
 }
 
@@ -57,6 +58,7 @@ if __name__ == '__main__':
           'html': bin2html,
           'json': bin2json,
           'adc': bin2adc,
+          'csv': bin2csv,
           'roi': bin2roi,
           'hdr': bin2hdr }[format](object,out,detail)
     elif re.search('^image/', mime_type):

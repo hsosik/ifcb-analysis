@@ -292,6 +292,30 @@ def bin2xml(bin,out=sys.stdout,detail=DETAIL_SHORT):
                 elt.set(DC_IDENTIFIER, target.pid)
     return ElementTree(root).write(out, pretty_print=True)
 
+def bin2csv(bin,out=sys.stdout,detail=DETAIL_FULL):
+    """Output CSV representing a given bin
+    
+    Parameters:
+    bin - instance of Bin
+    out - where to write the representation (default: stdout)"""
+    header_done = False
+    for target in bin:
+        if not header_done:
+            columns = order_keys(target.info, [column for column,type in ADC_SCHEMA])
+            print >>out, ','.join(columns)
+            header_done = True
+        row = []
+        for c in columns:
+            if c == 'binID':
+                row.append(bin.pid)
+            elif c == 'pid':
+                row.append(target.pid)
+            elif c == 'targetNumber':
+                row.append(target.targetNumber)
+            else:
+                row.append(target.info[c])
+        print >>out, ','.join(map(str,row))
+    
 ATOM_NAMESPACE = 'http://www.w3.org/2005/Atom'
 XHTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
 
