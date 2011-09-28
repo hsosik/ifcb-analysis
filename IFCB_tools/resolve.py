@@ -4,7 +4,7 @@ import cgi
 import cgitb
 from ifcb.io import DETAIL_FULL, DETAIL_SHORT, DETAIL_HEAD
 from ifcb.io.path import Filesystem
-from ifcb.io.convert import bin2json, bin2xml, bin2rdf, target2rdf, target2xml, target2json, target2image, day2rdf, day2xml, day2json, day2html, bin2html, target2html, bin2hdr, bin2adc, bin2roi
+from ifcb.io.convert import bin2json, bin2xml, bin2rdf, target2rdf, target2xml, target2json, target2image, day2rdf, day2xml, day2json, day2html, bin2html, target2html, bin2hdr, bin2adc, bin2roi, bin2csv
 from ifcb.io.file import BinFile, Target
 from ifcb.io.dir import DayDir
 import os.path
