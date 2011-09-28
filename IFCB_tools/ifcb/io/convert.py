@@ -292,6 +292,9 @@ def bin2xml(bin,out=sys.stdout,detail=DETAIL_SHORT):
                 elt.set(DC_IDENTIFIER, target.pid)
     return ElementTree(root).write(out, pretty_print=True)
 
+def dq(s):
+    return '"' + s + '"'
+
 def bin2csv(bin,out=sys.stdout,detail=DETAIL_FULL):
     """Output CSV representing a given bin
     
@@ -307,9 +310,9 @@ def bin2csv(bin,out=sys.stdout,detail=DETAIL_FULL):
         row = []
         for c in columns:
             if c == 'binID':
-                row.append(bin.pid)
+                row.append(dq(bin.pid))
             elif c == 'pid':
-                row.append(target.pid)
+                row.append(dq(target.pid))
             elif c == 'targetNumber':
                 row.append(target.targetNumber)
             else:
