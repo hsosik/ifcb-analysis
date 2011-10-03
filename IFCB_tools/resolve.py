@@ -14,6 +14,7 @@ import sys
 
 """RESTful service resolving an IFCB permanent ID (pid) + format parameter to an appropriate representation"""
 
+# map extensions to MIME types
 MIME_MAP = {
   'rdf': 'text/xml',
   'json': 'application/json',
@@ -30,6 +31,7 @@ MIME_MAP = {
   'roi': 'application/octet-stream'
 }
 
+# map image MIME types to PIL image formats
 IMAGE_FORMATS = {
   'image/png': 'png',
   'image/jpeg': 'jpeg',
@@ -42,17 +44,17 @@ if __name__ == '__main__':
     cgitb.enable()
     out = sys.stdout
     pid = cgi.FieldStorage().getvalue('pid')
-    format = 'rdf'
-    if re.search(r'\.[a-z]+$',pid):
+    format = 'rdf' # default format is RDF, to support "linked open data"
+    if re.search(r'\.[a-z]+$',pid): # does the pid have an extension?
         (pid, ext) = os.path.splitext(pid)
-        format = re.sub(r'^\.','',ext)
-    format = cgi.FieldStorage().getvalue('format',format)
-    detail = cgi.FieldStorage().getvalue('detail', DETAIL_SHORT)
-    scale = float(cgi.FieldStorage().getvalue('scale','1.0'))
-    object = Filesystem(FS_ROOTS).resolve(pid)
-    mime_type = MIME_MAP[format]
+        format = re.sub(r'^\.','',ext) # the extension minus the "." is the "format"
+    format = cgi.FieldStorage().getvalue('format',format) # specified format overrides
+    detail = cgi.FieldStorage().getvalue('detail', DETAIL_SHORT) # default detail is "short"
+    scale = float(cgi.FieldStorage().getvalue('scale','1.0')) # default scale is "1.0"
+    object = Filesystem(FS_ROOTS).resolve(pid) # resolve the object
+    mime_type = MIME_MAP[format] # compute its MIME type
     print 'Content-type: %s\n' % mime_type
-    if isinstance(object,BinFile):
+    if isinstance(object,BinFile): # is the object a bin?
         { 'rdf': bin2rdf,
           'xml': bin2xml,
           'html': bin2html,
@@ -60,17 +62,17 @@ if __name__ == '__main__':
           'adc': bin2adc,
           'csv': bin2csv,
           'roi': bin2roi,
-          'hdr': bin2hdr }[format](object,out,detail)
-    elif re.search('^image/', mime_type):
-        target2image(object, IMAGE_FORMATS[mime_type], out, scale)
-    elif isinstance(object,Target):
+          'hdr': bin2hdr }[format](object,out,detail) # convert it to format
+    elif re.search('^image/', mime_type): # is it an image?
+        target2image(object, IMAGE_FORMATS[mime_type], out, scale) # produce the image
+    elif isinstance(object,Target): # is it a target?
         { 'rdf': target2rdf,
           'xml': target2xml,
           'html': target2html,
-          'json': target2json }[format](object)
-    elif isinstance(object,DayDir):
+          'json': target2json }[format](object) # convert it to format
+    elif isinstance(object,DayDir): # is it a day dir?
         { 'rdf': day2rdf,
           'xml': day2xml,
           'html': day2html,
-          'json': day2json }[format](object)
+          'json': day2json }[format](object) # convert it to format
     

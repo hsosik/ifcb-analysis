@@ -141,6 +141,15 @@ def day2xml(day,out=sys.stdout):
     return ElementTree(root).write(out, pretty_print=True)
 
 def __html(title,heading=True):
+    # emit
+    # <html>
+    #   <head>
+    #     <title>{title}</title>
+    #     <link type="text/css" href="ifcb.css" rel="Stylesheet">
+    #   </head>
+    # <body>
+    #   <div class="title">{title}</div>
+    #   ...
     html = Element('html')
     head = SubElement(html, 'head')
     SubElement(head, 'title').text = title
@@ -168,6 +177,11 @@ def href(pid,extension='html'):
     return ''.join([config.URL_BASE, pid, '.', extension])
 
 def __bins2html(parent,bins):
+    # emit
+    # <div class="bins">
+    #   <ul class="bins">
+    #     <li><a href="{bin.pid}">{bin.title}</li>
+    #     ...
     div = Sub(parent, 'div', 'bins')
     ul = Sub(div, 'ul', 'bins')
     for bin in bins:
@@ -235,6 +249,11 @@ def bin2roi(bin,out=sys.stdout,detail=DETAIL_FULL):
     
 # some shared code for XML and RDF representations
 def __add_headers(bin,root):
+    # emit
+    #   <dc:date>{bin.iso8601time}</dc:date>
+    #   <ifcb:context>{bin.headers()[CONTEXT]}</ifcb:context>
+    #   <ifcb:{name}>{bin.headers[name]}</ifcb:{name}>
+    #   ...
     SubElement(root, DC_DATE).text = bin.iso8601time
     headers = bin.headers()
     for c in headers[CONTEXT]:
@@ -246,6 +265,7 @@ def __target_properties(target, elt):
     # each target is a dict. prepend the ifcb namespace to each dict key and make subtags
     for tag in order_keys(target.info, [column for column,type in ADC_SCHEMA]):
          if tag != PID:
+            # emit <ifcb:{tag}>{target.tag}</ifcb:{tag}>
             property = SubElement(elt, ifcb_term(tag))
             property.text = str(target.info[tag])
 
@@ -278,7 +298,10 @@ def bin2xml(bin,out=sys.stdout,detail=DETAIL_SHORT):
     bin - instance of Bin
     out - where to write the representation (default: stdout)
     """
-    # top level is called "bin"
+    # emit
+    # <ifcb:Bin xmlns...>
+    #   <dc:identifier>{bin.pid}</dc:identifier>
+    #   {headers}
     root = Element(IFCB_BIN, nsmap=XML_NSMAP)
     SubElement(root, DC_IDENTIFIER).text = bin.pid
     __add_headers(bin,root)
@@ -288,6 +311,7 @@ def bin2xml(bin,out=sys.stdout,detail=DETAIL_SHORT):
             if detail == DETAIL_FULL:
                 __target2xml(target, root)
             else:
+                # emit <ifcb:Target dc:identifier="{target.pid}"/>
                 elt = SubElement(root, IFCB_TARGET)
                 elt.set(DC_IDENTIFIER, target.pid)
     return ElementTree(root).write(out, pretty_print=True)

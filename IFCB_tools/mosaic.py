@@ -19,23 +19,47 @@ import shutil
 import tempfile
 import json
 
+"""Create a mosaic of images from the an IFCB bin"""
+
 def __layout(bin, (width, height), size=0):
+    """Fit images into a rectangle using a bin packing algorithm. Returns structures
+    describing the layout.
+    
+    Parameters:
+    bin - the bin to get the images from (instance of BinFile)
+    (width, height) - the pixel dimensions of the desired mosaic
+    size - size threshold in pixels^2. images below this area threshold will be ignored"""
     packer = JimScottRectanglePacker(width, height)
+    """Sort by largest first. This does not generate a "representative" mosaic, but one
+    that shows large and therefore interesting targets in a layout without much wasted space"""
     targets = sorted(bin.all_targets(), key=lambda t: 0 - (t.info[HEIGHT] * t.info[WIDTH]))
     for target in targets:
         h = target.info[WIDTH] # rotate 90 degrees
         w = target.info[HEIGHT] # rotate 90 degrees
-        if w * h > size:
-            p = packer.TryPack(w, h)
+        if w * h > size: # above the size threshold?
+            p = packer.TryPack(w, h) # attempt to fit
             if p is not None:
                 yield {'x':p.x, 'y':p.y, WIDTH:w, HEIGHT:h, PID:target.info[PID], TARGET_NUMBER:target.info[TARGET_NUMBER]}
 
 def layout(bin, (width, height), size=0):
-    cache_key = ifcb.lid(bin.pid) + '/mosaic/'+str(width)+'.json'
+    """Fit images into a rectangle using a bin packing algorithm. Returns structures
+    describing the layout.
+    
+    Parameters:
+    bin - the bin to get the images from (instance of BinFile)
+    (width, height) - the pixel dimensions of the desired mosaic
+    size - size threshold in pixels^2. images below this area threshold will be ignored"""
+    cache_key = ifcb.lid(bin.pid) + '/mosaic/'+str(width)+'.json' # cache the layout
     tiles = cache_obj(cache_key, lambda: list(__layout(bin, (width, height), size)))
     return {'width':width, 'height':height, 'tiles':tiles}
     
 def mosaic(bin, (width, height), size=0):
+    """Fit images into a rectangle using a bin packing algorithm. Returns an image.
+    
+    Parameters:
+    bin - the bin to get the images from (instance of BinFile)
+    (width, height) - the pixel dimensions of the desired mosaic
+    size - size threshold in pixels^2. images below this area threshold will be ignored"""
     mosaic = Image.new('L', (width, height))
     mosaic.paste(160,(0,0,width,height))
     with open(bin.roi_path, 'rb') as roi_file:
@@ -56,17 +80,20 @@ def stream(image,out,format):
 def box(w,aspectratio):
     return (w, int(w * aspectratio))
 
+# entry point.
 def doit(pid,size='medium',format='jpg',out=sys.stdout, fs_roots=FS_ROOTS):
     format = dict(png='png', jpg='jpeg', gif='gif', json='json')[format] # validate
+    # sizes map to widths, widths map to height via fixed 16:9 aspect ratio
     aspectratio = 0.5625 # 16:9
     tw = {'icon':48, 'thumb':128, 'small':320, 'medium':800, 'large':1024, '720p':1280, '1080p':1920}[size]
     wh = box(tw,aspectratio)
     size_thresh = 2500
-    bin = Filesystem(fs_roots).resolve(pid)
+    bin = Filesystem(fs_roots).resolve(pid) # fetch the bin
+    # all mosaics are created at 2400 x 1260 and then scaled down
     fullarea = box(2400,aspectratio)
-    if format == 'json':
+    if format == 'json': # if the caller just wants the layout
         print 'Content-type: application/json\n'
-        json.dump(layout(bin, fullarea, size_thresh),out)
+        json.dump(layout(bin, fullarea, size_thresh),out) # give it to em
     else:
         print 'Content-type: image/'+format+'\n'
         cache_key = ifcb.lid(pid) + '/mosaic/'+str(tw)+'.'+format

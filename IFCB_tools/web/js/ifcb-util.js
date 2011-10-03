@@ -8,3 +8,4 @@ function query_param(name,default_value) {
     else
         return results[1];
 }
+

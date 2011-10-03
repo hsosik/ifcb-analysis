@@ -258,6 +258,9 @@ class CygonRectanglePacker(RectanglePacker):
                 del self.heightSlices[startSlice:endSlice]
                 if right < self.packingAreaWidth:
                     self.heightSlices.insert(startSlice, Point(right, returnHeight))
+
+# the following implementation is adapted from Jim Scott's work:
+# http://www.blackpawn.com/texts/lightmaps/default.html
                     
 class Node:
     def __init__(self,left,top,right,bottom):
