@@ -7,3 +7,4 @@ RewriteRule ^(IFCB.*)/head\.([a-z]+) resolve.py?format=$2&detail=head&pid=http:/
 RewriteRule ^(IFCB.*)/full\.([a-z]+) resolve.py?format=$2&detail=full&pid=http://ifcb-data.whoi.edu/$1 [L]
 RewriteRule ^(IFCB.*)/short\.([a-z]+) resolve.py?format=$2&detail=short&pid=http://ifcb-data.whoi.edu/$1 [L]
 RewriteRule ^(IFCB.*)\.([a-z]+) resolve.py?format=$2&pid=http://ifcb-data.whoi.edu/$1 [L]
+RewriteRule ^(IFCB.*) resolve.py?pid=http://ifcb-data.whoi.edu/$1 [L]
