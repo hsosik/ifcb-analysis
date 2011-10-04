@@ -214,7 +214,7 @@ def day2json(day,out=sys.stdout):
 
 def __copy_file(path,out):
     f = open(path,'rb')
-    shutil.copyfileobj(f, out)
+    shutil.copyfileobj(f, out) # FIXME is this slow?
     f.close()
     
 def bin2hdr(bin,out=sys.stdout,detail=DETAIL_HEAD):
@@ -271,13 +271,16 @@ def __target_properties(target, elt):
 
 def __target2xml(target, root=None):
     elt = None
+    # emit <ifcb:Target number="{target.targetNumber}"> ...
     if root is not None:
         elt = SubElement(root, IFCB_TARGET, number=str(target.targetNumber))
     else:
         elt = Element(IFCB_TARGET, nsmap=XML_NSMAP, number=str(target.targetNumber))
     pid = target.pid
+    # emit <dc:identifier>{target.pid}</dc:identifier>
     SubElement(elt, DC_IDENTIFIER).text = target.pid
     __target_properties(target, elt)
+    # emit <dc:hasFormat>{target.pid}.png</dc:hasFormat>
     SubElement(elt, DC_TERMS_HAS_FORMAT).text = target.pid + '.png'
     return elt
 
@@ -327,12 +330,13 @@ def bin2csv(bin,out=sys.stdout,detail=DETAIL_FULL):
     out - where to write the representation (default: stdout)"""
     header_done = False
     for target in bin:
-        if not header_done:
+        if not header_done: # emit header
             columns = order_keys(target.info, [column for column,type in ADC_SCHEMA])
             print >>out, ','.join(columns)
             header_done = True
         row = []
         for c in columns:
+            # add binID, pid, and targetNumber to the row
             if c == 'binID':
                 row.append(dq(bin.pid))
             elif c == 'pid':
@@ -347,10 +351,16 @@ ATOM_NAMESPACE = 'http://www.w3.org/2005/Atom'
 XHTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
 
 def __feed_bins(fs,n=20,date=None):
+    """Get the n latest bins from the filesystem.
+    
+    Parameters:
+    fs - instance of Filesystem
+    n - number of bins (default: 20)
+    date - as of the given date (default: None which means now)"""
     if date is None:
         return list(reversed(fs.latest_bins(n)))
     else:
-        # two day window from closest bin
+        # two day window from date. if that's empty, two-day window from bin nearest date
         for end_date_fn in [lambda: date, lambda: fs.nearest_bin(date).time]:
             end_date = end_date_fn()
             two_days_before = time.gmtime(calendar.timegm(end_date) - 172800)
@@ -424,6 +434,7 @@ def fs2rss(fs,link,n=20,date=None,out=sys.stdout):
         SubElement(t, 'pubDate').text = bin.rfc822time
         content = SubElement(t, 'description')
         headers = bin.headers()
+        # generate a brief HTML description of the bin headers
         body = '\n'.join(['<div>%s: %s</div>' % (header, headers[header]) for header in sorted(headers.keys())])
         content.text = '<div>%s</div>' % body
     ElementTree(rss).write(out, pretty_print=True)
@@ -467,16 +478,38 @@ def bin2html(bin,out=sys.stdout,detail=DETAIL_SHORT):
     out - where to write the representation (default: stdout)
     detail - level of detail (default: DETAIL_SHORT)
     """
+    # emit
+    # <html>
+    #   <head>
+    #     <title>{bin_title(bin)}</title>
+    #   </head>
+    #   <body>
+    #     <div class="title">{bin_title(bin)}</div>
+    #     <div class="properties">
+    #       ...
     (html, body) = __html(bin_title(bin))
     properties = Sub(body, 'div', 'properties')
     for k in order_keys(bin.properties(), [column for column,type in HDR_SCHEMA]):
+        # emit
+        # <div class="property">
+        #   <div class="label">{pretty_property_name(k)}</div>
+        #   <div class="value">{bin.properties()[k]}</div>
+        # </div>
         prop = Sub(properties, 'div', 'property')
         Sub(prop, 'div', 'label').text = pretty_property_name(k)
         Sub(prop, 'div', 'value').text = str(bin.properties()[k])
     if detail != DETAIL_HEAD:
+        # emit
+        # <div class="targets">
+        #   <ul class="targets">
+        #     ...
         targets = Sub(body, 'div', 'targets')
         ul = Sub(targets,'ul','targets')
         for target in bin:
+            # emit
+            # <li class="target">
+            #   <a href="{href(target.pid)}">{target_title(target)} {target area}B</a>
+            # </li>
             li = Sub(ul, 'li', 'target')
             a = SubElement(li, 'a', href=href(target.pid))
             a.text = target_title(target)
@@ -491,15 +524,32 @@ def target2html(target,out=sys.stdout):
     out - where to write the representation (default: stdout)
     """
     (html, body) = __html(target_title(target))
+    # emit
+    # <div class="properties">
+    #   <div class="property">
+    #     <div class="label">bin</div>
+    #     <div class="bin value">
+    #       <a href="{target.bin.pid}">{bin_title(target.bin)}</a>
+    #     </div>
+    #     ...
     properties = Sub(body, 'div', 'properties')
     parent_link = Sub(properties, 'div', 'property')
     Sub(parent_link, 'div', 'label').text = 'bin'
     link = Sub(parent_link, 'div', 'bin value')
     SubElement(link, 'a', href=href(target.bin.pid)).text = bin_title(target.bin)
     for k in order_keys(target.info, [column for column,type in ADC_SCHEMA]):
+        # emit
+        # <div class="property">
+        #   <div class="label">{pretty_property_name(k)}</div>
+        #   <div class="value">{target.info[k]}</div>
+        # </div>
         prop = Sub(properties, 'div', 'property')
         Sub(prop, 'div', 'label').text = pretty_property_name(k)
         Sub(prop, 'div', 'value').text = str(target.info[k])
+    # emit
+    # <div class="image">
+    #   <img src="{target.pid}.png" class="image">
+    # </div>
     id = Sub(body, 'div', 'image')
     img = SubElement(id, 'img', src=href(target.pid,'png'))
     img.set('class','image')

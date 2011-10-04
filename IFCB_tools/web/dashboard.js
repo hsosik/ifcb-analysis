@@ -16,11 +16,13 @@ function with_mosaic(pid, size, fn) {
     with_json_request('../mosaic.py?format=json&size=' + size + '&pid=' + pid, fn);
 }
 function describe_bin(pid, tag) {
+    /* generate a short description of the bin */
     with_metadata(pid, function(bin) {
-        var instrument = bin['instrument']
-        var time = bin['time'];
-        var temp = Math.round(bin['temperature']) + '&deg;C';
+        var instrument = bin['instrument']; /* instrument number */
+        var time = bin['time']; /* time */
+        var temp = Math.round(bin['temperature']) + '&deg;C'; /* temperature */
         $('#' + tag + 'd').html('<br>IFCB#' + instrument + ' ' + time + ' (<abbr class="timeago" title="' + time + '"></abbr>), ' + temp).find('abbr').timeago();
+        /* "timeago" converts absolute time to constantly updated relative time e.g., "about 5 minutes ago" */
     });
 }
 /* draw a mosaic for a bin and add behavior to it */
@@ -126,13 +128,15 @@ function render(bin, width, size, tag, targetLinks) {
 }
 /* handle the date changing */
 function asof(date, fn) {
-    /* fetch the feed */
+    /* clear the handlers */
     $('#topc').unbind('click').unbind('mousemove').unbind('mouseleave');
+    /* fetch the feed */
     with_json_request('../rss.py?format=json&date=' + date, function(bin) {
         /* the first item is the large (800px wide) mosaic at the top */
         render(bin[0], 800, 'medium', 'top', true);
         /* the following 4 items are the small mosaics below */
         for (index = 1; index <= 6; index++) {
+            /* clear handlers */
             $('#s' + index + 'c').unbind('click').unbind('mousemove').unbind('mouseleave');
             render(bin[index], 264, 'small', 's' + index, false);
         }
