@@ -1,6 +1,7 @@
 RewriteEngine On
 
 RewriteRule (web/.*) $1 [L]
+RewriteRule cache/(.*) spider/cache/$1 [L]
 RewriteRule feed.(.*) rss.py?format=$1 [L]
 RewriteRule ^(IFCB.*)/mosaic/([a-z0-9]+)\.([a-z]+) mosaic.py?size=$2&format=$3&pid=http://ifcb-data.whoi.edu/$1 [L]
 RewriteRule ^(IFCB.*)/head\.([a-z]+) resolve.py?format=$2&detail=head&pid=http://ifcb-data.whoi.edu/$1 [L]
