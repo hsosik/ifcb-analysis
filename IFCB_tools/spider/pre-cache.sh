@@ -1,7 +1,7 @@
 #!/bin/sh
 
 FEED="http://ifcb-data.whoi.edu/rss.py?format=atom&date=now"
-for line in `curl -s $FEED | xsltproc atom2csv.xsl - | head -5`; do
+for line in `curl -s $FEED | xsltproc atom2csv.xsl -`; do
     pid="$(echo $line | cut -d, -f1)"
     lid="$(echo $pid | sed -e 's/.*IFCB/IFCB/')"
     medium=${pid}/mosaic/medium.jpg
