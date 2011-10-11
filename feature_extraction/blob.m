@@ -1,6 +1,7 @@
 function [ img_blob ] = blob( img )
 % find a "blob" in the image and produce its mask. this can be further
 % split if other downstream filters need e.g., the phasecong result
+% JF
 persistent se2 se3;
 
 if isempty(se2)
