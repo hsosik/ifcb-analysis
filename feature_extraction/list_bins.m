@@ -1,4 +1,6 @@
 function [ bins, next_date ] = list_bins( date )
+% given a date (or with no argument, now), list the URL's of the most
+% recent bins up to that date.
 
 if nargin < 1 || isempty(date)
     date = 'now';

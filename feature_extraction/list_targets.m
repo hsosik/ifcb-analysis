@@ -1,5 +1,5 @@
 function [ targets ] = list_targets( bin_pid )
-
+% given the URL of a bin, list the URL's of each target in that bin.
 import org.xml.sax.InputSource
 import java.io.StringReader
 

@@ -2,7 +2,7 @@
 %starting here with no stitching implemented and just one feature (summed large blob area);
 %plan to work with Joe to add back stitching and other features during code "refactoring"
 
-warning('off')
+warning('off');
 
 feapath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\features2\';
 numfea = 1;
