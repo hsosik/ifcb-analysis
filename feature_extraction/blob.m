@@ -12,7 +12,9 @@ if isempty(se3)
     se3 = strel('disk',3);
 end;
 
+% FIXME magic numbers
 [M m , ~, ~, ~, ~, ~] = phasecong3(img, 4, 6, 2, 2.5, 0.55, 2.0, 0.3, 5,-1);
+% FIXME magic numbers
 img_blob = hysthresh(M+m, 0.2, 0.1);
 % omit spurious edges along margins
 img_blob(1,img_blob(2,:)==0)=0;
@@ -29,4 +31,3 @@ img_blob = bwmorph(img_blob, 'thin', 1);
 img_blob = imfill(img_blob, 'holes');
     
 end
-
