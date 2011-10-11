@@ -4,7 +4,6 @@ import pylibmc
 import io
 from array import array
 import pickle
-from shutil import copyfileobj
 
 """Utilities for caching using Memcached. These utilities are controlled by config.USE_MEMCACHED. If false, no caching will take place"""
 
@@ -41,7 +40,11 @@ def cache_io(cache_key,f,out=sys.stdout):
 
 def __fp2bytes(fp):
     buffer = io.BytesIO()
-    copyfileobj(fp,buffer)
+    while True:
+        b = fp.read(2**20)
+        if not b:
+            break
+        buffer.write(b)
     return buffer.getvalue()
     
 def __file2bytes(path):

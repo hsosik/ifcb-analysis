@@ -10,10 +10,10 @@ function with_json_request(url, fn) {
     });
 }
 function with_metadata(pid, fn) {
-    with_json_request('../resolve.py?detail=head&format=json&pid=' + pid, fn);
+    with_json_request(pid+'/head.json', fn);
 }
 function with_mosaic(pid, size, fn) {
-    with_json_request('../mosaic.py?format=json&size=' + size + '&pid=' + pid, fn);
+    with_json_request(pid+'/mosaic/small.json',fn);
 }
 function describe_bin(pid, tag) {
     /* generate a short description of the bin */
@@ -45,7 +45,7 @@ function render(bin, width, size, tag, targetLinks) {
         $(img).bind('load', function(event) {
             ctx.drawImage(this, 0, 0, width, width * aspect_ratio); // 16:9
         });
-        img.src = '../mosaic.py?format=jpg&size=' + size + '&pid=' + bin['pid'];
+        img.src = bin['pid'] + '/mosaic/' + size + '.jpg';
         /* on the top mosaic, targetLinks is true and a click takes you to the target */
         /* on the smaller mosaics, targetLinks is false and a click changes the date to the date of the bin */
         if (!targetLinks) {
@@ -131,7 +131,7 @@ function asof(date, fn) {
     /* clear the handlers */
     $('#topc').unbind('click').unbind('mousemove').unbind('mouseleave');
     /* fetch the feed */
-    with_json_request('../rss.py?format=json&date=' + date, function(bin) {
+    with_json_request('/feed.json&date=' + date, function(bin) {
         /* the first item is the large (800px wide) mosaic at the top */
         render(bin[0], 800, 'medium', 'top', true);
         /* the following 4 items are the small mosaics below */

@@ -1,5 +1,6 @@
 RewriteEngine On
 
+RewriteRule ^$ http://ifcb-data.whoi.edu/web/dashboard.html [L]
 RewriteRule (web/.*) $1 [L]
 RewriteRule cache/(.*) spider/cache/$1 [L]
 RewriteRule feed.(.*) rss.py?format=$1 [L]

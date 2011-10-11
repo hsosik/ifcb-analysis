@@ -53,7 +53,11 @@ if __name__ == '__main__':
     scale = float(cgi.FieldStorage().getvalue('scale','1.0')) # default scale is "1.0"
     object = Filesystem(FS_ROOTS).resolve(pid) # resolve the object
     mime_type = MIME_MAP[format] # compute its MIME type
-    print 'Content-type: %s\n' % mime_type
+    headers = ['Content-type: %s' % mime_type,
+               'Cache-control: max-age=31622400',
+               '']
+    for h in headers:
+        print h
     if isinstance(object,BinFile): # is the object a bin?
         { 'rdf': bin2rdf,
           'xml': bin2xml,

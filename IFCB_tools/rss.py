@@ -23,7 +23,11 @@ if __name__ == '__main__':
             date = time.strptime(re.sub('Z$','UTC',dates),'%Y-%m-%dT%H:%M:%S%Z') # parse
     # compute MIME type
     mime = dict(atom='application/atom+xml', json='application/json', html='text/html', rss='application/rss+xml')[format]
-    print 'Content-type: %s\n' % (mime)
+    headers = ['Content-type: %s' % mime,
+               'Cache-control: max-age=60',
+               '']
+    for h in headers:
+        print h
     link = '.'.join([FEED,format])
     # convert to feed
     dict(atom=fs2atom, json=fs2json_feed, html=fs2html_feed, rss=fs2rss)[format](Filesystem(FS_ROOTS),link,size,date)

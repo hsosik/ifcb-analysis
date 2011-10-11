@@ -92,10 +92,16 @@ def doit(pid,size='medium',format='jpg',out=sys.stdout, fs_roots=FS_ROOTS):
     # all mosaics are created at 2400 x 1260 and then scaled down
     fullarea = box(2400,aspectratio)
     if format == 'json': # if the caller just wants the layout
-        print 'Content-type: application/json\n'
+        for h in ['Content-type: application/json',
+                  'Cache-control: max-age=31622400',
+                  '']:
+            print h
         json.dump(layout(bin, fullarea, size_thresh),out) # give it to em
     else:
-        print 'Content-type: image/'+format+'\n'
+        for h in ['Content-type: image/'+format,
+                  'Cache-control: max-age=31622400',
+                  '']:
+            print h
         cache_key = ifcb.lid(pid) + '/mosaic/'+str(tw)+'.'+format
         cache_io(cache_key, lambda o: stream(thumbnail(mosaic(bin, fullarea, size_thresh),wh),o,format), out)
 
