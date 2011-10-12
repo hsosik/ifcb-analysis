@@ -436,7 +436,8 @@ def fs2rss(fs,link,n=20,date=None,out=sys.stdout):
         headers = bin.headers()
         # generate a brief HTML description of the bin headers
         body = '\n'.join(['<div>%s: %s</div>' % (header, headers[header]) for header in sorted(headers.keys())])
-        content.text = '<div>%s</div>' % body
+        img = '<img src="'+bin.pid+'/mosaic/small.jpg">'
+        content.text = '<div>%s%s</div>' % (img,body)
     ElementTree(rss).write(out, pretty_print=True)
 
 def fs2html_feed(fs,link,n=20,date=None,out=sys.stdout):

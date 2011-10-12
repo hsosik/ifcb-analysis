@@ -20,8 +20,10 @@ function describe_bin(pid, tag) {
     with_metadata(pid, function(bin) {
         var instrument = bin['instrument']; /* instrument number */
         var time = bin['time']; /* time */
+	var dayhref = pid.replace(/(IFCB._\d+_\d+).*/,'$1.html');
+	var time_href = time.replace(/(\d+-\d+-\d+)/,'<a href="'+dayhref+'">$1</a>');
         var temp = Math.round(bin['temperature']) + '&deg;C'; /* temperature */
-        $('#' + tag + 'd').html('<br>IFCB#' + instrument + ' ' + time + ' (<abbr class="timeago" title="' + time + '"></abbr>), ' + temp).find('abbr').timeago();
+        $('#' + tag + 'd').html('<br>IFCB#' + instrument + ' ' + time_href + ' (<abbr class="timeago" title="' + time + '"></abbr>), ' + temp + ' (<a href="'+pid+'.csv">CSV</a> <a href="'+pid+'.xml">XML</a> <a href="'+pid+'.rdf">RDF</a>)').find('abbr').timeago();
         /* "timeago" converts absolute time to constantly updated relative time e.g., "about 5 minutes ago" */
     });
 }
