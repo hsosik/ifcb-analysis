@@ -15,7 +15,7 @@ for count = 1:n
             k = 'pid';
         end
         v = char(node.getTextContent);
-        if regexp(v,'^-?\d+\.?\d+$') % is it a number?
+        if regexp(v,'^-?\d+\.?\d*$') % is it a number?
             v = str2double(v);
         end
         keys{end+1} = k;
