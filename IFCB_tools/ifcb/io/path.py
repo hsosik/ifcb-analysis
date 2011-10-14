@@ -128,7 +128,8 @@ class Filesystem(Resolver):
         http://ifcb-data.whoi.edu/IFCB1_2010_025
         would be located at
         {some years dir}/IFCB1_2010_025"""
-        return cache_obj(ifcb.lid(pid)+'_path',lambda: self.__day(pid))
+        #return cache_obj(ifcb.lid(pid)+'_path',lambda: self.__day(pid))
+        return self.__day(pid)
     
     # search for a day in the filesystem
     def __day(self,pid):
@@ -144,7 +145,8 @@ class Filesystem(Resolver):
         http://ifcb-data.whoi.edu/IFCB1_2010_025_134056
         would be located at
         {some years dir}/IFCB1_2010_025/IFCB1_2010_025_134056"""
-        bin_path = cache_obj(ifcb.lid(pid)+'_path', lambda: self.bin_path(pid)) # path is cached
+        #bin_path = cache_obj(ifcb.lid(pid)+'_path', lambda: self.bin_path(pid)) # path is cached
+        bin_path = self.bin_path(pid)
         if bin_path is not None:
             return BinFile(bin_path)
     

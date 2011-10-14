@@ -80,6 +80,22 @@ def stream(image,out,format):
 def box(w,aspectratio):
     return (w, int(w * aspectratio))
 
+def http(bin, fullarea, size_thresh, wh, out, format):
+    try:
+        m = mosaic(bin, fullarea, size_thresh)
+        # FIXME should print to out
+        for h in ['Content-type: image/'+format,
+                  'Cache-control: max-age=31622400',
+                  '']:
+            print >>out, h
+        return stream(thumbnail(m, wh), out, format)
+    except IOError:
+        for h in ['Status: 500 Filesystem busy',
+                  'Cache-control: max-age=1',
+                  '']:
+            print h
+        raise IOError
+
 # entry point.
 def doit(pid,size='medium',format='jpg',out=sys.stdout, fs_roots=FS_ROOTS):
     format = dict(png='png', jpg='jpeg', gif='gif', json='json')[format] # validate
@@ -98,12 +114,8 @@ def doit(pid,size='medium',format='jpg',out=sys.stdout, fs_roots=FS_ROOTS):
             print h
         json.dump(layout(bin, fullarea, size_thresh),out) # give it to em
     else:
-        for h in ['Content-type: image/'+format,
-                  'Cache-control: max-age=31622400',
-                  '']:
-            print h
         cache_key = ifcb.lid(pid) + '/mosaic/'+str(tw)+'.'+format
-        cache_io(cache_key, lambda o: stream(thumbnail(mosaic(bin, fullarea, size_thresh),wh),o,format), out)
+        cache_io(cache_key, lambda o: http(bin, fullarea, size_thresh, wh, o, format), out)
 
 if __name__=='__main__':
     cgitb.enable()
