@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from urllib2 import urlopen
+from urllib2 import urlopen, HTTPError
 import json
 import re
 import os
@@ -10,11 +10,15 @@ def lid(pid):
 
 def hit_url(url):
     print 'hitting ' + url + '...'
-    u = urlopen(url)
-    while True:
-        b = u.read(2**20)
-        if not b:
-            return
+    try:
+        u = urlopen(url)
+        while True:
+            b = u.read(2**20)
+            if not b:
+                break
+        u.close()
+    except HTTPError:
+        pass
 
 def spider():
     f = urlopen('http://ifcb-data.whoi.edu/feed.json')
