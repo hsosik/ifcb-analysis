@@ -1,7 +1,7 @@
 import csv
 import ifcb
 from ifcb.io import adc_path, roi_path, hdr_path, ADC_SCHEMA, ADC_COLUMNS, HDR_SCHEMA, HDR_COLUMNS, TARGET_NUMBER, BIN_ID, PID, WIDTH, HEIGHT, BYTE_OFFSET, Timestamped, CONTEXT, FRAME_GRAB_TIME, ISO_8601_FORMAT
-from PIL import Image
+from PIL import Image, ImageChops
 from array import array
 import string
 import re
@@ -164,8 +164,8 @@ class BinFile(Timestamped):
     def __get_image(self, target, roi_file=None):
         cache_key = self.__cache_key('img',ifcb.lid(target.pid))
         data = cache_obj(cache_key, lambda: self.__get_image_bytes(target, roi_file))
-        im = Image.new('L', (target.height, target.width)) # rotate 90 degrees
-        im.putdata(data)
+        im = Image.fromstring('L', (target.height, target.width), data) # rotate 90 degrees
+        im = ImageChops.offset(im, 1, 0) # fix for https://beagle.whoi.edu/redmine/issues/542
         return im
     
     ## image access
