@@ -153,7 +153,7 @@ class BinFile(Timestamped):
             roi_file = open(self.roi_path,'rb',1)
         else:
             roi_file = open_roi_file
-        roi_file.seek(target.byteOffset+1) # byte offsets in target file are 1-based (Matlab legacy)
+        roi_file.seek(target.byteOffset)
         # images are 8-bit grayscale
         data = array('B')
         data.fromfile(roi_file, target.width * target.height)
@@ -165,7 +165,6 @@ class BinFile(Timestamped):
         cache_key = self.__cache_key('img',ifcb.lid(target.pid))
         data = cache_obj(cache_key, lambda: self.__get_image_bytes(target, roi_file))
         im = Image.fromstring('L', (target.height, target.width), data) # rotate 90 degrees
-        im = ImageChops.offset(im, 1, 0) # fix for https://beagle.whoi.edu/redmine/issues/542
         return im
     
     ## image access
