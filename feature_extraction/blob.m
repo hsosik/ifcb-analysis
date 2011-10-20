@@ -1,4 +1,4 @@
-function [ img_blob ] = blob( img )
+function [ img_blob ] = blob( img , want2plot)
 % find a "blob" in the image and produce its mask. this can be further
 % split if other downstream filters need e.g., the phasecong result
 % JF
@@ -16,6 +16,7 @@ end;
 [M m , ~, ~, ~, ~, ~] = phasecong3(img, 4, 6, 2, 2.5, 0.55, 2.0, 0.3, 5,-1);
 % FIXME magic numbers
 img_blob = hysthresh(M+m, 0.2, 0.1);
+img_edge = img_blob; %keep this to plot?
 % omit spurious edges along margins
 img_blob(1,img_blob(2,:)==0)=0;
 img_blob(end,img_blob(end-1,:)==0)=0;
@@ -29,5 +30,8 @@ img_blob = imclose(img_blob, se3);
 img_blob = imdilate(img_blob, se2);
 img_blob = bwmorph(img_blob, 'thin', 1);
 img_blob = imfill(img_blob, 'holes');
-    
+want2plot = 1; %FIXME to argument or config
+if want2plot,
+    img_proc_plot(img, M+m, img_edge, img_dark, img_blob)
+end;
 end
