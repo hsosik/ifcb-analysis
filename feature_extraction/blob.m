@@ -16,22 +16,34 @@ end;
 [M m , ~, ~, ~, ~, ~] = phasecong3(img, 4, 6, 2, 2.5, 0.55, 2.0, 0.3, 5,-1);
 % FIXME magic numbers
 img_blob = hysthresh(M+m, 0.2, 0.1);
-img_edge = img_blob; %keep this to plot?
+%img_edge = img_blob; %keep this to plot?
 % omit spurious edges along margins
 img_blob(1,img_blob(2,:)==0)=0;
 img_blob(end,img_blob(end-1,:)==0)=0;
 img_blob(img_blob(:,2)==0,1)=0;
 img_blob(img_blob(:,end-1)==0,end)=0;
+img_edge = img_blob; %keep this to plot?
 % now use kmean clustering approach to make sure dark areas are included
 img_dark = kmean_segment(img);
 img_blob(img_dark==1)=1;
 % now apply some structuring morphs to fill in various gaps
 img_blob = imclose(img_blob, se3);
 img_blob = imdilate(img_blob, se2);
-img_blob = bwmorph(img_blob, 'thin', 1);
+img_blob = bwmorph(img_blob, 'thin', 3); %20 oct 2011, Heidi thinks 3 times here might be better than previous 1
 img_blob = imfill(img_blob, 'holes');
+%get rid of blobs < blob_min
+blob_min = 150; % FIXME magic number
+img_cc = bwconncomp(img_blob);
+t = regionprops(img_cc, 'Area');
+disp([t.Area])
+idx = find([t.Area] > blob_min);
+img_blob = ismember(labelmatrix(img_cc), idx); %is this most efficient method?
+
 want2plot = 1; %FIXME to argument or config
+%if length(find(img_blob)) > 10000, want2plot = 1; end;
 if want2plot,
     img_proc_plot(img, M+m, img_edge, img_dark, img_blob)
+    pause
 end;
+
 end

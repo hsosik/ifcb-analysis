@@ -16,6 +16,5 @@ for count = 1:n
     bins{count} = char(id);
 end
 next_date = char(entry.getElementsByTagNameNS(ifcb.ATOM_NAMESPACE, 'updated').item(0).getTextContent);
-
 end
 
