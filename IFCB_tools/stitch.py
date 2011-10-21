@@ -6,6 +6,7 @@ from collections import namedtuple
 import math
 from numpy import random
 import ifcb
+import os
 
 Roi = namedtuple('Roi', ['image','x','y','w','h', 'trigger'])
 
@@ -82,16 +83,18 @@ def stitch(pids):
     for color in range(low,256):
         sum2 += ((color - mean) ** 2) * histogram[color]
     variance = sum2 / n # corresponding variance
-    # now fill the mask with the mean value, plus Gaussian noise
-    pix = mask.load()
-    noise = random.normal(math.sqrt(variance), size=(h,w))
+    # now construct the noise from the mask
+    noise = Image.new('L',(h,w),int(mean))
+    mask_pix = mask.load()
+    noise_pix = noise.load()
+    gaussian = random.normal(mean, math.sqrt(variance), size=(h,w))
     for x in xrange(h):
         for y in xrange(w):
-            if pix[x,y] == 255: # only for pixels in the mask
-                pix[x,y] = mean + noise[x,y]
+            if mask_pix[x,y] == 255: # only for pixels in the mask
+                noise_pix[x,y] = gaussian[x,y]
     # apply a median filter to the noise
-    mask.filter(ImageFilter.MedianFilter(3))
-    s = ImageChops.add(mask, s) # final composite
+    noise = noise.filter(ImageFilter.MedianFilter(3))
+    s.paste(noise, None, mask);
     return s
 
 def test_stitch():
@@ -110,13 +113,18 @@ def test_stitch():
     s.save(pathname,'png')
 
 def test_bin(pid):
+    dir = os.path.join('stitch',ifcb.lid(pid))
+    os.mkdir(dir)
     for pid1,pid2 in find_pairs(pid):
         try:
             s = stitch([pid1, pid2])
-            pathname = 'stitch/' + ifcb.lid(pid1) + '.png'
+            pathname = os.path.join(dir,ifcb.lid(pid1) + '.png')
             s.save(pathname,'png')
         except:
             print 'Error stitching ' + pid1 + ' and ' + pid2
         
 if __name__=='__main__':
-    test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_294_114650')
+    #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_294_114650')
+    test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_282_235113')
+    #test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_264_121939')
+    #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_287_152253')
