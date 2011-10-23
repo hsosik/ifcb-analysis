@@ -4,9 +4,11 @@ from StringIO import StringIO
 from PIL import Image, ImageDraw, ImageChops, ImageFilter
 from collections import namedtuple
 import math
-from numpy import random
+from numpy import random, convolve
 import ifcb
 import os
+import sys
+from matplotlib import pyplot
 
 Roi = namedtuple('Roi', ['image','x','y','w','h', 'trigger'])
 
@@ -38,12 +40,18 @@ def find_pairs(bin_pid):
         if prev is not None and overlaps(target, prev):
             yield (prev['pid'], target['pid'])
         prev = target
-            
+
+# idea:
+# divide the edge mask into quadrants
+# throw away the quadrants with no edge pixels. one or two quadrants will remain
+# 1. if there's one, compute its mean and variance.
+# 2. if there are two, compute their means and variances. mean and variance for noise
+# at any point x,y is a linear combination between the m/v of the two quadrants,
+# weighted by the distance to that corner (i.e., linear interpolation)
 def stitch(pids):
     rois = {}
     for pid in pids:
         p = get_image_properties(pid)
-        print p
         i = get_image(pid)
         xywht = [p[x] for x in ['left','bottom','width','height','trigger']]
         rois[pid] = Roi._make([i] + xywht)
@@ -69,20 +77,8 @@ def stitch(pids):
     # OK. Now the stitched image contains both ROIs and black gap
     # The mask contains just the gap, in white
     # The edges is a mask just for the pixels bordering on the edge of the gap
-    # compute the mean and variance of all of those pixels that aren't too dark (>150)
-    sum = 0
-    n = 0
-    histogram = s.histogram(edges) # image pixel value, just along the edges
-    low = 120 # arbitrary darkness cutoff: don't count edge pixels under this value
-    for color in range(low,256):
-        count = histogram[color]
-        n += count
-        sum += count * color
-    mean = sum / n # mean pixel value along the edges (excluding dark pixels)
-    sum2 = 0
-    for color in range(low,256):
-        sum2 += ((color - mean) ** 2) * histogram[color]
-    variance = sum2 / n # corresponding variance
+    histogram = s.histogram(edges)
+    (mean, variance) = adjusted_mv(histogram)
     # now construct the noise from the mask
     noise = Image.new('L',(h,w),int(mean))
     mask_pix = mask.load()
@@ -95,7 +91,7 @@ def stitch(pids):
     # apply a median filter to the noise
     noise = noise.filter(ImageFilter.MedianFilter(3))
     s.paste(noise, None, mask);
-    return s
+    return (s,histogram)
 
 def test_stitch():
     pids = [
@@ -112,19 +108,80 @@ def test_stitch():
     pathname = 'stitch.png'
     s.save(pathname,'png')
 
+def normz(a):
+    m = max(a)
+    return [float(x) / float(m) for x in a]
+
+def mv(eh):
+    n = 0
+    sum = 0
+    counts = zip(range(256), eh)
+    for color,count in counts:
+        n += count
+        sum += count * color
+    mean = sum / n
+    sum2 = 0
+    for color,count in counts:
+        sum2 += ((color - mean) ** 2) * count
+    variance = sum2 / n
+    return (mean, variance)
+    
+def adjusted_mv(eh):
+    # smooth the filter, preferring peaks with sharp declines on the higher luminance end
+    peak = convolve(eh,[2,2,2,2,2,2,4,1,1,1,1,1,1],'same')
+    # now smooth that to eliminate noise
+    peak = convolve(peak,[1,1,1,1,1,1,1,1,1],'same') 
+    # scale original signal to the normalized smoothed signal ^3;
+    # that will tend to deattenuate secondary peaks, and reduce variance of bimodal distros
+    scaled = [(x**3)*y for x,y in zip(normz(peak),eh)]
+    # now compute mean and variance of the scaled signal
+    return mv(scaled)
+    
 def test_bin(pid):
     dir = os.path.join('stitch',ifcb.lid(pid))
-    os.mkdir(dir)
+    try:
+        os.mkdir(dir)
+    except:
+        pass
+    os.chdir(dir)
     for pid1,pid2 in find_pairs(pid):
         try:
-            s = stitch([pid1, pid2])
-            pathname = os.path.join(dir,ifcb.lid(pid1) + '.png')
-            s.save(pathname,'png')
+            (s,eh) = stitch([pid1, pid2])
+            print 'Stitched %s and %s' % (pid1, pid2)
+            basename = ifcb.lid(pid1)
+            s.save(basename+'.png','png')
+            pyplot.hold(False)
+            pyplot.plot(eh)
+            pyplot.hold(True)
+            peak = convolve(eh,[2,2,2,2,2,2,4,1,1,1,1,1,1],'same')
+            peak = convolve(peak,[1,1,1,1,1,1,1,1,1],'same')
+            peak = [x/40 for x in peak]
+            # now locate the rightmost highest peak in the smoothed histogram
+            #max_y = 0
+            #peak_x = 0
+            #max_x = 0
+            #for x,y in zip(range(256),peak):
+            #    if y > 0:
+            #        max_x = x
+            #    if y >= max_y:
+            #        max_y = y
+            #        peak_x = x
+            #min_x = peak_x - (max_x - peak_x)
+            #pyplot.annotate('peak',(peak_x,max_y), (peak_x-50,max_y), arrowprops=dict(arrowstyle="->",connectionstyle="arc,angleA=0,armA=30,rad=10"))
+            #pyplot.annotate('upper',(max_x,peak[max_x]), (max_x+50,peak[max_x]+20), arrowprops=dict(arrowstyle="->",connectionstyle="arc,angleA=0,armA=30,rad=10"))
+            #pyplot.annotate('lower',(min_x,peak[min_x]), (min_x-50,peak[min_x]+20), arrowprops=dict(arrowstyle="->",connectionstyle="arc,angleA=0,armA=30,rad=10"))
+            scaled = [(x**3)*y*10 for x,y in zip(normz(peak),eh)]
+            pyplot.plot([x * max(eh) * 10 for x in normz(peak)])
+            pyplot.plot(scaled)
+            pyplot.savefig(basename+'_edgehist.png')
         except:
-            print 'Error stitching ' + pid1 + ' and ' + pid2
+            print 'Error stitching: "%s" for %s and %s' % (sys.exc_info()[0], pid1, pid2)
         
 if __name__=='__main__':
     #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_294_114650')
-    test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_282_235113')
+    #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_282_235113')
     #test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_264_121939')
     #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_287_152253')
+    #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_295_022253')
+    #test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_273_121647')
+    test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_273_135001')
