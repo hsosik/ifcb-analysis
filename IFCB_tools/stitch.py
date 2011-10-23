@@ -4,11 +4,14 @@ from StringIO import StringIO
 from PIL import Image, ImageDraw, ImageChops, ImageFilter
 from collections import namedtuple
 import math
-from numpy import random, convolve
+from math import sqrt
+import numpy
+from numpy import convolve, median
 import ifcb
 import os
 import sys
 from matplotlib import pyplot
+import random
 
 Roi = namedtuple('Roi', ['image','x','y','w','h', 'trigger'])
 
@@ -41,13 +44,38 @@ def find_pairs(bin_pid):
             yield (prev['pid'], target['pid'])
         prev = target
 
-# idea:
-# divide the edge mask into quadrants
-# throw away the quadrants with no edge pixels. one or two quadrants will remain
-# 1. if there's one, compute its mean and variance.
-# 2. if there are two, compute their means and variances. mean and variance for noise
-# at any point x,y is a linear combination between the m/v of the two quadrants,
-# weighted by the distance to that corner (i.e., linear interpolation)
+def normz(a):
+    m = max(a)
+    return [float(x) / float(m) for x in a]
+
+def mv(eh):
+    n = 0
+    sum = 0
+    counts = zip(range(256), eh)
+    for color,count in counts:
+        n += count
+        sum += count * color
+    mean = sum / n
+    sum2 = 0
+    for color,count in counts:
+        sum2 += ((color - mean) ** 2) * count
+    variance = sum2 / n
+    return (mean, variance)
+    
+def bright_mv(image,mask):
+    eh = image.histogram(mask)
+    # toast zeroes
+    eh[0] = 0
+    # smooth the filter, preferring peaks with sharp declines on the higher luminance end
+    peak = convolve(eh,[2,2,2,2,2,2,4,1,1,1,1,1,1],'same')
+    # now smooth that to eliminate noise
+    peak = convolve(peak,[1,1,1,1,1,1,1,1,1],'same') 
+    # scale original signal to the normalized smoothed signal ^3;
+    # that will tend to deattenuate secondary peaks, and reduce variance of bimodal distros
+    scaled = [(x**3)*y for x,y in zip(normz(peak),eh)]
+    # now compute mean and variance of the scaled signal
+    return mv(scaled)
+
 def stitch(pids):
     rois = {}
     for pid in pids:
@@ -77,21 +105,32 @@ def stitch(pids):
     # OK. Now the stitched image contains both ROIs and black gap
     # The mask contains just the gap, in white
     # The edges is a mask just for the pixels bordering on the edge of the gap
-    histogram = s.histogram(edges)
-    (mean, variance) = adjusted_mv(histogram)
-    # now construct the noise from the mask
-    noise = Image.new('L',(h,w),int(mean))
+    (mean,variance) = bright_mv(s,edges)
+    borders = Image.new('L',(h,w),0)
+    draw = ImageDraw.Draw(borders)
+    draw.rectangle((0,0,1,w),fill=255)
+    (right_mean, ignore) = bright_mv(s,borders)
+    draw.rectangle((0,0,h,w),fill=0)
+    draw.rectangle((h-1,0,h,w),fill=255)
+    (left_mean, ignore) = bright_mv(s,borders)
+    print (left_mean,mean,right_mean)
+    # FIXME do all four edges
+    # now construct the noise from the stats
+    noise = Image.new('L',(h,w),mean)
     mask_pix = mask.load()
     noise_pix = noise.load()
-    gaussian = random.normal(mean, math.sqrt(variance), size=(h,w))
+    gaussian = numpy.random.normal(0, 1.0, size=(h,w))
     for x in xrange(h):
         for y in xrange(w):
+            # FIXME also compute noise at least one pixel around the mask, so median filter will not darken the edge
             if mask_pix[x,y] == 255: # only for pixels in the mask
-                noise_pix[x,y] = gaussian[x,y]
+                gx = float(x) / float(h)
+                mean = (gx * left_mean) + ((1-gx) * right_mean)
+                noise_pix[x,y] = mean + (gaussian[x,y] * sqrt(variance))
     # apply a median filter to the noise
     noise = noise.filter(ImageFilter.MedianFilter(3))
-    s.paste(noise, None, mask);
-    return (s,histogram)
+    s.paste(noise,None,mask)
+    return (s,s.histogram(edges))
 
 def test_stitch():
     pids = [
@@ -108,34 +147,6 @@ def test_stitch():
     pathname = 'stitch.png'
     s.save(pathname,'png')
 
-def normz(a):
-    m = max(a)
-    return [float(x) / float(m) for x in a]
-
-def mv(eh):
-    n = 0
-    sum = 0
-    counts = zip(range(256), eh)
-    for color,count in counts:
-        n += count
-        sum += count * color
-    mean = sum / n
-    sum2 = 0
-    for color,count in counts:
-        sum2 += ((color - mean) ** 2) * count
-    variance = sum2 / n
-    return (mean, variance)
-    
-def adjusted_mv(eh):
-    # smooth the filter, preferring peaks with sharp declines on the higher luminance end
-    peak = convolve(eh,[2,2,2,2,2,2,4,1,1,1,1,1,1],'same')
-    # now smooth that to eliminate noise
-    peak = convolve(peak,[1,1,1,1,1,1,1,1,1],'same') 
-    # scale original signal to the normalized smoothed signal ^3;
-    # that will tend to deattenuate secondary peaks, and reduce variance of bimodal distros
-    scaled = [(x**3)*y for x,y in zip(normz(peak),eh)]
-    # now compute mean and variance of the scaled signal
-    return mv(scaled)
     
 def test_bin(pid):
     dir = os.path.join('stitch',ifcb.lid(pid))
@@ -145,7 +156,7 @@ def test_bin(pid):
         pass
     os.chdir(dir)
     for pid1,pid2 in find_pairs(pid):
-        try:
+        #try:
             (s,eh) = stitch([pid1, pid2])
             print 'Stitched %s and %s' % (pid1, pid2)
             basename = ifcb.lid(pid1)
@@ -174,8 +185,8 @@ def test_bin(pid):
             pyplot.plot([x * max(eh) * 10 for x in normz(peak)])
             pyplot.plot(scaled)
             pyplot.savefig(basename+'_edgehist.png')
-        except:
-            print 'Error stitching: "%s" for %s and %s' % (sys.exc_info()[0], pid1, pid2)
+        #except:
+        #    print 'Error stitching: "%s" for %s and %s' % (sys.exc_info()[0], pid1, pid2)
         
 if __name__=='__main__':
     #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_294_114650')
@@ -185,3 +196,4 @@ if __name__=='__main__':
     #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_295_022253')
     #test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_273_121647')
     test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_273_135001')
+    #test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_242_133222')
