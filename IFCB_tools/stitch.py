@@ -12,6 +12,7 @@ import os
 import sys
 from matplotlib import pyplot
 import random
+from scipy import interpolate
 
 Roi = namedtuple('Roi', ['image','x','y','w','h', 'trigger'])
 
@@ -45,11 +46,11 @@ def find_pairs(bin_pid):
         prev = target
 
 def normz(a):
-    m = max(a)
+    m = max(a) + 0.000001
     return [float(x) / float(m) for x in a]
 
 def mv(eh):
-    n = 0
+    n = 0.000001
     sum = 0
     counts = zip(range(256), eh)
     for color,count in counts:
@@ -128,11 +129,19 @@ def stitch(pids):
     draw.rectangle((h-1,0,h,w),fill=255) # right edge
     (right_mean, right_variance) = bright_mv(s,borders)
     draw.rectangle((0,0,h,w),fill=0) # erase
-    draw.rectangle((0,0,h,1),fill=255) # top edge
+    draw.rectangle((0,w,h,w-1),fill=255) # top edge
     (top_mean, top_variance) = bright_mv(s,borders)
     draw.rectangle((0,0,h,w),fill=0) # erase
     draw.rectangle((0,0,h,1),fill=255) # bottom edge
     (bottom_mean, bottom_variance) = bright_mv(s,borders)
+    # now construct a radial basis function for the mean.
+    # here we assume the mean and variance samples are centered on their edge (not a correct assumption!)
+    nodes = [(h/2,0),(h/2,w-1),(0,w/2),(h-1,w/2),(h/2,w/2)]
+    # further we estimate the mean at the center of each edge by including neighboring edge means
+    # also estimate the mean at the center of the image from the edge means
+    # this is no substitute for collecting more samples from the edge data
+    means = [bottom_mean, top_mean, left_mean, right_mean, (bottom_mean + top_mean + left_mean + right_mean) / 4]
+    mean_rbf = interpolate.Rbf([x for x,y in nodes], [y for x,y in nodes], means)
     # variance is average of lowest two variances
     (v1,v2) = sorted([left_variance, right_variance, top_variance, bottom_variance])[:2]
     variance = (v1 + v2) / 2; # average of bottom two (likely short-side) variances
@@ -145,10 +154,8 @@ def stitch(pids):
     for x in xrange(h):
         for y in xrange(w):
             if mask_pix[x,y] == 255: # only for pixels in the mask
-                gx = float(x) / float(h)
-                gy = float(y) / float(w)
-                # mean is average edge means weighted by distance to edge
-                mean = (((1-gx) * left_mean) + (gx * right_mean) + ((1-gy) * bottom_mean) + (gy * top_mean)) / 2;
+                # mean is based on the gradient estimate function
+                mean = mean_rbf(x,y)
                 # then add some gaussian noise
                 noise_pix[x,y] = mean + (gaussian[x,y] * sqrt(variance))
     # apply a median filter to the noise
@@ -173,6 +180,7 @@ def test_stitch():
 
     
 def test_bin(pid):
+    catch = False
     dir = os.path.join('stitch',ifcb.lid(pid))
     try:
         os.mkdir(dir)
@@ -186,7 +194,10 @@ def test_bin(pid):
             basename = ifcb.lid(pid1)
             s.save(basename+'.png','png')
         except:
-            print 'Error stitching: "%s" for %s and %s' % (sys.exc_info()[0], pid1, pid2)
+            if catch:
+                print 'Error stitching: "%s" for %s and %s' % (sys.exc_info()[0], pid1, pid2)
+            else:
+                raise
         
 if __name__=='__main__':
     #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_294_114650')
@@ -197,4 +208,4 @@ if __name__=='__main__':
     #test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_273_121647')
     #test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_273_135001')
     #test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_242_133222')
-    test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_334_120915')
+    test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_264_150210')
