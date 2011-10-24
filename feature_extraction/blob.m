@@ -30,22 +30,17 @@ img_blob = imclose(img_blob, se3);
 img_blob = imdilate(img_blob, se2);
 img_blob = bwmorph(img_blob, 'thin', 3); %20 oct 2011, Heidi thinks 3 times here might be better than previous 1
 img_blob = imfill(img_blob, 'holes');
-%get rid of blobs < blob_min
-blob_min = config.blob_min;
-img_cc = bwconncomp(img_blob);
-t = regionprops(img_cc, 'Area');
-target = add_field(target, 'blob_props');
-target.blob_props.Area = t;
-disp([t.Area])
-idx = find([t.Area] > blob_min);
-img_blob = ismember(labelmatrix(img_cc), idx); %is this most efficient method?
+target.blob_image = img_blob;
+target = apply_blob_min( target ); %get rid of blobs < blob_min
+%target = add_field(target, 'blob_props');
+%target.blob_props.Area = t;
 
 if config.plot,
-    img_proc_plot(img, M+m, img_edge, img_dark, img_blob)
+    img_proc_plot(target.img, M+m, img_edge, img_dark, target.blob_image)
     pause
 end;
 
-target.img_blob = img_blob;
-target.img_edge = img_edge;
+%target.img_blob = img_blob;
+%target.img_edge = img_edge;
 
 end

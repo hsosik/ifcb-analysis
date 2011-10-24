@@ -1,7 +1,7 @@
 function [ config ] = configure ()
 
 config = struct;
-config.plot = 1; % plot images showing what's happening?
+config.plot = 0; % plot images showing what's happening?
 config.date = 'now';
 
 % phasecong3 parameters

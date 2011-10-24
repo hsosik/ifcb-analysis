@@ -3,9 +3,9 @@ function [ target ] = blob_geomprop( target )
 
 prop_list = target.config.blob_props;
 
-geomprops = regionprops(logical(target.img_blob), prop_list);
+geomprops = regionprops(logical(target.blob_image), prop_list);
 
-target = add_field(target, 'blob_props');
+%FIX - merge_structs ignores any values after the first entry in geomprops
 target.blob_props = merge_structs(target.blob_props, geomprops);
 
 end
