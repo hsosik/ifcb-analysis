@@ -22,8 +22,10 @@ config.hysthresh.high = 0.2;
 config.hysthresh.low = 0.1;
 
 config.blob_min = 150; % minimum area of blob
-% list of region props to compute for blob
+% list of region props to compute for blob; AREA is done no matter what so
+% omit from this list
 config.blob_props = {'ConvexArea', 'Eccentricity', 'EquivDiameter', 'Extent', 'FilledArea', 'MajorAxisLength', ...
     'MinorAxisLength', 'Orientation', 'Perimeter', 'Solidity'};
+config.props2sum = {'Area' 'ConvexArea', 'FilledArea', 'MajorAxisLength', 'MinorAxisLength', 'Perimeter'};
 
 end
