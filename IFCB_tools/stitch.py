@@ -72,9 +72,23 @@ def bright_mv(image,mask):
     peak = convolve(peak,[1,1,1,1,1,1,1,1,1],'same') 
     # scale original signal to the normalized smoothed signal ^3;
     # that will tend to deattenuate secondary peaks, and reduce variance of bimodal distros
-    scaled = [(x**3)*y for x,y in zip(normz(peak),eh)]
+    scaled = [(x**3)*y for x,y in zip(normz(peak),eh)] # FIXME magic number ^3
     # now compute mean and variance of the scaled signal
     return mv(scaled)
+
+            #pyplot.hold(False)
+            #pyplot.plot(eh)
+            #pyplot.hold(True)
+            #peak = convolve(eh,[2,2,2,2,2,2,4,1,1,1,1,1,1],'same')
+            #peak = convolve(peak,[1,1,1,1,1,1,1,1,1],'same')
+            #peak = [x/40 for x in peak]
+            #pyplot.annotate('peak',(peak_x,max_y), (peak_x-50,max_y), arrowprops=dict(arrowstyle="->",connectionstyle="arc,angleA=0,armA=30,rad=10"))
+            #pyplot.annotate('upper',(max_x,peak[max_x]), (max_x+50,peak[max_x]+20), arrowprops=dict(arrowstyle="->",connectionstyle="arc,angleA=0,armA=30,rad=10"))
+            #pyplot.annotate('lower',(min_x,peak[min_x]), (min_x-50,peak[min_x]+20), arrowprops=dict(arrowstyle="->",connectionstyle="arc,angleA=0,armA=30,rad=10"))
+            #scaled = [(x**3)*y*10 for x,y in zip(normz(peak),eh)]
+            #pyplot.plot([x * max(eh) * 10 for x in normz(peak)])
+            #pyplot.plot(scaled)
+            #pyplot.savefig(basename+'_edgehist.png')
 
 def stitch(pids):
     rois = {}
@@ -108,24 +122,34 @@ def stitch(pids):
     (mean,variance) = bright_mv(s,edges)
     borders = Image.new('L',(h,w),0)
     draw = ImageDraw.Draw(borders)
-    draw.rectangle((0,0,1,w),fill=255)
-    (right_mean, ignore) = bright_mv(s,borders)
-    draw.rectangle((0,0,h,w),fill=0)
-    draw.rectangle((h-1,0,h,w),fill=255)
-    (left_mean, ignore) = bright_mv(s,borders)
-    print (left_mean,mean,right_mean)
-    # FIXME do all four edges
+    draw.rectangle((0,0,1,w),fill=255) # left edge
+    (left_mean, left_variance) = bright_mv(s,borders)
+    draw.rectangle((0,0,h,w),fill=0) # erase
+    draw.rectangle((h-1,0,h,w),fill=255) # right edge
+    (right_mean, right_variance) = bright_mv(s,borders)
+    draw.rectangle((0,0,h,w),fill=0) # erase
+    draw.rectangle((0,0,h,1),fill=255) # top edge
+    (top_mean, top_variance) = bright_mv(s,borders)
+    draw.rectangle((0,0,h,w),fill=0) # erase
+    draw.rectangle((0,0,h,1),fill=255) # bottom edge
+    (bottom_mean, bottom_variance) = bright_mv(s,borders)
+    # variance is average of lowest two variances
+    (v1,v2) = sorted([left_variance, right_variance, top_variance, bottom_variance])[:2]
+    variance = (v1 + v2) / 2; # average of bottom two (likely short-side) variances
     # now construct the noise from the stats
+    grow_mask = mask.copy().filter(ImageFilter.MaxFilter(5)) # grow the mask past the edge
     noise = Image.new('L',(h,w),mean)
-    mask_pix = mask.load()
+    mask_pix = grow_mask.load()
     noise_pix = noise.load()
-    gaussian = numpy.random.normal(0, 1.0, size=(h,w))
+    gaussian = numpy.random.normal(0, 1.0, size=(h,w)) # it's normal
     for x in xrange(h):
         for y in xrange(w):
-            # FIXME also compute noise at least one pixel around the mask, so median filter will not darken the edge
             if mask_pix[x,y] == 255: # only for pixels in the mask
                 gx = float(x) / float(h)
-                mean = (gx * left_mean) + ((1-gx) * right_mean)
+                gy = float(y) / float(w)
+                # mean is average edge means weighted by distance to edge
+                mean = (((1-gx) * left_mean) + (gx * right_mean) + ((1-gy) * bottom_mean) + (gy * top_mean)) / 2;
+                # then add some gaussian noise
                 noise_pix[x,y] = mean + (gaussian[x,y] * sqrt(variance))
     # apply a median filter to the noise
     noise = noise.filter(ImageFilter.MedianFilter(3))
@@ -156,37 +180,13 @@ def test_bin(pid):
         pass
     os.chdir(dir)
     for pid1,pid2 in find_pairs(pid):
-        #try:
+        try:
             (s,eh) = stitch([pid1, pid2])
             print 'Stitched %s and %s' % (pid1, pid2)
             basename = ifcb.lid(pid1)
             s.save(basename+'.png','png')
-            pyplot.hold(False)
-            pyplot.plot(eh)
-            pyplot.hold(True)
-            peak = convolve(eh,[2,2,2,2,2,2,4,1,1,1,1,1,1],'same')
-            peak = convolve(peak,[1,1,1,1,1,1,1,1,1],'same')
-            peak = [x/40 for x in peak]
-            # now locate the rightmost highest peak in the smoothed histogram
-            #max_y = 0
-            #peak_x = 0
-            #max_x = 0
-            #for x,y in zip(range(256),peak):
-            #    if y > 0:
-            #        max_x = x
-            #    if y >= max_y:
-            #        max_y = y
-            #        peak_x = x
-            #min_x = peak_x - (max_x - peak_x)
-            #pyplot.annotate('peak',(peak_x,max_y), (peak_x-50,max_y), arrowprops=dict(arrowstyle="->",connectionstyle="arc,angleA=0,armA=30,rad=10"))
-            #pyplot.annotate('upper',(max_x,peak[max_x]), (max_x+50,peak[max_x]+20), arrowprops=dict(arrowstyle="->",connectionstyle="arc,angleA=0,armA=30,rad=10"))
-            #pyplot.annotate('lower',(min_x,peak[min_x]), (min_x-50,peak[min_x]+20), arrowprops=dict(arrowstyle="->",connectionstyle="arc,angleA=0,armA=30,rad=10"))
-            scaled = [(x**3)*y*10 for x,y in zip(normz(peak),eh)]
-            pyplot.plot([x * max(eh) * 10 for x in normz(peak)])
-            pyplot.plot(scaled)
-            pyplot.savefig(basename+'_edgehist.png')
-        #except:
-        #    print 'Error stitching: "%s" for %s and %s' % (sys.exc_info()[0], pid1, pid2)
+        except:
+            print 'Error stitching: "%s" for %s and %s' % (sys.exc_info()[0], pid1, pid2)
         
 if __name__=='__main__':
     #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_294_114650')
@@ -195,5 +195,6 @@ if __name__=='__main__':
     #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_287_152253')
     #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_295_022253')
     #test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_273_121647')
-    test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_273_135001')
+    #test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_273_135001')
     #test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_242_133222')
+    test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_334_120915')
