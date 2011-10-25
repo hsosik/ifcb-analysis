@@ -51,15 +51,41 @@ def bright_mv(image,mask):
     eh = image.histogram(mask)
     # toast zeroes
     eh[0] = 0
+    return bright_mv_hist(eh)
+
+def bright_mv_hist(histogram):
     # smooth the filter, preferring peaks with sharp declines on the higher luminance end
-    peak = convolve(eh,[2,2,2,2,2,2,4,1,1,1,1,1,1],'same')
+    peak = convolve(histogram,[2,2,2,2,2,2,4,1,1,1,1,1,1],'same')
     # now smooth that to eliminate noise
     peak = convolve(peak,[1,1,1,1,1,1,1,1,1],'same') 
     # scale original signal to the normalized smoothed signal;
     # that will tend to deattenuate secondary peaks, and reduce variance of bimodal distros
-    scaled = [(x**5)*y for x,y in zip(normz(peak),eh)] # FIXME magic number
+    scaled = [(x**5)*y for x,y in zip(normz(peak),histogram)] # FIXME magic number
     # now compute mean and variance of the scaled signal
     return mv(scaled)
+    
+def extract_background(image,estimated_background):
+    bg_mask = ImageChops.difference(image,estimated_background)
+    # now compute threshold from histogram
+    h = bg_mask.histogram()
+    # reject bottom part with threshold
+    total = sum(h)
+    running = 0
+    for t in range(256):
+        running += h[t]
+        if running > total * 0.8:
+            threshold = t
+            break
+    #print threshold
+    table = range(256)
+    for t in range(256):
+        if t < threshold: # FIXME magic number
+            table[t] = 0
+        else:
+            table[t] = 255;
+    bg_mask = bg_mask.point(table)
+    bg_mask = ImageChops.screen(image,bg_mask)
+    return bg_mask
 
 def stitch(targets):
     # compute bounds relative to the camera field
@@ -88,64 +114,48 @@ def stitch(targets):
     # The edges is a mask just for the pixels bordering on the edge of the gap
     # compute the mean and variance of the edges
     (mean,variance) = bright_mv(s,edges)
-    # now compute the mean and variance of the left, right, top and bottom edges.
-    # these edges have black gaps where they intersect with missing regions; "bright_mv"
-    # drops those from the histogram. further, a target may be cropped at the edge,
-    # contributing dark pixels. this algorithm scales the histogram to de-attenuate secondary peaks
-    borders = Image.new('L',(h,w),0)
-    draw = ImageDraw.Draw(borders)
-    draw.rectangle((0,0,1,w),fill=255) # left edge
-    (left_mean, left_variance) = bright_mv(s,borders)
-    draw.rectangle((0,0,h,w),fill=0) # erase
-    draw.rectangle((h-1,0,h,w),fill=255) # right edge
-    (right_mean, right_variance) = bright_mv(s,borders)
-    draw.rectangle((0,0,h,w),fill=0) # erase
-    draw.rectangle((0,w,h,w-1),fill=255) # top edge
-    (top_mean, top_variance) = bright_mv(s,borders)
-    draw.rectangle((0,0,h,w),fill=0) # erase
-    draw.rectangle((0,0,h,1),fill=255) # bottom edge
-    (bottom_mean, bottom_variance) = bright_mv(s,borders)
-    # now construct a radial basis function for the background illumination
-    # first determine where the edge means are centered, physically
+    # now use that as an estimated background
+    flat_bg = Image.new('L',(h,w),mean)
+    s.paste(mean,None,mask)
+    # now compute diff between image and estimated background,
+    # and mask that out of the data 
+    bg = extract_background(s,flat_bg)
+    # also mask the gaps out of the data
+    bg.paste(255,None,mask)
+    # now sample that, ignoring masked pixels
+    nodes = []
+    means = []
+    rad = avg([h,w]) / 7
+    for x in range(rad,h,rad*2):
+        for y in range(rad,w,rad*2):
+            box = (max(0,x-rad),max(0,y-rad),min(h-1,x+rad),min(w-1,y+rad))
+            region = bg.crop(box)
+            nabe = region.histogram()
+            nabe[255] = 0 # reject masked target
+            (m,v) = bright_mv_hist(nabe)
+            if m > 0 and m < 255: # reject outliers
+                nodes += [(x,y)]
+                means += [m]
+    # now construct radial basis functions for mean, based on the samples
+    eps = avg([h,w]) * 1.2
+    # FIXME if no samples, will fail! need to use different sampling grid
+    mean_rbf = interpolate.Rbf([x for x,y in nodes], [y for x,y in nodes], means, epsilon=eps)
     mask_pix = mask.load()
-    bottom_center = avg([i for i in range(h) if mask_pix[i,0] != 255])
-    top_center = avg([i for i in range(h) if mask_pix[i,w-1] != 255])
-    left_center = avg([i for i in range(w) if mask_pix[0,i] != 255])
-    right_center = avg([i for i in range(w) if mask_pix[h-1,i] != 255])
-    #(bottom_center,top_center,left_center,right_center) = (h/2,h/2,w/2,w/2)
-    nodes = [(bottom_center,0),(top_center,w-1),(0,left_center),(h-1,right_center)]
-    means = [bottom_mean, top_mean, left_mean, right_mean]
-    eps = avg([h,w])
-    
-    mean_rbf = interpolate.Rbf([x for x,y in nodes], [y for x,y in nodes], means, function='gaussian',epsilon=eps*2.5 ) # FIXME magic number
-    # variance is average of lowest two variances
-    (v1,v2,v3,v4) = sorted([left_variance, right_variance, top_variance, bottom_variance])
-    variance = (v1 * 0.30) + (v2 * 0.30) + (v3 * 0.20) + (v4 * 0.20) # shortest (lowest-variance) edges count most
-    # boost the variance to overcome the median filter
-    variance *= 1.15 # FIXME magic number
-    # now construct the noise from the stats
-    # first grow the mask past the edges, to keep the median filter later from generating an edge artifact
-    grow_mask = mask.copy().filter(ImageFilter.MaxFilter(5))
-    grow_mask_pix = grow_mask.load()
     noise = Image.new('L',(h,w),mean)
     noise_pix = noise.load()
-    background = Image.new('L',(h,w),0)
-    background_pix = background.load()
     gaussian = numpy.random.normal(0, 1.0, size=(h,w)) # it's normal
     std_dev = sqrt(variance)
     for x in xrange(h):
         for y in xrange(w):
             background_luminance = mean_rbf(x,y) # estimated background is computed by the RBF
-            background_pix[x,y] = background_luminance
-            if grow_mask_pix[x,y] == 255: # only for pixels in the mask
-                # fill is estimated background + noise
-                noise_pix[x,y] = background_luminance + (gaussian[x,y] * std_dev)
-    # apply a median filter to the noise
-    noise = noise.filter(ImageFilter.MedianFilter(3))
-    # add the noise, but mask it
+            if mask_pix[x,y] == 255: # only for pixels in the mask
+            # fill is estimated background + noise
+                noise_pix[x,y] = background_luminance + (gaussian[x,y] * std_dev * 2)
+    # now blur the edges of the noise by adding back pixels from the data
+    noise.paste(s,None,ImageChops.invert(mask))
+    noise = noise.filter(ImageFilter.MedianFilter(7))
     s.paste(noise,None,mask)
-    # return the image and the estimated background
-    return (s,background)
+    return (s,bg) # FIXME return background instead
 
 def test_stitch():
     pids = [
