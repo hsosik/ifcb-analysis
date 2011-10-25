@@ -55,9 +55,9 @@ def bright_mv(image,mask):
     peak = convolve(eh,[2,2,2,2,2,2,4,1,1,1,1,1,1],'same')
     # now smooth that to eliminate noise
     peak = convolve(peak,[1,1,1,1,1,1,1,1,1],'same') 
-    # scale original signal to the normalized smoothed signal ^3;
+    # scale original signal to the normalized smoothed signal;
     # that will tend to deattenuate secondary peaks, and reduce variance of bimodal distros
-    scaled = [(x**3)*y for x,y in zip(normz(peak),eh)] # FIXME magic number ^3
+    scaled = [(x**5)*y for x,y in zip(normz(peak),eh)] # FIXME magic number
     # now compute mean and variance of the scaled signal
     return mv(scaled)
 
@@ -90,7 +90,8 @@ def stitch(targets):
     (mean,variance) = bright_mv(s,edges)
     # now compute the mean and variance of the left, right, top and bottom edges.
     # these edges have black gaps where they intersect with missing regions; "bright_mv"
-    # is used to reduce the influence of those black gaps
+    # drops those from the histogram. further, a target may be cropped at the edge,
+    # contributing dark pixels. this algorithm scales the histogram to de-attenuate secondary peaks
     borders = Image.new('L',(h,w),0)
     draw = ImageDraw.Draw(borders)
     draw.rectangle((0,0,1,w),fill=255) # left edge
@@ -105,19 +106,20 @@ def stitch(targets):
     draw.rectangle((0,0,h,1),fill=255) # bottom edge
     (bottom_mean, bottom_variance) = bright_mv(s,borders)
     # now construct a radial basis function for the background illumination
-    # first determine where the edge means are centered
+    # first determine where the edge means are centered, physically
     mask_pix = mask.load()
     bottom_center = avg([i for i in range(h) if mask_pix[i,0] != 255])
     top_center = avg([i for i in range(h) if mask_pix[i,w-1] != 255])
     left_center = avg([i for i in range(w) if mask_pix[0,i] != 255])
     right_center = avg([i for i in range(w) if mask_pix[h-1,i] != 255])
     #(bottom_center,top_center,left_center,right_center) = (h/2,h/2,w/2,w/2)
-    nodes = [(bottom_center,0),(top_center,w-1),(0,left_center),(h-1,right_center),(h/2,w/2)]
-    means = [bottom_mean, top_mean, left_mean, right_mean, avg([bottom_mean,top_mean,left_mean,right_mean])]
-    mean_rbf = interpolate.Rbf([x for x,y in nodes], [y for x,y in nodes], means)
+    nodes = [(bottom_center,0),(top_center,w-1),(0,left_center),(h-1,right_center)]
+    means = [bottom_mean, top_mean, left_mean, right_mean]
+    eps = avg([h,w])
+    mean_rbf = interpolate.Rbf([x for x,y in nodes], [y for x,y in nodes], means, function='gaussian', epsilon=eps*2.5)
     # variance is average of lowest two variances
     (v1,v2,v3,v4) = sorted([left_variance, right_variance, top_variance, bottom_variance])
-    variance = (v1 * 0.40) + (v2 * 0.40) + (v3 * 0.10) + (v4 * 0.10) # shortest (lowest-variance) edges count most
+    variance = (v1 * 0.30) + (v2 * 0.30) + (v3 * 0.20) + (v4 * 0.20) # shortest (lowest-variance) edges count most
     # now construct the noise from the stats
     # first grow the mask past the edges, to keep the median filter later from generating an edge artifact
     grow_mask = mask.copy().filter(ImageFilter.MaxFilter(5))
