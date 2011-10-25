@@ -116,10 +116,13 @@ def stitch(targets):
     nodes = [(bottom_center,0),(top_center,w-1),(0,left_center),(h-1,right_center)]
     means = [bottom_mean, top_mean, left_mean, right_mean]
     eps = avg([h,w])
-    mean_rbf = interpolate.Rbf([x for x,y in nodes], [y for x,y in nodes], means, function='gaussian', epsilon=eps*2.5)
+    
+    mean_rbf = interpolate.Rbf([x for x,y in nodes], [y for x,y in nodes], means, function='gaussian',epsilon=eps*2.5 ) # FIXME magic number
     # variance is average of lowest two variances
     (v1,v2,v3,v4) = sorted([left_variance, right_variance, top_variance, bottom_variance])
     variance = (v1 * 0.30) + (v2 * 0.30) + (v3 * 0.20) + (v4 * 0.20) # shortest (lowest-variance) edges count most
+    # boost the variance to overcome the median filter
+    variance *= 1.15 # FIXME magic number
     # now construct the noise from the stats
     # first grow the mask past the edges, to keep the median filter later from generating an edge artifact
     grow_mask = mask.copy().filter(ImageFilter.MaxFilter(5))
