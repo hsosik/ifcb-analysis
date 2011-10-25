@@ -125,17 +125,24 @@ def stitch(targets):
     # now sample that, ignoring masked pixels
     nodes = []
     means = []
-    rad = avg([h,w]) / 7
-    for x in range(rad,h,rad*2):
-        for y in range(rad,w,rad*2):
-            box = (max(0,x-rad),max(0,y-rad),min(h-1,x+rad),min(w-1,y+rad))
-            region = bg.crop(box)
-            nabe = region.histogram()
-            nabe[255] = 0 # reject masked target
-            (m,v) = bright_mv_hist(nabe)
-            if m > 0 and m < 255: # reject outliers
-                nodes += [(x,y)]
-                means += [m]
+    # grid
+    div = 5
+    # make sure we get some samples
+    while len(nodes) == 0:
+        div += 1
+        rad = avg([h,w]) / div
+        for x in range(rad,h,rad*2):
+            for y in range(rad,w,rad*2):
+                for r in range(rad,max(h,w),2):
+                    box = (max(0,x-r),max(0,y-r),min(h-1,x+r),min(w-1,y+r))
+                    region = bg.crop(box)
+                    nabe = region.histogram()
+                    nabe[255] = 0 # reject masked target
+                    (m,v) = bright_mv_hist(nabe)
+                    if m > 0 and m < 255: # reject outliers
+                        nodes += [(x,y)]
+                        means += [m]
+                        break
     # now construct radial basis functions for mean, based on the samples
     eps = avg([h,w]) * 1.2
     # FIXME if no samples, will fail! need to use different sampling grid
