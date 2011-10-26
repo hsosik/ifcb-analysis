@@ -161,6 +161,12 @@ def stitch(targets):
     # now blur the edges of the noise by adding back pixels from the data
     noise.paste(s,None,ImageChops.invert(mask))
     noise = noise.filter(ImageFilter.MedianFilter(7))
+    noise_pix = noise.load()
+    for x in xrange(h):
+        for y in xrange(w):
+            if mask_pix[x,y] == 255: # only for pixels in the mask
+            # fill is estimated background + noise
+                noise_pix[x,y] = noise_pix[x,y] + (gaussian[x,y] * (std_dev / 2.5))
     s.paste(noise,None,mask)
     return (s,bg) # FIXME return background instead
 
