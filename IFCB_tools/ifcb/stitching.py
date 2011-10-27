@@ -154,21 +154,20 @@ def stitch(targets):
     std_dev = sqrt(variance)
     for x in xrange(h):
         for y in xrange(w):
-            background_luminance = mean_rbf(x,y) # estimated background is computed by the RBF
             if mask_pix[x,y] == 255: # only for pixels in the mask
-            # fill is estimated background + noise
-                noise_pix[x,y] = background_luminance + (gaussian[x,y] * std_dev * 2)
+                # fill is estimated background + noise
+                noise_pix[x,y] = mean_rbf(x,y) + (gaussian[x,y] * std_dev * 2)
     # now blur the edges of the noise by adding back pixels from the data
     noise.paste(s,None,ImageChops.invert(mask))
     noise = noise.filter(ImageFilter.MedianFilter(7))
+    # now add a little more noise to compensate for the median smoothing
     noise_pix = noise.load()
     for x in xrange(h):
         for y in xrange(w):
             if mask_pix[x,y] == 255: # only for pixels in the mask
-            # fill is estimated background + noise
-                noise_pix[x,y] = noise_pix[x,y] + (gaussian[x,y] * (std_dev / 2.5))
+                noise_pix[x,y] += gaussian[x,y] * (std_dev / 2.5)
     s.paste(noise,None,mask)
-    return (s,bg) # FIXME return background instead
+    return (s,ImageChops.invert(mask))
 
 def test_stitch():
     pids = [
