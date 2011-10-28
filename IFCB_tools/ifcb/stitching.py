@@ -60,7 +60,7 @@ def bright_mv_hist(histogram):
     peak = convolve(peak,[1,1,1,1,1,1,1,1,1],'same') 
     # scale original signal to the normalized smoothed signal;
     # that will tend to deattenuate secondary peaks, and reduce variance of bimodal distros
-    scaled = [(x**5)*y for x,y in zip(normz(peak),histogram)] # FIXME magic number
+    scaled = [(x**7)*y for x,y in zip(normz(peak),histogram)] # FIXME magic number
     # now compute mean and variance of the scaled signal
     return mv(scaled)
     
@@ -104,11 +104,7 @@ def stitch(targets):
         s.paste(roi.image(), (ry, rx)) # paste in the right location
         mask.paste(0, (ry, rx, ry + roi.height, rx + roi.width))
         # draw a white rectangle around the edges of the roi
-        edges.paste(255, (ry, rx, ry + roi.height, rx + roi.width))
-        # fill it with black (leaving just edge pixels)
-        draw.rectangle((ry + 1, rx + 1, ry + roi.height - 2, rx + roi.width - 2), fill=0)
-    # erase the edge mask where it touches the outer border of the entire stitched field
-    draw.rectangle((0,0,h-1,w-1), outline=0)
+        draw.rectangle((ry, rx, ry + roi.height, rx + roi.width), outline=255)
     # OK. Now the stitched image contains both ROIs and black gap
     # The mask contains just the gap, in white
     # The edges is a mask just for the pixels bordering on the edge of the gap
