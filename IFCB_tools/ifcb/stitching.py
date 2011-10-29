@@ -60,7 +60,7 @@ def bright_mv_hist(histogram):
     peak = convolve(peak,[1,1,1,1,1,1,1,1,1],'same') 
     # scale original signal to the normalized smoothed signal;
     # that will tend to deattenuate secondary peaks, and reduce variance of bimodal distros
-    scaled = [(x**7)*y for x,y in zip(normz(peak),histogram)] # FIXME magic number
+    scaled = [(x**13)*y for x,y in zip(normz(peak),histogram)] # FIXME magic number
     # now compute mean and variance of the scaled signal
     return mv(scaled)
     
@@ -103,8 +103,19 @@ def stitch(targets):
         ry = roi.bottom - y
         s.paste(roi.image(), (ry, rx)) # paste in the right location
         mask.paste(0, (ry, rx, ry + roi.height, rx + roi.width))
-        # draw a white rectangle around the edges of the roi
-        draw.rectangle((ry, rx, ry + roi.height, rx + roi.width), outline=255)
+        edges.paste(255, (ry, rx, ry + roi.height, rx + roi.width))
+    # blank out an ellipse in the middle of the ROI edge mas
+    inset_factor = 25
+    insets = []
+    for roi in targets:
+        rx = roi.left - x
+        ry = roi.bottom - y
+        insets += [roi.width / inset_factor, roi.height / inset_factor]
+    inset = avg(insets)
+    for roi in targets:
+        rx = roi.left - x
+        ry = roi.bottom - y
+        draw.rectangle((ry + inset, rx + inset, ry + roi.height - inset - 1, rx + roi.width - inset - 1), fill=0)
     # OK. Now the stitched image contains both ROIs and black gap
     # The mask contains just the gap, in white
     # The edges is a mask just for the pixels bordering on the edge of the gap
@@ -152,7 +163,7 @@ def stitch(targets):
         for y in xrange(w):
             if mask_pix[x,y] == 255: # only for pixels in the mask
                 # fill is estimated background + noise
-                noise_pix[x,y] = mean_rbf(x,y) + (gaussian[x,y] * std_dev * 2)
+                noise_pix[x,y] = mean_rbf(x,y) + (gaussian[x,y] * std_dev)
     # now blur the edges of the noise by adding back pixels from the data
     noise.paste(s,None,ImageChops.invert(mask))
     noise = noise.filter(ImageFilter.MedianFilter(7))
@@ -161,9 +172,9 @@ def stitch(targets):
     for x in xrange(h):
         for y in xrange(w):
             if mask_pix[x,y] == 255: # only for pixels in the mask
-                noise_pix[x,y] += gaussian[x,y] * (std_dev / 2.5)
+                noise_pix[x,y] += gaussian[x,y] * (std_dev / 3)
     s.paste(noise,None,mask)
-    return (s,ImageChops.invert(mask))
+    return (s,ImageChops.invert(mask),edges)
 
 def test_stitch():
     pids = [
