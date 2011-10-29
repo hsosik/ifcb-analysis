@@ -47,7 +47,7 @@ class Bin(Timestamped):
     
     def __init__(self, pid, info=None):
         self.pid = pid
-        self.instrument = self.info()['instrument']
+        #self.instrument = self.info()['instrument']
 
     def __repr__(self):
         return '{Bin ' + self.pid + '}'
@@ -101,8 +101,10 @@ class Bin(Timestamped):
 
 class Client(Resolver):
     def latest_bins(self,n=10):
-        pass
-
+        feed = get_json('http://ifcb-data.whoi.edu/feed')
+        length = min(len(feed),n)
+        return [Bin(info['pid']) for info in feed[:length]]
+    
     def latest_bin(self):
         """Return latest bin"""
         return self.latest_bins(1)[0]
