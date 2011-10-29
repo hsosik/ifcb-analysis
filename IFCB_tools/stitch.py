@@ -16,11 +16,12 @@ def test_bin(pid):
     bin = client.resolve(pid)
     for t1,t2 in find_pairs(bin):
         try:
-            (s,mask) = stitch([t1,t2])
+            (s,mask,edges) = stitch([t1,t2])
             print 'Stitched %s and %s' % (t1.pid, t2.pid)
             basename = ifcb.lid(t1.pid)
             s.save(basename+'.png','png')
             mask.save(basename+'_mask.png','png')
+            edges.save(basename+'_edge.png','png')
         except:
             if catch:
                 print 'Error stitching: "%s" for %s and %s' % (sys.exc_info()[0], pid1, pid2)
