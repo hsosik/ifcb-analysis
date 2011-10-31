@@ -3,7 +3,6 @@
 function [output] = sandbox()
 
 config = configure();
-
 bins = list_bins(config.date);
 bin = bins(1);
 target_ids = get_targets(bin);
@@ -11,18 +10,22 @@ target.config = config;
 %target = add_field(target, 'blob_props');
 output.config = config;
 output.targets = target_ids.pid;
-start_target = target;
+empty_target = target;
 
-for tix = 1:100, %length(target_ids.pid),
+for tix = 1:length(target_ids.pid),
     disp(tix)
-    target.img = get_image(target_ids.pid(tix));
+    target = empty_target; %re-initialize each time through
+    target.image = get_image(target_ids.pid(tix));
     target = blob(target);
-    target = blob_geomprop(target);
-    target = blob_sumprops(target);
+    target = blob_geomprop(target); 
+    target = blob_texture(target);
+    target = blob_invmoments(target);
+    target = blob_sumprops(target); 
     output.features(tix) = target.blob_props;
-    %hmmm...need to clear contents of target before going to next one to
-    %misplaced properties, clear back to only target.config?
-    target = start_target;
 end;
 
 end
+
+%feamat = struct2cell(output.features);
+%feamat = cell2mat(squeeze(feamat)');
+%featitles = fields(output.features)';

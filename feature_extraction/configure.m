@@ -3,6 +3,8 @@ function [ config ] = configure ()
 config = struct;
 config.plot = 0; % plot images showing what's happening?
 config.date = 'now';
+config.date = '2010-10-10T11:07:16Z';
+
 
 % phasecong3 parameters
 config.pc3 = struct;

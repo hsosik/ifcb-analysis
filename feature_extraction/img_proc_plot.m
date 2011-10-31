@@ -1,6 +1,8 @@
 function [  ] = img_proc_plot( img, img_pc, img_edge, img_dark, img_blob )
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+% function [  ] = img_proc_plot( img, img_pc, img_edge, img_dark, img_blob )
+% produce figure for manual inspection, given input image set (original, phase congruency, edge, 
+% dark areas, and b&w blob mask)
+% Heidi M. Sosik, Woods Hole Oceanographic Institution, Oct 2011
 
 figure(1), clf
 subplot(5,1,1), imshow(img); title('original')
