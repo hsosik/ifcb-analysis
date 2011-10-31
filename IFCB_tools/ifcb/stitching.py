@@ -8,6 +8,7 @@ import sys
 import random
 from scipy import interpolate
 from io.path import Filesystem
+import time
 
 def overlaps(t1, t2):
     if t1.trigger == t2.trigger:
@@ -79,7 +80,7 @@ def extract_background(image,estimated_background):
     #print threshold
     table = range(256)
     for t in range(256):
-        if t < threshold: # FIXME magic number
+        if t < threshold:
             table[t] = 0
         else:
             table[t] = 255;
@@ -87,24 +88,53 @@ def extract_background(image,estimated_background):
     bg_mask = ImageChops.screen(image,bg_mask)
     return bg_mask
 
-def stitch(targets):
+def stitched_box(targets):
     # compute bounds relative to the camera field
     x = min([target.left for target in targets])
     y = min([target.bottom for target in targets])
     w = max([target.left + target.width for target in targets]) - x
     h = max([target.bottom + target.height for target in targets]) - y
+    return (x,y,w,h)
+    
+def mask(targets):
+    (x,y,w,h) = stitched_box(targets)
     # now we swap width and height to rotate the image 90 degrees
-    s = Image.new('L',(h,w)) # the stitched image with a missing region
-    mask = Image.new('L',(h,w), 255) # a mask of the missing region
-    edges = Image.new('L',(h,w), 0) # just the edges of the missing region
-    draw = ImageDraw.Draw(edges)
+    mask = Image.new('L',(h,w), 0) # a mask of the non-missing region
     for roi in targets:
         rx = roi.left - x
         ry = roi.bottom - y
+        mask.paste(255, (ry, rx, ry + roi.height, rx + roi.width))
+    return mask
+
+# stitch with no noise fill
+def stitch_raw(targets,images=None):
+    # fetch images
+    if images is None:
+        images = [target.image for target in targets]
+    # compute bounds relative to the camera field
+    (x,y,w,h) = stitched_box(targets)
+    # now we swap width and height to rotate the image 90 degrees
+    s = Image.new('L',(h,w)) # the stitched image with a missing region
+    for (roi,image) in zip(targets,images):
+        rx = roi.left - x
+        ry = roi.bottom - y
         s.paste(roi.image(), (ry, rx)) # paste in the right location
-        mask.paste(0, (ry, rx, ry + roi.height, rx + roi.width))
+    return s
+
+def edges_mask(targets,images=None):
+    # fetch images
+    if images is None:
+        images = [target.image for target in targets]
+    # compute bounds relative to the camera field
+    (x,y,w,h) = stitched_box(targets)
+    # now we swap width and height to rotate the image 90 degrees
+    edges = Image.new('L',(h,w), 0) # just the edges of the missing region
+    draw = ImageDraw.Draw(edges)
+    for (roi,image) in zip(targets,images):
+        rx = roi.left - x
+        ry = roi.bottom - y
         edges.paste(255, (ry, rx, ry + roi.height, rx + roi.width))
-    # blank out an ellipse in the middle of the ROI edge mas
+    # blank out a rectangle in the middle of the rois
     inset_factor = 25
     insets = []
     for roi in targets:
@@ -116,20 +146,31 @@ def stitch(targets):
         rx = roi.left - x
         ry = roi.bottom - y
         draw.rectangle((ry + inset, rx + inset, ry + roi.height - inset - 1, rx + roi.width - inset - 1), fill=0)
-    # OK. Now the stitched image contains both ROIs and black gap
-    # The mask contains just the gap, in white
-    # The edges is a mask just for the pixels bordering on the edge of the gap
+    return edges
+    
+def stitch(targets,images=None):
+    # fetch images
+    if images is None:
+        images = [target.image for target in targets]
+    # compute bounds relative to the camera field
+    (x,y,w,h) = stitched_box(targets)
+    # note that w and h are switched from here on out to rotate 90 degrees.
+    # step 1: compute masks
+    s = stitch_raw(targets,images) # stitched ROI's with black gaps
+    rois_mask = mask(targets) # a mask of where the ROI's are
+    gaps_mask = ImageChops.invert(rois_mask) # its inverse is where the gaps are
+    edges = edges_mask(targets,images) # edges are pixels along the ROI edges
+    # step 2: estimate background from edges
     # compute the mean and variance of the edges
     (mean,variance) = bright_mv(s,edges)
     # now use that as an estimated background
     flat_bg = Image.new('L',(h,w),mean)
-    s.paste(mean,None,mask)
-    # now compute diff between image and estimated background,
-    # and mask that out of the data 
+    s.paste(mean,None,gaps_mask)
+    # step 3: compute "probable background": low luminance delta from estimated bg
     bg = extract_background(s,flat_bg)
-    # also mask the gaps out of the data
-    bg.paste(255,None,mask)
-    # now sample that, ignoring masked pixels
+    # also mask out the gaps, which are not "probable background"
+    bg.paste(255,None,gaps_mask)
+    # step 4: sample probable background to compute RBF for illumination gradient
     nodes = []
     means = []
     # grid
@@ -151,10 +192,10 @@ def stitch(targets):
                         means += [m]
                         break
     # now construct radial basis functions for mean, based on the samples
-    eps = avg([h,w]) * 1.2
-    # FIXME if no samples, will fail! need to use different sampling grid
+    eps = avg([h,w]) * 1.2 # epsilon here reflects overall dimensions, not sampling density
     mean_rbf = interpolate.Rbf([x for x,y in nodes], [y for x,y in nodes], means, epsilon=eps)
-    mask_pix = mask.load()
+    # step 5: fill gaps with mean based on RBF and variance from bright_mv(edges)
+    mask_pix = gaps_mask.load()
     noise = Image.new('L',(h,w),mean)
     noise_pix = noise.load()
     gaussian = numpy.random.normal(0, 1.0, size=(h,w)) # it's normal
@@ -162,19 +203,20 @@ def stitch(targets):
     for x in xrange(h):
         for y in xrange(w):
             if mask_pix[x,y] == 255: # only for pixels in the mask
-                # fill is estimated background + noise
+                # fill is illumination gradient + noise
                 noise_pix[x,y] = mean_rbf(x,y) + (gaussian[x,y] * std_dev)
-    # now blur the edges of the noise by adding back pixels from the data
-    noise.paste(s,None,ImageChops.invert(mask))
+    # step 6: blur the edge of the noise a little bit using data pixels
+    noise.paste(s,None,rois_mask)
     noise = noise.filter(ImageFilter.MedianFilter(7))
-    # now add a little more noise to compensate for the median smoothing
+    # step 7: add a bit more noise
     noise_pix = noise.load()
     for x in xrange(h):
         for y in xrange(w):
             if mask_pix[x,y] == 255: # only for pixels in the mask
                 noise_pix[x,y] += gaussian[x,y] * (std_dev / 3)
-    s.paste(noise,None,mask)
-    return (s,ImageChops.invert(mask),edges)
+    # step 8: final composite
+    s.paste(noise,None,gaps_mask)
+    return (s,rois_mask)
 
 def test_stitch():
     pids = [
