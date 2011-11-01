@@ -7,7 +7,8 @@ import os
 import sys
 import random
 from scipy import interpolate
-from io.path import Filesystem
+from ifcb.io.file import TARGET_INFO
+from ifcb.io.path import Filesystem
 import time
 
 def overlaps(t1, t2):
@@ -217,6 +218,95 @@ def stitch(targets,images=None):
     # step 8: final composite
     s.paste(noise,None,gaps_mask)
     return (s,rois_mask)
+
+# for bin I need iso8601time, rfc822time, headers(), properties(), and pid
+
+class StitchedTarget(object):
+    """Represents a Target (e.g., an image and metadata from a single ROI)"""
+    info = {}
+    bin = None
+
+    def __init__(self,bin,target1,target2):
+        self.bin = bin
+        (left,bottom,width,height) = stitched_box([target1,target2])
+        info = target1.info.copy()
+        info['left'] = left
+        info['bottom'] = bottom
+        info['width'] = width
+        info['height'] = height
+        self.info = info
+        self.target1 = target1
+        self.target2 = target2
+    
+    def __getattribute__(self,name):
+        if name in TARGET_INFO:
+            return self.info[name]
+        else:
+            return object.__getattribute__(self,name)
+        
+    def __repr__(self):
+        return '{Target(stitched) '+self.pid + '}'
+    
+    def time(self):
+        bin_time = calendar.timegm(self.bin.time()) # bin seconds since epoch
+        return time.gmtime(bin_time + self.frameGrabTime)
+    
+    def iso8601time(self):
+        return time.strftime(ISO_8601_FORMAT, self.time())
+    
+    def image(self):
+        (stitched, ignore) = stitch([self.target1, self.target2])
+        return stitched
+    
+    def mask(self):
+        return mask([self.target1, self.target2])
+    
+class StitchedBin(object):
+    bin = None
+    pairs = None
+    stitches = None
+        
+    def __init__(self,bin):
+        self.bin = bin
+        self.pid = bin.pid
+        self.iso8601time = bin.iso8601time
+        self.rfc822time = bin.rfc822time
+
+    def headers(self):
+        return self.bin.headers()
+    
+    def properties(self,include_pid=False):
+        return self.bin.properties(include_pid)
+    
+     # generate all targets
+    def __iter__(self):
+        if self.pairs is None:
+            self.pairs = list(find_pairs(self.bin))
+        for target in self.bin:
+            # need stitching?
+            stitched = False
+            for t1,t2 in self.pairs:
+                if target.pid == t1.pid:
+                    target = StitchedTarget(self.bin,t1,t2)
+                    if self.stitches is None:
+                        self.stitches = {}
+                    self.stitches[t1.targetNumber] = target
+                    yield target
+                    stitched = True
+                elif target.pid == t2.pid:
+                    stitched = True
+            if not stitched:
+                yield target
+                
+    def target(self,n):
+        if self.stitches is None:
+            for target in list(self):
+                if target.targetNumber == n:
+                    return target
+        elif n in self.stitches:
+            return self.stitches[n]
+        else:
+            return self.bin.target(n)
 
 def test_stitch():
     pids = [
