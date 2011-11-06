@@ -229,8 +229,7 @@ def stitch(targets,images=None):
                 noise_pix[x,y] = mean_rbf(x,y) + (gaussian[x,y] * std_dev)
     # step 6: final composite
     s.paste(noise,None,gaps_mask)
-    return (s,bg)
-    #return (bg,noise)
+    return (s,rois_mask)
 
 # for bin I need iso8601time, rfc822time, headers(), properties(), and pid
 
