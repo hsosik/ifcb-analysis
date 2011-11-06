@@ -10,6 +10,7 @@ from scipy import interpolate
 from ifcb.io.file import TARGET_INFO
 from ifcb.io.path import Filesystem
 import time
+from random import random
 
 def overlaps(t1, t2):
     if t1.trigger == t2.trigger:
@@ -49,20 +50,21 @@ def mv(eh):
     return (mean, variance)
 
 # FIXME this is still too sensitive to lower modes
-def bright_mv(image,mask):
+def bright_mv(image,mask=None):
     eh = image.histogram(mask)
-    # toast zeroes
-    eh[0] = 0
+    # toast extrema
     return bright_mv_hist(eh)
 
-def bright_mv_hist(histogram):
+def bright_mv_hist(histogram,exclude=[0,255]):
+    for x in exclude:
+        histogram[x] = 0 
     # smooth the filter, preferring peaks with sharp declines on the higher luminance end
-    peak = convolve(histogram,[2,2,2,2,2,2,4,1,1,1,1,1,1],'same')
+    peak = convolve(histogram,[2,2,2,2,2,4,8,2,1,1,1,1,1],'same')
     # now smooth that to eliminate noise
-    peak = convolve(peak,[1,1,1,1,1,1,1,1,1],'same') 
+    peak = convolve(peak,[1,1,1,1,1,1,1,1,1],'same')
     # scale original signal to the normalized smoothed signal;
     # that will tend to deattenuate secondary peaks, and reduce variance of bimodal distros
-    scaled = [(x**13)*y for x,y in zip(normz(peak),histogram)] # FIXME magic number
+    scaled = [(x**20)*y for x,y in zip(normz(peak),histogram)] # FIXME magic number
     # now compute mean and variance of the scaled signal
     return mv(scaled)
     
@@ -148,7 +150,24 @@ def edges_mask(targets,images=None):
         ry = roi.bottom - y
         draw.rectangle((ry + inset, rx + inset, ry + roi.height - inset - 1, rx + roi.width - inset - 1), fill=0)
     return edges
-    
+
+def euclidian(x1,y1,x2,y2):
+    return sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
+
+def concentric(l):
+    n = len(l)
+    even = [l[i] for i in range(n) if i % 2 == 0]
+    odd = [l[i] for i in range(n) if i % 2 != 0]
+    for (one,two) in zip(even,reversed(odd)):
+        yield one
+        yield two
+
+def hist(samples):
+    h = [0 for ignore in range(256)]
+    for s in samples:
+        h[s] += 1
+    return h
+
 def stitch(targets,images=None):
     # fetch images
     if images is None:
@@ -171,51 +190,43 @@ def stitch(targets,images=None):
     bg = extract_background(s,flat_bg)
     # also mask out the gaps, which are not "probable background"
     bg.paste(255,None,gaps_mask)
+    # step 3a: improve mean/variance estimate
+    (mean,variance) = bright_mv(bg)
+    std_dev = sqrt(variance)
     # step 4: sample probable background to compute RBF for illumination gradient
-    nodes = []
-    means = []
     # grid
-    div = 5
+    nodes = []
+    div = 8
     # make sure we get some samples
     while len(nodes) == 0:
         div += 1
+        means = []
+        nodes = []
         rad = avg([h,w]) / div
-        for x in range(rad,h,rad*2):
-            for y in range(rad,w,rad*2):
-                for r in range(rad,max(h,w),2):
+        for x in range(0,h+rad,rad):
+            for y in range(0,w+rad,rad):
+                for r in range(rad,max(h,w),3):
                     box = (max(0,x-r),max(0,y-r),min(h-1,x+r),min(w-1,y+r))
                     region = bg.crop(box)
                     nabe = region.histogram()
-                    nabe[255] = 0 # reject masked target
                     (m,v) = bright_mv_hist(nabe)
                     if m > 0 and m < 255: # reject outliers
-                        nodes += [(x,y)]
-                        means += [m]
+                        nodes.append((x,y))
+                        means.append(m)
                         break
     # now construct radial basis functions for mean, based on the samples
-    eps = avg([h,w]) * 1.2 # epsilon here reflects overall dimensions, not sampling density
-    mean_rbf = interpolate.Rbf([x for x,y in nodes], [y for x,y in nodes], means, epsilon=eps)
+    mean_rbf = interpolate.Rbf([x for x,y in nodes], [y for x,y in nodes], means)
     # step 5: fill gaps with mean based on RBF and variance from bright_mv(edges)
     mask_pix = gaps_mask.load()
     noise = Image.new('L',(h,w),mean)
     noise_pix = noise.load()
     gaussian = numpy.random.normal(0, 1.0, size=(h,w)) # it's normal
-    std_dev = sqrt(variance)
     for x in xrange(h):
         for y in xrange(w):
             if mask_pix[x,y] == 255: # only for pixels in the mask
                 # fill is illumination gradient + noise
                 noise_pix[x,y] = mean_rbf(x,y) + (gaussian[x,y] * std_dev)
-    # step 6: blur the edge of the noise a little bit using data pixels
-    noise.paste(s,None,rois_mask)
-    noise = noise.filter(ImageFilter.MedianFilter(7))
-    # step 7: add a bit more noise
-    noise_pix = noise.load()
-    for x in xrange(h):
-        for y in xrange(w):
-            if mask_pix[x,y] == 255: # only for pixels in the mask
-                noise_pix[x,y] += gaussian[x,y] * (std_dev / 3)
-    # step 8: final composite
+    # step 6: final composite
     s.paste(noise,None,gaps_mask)
     return (s,rois_mask)
 
@@ -225,7 +236,9 @@ class StitchedTarget(object):
     """Represents a Target (e.g., an image and metadata from a single ROI)"""
     info = {}
     bin = None
-
+    img = None 
+    msk = None
+    
     def __init__(self,bin,target1,target2):
         self.bin = bin
         (left,bottom,width,height) = stitched_box([target1,target2])
@@ -254,12 +267,19 @@ class StitchedTarget(object):
     def iso8601time(self):
         return time.strftime(ISO_8601_FORMAT, self.time())
     
+    def imagenmask(self):
+        if self.img is None:
+            (self.img, self.msk) = stitch([self.target1, self.target2])
+        return (self.img, self.msk)
+    
     def image(self):
-        (stitched, ignore) = stitch([self.target1, self.target2])
-        return stitched
+        (image,mask) = self.imagenmask()
+        return image
     
     def mask(self):
-        return mask([self.target1, self.target2])
+        if self.msk is None:
+            self.msk = mask([self.target1, self.target2])
+        return self.msk
     
 class StitchedBin(object):
     bin = None
