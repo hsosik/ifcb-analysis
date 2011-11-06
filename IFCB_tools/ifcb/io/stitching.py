@@ -72,12 +72,12 @@ def extract_background(image,estimated_background):
     bg_mask = ImageChops.difference(image,estimated_background)
     # now compute threshold from histogram
     h = bg_mask.histogram()
-    # reject bottom part with threshold
+    # reject dark part with threshold
     total = sum(h)
     running = 0
     for t in range(256):
         running += h[t]
-        if running > total * 0.8:
+        if running > total * 0.95:
             threshold = t
             break
     #print threshold
@@ -184,7 +184,7 @@ def stitch(targets,images=None):
     # compute the mean and variance of the edges
     (mean,variance) = bright_mv(s,edges)
     # now use that as an estimated background
-    flat_bg = Image.new('L',(h,w),mean)
+    flat_bg = Image.new('L',(h,w),mean) # FIXME
     s.paste(mean,None,gaps_mask)
     # step 3: compute "probable background": low luminance delta from estimated bg
     bg = extract_background(s,flat_bg)
@@ -196,7 +196,7 @@ def stitch(targets,images=None):
     # step 4: sample probable background to compute RBF for illumination gradient
     # grid
     nodes = []
-    div = 8
+    div = 6
     # make sure we get some samples
     while len(nodes) == 0:
         div += 1
@@ -215,12 +215,13 @@ def stitch(targets,images=None):
                         means.append(m)
                         break
     # now construct radial basis functions for mean, based on the samples
-    mean_rbf = interpolate.Rbf([x for x,y in nodes], [y for x,y in nodes], means)
+    mean_rbf = interpolate.Rbf([x for x,y in nodes], [y for x,y in nodes], means, epsilon=rad)
     # step 5: fill gaps with mean based on RBF and variance from bright_mv(edges)
     mask_pix = gaps_mask.load()
     noise = Image.new('L',(h,w),mean)
     noise_pix = noise.load()
     gaussian = numpy.random.normal(0, 1.0, size=(h,w)) # it's normal
+    std_dev *= 0.66 # err on the side of smoother rather than noisier
     for x in xrange(h):
         for y in xrange(w):
             if mask_pix[x,y] == 255: # only for pixels in the mask
@@ -228,7 +229,8 @@ def stitch(targets,images=None):
                 noise_pix[x,y] = mean_rbf(x,y) + (gaussian[x,y] * std_dev)
     # step 6: final composite
     s.paste(noise,None,gaps_mask)
-    return (s,rois_mask)
+    return (s,bg)
+    #return (bg,noise)
 
 # for bin I need iso8601time, rfc822time, headers(), properties(), and pid
 
