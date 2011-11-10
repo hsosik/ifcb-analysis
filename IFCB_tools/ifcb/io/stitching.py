@@ -7,9 +7,9 @@ import os
 import sys
 import random
 from scipy import interpolate
-from ifcb.io.file import TARGET_INFO
 import time
 from random import random
+from ifcb.io import Timestamped, TARGET_INFO
 
 def overlaps(t1, t2):
     if t1.trigger == t2.trigger:
@@ -271,6 +271,7 @@ def stitch(targets,images=None):
     return (s,rois_mask)
 
 # for bin I need iso8601time, rfc822time, headers(), properties(), and pid
+# also targets
 
 class StitchedTarget(object):
     """Represents a Target (e.g., an image and metadata from a single ROI)"""
@@ -290,11 +291,11 @@ class StitchedTarget(object):
         info['height'] = height
         self.info = info
     
-    def __getattribute__(self,name):
+    def __getattr__(self,name):
         if name in TARGET_INFO:
             return self.info[name]
         else:
-            return object.__getattribute__(self,name)
+            return object.__getattribute__(self.bin,name)
         
     def __repr__(self):
         return '{Target(stitched) '+self.pid + '}'
@@ -327,12 +328,18 @@ class StitchedBin(object):
     bin = None
     pairs = None
     stitches = None
-        
+
     def __init__(self,bin):
         self.bin = bin
         self.pid = bin.pid
-        self.iso8601time = bin.iso8601time
-        self.rfc822time = bin.rfc822time
+
+    def __getattr__(self,name):
+        if name in TARGET_INFO:
+            return self.info[name]
+        try:
+            return object.__getattribute__(self,name)
+        except:
+            return object.__getattribute__(self.bin,name)
 
     def headers(self):
         return self.bin.headers()

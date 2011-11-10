@@ -83,6 +83,8 @@ BIN_ID = 'binID' # bin ID
 TARGET_ID = 'targetID' # target ID
 PID = 'pid'
 
+TARGET_INFO = ADC_COLUMNS + [TARGET_NUMBER, BIN_ID, PID]
+
 # path functions
 def ext_path(id, ext, dir='.'):
     """Generate a path for a given local ID and extension"""
@@ -127,3 +129,4 @@ class Timestamped(object):
     @property
     def epoch_time(self):
         return calendar.timegm(self.time)
+

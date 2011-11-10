@@ -3,7 +3,7 @@ from urllib2 import urlopen, Request
 import ifcb
 from ifcb.io import Timestamped
 from ifcb.io.path import Resolver
-from ifcb.io.file import TARGET_INFO
+from ifcb.io import TARGET_INFO
 import re
 
 import urllib2 as urllib

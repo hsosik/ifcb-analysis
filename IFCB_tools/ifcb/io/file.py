@@ -1,6 +1,6 @@
 import csv
 import ifcb
-from ifcb.io import adc_path, roi_path, hdr_path, ADC_SCHEMA, ADC_COLUMNS, HDR_SCHEMA, HDR_COLUMNS, TARGET_NUMBER, BIN_ID, PID, WIDTH, HEIGHT, BYTE_OFFSET, Timestamped, CONTEXT, FRAME_GRAB_TIME, ISO_8601_FORMAT
+from ifcb.io import adc_path, roi_path, hdr_path, ADC_SCHEMA, ADC_COLUMNS, HDR_SCHEMA, HDR_COLUMNS, TARGET_NUMBER, BIN_ID, PID, WIDTH, HEIGHT, BYTE_OFFSET, Timestamped, CONTEXT, FRAME_GRAB_TIME, ISO_8601_FORMAT, TARGET_INFO
 from PIL import Image, ImageChops
 from array import array
 import string
@@ -12,10 +12,9 @@ import calendar
 import pickle
 from cache import cache_io, cache_obj, cache_file
 from config import STITCH
+from ifcb.io.stitching import StitchedBin
 
 """Parsing of IFCB data formats including header files, metadata, and imagery"""
-
-TARGET_INFO = ADC_COLUMNS + [TARGET_NUMBER, BIN_ID, PID]
 
 # a target
 class Target(object):
@@ -196,7 +195,7 @@ class BinFile(Timestamped):
                     
 def newBin(path):
     if STITCH:
-        return ifcb.io.stitching.StitchedBin(BinFile(path))
+        return StitchedBin(BinFile(path))
     else:
         return BinFile(path)
         

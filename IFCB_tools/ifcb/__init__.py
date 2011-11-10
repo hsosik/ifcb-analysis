@@ -2,7 +2,8 @@
 
 # TODO choose a namespace URL prefix that is appropriate to IFCB's origin and place in the world
 TERM_NAMESPACE = 'http://ifcb.whoi.edu/terms#'
-DATA_NAMESPACE = 'http://ifcb-data.whoi.edu/'
+#DATA_NAMESPACE = 'http://ifcb-data.whoi.edu/'
+DATA_NAMESPACE = 'http://demi.whoi.edu/'
 
 def pid(local_id):
     return ''.join([DATA_NAMESPACE, local_id])

@@ -7,7 +7,7 @@ import ifcb
 from ifcb.io.file import BinFile
 from ifcb.io.path import Filesystem
 from ifcb.io import HEIGHT, WIDTH, TARGET_NUMBER, PID
-from config import FS_ROOTS
+from config import FS_ROOTS, DATA_TTL
 from ifcb.io.cache import cache_io, cache_obj
 
 import sys
@@ -85,7 +85,7 @@ def http(bin, fullarea, size_thresh, wh, out, format):
         m = mosaic(bin, fullarea, size_thresh)
         # FIXME should print to out
         for h in ['Content-type: image/'+format,
-                  'Cache-control: max-age=31622400',
+                  'Cache-control: max-age=%d' % DATA_TTL,
                   '']:
             print >>out, h
         return stream(thumbnail(m, wh), out, format)

@@ -10,7 +10,7 @@ from ifcb.io.dir import DayDir
 from ifcb.io.stitching import StitchedBin, StitchedTarget
 import os.path
 import re
-from config import FS_ROOTS
+from config import FS_ROOTS, DATA_TTL
 import sys
 
 """RESTful service resolving an IFCB permanent ID (pid) + format parameter to an appropriate representation"""
@@ -55,8 +55,7 @@ if __name__ == '__main__':
     object = Filesystem(FS_ROOTS).resolve(pid) # resolve the object
     mime_type = MIME_MAP[format] # compute its MIME type
     headers = ['Content-type: %s' % mime_type,
-               #'Cache-control: max-age=31622400',
-               'Cache-control: max-age=3600',
+               'Cache-control: max-age=%d' % DATA_TTL,
                '']
     for h in headers:
         print h

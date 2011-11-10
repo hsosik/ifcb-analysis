@@ -14,3 +14,5 @@ URL_BASE = ''
 
 STITCH=False
 
+# cached data lives for 5 mintues
+DATA_TTL = 300
