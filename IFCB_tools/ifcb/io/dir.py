@@ -39,7 +39,7 @@ class DayDir(Timestamped):
 			for item in sorted(os.listdir(self.dir)):
 				f = os.path.join(self.dir, item)
 				if re.search(r'\.adc$',f) and self.__all_exist(f):
-					return newBin(f)
+					yield newBin(f)
 		except OSError:
 			pass
 	
