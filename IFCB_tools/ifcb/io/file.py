@@ -11,6 +11,7 @@ import time
 import calendar
 import pickle
 from cache import cache_io, cache_obj, cache_file
+from config import STITCH
 
 """Parsing of IFCB data formats including header files, metadata, and imagery"""
 
@@ -192,4 +193,10 @@ class BinFile(Timestamped):
                     outfile = os.path.join(outdir,'%s_%05d.%s' % (self.id, target_number, string.lower(format)))
                     im.save(outfile, format)
                     target_number = target_number + 1 # increment this number *outside* of the loop that skips 0x0 targets!
+                    
+def newBin(path):
+    if STITCH:
+        return ifcb.io.stitching.StitchedBin(BinFile(path))
+    else:
+        return BinFile(path)
         

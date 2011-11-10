@@ -1,5 +1,5 @@
 from ifcb.io.dir import YearsDir, DayDir
-from ifcb.io.file import BinFile
+from ifcb.io.file import newBin
 from ifcb.io import ADC_EXT
 import ifcb
 import re
@@ -156,8 +156,8 @@ class Filesystem(Resolver):
         #bin_path = cache_obj(ifcb.lid(pid)+'_path', lambda: self.bin_path(pid)) # path is cached
         bin_path = self.bin_path(pid)
         if bin_path is not None:
-            return BinFile(bin_path)
-    
+            return newBin(bin_path)
+
     # search for a bin in the filesystem
     def bin_path(self,pid):
         # the names of the day directory and bin file are in the pid

@@ -1,6 +1,6 @@
 import os
 import ifcb
-from file import BinFile
+from file import newBin
 import re
 from ifcb.io import Timestamped, ADC_EXT, HDR_EXT, ROI_EXT
 from ifcb.util import gen2list
@@ -39,7 +39,7 @@ class DayDir(Timestamped):
 			for item in sorted(os.listdir(self.dir)):
 				f = os.path.join(self.dir, item)
 				if re.search(r'\.adc$',f) and self.__all_exist(f):
-					yield BinFile(f)
+					return newBin(f)
 		except OSError:
 			pass
 	
