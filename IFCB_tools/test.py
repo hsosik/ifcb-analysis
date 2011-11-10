@@ -11,6 +11,10 @@ import pickle
 from config import FEED
 from mosaic import doit
 
+import urllib2 as urllib
+from PIL import Image
+from cStringIO import StringIO
+
 J = Filesystem(['/Volumes/J_IFCB/ifcb_data_MVCO_jun06'])
 E = Filesystem(['../exampleData'])
 
@@ -56,9 +60,9 @@ def test7():
     print len(pickle.dumps(E.resolve('http://ifcb-data.whoi.edu/IFCB1_2011_231_182610').all_targets(),2))
     
 def test8():
-    pid = 'http://ifcb-data.whoi.edu/IFCB1_2009_216_075913_00250'
+    pid = 'http://ifcb-data.whoi.edu/IFCB1_2011_231_182610_09147'
     target_png = E.resolve(pid)
-    with open('/tmp/foo.png','w') as f:
+    with open('/Users/jfutrelle/Pictures/bad2.png','w') as f:
         target2image(target_png,'png', f)
 
 def test9():
@@ -70,7 +74,13 @@ def test10():
     with open('/tmp/bar.jpg','wb') as out:
         doit(pid, 'medium', 'jpg', out, ['../exampleData'])
 
+def test11():
+    img_file = urllib.urlopen('http://ifcb-data.whoi.edu/IFCB5_2010_264_124252_01179.png')
+    im = Image.open(StringIO(img_file.read()))
+    im.save('/Users/jfutrelle/Pictures/foo.png','PNG')
+
 if __name__ == '__main__':
+    """
     test1()
     test2()
     test3()
@@ -81,4 +91,6 @@ if __name__ == '__main__':
     test8()
     test9()
     test10()
+    """
+    test11()
     

@@ -12,3 +12,5 @@ URL_BASE = ''
 # uncomment for debugging
 #URL_BASE = 'http://localhost/~jfutrelle/sandbox/ifcb/resolve.py?pid='
 
+STITCH=False
+

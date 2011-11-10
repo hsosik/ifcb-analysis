@@ -7,6 +7,7 @@ from ifcb.io.path import Filesystem
 from ifcb.io.convert import bin2json, bin2xml, bin2rdf, target2rdf, target2xml, target2json, target2image, day2rdf, day2xml, day2json, day2html, bin2html, target2html, bin2hdr, bin2adc, bin2roi, bin2csv
 from ifcb.io.file import BinFile, Target
 from ifcb.io.dir import DayDir
+from ifcb.io.stitching import StitchedBin, StitchedTarget
 import os.path
 import re
 from config import FS_ROOTS
@@ -59,7 +60,7 @@ if __name__ == '__main__':
                '']
     for h in headers:
         print h
-    if isinstance(object,BinFile): # is the object a bin?
+    if isinstance(object,BinFile) or isinstance(object,StitchedBin): # is the object a bin?
         { 'rdf': bin2rdf,
           'xml': bin2xml,
           'html': bin2html,
@@ -70,7 +71,7 @@ if __name__ == '__main__':
           'hdr': bin2hdr }[format](object,out,detail) # convert it to format
     elif re.search('^image/', mime_type): # is it an image?
         target2image(object, IMAGE_FORMATS[mime_type], out, scale) # produce the image
-    elif isinstance(object,Target): # is it a target?
+    elif isinstance(object,Target) or isinstance(object,StitchedTarget): # is it a target?
         { 'rdf': target2rdf,
           'xml': target2xml,
           'html': target2html,

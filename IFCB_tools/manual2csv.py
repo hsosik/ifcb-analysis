@@ -55,8 +55,17 @@ def manual2tuples(path):
                     subs[cols[n]] = str(sub_classes[cols[n]][int(sub)-1])
             yield (lid, '%s_%05d' % (lid, roi), str(manual_classes[manual-1]) if manual is not None else None, str(auto_classes[svm_auto-1]) if svm_auto is not None else None, subs)
     except:
-        print 'error on %s' % lid
-        raise
+        if not 'class2use_sub4' in l:
+            print 'missing class2use_sub4 on %s' % lid
+        else:
+            print l
+            print l.keys()
+            print cols
+            print n 
+            print annotation
+            print sub
+            print sub_classes
+            raise
     
 #dump_mat_field('manual_list.mat','manual_list')
 #dump_mat_field('IFCB1_2006_158_000036.mat','classlist')
@@ -91,10 +100,15 @@ if __name__=='__main__':
             else:
                 p = os.path.join(dir,f)
                 print 'processing %s...' % f
-                for (bin_lid, roi_lid, manual, svm_auto, subs) in manual2tuples(p):
-                    (bin_lid, roi_lid, manual, svm_auto) = map(sqlize_str,(bin_lid, roi_lid, manual, svm_auto))
-                    db.execute("INSERT INTO manual (bin_lid, roi_lid, manual, svm_auto) VALUES (%s,%s,%s,%s)",(bin_lid,roi_lid,manual,svm_auto))
-                    for key,value in subs.items():
-                        db.execute("INSERT INTO manual_sub (bin_lid, roi_lid, sub_column, sub_class) VALUES (%s,%s,%s,%s)",(bin_lid,roi_lid,key,value))
-                conn.commit()
+                try:
+                    for (bin_lid, roi_lid, manual, svm_auto, subs) in manual2tuples(p):
+                        if manual is not None: # for now, just ones with manual class
+                            (bin_lid, roi_lid, manual, svm_auto) = map(sqlize_str,(bin_lid, roi_lid, manual, svm_auto))
+                            db.execute("INSERT INTO manual (bin_lid, roi_lid, manual, svm_auto) VALUES (%s,%s,%s,%s)",(bin_lid,roi_lid,manual,svm_auto))
+                            for key,value in subs.items():
+                                db.execute("INSERT INTO manual_sub (bin_lid, roi_lid, sub_column, sub_class) VALUES (%s,%s,%s,%s)",(bin_lid,roi_lid,key,value))
+                    conn.commit()
+                except:
+                    #raise
+                    pass
 
