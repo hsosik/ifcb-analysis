@@ -1,14 +1,13 @@
 from PIL import Image, ImageDraw, ImageChops, ImageFilter
 import math
 from math import sqrt
-import numpy
+import numpy as np
 from numpy import convolve, median
 import os
 import sys
 import random
 from scipy import interpolate
 from ifcb.io.file import TARGET_INFO
-from ifcb.io.path import Filesystem
 import time
 from random import random
 
@@ -110,24 +109,29 @@ def mask(targets):
     return mask
 
 # stitch with no noise fill
-def stitch_raw(targets,images=None):
+def stitch_raw(targets,images=None,box=None):
     # fetch images
     if images is None:
-        images = [target.image for target in targets]
+        images = [target.image() for target in targets]
     # compute bounds relative to the camera field
-    (x,y,w,h) = stitched_box(targets)
+    if box is None:
+        box = stitched_box(targets)
+    (x,y,w,h) = box
     # now we swap width and height to rotate the image 90 degrees
     s = Image.new('L',(h,w)) # the stitched image with a missing region
     for (roi,image) in zip(targets,images):
         rx = roi.left - x
         ry = roi.bottom - y
-        s.paste(roi.image(), (ry, rx)) # paste in the right location
+        rw = roi.width 
+        rh = roi.height
+        roi_box = (ry, rx, ry + rh, rx + rw)
+        s.paste(image, roi_box) # paste in the right location
     return s
 
 def edges_mask(targets,images=None):
     # fetch images
     if images is None:
-        images = [target.image for target in targets]
+        images = [target.image() for target in targets]
     # compute bounds relative to the camera field
     (x,y,w,h) = stitched_box(targets)
     # now we swap width and height to rotate the image 90 degrees
@@ -171,64 +175,99 @@ def hist(samples):
 def stitch(targets,images=None):
     # fetch images
     if images is None:
-        images = [target.image for target in targets]
+        images = [target.image() for target in targets]
+    start = time.time()
+    timings = {}
+    then = time.time()
     # compute bounds relative to the camera field
     (x,y,w,h) = stitched_box(targets)
+    timings['stitch_box'] = time.time() - then
+    then = time.time()
     # note that w and h are switched from here on out to rotate 90 degrees.
     # step 1: compute masks
-    s = stitch_raw(targets,images) # stitched ROI's with black gaps
+    s = stitch_raw(targets,images,(x,y,w,h)) # stitched ROI's with black gaps
+    timings['stitch_raw'] = time.time() - then
+    then = time.time()
     rois_mask = mask(targets) # a mask of where the ROI's are
     gaps_mask = ImageChops.invert(rois_mask) # its inverse is where the gaps are
     edges = edges_mask(targets,images) # edges are pixels along the ROI edges
+    timings['mask'] = time.time() - then
+    then = time.time()
     # step 2: estimate background from edges
     # compute the mean and variance of the edges
     (mean,variance) = bright_mv(s,edges)
     # now use that as an estimated background
     flat_bg = Image.new('L',(h,w),mean) # FIXME
     s.paste(mean,None,gaps_mask)
+    timings['estimate_bg'] = time.time() - then
+    then = time.time()
     # step 3: compute "probable background": low luminance delta from estimated bg
     bg = extract_background(s,flat_bg)
     # also mask out the gaps, which are not "probable background"
     bg.paste(255,None,gaps_mask)
+    timings['extract_bg'] = time.time() - then
+    then = time.time()
     # step 3a: improve mean/variance estimate
     (mean,variance) = bright_mv(bg)
     std_dev = sqrt(variance)
+    timings['bg_mv'] = time.time() - then
+    then = time.time()
     # step 4: sample probable background to compute RBF for illumination gradient
     # grid
-    nodes = []
     div = 6
-    # make sure we get some samples
-    while len(nodes) == 0:
-        div += 1
-        means = []
-        nodes = []
-        rad = avg([h,w]) / div
-        for x in range(0,h+rad,rad):
-            for y in range(0,w+rad,rad):
-                for r in range(rad,max(h,w),3):
-                    box = (max(0,x-r),max(0,y-r),min(h-1,x+r),min(w-1,y+r))
-                    region = bg.crop(box)
-                    nabe = region.histogram()
-                    (m,v) = bright_mv_hist(nabe)
-                    if m > 0 and m < 255: # reject outliers
-                        nodes.append((x,y))
-                        means.append(m)
-                        break
+    means = []
+    nodes = []
+    rad = avg([h,w]) / div
+    rad_step = int(rad/2)+1
+    for x in range(0,h+rad,rad):
+        for y in range(0,w+rad,rad):
+            for r in range(rad,max(h,w),int(rad/3)+1):
+                box = (max(0,x-r),max(0,y-r),min(h-1,x+r),min(w-1,y+r))
+                region = bg.crop(box)
+                nabe = region.histogram()
+                (m,v) = bright_mv_hist(nabe)
+                if m > 0 and m < 255: # reject outliers
+                    nodes.append((x,y))
+                    means.append(m)
+                    break
+    timings['sample'] = time.time() - then
+    then = time.time()
     # now construct radial basis functions for mean, based on the samples
     mean_rbf = interpolate.Rbf([x for x,y in nodes], [y for x,y in nodes], means, epsilon=rad)
+    timings['rbf'] = time.time() - then
+    then = time.time()
     # step 5: fill gaps with mean based on RBF and variance from bright_mv(edges)
     mask_pix = gaps_mask.load()
     noise = Image.new('L',(h,w),mean)
     noise_pix = noise.load()
-    gaussian = numpy.random.normal(0, 1.0, size=(h,w)) # it's normal
+    gaussian = np.random.normal(0, 1.0, size=(h,w)) # it's normal
     std_dev *= 0.66 # err on the side of smoother rather than noisier
+    timings['random'] = time.time() - then
+    then = time.time()
+    mask_x = []
+    mask_y = []
     for x in xrange(h):
         for y in xrange(w):
             if mask_pix[x,y] == 255: # only for pixels in the mask
-                # fill is illumination gradient + noise
-                noise_pix[x,y] = mean_rbf(x,y) + (gaussian[x,y] * std_dev)
+                mask_x.append(x)
+                mask_y.append(y)
+    rbf_fill = mean_rbf(np.array(mask_x), np.array(mask_y))
+    timings['rbf_fill'] = time.time() - then
+    then = time.time()
+    for x,y,r in zip(mask_x, mask_y, rbf_fill):
+        # fill is illumination gradient + noise
+        noise_pix[x,y] = r + (gaussian[x,y] * std_dev)
     # step 6: final composite
     s.paste(noise,None,gaps_mask)
+    timings['noise_fill'] = time.time() - then
+    elapsed = time.time() - start
+    #norm = sum(timings.values())
+    #for k in timings:
+    #    seconds = int(timings[k] * 1000)
+    #    percent = int(timings[k] * 1000 / norm) / 10.0
+    #    timings[k] = '%dms (%%%.1f)' % (seconds,percent)
+    #elapsed = int(elapsed * 1000)
+    #print (elapsed,timings)
     return (s,rois_mask)
 
 # for bin I need iso8601time, rfc822time, headers(), properties(), and pid
@@ -242,15 +281,14 @@ class StitchedTarget(object):
     
     def __init__(self,bin,target1,target2):
         self.bin = bin
-        (left,bottom,width,height) = stitched_box([target1,target2])
+        self.targets = [target1, target2]
+        (left,bottom,width,height) = stitched_box(self.targets)
         info = target1.info.copy()
         info['left'] = left
         info['bottom'] = bottom
         info['width'] = width
         info['height'] = height
         self.info = info
-        self.target1 = target1
-        self.target2 = target2
     
     def __getattribute__(self,name):
         if name in TARGET_INFO:
@@ -270,7 +308,7 @@ class StitchedTarget(object):
     
     def imagenmask(self):
         if self.img is None:
-            (self.img, self.msk) = stitch([self.target1, self.target2])
+            (self.img, self.msk) = stitch(self.targets)
         return (self.img, self.msk)
     
     def image(self):
@@ -279,8 +317,11 @@ class StitchedTarget(object):
     
     def mask(self):
         if self.msk is None:
-            self.msk = mask([self.target1, self.target2])
+            self.msk = mask(self.targets)
         return self.msk
+    
+    def stitch_raw(self):
+        return stitch_raw(self.targets)
     
 class StitchedBin(object):
     bin = None
