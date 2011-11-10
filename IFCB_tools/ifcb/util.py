@@ -28,4 +28,8 @@ def order_keys(d,s):
 def decamel(s):
     return string.capwords(re.sub(r'([a-z])([A-Z]+)',r'\1 \2',s))
     
+def apply_defaults(dict,defaults):
+    for k in defaults.keys():
+        if not dict.has_key(k):
+            dict[k] = defaults[k]
     
