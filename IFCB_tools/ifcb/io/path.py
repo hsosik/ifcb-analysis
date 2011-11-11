@@ -71,7 +71,7 @@ class Filesystem(Resolver):
             delta = math.fabs(day.epoch_time - epoch_time)
             if delta < 86400: # less than a day
                 for bin in sorted(list(day.all_bins()),key=lambda b: abs(b.epoch_time - epoch_time)):
-                    if bin.epoch_time < epoch_time:
+                    if bin.epoch_time <= epoch_time:
                         return bin
         
     def all_bins(self,start=None,end=None):
