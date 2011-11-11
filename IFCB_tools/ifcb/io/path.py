@@ -66,16 +66,13 @@ class Filesystem(Resolver):
             
     def nearest_bin(self,date):
         """Return the bin whose timestamp is nearest to this date"""
-        cursor = date
-        nearest_day = self.__nearest_thing(self.all_days(), date)
-        n = 60 # don't tolerate longer than 60-day gap
-        while n > 0:
-            nearest_bin = self.__nearest_thing(nearest_day.all_bins(), date)
-            if nearest_bin is not None:
-                return nearest_bin
-            # keep searching earlier until we find a day with bins
-            nearest_day = self.__nearest_thing(self.all_days(), nearest_day.time, True)
-            n -= 1;
+        epoch_time = calendar.timegm(date)
+        for day in self.all_days():
+            delta = math.fabs(day.epoch_time - epoch_time)
+            if delta < 86400: # less than a day
+                for bin in sorted(list(day.all_bins()),key=lambda b: abs(b.epoch_time - epoch_time)):
+                    if bin.epoch_time < epoch_time:
+                        return bin
         
     def all_bins(self,start=None,end=None):
         """Yield all bins
