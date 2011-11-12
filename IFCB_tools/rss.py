@@ -2,15 +2,15 @@
 from sys import argv, stdout
 import cgi
 import cgitb
-from ifcb.io.convert import fs2atom, fs2json_feed, fs2html_feed, fs2rss
+from ifcb.db.feed import latest_bins
+from ifcb.io.convert import bins2atom, bins2json_feed, bins2html_feed, bins2rss
 from ifcb.io.path import Filesystem
 from config import FS_ROOTS, FEED
-import time
 import re
+import time
+import datetime
 
-"""Produce an RSS or ATOM feed of bins"""
-
-if __name__ == '__main__':
+if __name__=='__main__':
     cgitb.enable()
     format = cgi.FieldStorage().getvalue('format','atom') # default format is atom
     size = int(cgi.FieldStorage().getvalue('n','25')) # default number of bins to return is 25
@@ -21,7 +21,8 @@ if __name__ == '__main__':
             date = time.strptime(dates+'UTC','%Y-%m-%d%Z') # assume midnight UTC
         elif re.match(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$',dates): # ISO 8601 in YYYY-mm-ddTHH:MM:SSZ?
             date = time.strptime(re.sub('Z$','UTC',dates),'%Y-%m-%dT%H:%M:%S%Z') # parse
-    # compute MIME type
+    fs = Filesystem(FS_ROOTS)
+    bins = [fs.resolve(pid) for pid in list(latest_bins(size,date))]
     mime = dict(atom='application/atom+xml', json='application/json', html='text/html', rss='application/rss+xml')[format]
     headers = ['Content-type: %s' % mime,
                'Cache-control: max-age=60',
@@ -29,5 +30,11 @@ if __name__ == '__main__':
     for h in headers:
         print h
     link = '.'.join([FEED,format])
-    # convert to feed
-    dict(atom=fs2atom, json=fs2json_feed, html=fs2html_feed, rss=fs2rss)[format](Filesystem(FS_ROOTS),link,size,date)
+    if format == 'atom':
+        bins2atom(bins,link)
+    elif format == 'json':
+        bins2json_feed(bins)
+    elif format == 'rss':
+        bins2rss(bins,link)
+    elif format == 'html':
+        bins2html_feed(bins)

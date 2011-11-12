@@ -370,6 +370,9 @@ def __feed_bins(fs,n=20,date=None):
     return result
     
 def fs2atom(fs,link,n=20,date=None,out=sys.stdout):
+    bins2atom(__feed_bins(fs,n,date),link,out)
+
+def bins2atom(bins,link,out=sys.stdout):
     """Output an Atom feed of recent bins from the given filesystem.
     
     Parameters:
@@ -381,7 +384,6 @@ def fs2atom(fs,link,n=20,date=None,out=sys.stdout):
     """
     nsmap = { None: ATOM_NAMESPACE }
     xhtml = { None: 'http://www.w3.org/1999/xhtml' }
-    bins = __feed_bins(fs,n,date)
     feed = Element('feed', nsmap=nsmap)
     SubElement(feed, 'title').text = 'Imaging FlowCytobot most recent data'
     SubElement(feed, 'subtitle').text = 'Live marine phytoplankton cytometry with imagery'
@@ -406,6 +408,9 @@ def fs2atom(fs,link,n=20,date=None,out=sys.stdout):
     ElementTree(feed).write(out, pretty_print=True)
 
 def fs2rss(fs,link,n=20,date=None,out=sys.stdout):
+    bins2rss(__feed_bins(fs,n,date),link,out)
+
+def bins2rss(bins,link,out=sys.stdout):
     """Output an RSS 2.0 feed of recent bins from the given filesystem.
     
     Parameters:
@@ -416,7 +421,6 @@ def fs2rss(fs,link,n=20,date=None,out=sys.stdout):
     out - where to write the feed (default: stdout)
     """
     xhtml = { None: 'http://www.w3.org/1999/xhtml' }
-    bins = __feed_bins(fs,n,date)
     rss = Element('rss', version='2.0')
     feed = SubElement(rss, 'channel', nsmap=dict(atom=ATOM_NAMESPACE))
     SubElement(feed, 'title').text = 'Imaging FlowCytobot most recent data'
@@ -441,6 +445,9 @@ def fs2rss(fs,link,n=20,date=None,out=sys.stdout):
     ElementTree(rss).write(out, pretty_print=True)
 
 def fs2html_feed(fs,link,n=20,date=None,out=sys.stdout):
+    bins2html_feed(__feed_bins(fs,n,date),out)
+
+def bins2html_feed(bins,out=sys.stdout):
     """Output an HTML-formatted "feed" of recent bins from the given filesystem.
     
     Parameters:
@@ -450,12 +457,14 @@ def fs2html_feed(fs,link,n=20,date=None,out=sys.stdout):
     date - the latest date to return (default: now)
     out - where to write the feed (default: stdout)
     """
-    bins = __feed_bins(fs,n,date)
     (html, body) = __html('Imaging FlowCytobot most recent data')
     __bins2html(body, bins)
     ElementTree(html).write(out, pretty_print=True)
-    
-def fs2json_feed(fs,link,n=20,date=None,out=sys.stdout):
+
+def fs2json_feed(fs,link,n,date=None,out=sys.stdout):
+    bins2json_feed(__feed_bins(fs,n,date),out)
+
+def bins2json_feed(bins,out=sys.stdout):
     """Output an JSON-formatted "feed" of recent bins from the given filesystem.
     
     Parameters:
@@ -465,7 +474,7 @@ def fs2json_feed(fs,link,n=20,date=None,out=sys.stdout):
     date - the latest date to return (default: now)
     out - where to write the feed (default: stdout)
     """
-    simplejson.dump([bin.properties(True) for bin in __feed_bins(fs,n,date)],out)
+    simplejson.dump([bin.properties(True) for bin in bins],out)
 
 def pretty_property_name(propName):
     """Decamelize a property name"""

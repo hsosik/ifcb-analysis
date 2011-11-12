@@ -5,4 +5,8 @@ from config import FS_ROOTS
 
 fs = Filesystem(FS_ROOTS)
 
+#for d in fs.all_days():
+#    print d
+
+#bins2db(fs,[])
 bins2db(fs)

@@ -44,6 +44,7 @@ def spider(mosaics=20,bins=10):
         for tile in mosaic['tiles']:
             pid = tile['pid'] # target pid
             hit_url(pid + '.jpg')
+            hit_url(pid + '.png')
             hit_url(pid + '/head.json')
 
 if __name__=='__main__':
