@@ -66,13 +66,16 @@ class Filesystem(Resolver):
             
     def nearest_bin(self,date):
         """Return the bin whose timestamp is nearest to this date"""
+        window = 1 # 1-day
         epoch_time = calendar.timegm(date)
-        for day in self.all_days():
-            delta = math.fabs(day.epoch_time - epoch_time)
-            if delta < 86400: # less than a day
-                for bin in sorted(list(day.all_bins()),key=lambda b: abs(b.epoch_time - epoch_time)):
-                    if bin.epoch_time <= epoch_time:
-                        return bin
+        while window < 365250: # 1000 years
+            for day in self.all_days():
+                delta = math.fabs(day.epoch_time - epoch_time)
+                if delta < (window * 86400): # within {window} days?
+                    for bin in sorted(list(day.all_bins()),key=lambda b: abs(b.epoch_time - epoch_time)):
+                        if bin.epoch_time < epoch_time:
+                            return bin
+            window *= 2
         
     def all_bins(self,start=None,end=None):
         """Yield all bins
@@ -103,7 +106,7 @@ class Filesystem(Resolver):
         Return a DayDir instance"""
         return self.latest_days(1)[0]
 
-    def latest_bins(self,n=10):
+    def latest_bins(self,n=10,nd=2):
         """Return latest bins as of now.
         
         Parameters:
@@ -111,7 +114,7 @@ class Filesystem(Resolver):
         
         Returns Bin instances"""
         bins = []
-        for day in self.latest_days(2):
+        for day in self.latest_days(nd):
             for bin in day:
                 bins.append(bin)
         return sorted(bins, key=lambda bin: bin.time)[-n:]

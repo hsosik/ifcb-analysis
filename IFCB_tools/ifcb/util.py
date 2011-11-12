@@ -1,6 +1,10 @@
 from functools import wraps
 import re
 import string
+from math import floor
+import time
+from time import time, strftime, gmtime
+from sys import stdout
 
 # adapted from http://argandgahandapandpa.wordpress.com/2009/03/29/python-generator-to-list-decorator/
 def gen2dict(func):
@@ -32,4 +36,20 @@ def apply_defaults(dict,defaults):
     for k in defaults.keys():
         if not dict.has_key(k):
             dict[k] = defaults[k]
+
+def iso8601utcnow():
+    t = time()
+    ms = int(floor((t * 1000) % 1000))
+    return '%s.%03dZ' % (strftime('%Y-%m-%dT%H:%M:%S',gmtime(t)),ms)
+
+def csvrep(value,none=''):
+    if value is None:
+        return none
+    s = str(value)
+    if ' ' in s:
+        s = "'%s'" % s
+    return s
+
+def log_msg(msg,fields=[],out=stdout):
+    print >> out, ' '.join([iso8601utcnow(),msg] + [csvrep(f,'-') for f in fields])
     

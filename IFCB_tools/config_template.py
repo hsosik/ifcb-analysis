@@ -1,3 +1,5 @@
+# web service namespace
+DATA_NAMESPACE = 'http://ifcb-data.whoi.edu/'
 # Self-link included in ATOM feed
 FEED = 'http://ifcb-data.whoi.edu/feed'
 

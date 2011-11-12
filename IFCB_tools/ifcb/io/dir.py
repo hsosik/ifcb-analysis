@@ -36,10 +36,16 @@ class DayDir(Timestamped):
 	
 	def __iter__(self):
 		try:
+			exts = {}
 			for item in sorted(os.listdir(self.dir)):
 				f = os.path.join(self.dir, item)
-				if re.search(r'\.adc$',f) and self.__all_exist(f):
-					yield newBin(f)
+				if re.search(r'\.[a-z]+$',f):
+					(lid,ext) = re.match('.*/(.*)\.([a-z]+)$',f).groups()
+					if lid not in exts:
+						exts[lid] = []
+					exts[lid].append(ext)
+					if 'hdr' in exts[lid] and 'adc' in exts[lid] and 'roi' in exts[lid]:
+						yield newBin(f)
 		except OSError:
 			pass
 	
