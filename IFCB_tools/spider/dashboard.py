@@ -4,12 +4,14 @@ import json
 import re
 import os
 from shutil import copyfileobj
+from config import DATA_NAMESPACE
+from ifcb.util import log_msg
 
 def lid(pid):
     return re.sub('http://[^/]+/','',pid)
 
 def hit_url(url):
-    print 'hitting ' + url + '...'
+    log_msg('hitting ' + url + '...')
     try:
         u = urlopen(url)
         while True:
@@ -20,21 +22,21 @@ def hit_url(url):
     except HTTPError:
         pass
 
-def spider():
-    f = urlopen('http://ifcb-data.whoi.edu/feed.json')
+def spider(mosaics=20,bins=10):
+    f = urlopen(DATA_NAMESPACE + 'feed.json')
     feed = json.load(f)
     f.close()
 
-    for bin_pid in [bin['pid'] for bin in feed[:7]]:
+    for bin_pid in [bin['pid'] for bin in feed[:mosaics]]:
         hit_url(bin_pid + '/head.json');
         hit_url(bin_pid + '/short.json');
 
     for size in ['small', 'medium']:
-        for bin_pid in [bin['pid'] for bin in feed[:7]]:
+        for bin_pid in [bin['pid'] for bin in feed[:mosaics]]:
             hit_url(bin_pid + '/mosaic/'+size+'.json');
             hit_url(bin_pid + '/mosaic/'+size+'.jpg');
 
-    for bin_pid in [bin['pid'] for bin in feed[:1]]:
+    for bin_pid in [bin['pid'] for bin in feed[:bins]]:
         f = urlopen(bin_pid + '/mosaic/small.json')
         mosaic = json.load(f)
         f.close()
