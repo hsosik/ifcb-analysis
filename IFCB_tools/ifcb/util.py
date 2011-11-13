@@ -5,6 +5,8 @@ from math import floor
 import time
 from time import time, strftime, gmtime
 from sys import stdout
+import datetime
+import pytz
 
 # adapted from http://argandgahandapandpa.wordpress.com/2009/03/29/python-generator-to-list-decorator/
 def gen2dict(func):
@@ -41,6 +43,9 @@ def iso8601utcnow():
     t = time()
     ms = int(floor((t * 1000) % 1000))
     return '%s.%03dZ' % (strftime('%Y-%m-%dT%H:%M:%S',gmtime(t)),ms)
+
+def utcdatetime(struct_time=time()):
+    return datetime.datetime(*struct_time[:6], tzinfo=pytz.timezone('UTC'))
 
 def csvrep(value,none=''):
     if value is None:

@@ -31,8 +31,8 @@ def spider(mosaics=20,bins=10):
         hit_url(bin_pid + '/head.json');
         hit_url(bin_pid + '/short.json');
 
-    for size in ['small', 'medium']:
-        for bin_pid in [bin['pid'] for bin in feed[:mosaics]]:
+    for bin_pid in [bin['pid'] for bin in feed[:mosaics]]:
+        for size in ['small', 'medium']:
             hit_url(bin_pid + '/mosaic/'+size+'.json');
             hit_url(bin_pid + '/mosaic/'+size+'.jpg');
 

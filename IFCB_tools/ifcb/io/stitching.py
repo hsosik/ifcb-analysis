@@ -346,7 +346,13 @@ class StitchedBin(object):
     
     def properties(self,include_pid=False):
         return self.bin.properties(include_pid)
-    
+
+    def __repr__(self):
+        return '{Bin(stitched) '+self.pid + '}'
+
+    def all_targets(self):
+        return list(self)
+
      # generate all targets
     def __iter__(self):
         if self.pairs is None:

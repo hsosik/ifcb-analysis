@@ -62,9 +62,8 @@ def mosaic(bin, (width, height), size=0):
     size - size threshold in pixels^2. images below this area threshold will be ignored"""
     mosaic = Image.new('L', (width, height))
     mosaic.paste(160,(0,0,width,height))
-    with open(bin.roi_path, 'rb') as roi_file:
-        for entry in layout(bin, (width, height), size)['tiles']:
-            mosaic.paste(bin.image(entry[TARGET_NUMBER], roi_file), (entry['x'], entry['y']))
+    for entry in layout(bin, (width, height), size)['tiles']:
+        mosaic.paste(bin.target(entry[TARGET_NUMBER]).image(), (entry['x'], entry['y']))
     return mosaic
            
 def thumbnail(image, wh):
