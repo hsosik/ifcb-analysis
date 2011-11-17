@@ -169,7 +169,7 @@ class BinFile(Timestamped):
     
     ## image access
     def all_images(self):
-        with open(self.roi_path(),'rb',1) as roi_file:
+        with open(self.roi_path,'rb',1) as roi_file:
             for target in self:
                 yield self.__get_image(target.info, roi_file)
         
@@ -183,7 +183,7 @@ class BinFile(Timestamped):
     
     def save_images(self,outdir='.',format='PNG'):
         # read target info from the ADC file
-        with open(self.roi_path(),'rb',1) as roi_file:
+        with open(self.roi_path,'rb',1) as roi_file:
             target_number = 1
             for target in self:
                 if(target.width > 0 and target.height > 0): # IFCB writes (or used to write) some 0x0 target's; skip them
