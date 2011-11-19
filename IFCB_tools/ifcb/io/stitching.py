@@ -10,6 +10,8 @@ from scipy import interpolate
 import time
 from random import random
 from ifcb.io import Timestamped, TARGET_INFO
+from ifcb.io.cache import cache_obj
+import ifcb
 
 def overlaps(t1, t2):
     if t1.trigger == t2.trigger:
@@ -24,7 +26,7 @@ def find_pairs(bin):
     prev = None
     for target in bin:
         if prev is not None and overlaps(target, prev):
-            yield (prev, target)
+            yield (prev.targetNumber, target.targetNumber)
         prev = target
 
 def normz(a):
@@ -280,8 +282,9 @@ class StitchedTarget(object):
     img = None 
     msk = None
     
-    def __init__(self,bin,target1,target2):
+    def __init__(self,bin,n1,n2):
         self.bin = bin
+        (target1, target2) = list(bin.targets([n1,n2]))
         self.targets = [target1, target2]
         (left,bottom,width,height) = stitched_box(self.targets)
         info = target1.info.copy()
@@ -353,33 +356,45 @@ class StitchedBin(object):
     def all_targets(self):
         return list(self)
 
-     # generate all targets
-    def __iter__(self):
+    def __pairs(self):
         if self.pairs is None:
-            self.pairs = list(find_pairs(self.bin))
-        for target in self.bin:
+            cache_key = '_'.join([ifcb.lid(self.pid),'spairs'])
+            self.pairs = cache_obj(cache_key,lambda: list(find_pairs(self.bin)))
+        return self.pairs
+    
+    def iterate(self,skip=0):
+        pairs = self.__pairs()
+        head2tail = {}
+        tail2head = {}
+        for one,two in pairs:
+            head2tail[one] = two
+            tail2head[two] = one
+        for target in self.bin.iterate(skip):
             # need stitching?
             stitched = False
-            for t1,t2 in self.pairs:
-                if target.pid == t1.pid:
-                    target = StitchedTarget(self.bin,t1,t2)
-                    if self.stitches is None:
-                        self.stitches = {}
-                    self.stitches[t1.targetNumber] = target
-                    yield target
-                    stitched = True
-                elif target.pid == t2.pid:
-                    stitched = True
-            if not stitched:
+            head = target.targetNumber
+            if self.stitches is None:
+                self.stitches = {}
+            if head in self.stitches:
+                yield self.stitches[head]
+            elif head in head2tail:
+                tail = head2tail[head]
+                st = StitchedTarget(self.bin,head,tail)
+                self.stitches[head] = st
+                yield st
+            elif head in tail2head:
+                pass
+            else:
                 yield target
                 
+     # generate all targets
+    def __iter__(self):
+        return iter(self.iterate())
+                
     def target(self,n):
-        if self.stitches is None:
-            for target in list(self):
-                if target.targetNumber == n:
-                    return target
-        elif n in self.stitches:
-            return self.stitches[n]
+        for target in self.iterate(n-1):
+            if target.targetNumber == n:
+                return target
         else:
             return self.bin.target(n)
 

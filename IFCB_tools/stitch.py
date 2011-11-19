@@ -6,8 +6,8 @@ import os
 import sys
 
 def test_bin(pid):
-    client = Client()
-    #client = Filesystem(['../exampleData'])
+    #client = Client()
+    client = Filesystem(['../exampleData'])
     catch = False
     dir = os.path.join('stitch',ifcb.lid(pid))
     try:
@@ -16,8 +16,10 @@ def test_bin(pid):
         pass
     unstitched = client.resolve(pid)
     stitched = StitchedBin(unstitched)
-    for target,ignore in find_pairs(unstitched):
-        t = stitched.target(target.targetNumber)
+    print stitched
+    pairs = list(find_pairs(unstitched))
+    for target,ignore in pairs:
+        t = stitched.target(target)
         print 'Got %s' % t
         basename = ifcb.lid(t.pid)
         t.image().save(os.path.join(dir,basename+'.png'),'png')
@@ -44,4 +46,5 @@ if __name__=='__main__':
     #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_297_142938')
     #test_bin('http://ifcb-data.whoi.edu/IFCB5_2011_305_135951')
     test_bin('http://ifcb-data.whoi.edu/IFCB5_2010_264_102403')
-    #test_bin('http://ifcb-data.whoi.edu/IFCB5_2011_308_140241')
+    #test_bin('http://ifcb-data.whoi.edu/IFCB1_2011_231_182610')
+    #test_bin('http://ifcb-data.whoi.edu/IFCB1_2009_216_075913')

@@ -14,6 +14,8 @@ from cache import cache_io, cache_obj, cache_file
 from config import STITCH
 from ifcb.io.stitching import StitchedBin
 
+import mmap
+
 """Parsing of IFCB data formats including header files, metadata, and imagery"""
 
 # a target
@@ -88,6 +90,7 @@ class BinFile(Timestamped):
     
     def headers(self):
         cache_key = self.__cache_key('hdr')
+        # FIXME cache the props, not the text!
         lines = [line.rstrip() for line in cache_file(cache_key, self.hdr_path).readlines()]
         # "context" is what the text on lines 2-4 is called in the header file
         props = { CONTEXT: [lines[n].strip('"') for n in range(3)] }
@@ -110,36 +113,47 @@ class BinFile(Timestamped):
         return id
     
     # the ADC file is in CSV format, schema is described in ADC_SCHEMA
-    def __read_adc(self, open_adc_file=None):
-        cache_key = self.__cache_key('adc')
-        target_number = 1
-        for row in csv.reader(cache_file(cache_key, self.adc_path)):
-            # record some contextual information that we know; the targeg number, the bin's id, and the target pid
-            target_info = { TARGET_NUMBER: target_number, BIN_ID: self.pid, PID: self.target_pid(target_number) }
-            # now cast the column values to their corresponding type in the schema
-            for (name, cast), value in zip(ADC_SCHEMA, row):
-                target_info[name] = cast(value)
-            # skip 0x0 targets ...
-            if target_info[HEIGHT] > 0 and target_info[WIDTH] > 0:
-                target = Target(target_info,self)
-                yield target
-            # ... but count them, so indicies are correct
-            target_number = target_number + 1
-            
+    def __read_adc(self, skip=0):
+        with open(self.adc_path) as adc:
+            for i in range(skip):
+                adc.readline()
+            target_number = skip + 1
+            for row in csv.reader(adc):
+                # record some contextual information that we know; the targeg number, the bin's id, and the target pid
+                target_info = { TARGET_NUMBER: target_number, BIN_ID: self.pid, PID: self.target_pid(target_number) }
+                # now cast the column values to their corresponding type in the schema
+                for (name, cast), value in zip(ADC_SCHEMA, row):
+                    target_info[name] = cast(value)
+                # skip 0x0 targets ...
+                if target_info[HEIGHT] > 0 and target_info[WIDTH] > 0:
+                    target = Target(target_info,self)
+                    yield target
+                # ... but count them, so indicies are correct
+                target_number = target_number + 1
+
+    def iterate(self,skip=0):
+        return iter(self.__read_adc(skip))
+                
     # generate all targets
     def __iter__(self):
-        return iter(self.__read_adc())
-            
+        return self.iterate()
+    
     def all_targets(self):
         return list(self)
 
     # retrieve the nth target (1-based!)
     # more efficient than subscripting the result of all_targets
     def target(self,n):
-        for target in self:
+        for target in self.__read_adc(n-1):
             if n == target.targetNumber:
                 return target
     
+    def targets(self,ns):
+        skip = min(ns) - 1
+        for target in self.__read_adc(skip):
+            if target.targetNumber in ns:
+                yield target
+                
     # return number of targets
     def length(self):
         count = 0
@@ -184,15 +198,13 @@ class BinFile(Timestamped):
     def save_images(self,outdir='.',format='PNG'):
         # read target info from the ADC file
         with open(self.roi_path,'rb',1) as roi_file:
-            target_number = 1
             for target in self:
                 if(target.width > 0 and target.height > 0): # IFCB writes (or used to write) some 0x0 target's; skip them
                     im = self.__get_image(target, roi_file)
                     # output filename is {id}_ddddd where ddddd is target number in file
-                    outfile = os.path.join(outdir,'%s_%05d.%s' % (self.id, target_number, string.lower(format)))
+                    outfile = os.path.join(outdir,'%s_%05d.%s' % (self.id, target.targetNumber, string.lower(format)))
                     im.save(outfile, format)
-                    target_number = target_number + 1 # increment this number *outside* of the loop that skips 0x0 targets!
-                    
+
 def newBin(path):
     if STITCH:
         return StitchedBin(BinFile(path))
