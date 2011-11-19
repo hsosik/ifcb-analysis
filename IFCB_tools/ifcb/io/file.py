@@ -112,24 +112,29 @@ class BinFile(Timestamped):
             id = '_'.join([id,str(subkey)])
         return id
     
+    def __parse_row(self,row,target_number):
+        # record some contextual information that we know; the targeg number, the bin's id, and the target pi
+        target_info = { TARGET_NUMBER: target_number, BIN_ID: self.pid, PID: self.target_pid(target_number) }
+        # now cast the column values to their corresponding type in the schema
+        for (name, cast), value in zip(ADC_SCHEMA, row):
+            target_info[name] = cast(value)
+        return target_info
+        
     # the ADC file is in CSV format, schema is described in ADC_SCHEMA
     def __read_adc(self, skip=0):
-        with open(self.adc_path) as adc:
-            for i in range(skip):
-                adc.readline()
-            target_number = skip + 1
-            for row in csv.reader(adc):
-                # record some contextual information that we know; the targeg number, the bin's id, and the target pid
-                target_info = { TARGET_NUMBER: target_number, BIN_ID: self.pid, PID: self.target_pid(target_number) }
-                # now cast the column values to their corresponding type in the schema
-                for (name, cast), value in zip(ADC_SCHEMA, row):
-                    target_info[name] = cast(value)
-                # skip 0x0 targets ...
-                if target_info[HEIGHT] > 0 and target_info[WIDTH] > 0:
-                    target = Target(target_info,self)
-                    yield target
-                # ... but count them, so indicies are correct
-                target_number = target_number + 1
+        cache_key = self.__cache_key('adc')
+        adc = cache_file(cache_key, self.adc_path)
+        for i in range(skip):
+            adc.readline()
+        target_number = skip + 1
+        for row in csv.reader(adc):
+            target_info = self.__parse_row(row,target_number)
+            # skip 0x0 targets ...
+            if target_info[HEIGHT] > 0 and target_info[WIDTH] > 0:
+                target = Target(target_info,self)
+                yield target
+            # ... but count them, so indicies are correct
+            target_number = target_number + 1
 
     def iterate(self,skip=0):
         return iter(self.__read_adc(skip))
