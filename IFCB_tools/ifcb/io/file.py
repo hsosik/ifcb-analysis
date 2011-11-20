@@ -204,7 +204,7 @@ class BinFile(Timestamped):
         # read target info from the ADC file
         with open(self.roi_path,'rb',1) as roi_file:
             for target in self:
-                if(target.width > 0 and target.height > 0): # IFCB writes (or used to write) some 0x0 target's; skip them
+                if(target.width > 0 and target.height > 0): # IFCB writes some 0x0 target's; skip them
                     im = self.__get_image(target, roi_file)
                     # output filename is {id}_ddddd where ddddd is target number in file
                     outfile = os.path.join(outdir,'%s_%05d.%s' % (self.id, target.targetNumber, string.lower(format)))

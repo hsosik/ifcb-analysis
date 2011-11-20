@@ -19,6 +19,8 @@ import shutil
 import tempfile
 import json
 
+ASPECT_RATIO=0.5625
+
 """Create a mosaic of images from the an IFCB bin"""
 
 def __layout(bin, (width, height), size=0):
@@ -96,25 +98,38 @@ def http(bin, fullarea, size_thresh, wh, out, format):
         raise IOError
 
 # entry point.
-def doit(pid,size='medium',format='jpg',out=sys.stdout, fs_roots=FS_ROOTS):
+def doit(pid,size='medium',format='jpg',headers=True,out=sys.stdout,fs_roots=FS_ROOTS):
     format = dict(png='png', jpg='jpeg', gif='gif', json='json')[format] # validate
     # sizes map to widths, widths map to height via fixed 16:9 aspect ratio
-    aspectratio = 0.5625 # 16:9
-    tw = {'icon':48, 'thumb':128, 'small':320, 'medium':800, 'large':1024, '720p':1280, '1080p':1920}[size]
-    wh = box(tw,aspectratio)
-    size_thresh = 2500
+    tw = {'icon':48, 'thumb':128, 'small':320, 'medium':800, 'large':1024, '720p':1280, '1080p':1920, 'max':2400}[size]
+    wh = box(tw,ASPECT_RATIO)
+    size_thresh = 1200
     bin = Filesystem(fs_roots).resolve(pid) # fetch the bin
     # all mosaics are created at 2400 x 1260 and then scaled down
-    fullarea = box(2400,aspectratio)
+    fullarea = box(2400,ASPECT_RATIO)
     if format == 'json': # if the caller just wants the layout
-        for h in ['Content-type: application/json',
-                  'Cache-control: max-age=31622400',
-                  '']:
-            print h
+        if headers:
+            for h in ['Content-type: application/json',
+                      'Cache-control: max-age=31622400',
+                      '']:
+                print h
         json.dump(layout(bin, fullarea, size_thresh),out) # give it to em
     else:
-        cache_key = ifcb.lid(pid) + '/mosaic/'+str(tw)+'.'+format
-        cache_io(cache_key, lambda o: http(bin, fullarea, size_thresh, wh, o, format), out)
+        if headers:
+            cache_key = ifcb.lid(pid) + '/mosaic/'+str(tw)+'.'+format
+            cache_io(cache_key, lambda o: http(bin, fullarea, size_thresh, wh, o, format), out)
+        else:
+            stream(thumbnail(mosaic(bin,fullarea,size_thresh),wh),out,format)
+
+def save_mosaic(bin,outfile=None,format='PNG',size=2400):
+    if len(sys.argv) > 2:
+        outfile = sys.argv[2]
+    m = mosaic(bin, box(size, ASPECT_RATIO))
+    if outfile is not None:
+        with open(outfile,'wb') as out:
+            stream(m,out,format)
+    else:
+       stream(m,sys.stdout,format)
 
 if __name__=='__main__':
     cgitb.enable()

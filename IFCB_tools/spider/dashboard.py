@@ -22,7 +22,7 @@ def hit_url(url):
     except HTTPError:
         pass
 
-def spider(mosaics=20,bins=10):
+def spider(mosaics=200,bins=100):
     f = urlopen(DATA_NAMESPACE + 'feed.json')
     feed = json.load(f)
     f.close()

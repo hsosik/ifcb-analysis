@@ -21,7 +21,7 @@ class DayDir(Timestamped):
 		self.time_string = re.sub('^IFCB\\d+_','',ifcb.lid(self.pid)) 
 				
 	def __repr__(self):
-		return '{DayDir ' + self.pid +'}'
+		return '{DayDir ' + self.pid +' @ '+str(self.dir)+'}'
 	
 	@property
 	def pid(self):
