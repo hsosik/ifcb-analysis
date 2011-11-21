@@ -36,8 +36,8 @@ target.blob_image = img_blob;
 target = apply_blob_min( target ); %get rid of blobs < blob_min
 
 if config.plot, %go to graphing routine if requested
-    img_proc_plot(target.image, M+m, img_edge, img_dark, target.blob_image)
-    pause
+    img_proc_plot(target, M+m, img_edge, img_dark)
+    %pause
 end;
 
 end

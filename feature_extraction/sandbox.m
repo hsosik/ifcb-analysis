@@ -12,7 +12,7 @@ output.config = config;
 output.targets = target_ids.pid;
 empty_target = target;
 
-for tix = 1:length(target_ids.pid),
+for tix = 1:500%length(target_ids.pid),
     disp(tix)
     target = empty_target; %re-initialize each time through
     target.image = get_image(target_ids.pid(tix));
@@ -20,6 +20,7 @@ for tix = 1:length(target_ids.pid),
     target = blob_geomprop(target); 
     target = blob_texture(target);
     target = blob_invmoments(target);
+    target = blob_shapehist_stats(target);
     target = blob_sumprops(target); 
     output.features(tix) = target.blob_props;
 end;
