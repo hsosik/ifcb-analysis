@@ -1,6 +1,7 @@
+load output
 
 classes = fieldnames(output);
-classes = setdiff(classes, 'config');
+classes = setdiff(classes, {'config' 'Eucampia_groenlandica' 'Tropidoneis' 'dino10' 'roundCell' 'other' 'flagellate' 'crypto'});
 
 for classcount = 1:length(classes),
     class = char(classes(classcount));
@@ -32,6 +33,8 @@ end;
 featitles = fieldnames(output_largest.(class).features);
 
 train(isnan(train)) = 0;
+
+clear temp s_largest classcount i largest_ind field s_temp n temp output list fields class
 
 return
 

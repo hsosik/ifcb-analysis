@@ -14,9 +14,10 @@ target.config = config;
 output.config = config;
 empty_target = target;
 
-load output
+%load output
 
-for cix = 40:length(classlist),
+for cix = 1:length(classlist),
+    clear temp
     disp(classlist(cix))
     roilist = dir([trainpath char(classlist(cix)) '\IFCB*']);
     temp.targets = cellstr(char(roilist.name));
@@ -33,9 +34,11 @@ for cix = 40:length(classlist),
         target = blob_shapehist_stats(target);
         target = blob_sumprops(target); 
         temp.features(iix) = target.blob_props;
+        temp.images(iix).blob_image = target.blob_image;
+        temp.images(iix).image = target.image;
     end;
     eval(['output.' char(classlist(cix)) ' = temp;'])
-    save output2 output
+    save output output
 end;
 
 %feamat = struct2cell(output.features);
