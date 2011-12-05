@@ -4,7 +4,9 @@ function [ target ] = blob_texture( target )
 % from DIPUM function stattxture (http://www.imageprocessingplace.com/)
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, Oct 2011
 
-texture = statxture(target.image(find(target.blob_image)));
+%texture = statxture(target.image(find(target.blob_image)));
+img_adjusted = imadjust(target.image);
+texture = statxture(img_adjusted(find(target.blob_image)));
 
 target.blob_props.texture_average_gray_level = texture(1);
 target.blob_props.texture_average_contrast = texture(2);

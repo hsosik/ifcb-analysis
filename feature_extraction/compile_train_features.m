@@ -1,4 +1,4 @@
-load output
+load output4
 
 classes = fieldnames(output);
 classes = setdiff(classes, {'config' 'Eucampia_groenlandica' 'Tropidoneis' 'dino10' 'roundCell' 'other' 'flagellate' 'crypto'});
@@ -6,6 +6,9 @@ classes = setdiff(classes, {'config' 'Eucampia_groenlandica' 'Tropidoneis' 'dino
 for classcount = 1:length(classes),
     class = char(classes(classcount));
     s_temp = output.(class).features;
+    Rings = [s_temp.Rings];
+    Wedges = [s_temp.Wedges];
+    s_temp = rmfield(s_temp, {'Rings' 'Wedges'});
     n = [s_temp.numBlobs];
     n_class(classcount) = length(n);
     largest_ind = [1 cumsum(n(1:end-1))+1];
@@ -22,7 +25,7 @@ for classcount = 1:length(classes),
     end;
     output_largest.(class).features = s_largest;
     temp = struct2cell(s_largest);    
-    feamat{classcount} = cell2mat(temp);
+    feamat{classcount} = [cell2mat(temp); Wedges; Rings];
 end;
 
 train = cell2mat(feamat);
@@ -31,6 +34,8 @@ for i = 1:length(n_class),
     class_vector = [class_vector repmat(i,1,n_class(i))];
 end;
 featitles = fieldnames(output_largest.(class).features);
+nring = size(Rings,1); nwedge = size(Wedges,1);
+featitles = [featitles; cellstr([repmat('Wedge:',nwedge,1) num2str((1:nwedge)')]); cellstr([repmat('Ring:',nring,1) num2str((1:nring)')])];
 
 train(isnan(train)) = 0;
 

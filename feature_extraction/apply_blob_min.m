@@ -1,5 +1,5 @@
 function [ target ] = apply_blob_min( target )
-%function [ img_blob ] = apply_blob_min( img_blob )
+%function  [ target ] = apply_blob_min( target )
 % take an input b&w blob image, remove any continguous components <
 % blob_min, and return the resulting blob image along with the summed area
 % of the remaining components 
