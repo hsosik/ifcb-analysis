@@ -1,4 +1,4 @@
-load output4
+load output
 
 classes = fieldnames(output);
 classes = setdiff(classes, {'config' 'Eucampia_groenlandica' 'Tropidoneis' 'dino10' 'roundCell' 'other' 'flagellate' 'crypto'});

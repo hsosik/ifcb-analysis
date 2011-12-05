@@ -5,7 +5,7 @@ function [output] = batch_features_train( )
 config = configure();
 
 urlbase = 'http://demi.whoi.edu/';
-trainpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\train_04Nov2011\';
+trainpath = 'D:\work\IFCB1\ifcb_data_mvco_jun06\train_04Nov2011\';
 classlist = dir(trainpath);
 classlist = cellstr(char(classlist(cat(1,classlist.isdir)).name));
 classlist = setdiff(classlist, {'.', '..'});
@@ -21,7 +21,7 @@ for cix = 1:length(classlist),
     disp(classlist(cix))
     roilist = dir([trainpath char(classlist(cix)) '\IFCB*']);
     temp.targets = cellstr(char(roilist.name));
-    for iix = 1:25:length(roilist),
+    for iix = 1:length(roilist),
         if rem(iix,10) == 0, disp(iix), end;
         target = empty_target;
         tname = roilist(iix).name; tname = tname(1:end-4); %get_image expects no extension
@@ -37,6 +37,7 @@ for cix = 1:length(classlist),
         target = blob_sumprops(target); 
         temp.features(iix) = target.blob_props;
         temp.images(iix).blob_image = target.blob_image;
+        temp.images(iix).blob_image_rotated = target.blob_image_rotated;
         temp.images(iix).image = target.image;
     end;
     eval(['output.' char(classlist(cix)) ' = temp;'])
