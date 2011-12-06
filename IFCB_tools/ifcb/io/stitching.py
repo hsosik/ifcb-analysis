@@ -23,11 +23,13 @@ def overlaps(t1, t2):
     return False
 
 def find_pairs(bin):
+    print 'finding pairs'
     prev = None
     for target in bin:
         if prev is not None and overlaps(target, prev):
             yield (prev.targetNumber, target.targetNumber)
         prev = target
+    print 'done'
 
 def normz(a):
     m = max(a) + 0.000001 # dividing by zero is bad
