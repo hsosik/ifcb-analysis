@@ -17,6 +17,7 @@ import tempfile
 from PIL import Image
 import time
 import calendar
+from zipfile import ZipFile
 
 """Conversions between IFCB data and standard formats"""
 
@@ -725,3 +726,14 @@ def target2tiff(target,out=sys.stdout,scale=1.0):
     scale - scaling factor for image dimensions (default: 1.0)
     """
     target2image(target,'TIFF',out)
+
+def bin_images2zip(bin,out=sys.stdout):
+    buffer = io.BytesIO()
+    z = ZipFile(out,'w')
+    for target in bin:
+        buffer.seek(0)
+        buffer.truncate()
+        __stream_image(target,'PNG',buffer)
+        z.writestr(target.lid + '.png', buffer.getvalue())
+    z.close()
+        
