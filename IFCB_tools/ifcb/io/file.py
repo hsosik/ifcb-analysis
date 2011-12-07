@@ -73,6 +73,10 @@ class BinFile(Timestamped):
         return '{Bin ' + self.pid + '}'
     
     @property
+    def lid(self):
+        return self.id
+    
+    @property
     def adc_path(self):
         return adc_path(self.id,self.dir)
     

@@ -727,13 +727,19 @@ def target2tiff(target,out=sys.stdout,scale=1.0):
     """
     target2image(target,'TIFF',out)
 
-def bin_images2zip(bin,out=sys.stdout):
+def bin2zip(bin,out=sys.stdout,detail=None):
     buffer = io.BytesIO()
-    z = ZipFile(out,'w')
-    for target in bin:
-        buffer.seek(0)
-        buffer.truncate()
-        __stream_image(target,'PNG',buffer)
-        z.writestr(target.lid + '.png', buffer.getvalue())
-    z.close()
+    with tempfile.SpooledTemporaryFile() as temp:
+        z = ZipFile(temp,'w')
+        bin2csv(bin,buffer)
+        z.writestr(bin.lid + '.csv', buffer.getvalue())
+        for target in bin:
+            buffer.seek(0)
+            buffer.truncate()
+            __stream_image(target,'PNG',buffer)
+            print str(target) + ', ' + target.lid + '.png'
+            z.writestr(target.lid + '.png', buffer.getvalue())
+        z.close()
+        temp.seek(0)
+        shutil.copyfileobj(temp, out)
         

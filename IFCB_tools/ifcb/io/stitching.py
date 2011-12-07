@@ -303,6 +303,10 @@ class StitchedTarget(object):
     def __repr__(self):
         return '{Target(stitched) '+self.pid + '}'
     
+    @property
+    def lid(self):
+        return ifcb.lid(self.pid)
+    
     def time(self):
         bin_time = calendar.timegm(self.bin.time()) # bin seconds since epoch
         return time.gmtime(bin_time + self.frameGrabTime)

@@ -4,7 +4,7 @@ import cgi
 import cgitb
 from ifcb.io import DETAIL_FULL, DETAIL_SHORT, DETAIL_HEAD
 from ifcb.io.path import Filesystem
-from ifcb.io.convert import bin2json, bin2xml, bin2rdf, target2rdf, target2xml, target2json, target2image, day2rdf, day2xml, day2json, day2html, bin2html, target2html, bin2hdr, bin2adc, bin2roi, bin2csv
+from ifcb.io.convert import bin2json, bin2xml, bin2rdf, target2rdf, target2xml, target2json, target2image, day2rdf, day2xml, day2json, day2html, bin2html, target2html, bin2hdr, bin2adc, bin2roi, bin2csv, bin2zip
 from ifcb.io.file import BinFile, Target
 from ifcb.io.dir import DayDir
 from ifcb.io.stitching import StitchedBin, StitchedTarget
@@ -29,6 +29,7 @@ MIME_MAP = {
   'hdr': 'text/plain',
   'adc': 'text/csv',
   'csv': 'text/csv',
+  'zip': 'application/zip',
   'roi': 'application/octet-stream'
 }
 
@@ -67,7 +68,8 @@ if __name__ == '__main__':
           'adc': bin2adc,
           'csv': bin2csv,
           'roi': bin2roi,
-          'hdr': bin2hdr }[format](object,out,detail) # convert it to format
+          'hdr': bin2hdr,
+          'zip': bin2zip }[format](object,out,detail) # convert it to format
     elif re.search('^image/', mime_type): # is it an image?
         target2image(object, IMAGE_FORMATS[mime_type], out, scale) # produce the image
     elif isinstance(object,Target) or isinstance(object,StitchedTarget): # is it a target?
