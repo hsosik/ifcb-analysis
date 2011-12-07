@@ -160,12 +160,16 @@ class BinFile(Timestamped):
         for target in self.__read_adc(n-1):
             if n == target.targetNumber:
                 return target
+            if target.targetNumber > n:
+                raise KeyError
     
     def targets(self,ns):
         skip = min(ns) - 1
         for target in self.__read_adc(skip):
             if target.targetNumber in ns:
                 yield target
+            if target.targetNumber > max(ns):
+                return
                 
     # return number of targets
     def length(self):
