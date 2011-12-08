@@ -97,9 +97,8 @@ class BinFile(Timestamped):
         return props
     
     def headers(self):
-        cache_key = self.__cache_key('hdr')
-        # FIXME cache the props, not the text!
-        lines = [line.rstrip() for line in cache_file(cache_key, self.hdr_path).readlines()]
+        with open(self.hdr_path,'r') as hdr:
+            lines = [line.rstrip() for line in hdr]
         # "context" is what the text on lines 2-4 is called in the header file
         props = { CONTEXT: [lines[n].strip('"') for n in range(3)] }
         # add an "instrument" property
@@ -113,13 +112,6 @@ class BinFile(Timestamped):
                 props[name] = cast(value)
         return props
     
-    def __cache_key(self,subkey=None,id=None):
-        if id is None:
-            id = self.id
-        if subkey is not None:
-            id = '_'.join([id,str(subkey)])
-        return id
-    
     def __parse_row(self,row,target_number):
         # record some contextual information that we know; the targeg number, the bin's id, and the target pi
         target_info = { TARGET_NUMBER: target_number, BIN_ID: self.pid, PID: self.target_pid(target_number) }
@@ -130,19 +122,18 @@ class BinFile(Timestamped):
         
     # the ADC file is in CSV format, schema is described in ADC_SCHEMA
     def __read_adc(self, skip=0):
-        cache_key = self.__cache_key('adc')
-        adc = cache_file(cache_key, self.adc_path)
-        for i in range(skip):
-            adc.readline()
-        target_number = skip + 1
-        for row in csv.reader(adc):
-            target_info = self.__parse_row(row,target_number)
-            # skip 0x0 targets ...
-            if target_info[HEIGHT] > 0 and target_info[WIDTH] > 0:
-                target = Target(target_info,self)
-                yield target
-            # ... but count them, so indicies are correct
-            target_number = target_number + 1
+        with open(self.adc_path,'r') as adc:
+            for i in range(skip):
+                adc.readline()
+            target_number = skip + 1
+            for row in csv.reader(adc):
+                target_info = self.__parse_row(row,target_number)
+                # skip 0x0 targets ...
+                if target_info[HEIGHT] > 0 and target_info[WIDTH] > 0:
+                    target = Target(target_info,self)
+                    yield target
+                # ... but count them, so indicies are correct
+                target_number = target_number + 1
 
     def iterate(self,skip=0):
         return iter(self.__read_adc(skip))
@@ -193,8 +184,7 @@ class BinFile(Timestamped):
         return data
         
     def __get_image(self, target, roi_file=None):
-        cache_key = self.__cache_key('img',ifcb.lid(target.pid))
-        data = cache_obj(cache_key, lambda: self.__get_image_bytes(target, roi_file))
+        data = self.__get_image_bytes(target, roi_file)
         im = Image.fromstring('L', (target.height, target.width), data) # rotate 90 degrees
         return im
     

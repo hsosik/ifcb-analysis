@@ -17,7 +17,7 @@ import tempfile
 from PIL import Image
 import time
 import calendar
-from zipfile import ZipFile
+from zipfile import ZipFile, ZIP_STORED
 
 """Conversions between IFCB data and standard formats"""
 
@@ -674,8 +674,7 @@ def target2image(target,format='PNG',out=sys.stdout,scale=1.0):
     scale - scaling factor for image dimensions (default: 1.0)
     """
     format = string.upper(format)
-    cache_key = '%s/%d.%s' % (lid(target.pid), int(scale * 1000), string.lower(format)) 
-    cache_io(cache_key, lambda o: __stream_image(target,format,o,scale), out)
+    __stream_image(target,format,out,scale)
     
 def target2png(target,out=sys.stdout,scale=1.0):
     """Output the image of a target in png format to an output stream (resizing if desired).
@@ -730,7 +729,7 @@ def target2tiff(target,out=sys.stdout,scale=1.0):
 def bin2zip(bin,out=sys.stdout,detail=None):
     buffer = io.BytesIO()
     with tempfile.SpooledTemporaryFile() as temp:
-        z = ZipFile(temp,'w')
+        z = ZipFile(temp,'w',ZIP_STORED)
         bin2csv(bin,buffer)
         z.writestr(bin.lid + '.csv', buffer.getvalue())
         for target in bin:
