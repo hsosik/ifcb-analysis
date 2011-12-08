@@ -399,8 +399,8 @@ class StitchedBin(object):
         for target in self.iterate(n-1):
             if target.targetNumber == n:
                 return target
-        else:
-            return self.bin.target(n)
+            if target.targetNumber > n:
+                raise KeyError
 
 def test_stitch():
     pids = [

@@ -17,7 +17,7 @@ import tempfile
 from PIL import Image
 import time
 import calendar
-from zipfile import ZipFile, ZIP_STORED
+from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 
 """Conversions between IFCB data and standard formats"""
 
@@ -729,16 +729,16 @@ def target2tiff(target,out=sys.stdout,scale=1.0):
 def bin2zip(bin,out=sys.stdout,detail=None):
     buffer = io.BytesIO()
     with tempfile.SpooledTemporaryFile() as temp:
-        z = ZipFile(temp,'w',ZIP_STORED)
+        z = ZipFile(temp,'w',ZIP_DEFLATED)
         bin2csv(bin,buffer)
         z.writestr(bin.lid + '.csv', buffer.getvalue())
         for target in bin:
             buffer.seek(0)
             buffer.truncate()
             __stream_image(target,'PNG',buffer)
-            print str(target) + ', ' + target.lid + '.png'
             z.writestr(target.lid + '.png', buffer.getvalue())
         z.close()
         temp.seek(0)
         shutil.copyfileobj(temp, out)
+        out.flush()
         
