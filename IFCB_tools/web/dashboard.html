@@ -35,7 +35,7 @@ $(document).ready(function() {
     metadata_width = total_width - mosaic_width;
     html = '<table width="'+total_width+'px">';
     /* top row */
-    html += '<tr>' + cell('top',800,3) + '<td width="'+metadata_width+'px" rowspan="3" id="metadata" valign="top"></div></td>' + '</tr>';
+    html += '<tr>' + cell('top',800,3) + '<td width="'+metadata_width+'px" rowspan="3" valign="top"><div id="controls"></div>Target details:<br><div id="metadata"></div></div></td>' + '</tr>';
     /* two rows */
     for(row = 0; row < 2; row++) {
         html += '<tr>';
@@ -49,6 +49,14 @@ $(document).ready(function() {
     window.onpopstate = function() {
         go_to_date_param();
     };
+    /* add date picker */
+    $('#controls').append('Select date:<br><input id="datepicker" type="text"><p>').find('#datepicker').datepicker({
+	dateFormat: 'yy-mm-dd',
+	onSelect: function(datetext) {
+            window.history.pushState('ignore', 'IFCB Dashboard', 'dashboard.html?date=' + datetext);
+	    go_to_date_param();
+	}
+    });
 });
 </script>
 <title>Imaging FlowCytobot @ MVCO</title>
