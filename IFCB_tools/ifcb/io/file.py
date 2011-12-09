@@ -11,7 +11,7 @@ import time
 import calendar
 import pickle
 from cache import cache_io, cache_obj, cache_file
-from config import STITCH
+from config import STITCH, MOD_ROOTS
 from ifcb.io.stitching import StitchedBin
 
 import mmap
@@ -58,7 +58,8 @@ class BinFile(Timestamped):
     id = ''
     dir = ''
     time_format = '%Y_%j_%H%M%S'
-    
+    __corrected_adc_path = None
+
     # determine PID, local id, instrument number, and timestamp from path
     def __init__(self, path):
         self.dir = os.path.dirname(os.path.abspath(path))
@@ -119,10 +120,24 @@ class BinFile(Timestamped):
         for (name, cast), value in zip(ADC_SCHEMA, row):
             target_info[name] = cast(value)
         return target_info
-        
+
+    def __correct_adc_path(self):
+        if self.__corrected_adc_path is not None:
+            return self.__corrected_adc_path
+        else:
+            for r in MOD_ROOTS:
+                dd = re.sub('_\\d+$','',self.id)
+                p = os.path.join(r,dd,self.id + '.adc.mod')
+                if os.path.exists(p):
+                    self.__corrected_adc_path = p
+                    return p
+            self.__corrected_adc_path = self.adc_path
+            return self.__corrected_adc_path
+
     # the ADC file is in CSV format, schema is described in ADC_SCHEMA
     def __read_adc(self, skip=0):
-        with open(self.adc_path,'r') as adc:
+        adcfile = self.__correct_adc_path()
+        with open(adcfile,'r') as adc:
             for i in range(skip):
                 adc.readline()
             target_number = skip + 1
