@@ -2,13 +2,10 @@ body {
   font-family: sans-serif;
 }
 .title {
-  font-size: large;
   font-weight: bold;
   margin-bottom: 1em;
 }
 .properties {
-  position: absolute;
-  right: 0.3em;
   max-width: 30em;
 }
 .property {
@@ -23,7 +20,6 @@ body {
 }
 .value {
   padding: 0.2em;
-  font-size: large;
   margin-bottom: 0.5em;
   border: 0.1em lightgray solid;
   background: white;

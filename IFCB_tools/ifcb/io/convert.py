@@ -536,6 +536,13 @@ def target2html(target,out=sys.stdout):
     """
     (html, body) = __html(target_title(target))
     # emit
+    # <div class="image">
+    #   <img src="{target.pid}.png" class="image">
+    # </div>
+    id = Sub(body, 'div', 'image')
+    img = SubElement(id, 'img', src=href(target.pid,'png'))
+    img.set('class','image')
+    # emit
     # <div class="properties">
     #   <div class="property">
     #     <div class="label">bin</div>
@@ -557,13 +564,6 @@ def target2html(target,out=sys.stdout):
         prop = Sub(properties, 'div', 'property')
         Sub(prop, 'div', 'label').text = pretty_property_name(k)
         Sub(prop, 'div', 'value').text = str(target.info[k])
-    # emit
-    # <div class="image">
-    #   <img src="{target.pid}.png" class="image">
-    # </div>
-    id = Sub(body, 'div', 'image')
-    img = SubElement(id, 'img', src=href(target.pid,'png'))
-    img.set('class','image')
     ElementTree(html).write(out, pretty_print=True)
         
 def __target2rdf(target,parent):
