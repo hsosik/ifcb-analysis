@@ -7,6 +7,7 @@ from time import time, strftime, gmtime
 from sys import stdout
 import datetime
 import pytz
+import hashlib
 
 # adapted from http://argandgahandapandpa.wordpress.com/2009/03/29/python-generator-to-list-decorator/
 def gen2dict(func):
@@ -57,4 +58,22 @@ def csvrep(value,none=''):
 
 def log_msg(msg,fields=[],out=stdout):
     print >> out, ' '.join([iso8601utcnow(),msg] + [csvrep(f,'-') for f in fields])
-    
+
+def sha1_string(data):
+    m = hashlib.sha1()
+    m.update(data)
+    return m.hexdigest()
+
+def sha1_filelike(filelike):
+    m = hashlib.sha1()
+    while True:
+        s = filelike.read()
+        if len(s) == 0:
+            break
+        else:
+            m.update(s)
+    return m.hexdigest()
+
+def sha1_file(pathname):
+    with open(pathname,'rb') as fl:
+        return sha1_filelike(fl)
