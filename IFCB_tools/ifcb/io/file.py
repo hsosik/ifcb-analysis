@@ -78,8 +78,22 @@ class BinFile(Timestamped):
         return self.id
     
     @property
-    def adc_path(self):
+    def raw_adc_path(self):
         return adc_path(self.id,self.dir)
+
+    @property
+    def adc_path(self):
+        if self.__corrected_adc_path is not None:
+            return self.__corrected_adc_path
+        else:
+            for r in MOD_ROOTS:
+                dd = re.sub('_\\d+$','',self.id)
+                p = os.path.join(r,dd,self.id + '.adc.mod')
+                if os.path.exists(p):
+                    self.__corrected_adc_path = p
+                    return p
+            self.__corrected_adc_path = self.raw_adc_path
+            return self.__corrected_adc_path
     
     @property
     def roi_path(self):
@@ -120,20 +134,7 @@ class BinFile(Timestamped):
         for (name, cast), value in zip(ADC_SCHEMA, row):
             target_info[name] = cast(value)
         return target_info
-
-    def __correct_adc_path(self):
-        if self.__corrected_adc_path is not None:
-            return self.__corrected_adc_path
-        else:
-            for r in MOD_ROOTS:
-                dd = re.sub('_\\d+$','',self.id)
-                p = os.path.join(r,dd,self.id + '.adc.mod')
-                if os.path.exists(p):
-                    self.__corrected_adc_path = p
-                    return p
-            self.__corrected_adc_path = self.adc_path
-            return self.__corrected_adc_path
-
+    
     # the ADC file is in CSV format, schema is described in ADC_SCHEMA
     def __read_adc(self, skip=0):
         adcfile = self.__correct_adc_path()
