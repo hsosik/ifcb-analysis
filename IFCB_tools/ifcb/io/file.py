@@ -137,7 +137,7 @@ class BinFile(Timestamped):
     
     # the ADC file is in CSV format, schema is described in ADC_SCHEMA
     def __read_adc(self, skip=0):
-        adcfile = self.__correct_adc_path()
+        adcfile = self.adc_path
         with open(adcfile,'r') as adc:
             for i in range(skip):
                 adc.readline()
