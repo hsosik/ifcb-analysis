@@ -174,10 +174,10 @@ def hist(samples):
         h[s] += 1
     return h
 
-def stitch(targets,images=None):
+def stitch(targets,images=None,roi_file=None):
     # fetch images
     if images is None:
-        images = [target.image() for target in targets]
+        images = [target.image(roi_file) for target in targets]
     start = time.time()
     timings = {}
     then = time.time()
@@ -314,13 +314,13 @@ class StitchedTarget(object):
     def iso8601time(self):
         return time.strftime(ISO_8601_FORMAT, self.time())
     
-    def imagenmask(self):
+    def imagenmask(self,roi_file=None):
         if self.img is None:
-            (self.img, self.msk) = stitch(self.targets)
+            (self.img, self.msk) = stitch(self.targets,roi_file)
         return (self.img, self.msk)
     
-    def image(self):
-        (image,mask) = self.imagenmask()
+    def image(self,roi_file=None):
+        (image,mask) = self.imagenmask(roi_file)
         return image
     
     def mask(self):

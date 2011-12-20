@@ -48,8 +48,8 @@ class Target(object):
     def iso8601time(self):
         return time.strftime(ISO_8601_FORMAT, self.time())
     
-    def image(self):
-        return self.bin.image(self.targetNumber)
+    def image(self,roi_file=None):
+        return self.bin.target_image(self,roi_file)
     
 # one bin's worth of data
 class BinFile(Timestamped):
@@ -213,6 +213,10 @@ class BinFile(Timestamped):
     # convenience method for getting a specific image
     def image(self,n,roi_file=None):
         return self.__get_image(self.target(n),roi_file)
+    
+    # used by target to fetch image
+    def target_image(self,target,roi_file=None):
+        return self.__get_image(target,roi_file)
 
     # compute the pid of a target, given its index
     def target_pid(self,target_number):
