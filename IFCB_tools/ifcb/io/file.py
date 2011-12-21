@@ -27,6 +27,7 @@ class Target(object):
     def __init__(self,target_info,bin):
         self.bin = bin
         self.info = target_info
+        self.info['stitched'] = 0
     
     def __getattribute__(self,name):
         if name in TARGET_INFO:

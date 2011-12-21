@@ -292,6 +292,7 @@ class StitchedTarget(object):
         info['bottom'] = bottom
         info['width'] = width
         info['height'] = height
+        info['stitched'] = 1
         self.info = info
     
     def __getattr__(self,name):
