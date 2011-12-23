@@ -1,11 +1,9 @@
-% file for messing around and testing stuff. - Joe Futrelle 9/2011
-
 function [output] = batch_features_train( )
 
 config = configure();
 
-urlbase = 'http://demi.whoi.edu/';
-trainpath = 'D:\work\IFCB1\ifcb_data_mvco_jun06\train_04Nov2011\';
+urlbase = 'http://ifcb-data.whoi.edu/mvco/';
+trainpath = '\\queenrose\ifcb_data_mvco_jun06\train_04Nov2011\';
 classlist = dir(trainpath);
 classlist = cellstr(char(classlist(cat(1,classlist.isdir)).name));
 classlist = setdiff(classlist, {'.', '..'});
@@ -14,14 +12,20 @@ target.config = config;
 output.config = config;
 empty_target = target;
 
-%load output
+%load output2
 
 for cix = 1:length(classlist),
     clear temp
     disp(classlist(cix))
     roilist = dir([trainpath char(classlist(cix)) '\IFCB*']);
-    temp.targets = cellstr(char(roilist.name));
-    for iix = 1:length(roilist),
+    roinames = {};
+    for idx = 1:length(roilist), %reformat with zero padding on roi num to 5 digits
+        t = char(roilist(idx).name);
+        roinames(idx,1) = cellstr([t(1:22) repmat('0',1,31-length(t)) t(23:end)]);
+    end;
+    %temp.targets = cellstr(char(roilist.name));
+    temp.targets = roinames; 
+    for iix = 1:length(roilist), %min([3 length(roilist)]),
         if rem(iix,10) == 0, disp(iix), end;
         target = empty_target;
         tname = roilist(iix).name; tname = tname(1:end-4); %get_image expects no extension
@@ -34,14 +38,17 @@ for cix = 1:length(classlist),
         target = blob_invmoments(target);
         target = blob_shapehist_stats(target);
         target = blob_RingWedge(target);
-        target = blob_sumprops(target); 
-        temp.features(iix) = target.blob_props;
+        target = blob_sumprops(target);
+        target = blob_Hausdorff_symmetry(target);
+        target = image_HOG(target);
+        target = blob_rotated_geomprop(target);
+        temp.features(iix) = merge_structs(target.blob_props, target.image_props);
         temp.images(iix).blob_image = target.blob_image;
-        temp.images(iix).blob_image_rotated = target.blob_image_rotated;
+        temp.images(iix).blob_image_rootated = target.blob_image_rotated;
         temp.images(iix).image = target.image;
     end;
     eval(['output.' char(classlist(cix)) ' = temp;'])
-    save output output
+    save output2 output
 end;
 
 %feamat = struct2cell(output.features);

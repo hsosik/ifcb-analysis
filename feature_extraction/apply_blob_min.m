@@ -11,7 +11,11 @@ img_cc = bwconncomp(target.blob_image);
 t = regionprops(img_cc, 'Area');
 idx = find([t.Area] > blob_min);
 target.blob_image = ismember(labelmatrix(img_cc), idx); %is this most efficient method?
-target.blob_props.Area = [t(idx).Area];
+if ~isempty(idx),
+    target.blob_props.Area = [t(idx).Area];
+else
+    target.blob_props.Area = 0;
+end;
 target.blob_props.numBlobs = length(idx);
 end
 

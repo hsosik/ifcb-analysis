@@ -2,7 +2,7 @@
 
 function [output] = batch_add_features_train( )
 
-%config = configure();
+config = configure();
 
 %urlbase = 'http://demi.whoi.edu/';
 %trainpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\train_04Nov2011\';
@@ -12,9 +12,9 @@ function [output] = batch_add_features_train( )
 
 %target.config = config;
 %output.config = config;
-%empty_target = target;
+empty_target.config = config;
 
-load output3
+load output
 classlist = setdiff(fields(output), 'config');
 
 for cix = 1:length(classlist),
@@ -33,22 +33,26 @@ for cix = 1:length(classlist),
             %tname = roilist(iix).name; tname = tname(1:end-4); %get_image expects no extension
             %target.image = get_image([urlbase tname]);
             target.image = output.(class).images(iix).image;
-            target.blob_image = output.(class).images(iix).blob_image;
+            %target.blob_image = output.(class).images(iix).blob_image;
+            %target.blob_image_rotated = output.(class).images(iix).blob_image_rotated;
             target.blob_props = output.(class).features(iix);
+            target.config = empty_target.config;
             %target = blob(target);
             %target = blob_geomprop(target);
-            target = blob_texture(target);
+            %target = blob_texture(target);
             %target = blob_invmoments(target);
             %target = blob_shapehist_stats(target);
             %target = blob_RingWedge(target);
             %target = blob_sumprops(target);
-            temp.features(iix) = target.blob_props;
+            target = image_HOG(target);
+            %target = blob_rotated_geomprop(target);
+            temp.features(iix) = merge_structs(target.blob_props, target.image_props);
             %temp.images(iix).blob_image = target.blob_image;
             %temp.images(iix).image = target.image;
         end;
     end;
     eval(['output.' char(classlist(cix)) ' = temp;'])
-    save output4 output
+    save output2 output
 end;
 
 %feamat = struct2cell(output.features);

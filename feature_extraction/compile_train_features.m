@@ -1,14 +1,18 @@
-load output
+load output2 %load result file produced by batch_features_train.m
 
 classes = fieldnames(output);
+%skip some classes that are empty or not properly annotated
 classes = setdiff(classes, {'config' 'Eucampia_groenlandica' 'Tropidoneis' 'dino10' 'roundCell' 'other' 'flagellate' 'crypto'});
-
+%classes = setdiff(classes, {'config' 'Eucampia_groenlandica' 'Tropidoneis' 'dino10' 'roundCell' 'other' 'flagellate' 'crypto' 'Lauderia' 'Odontella' 'Stephanopyxis'});
+maxn = 250;
+class_vector = [];
 for classcount = 1:length(classes),
     class = char(classes(classcount));
     s_temp = output.(class).features;
     Rings = [s_temp.Rings];
     Wedges = [s_temp.Wedges];
-    s_temp = rmfield(s_temp, {'Rings' 'Wedges'});
+    HOG = [s_temp.HOG];
+    s_temp = rmfield(s_temp, {'Rings' 'Wedges' 'HOG'});
     n = [s_temp.numBlobs];
     n_class(classcount) = length(n);
     largest_ind = [1 cumsum(n(1:end-1))+1];
@@ -25,21 +29,27 @@ for classcount = 1:length(classes),
     end;
     output_largest.(class).features = s_largest;
     temp = struct2cell(s_largest);    
-    feamat{classcount} = [cell2mat(temp); Wedges; Rings];
+    feamat{classcount} = [cell2mat(temp); Wedges; Rings; HOG];
+    if maxn < n_class(classcount),
+        ind = randi(n_class(classcount),maxn,1);
+        feamat{classcount} = feamat{classcount}(:,ind);
+    end;
+    class_vector = [class_vector repmat(classcount,1,min(maxn,n_class(classcount)))];
 end;
 
 train = cell2mat(feamat);
-class_vector = [];
-for i = 1:length(n_class),
-    class_vector = [class_vector repmat(i,1,n_class(i))];
-end;
+%class_vector = [];
+%for i = 1:length(n_class),
+%    class_vector = [class_vector repmat(i,1,min(maxn,n_class(i)))];
+%end;
 featitles = fieldnames(output_largest.(class).features);
-nring = size(Rings,1); nwedge = size(Wedges,1);
-featitles = [featitles; cellstr([repmat('Wedge:',nwedge,1) num2str((1:nwedge)')]); cellstr([repmat('Ring:',nring,1) num2str((1:nring)')])];
+nring = size(Rings,1); nwedge = size(Wedges,1); nhog = size(HOG,1);
+featitles = [featitles; cellstr([repmat('Wedge:',nwedge,1) num2str((1:nwedge)')]); cellstr([repmat('Ring:',nring,1) num2str((1:nring)')]); cellstr([repmat('HOG:',nhog,1) num2str((1:nhog)')])];
 
 train(isnan(train)) = 0;
 
-clear temp s_largest classcount i largest_ind field s_temp n temp output list fields class
+clear temp s_largest classcount i largest_ind field s_temp n temp list fields class
+%clear output
 
 return
 
