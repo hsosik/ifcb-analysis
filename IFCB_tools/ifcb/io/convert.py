@@ -7,7 +7,7 @@ from lxml.etree import ElementTree, QName, Element, SubElement
 import sys
 import simplejson
 import string
-from ifcb.util import order_keys, decamel
+from ifcb.util import order_keys, decamel, iso8601utcnow
 from array import array
 import pylibmc
 from cache import cache_io
@@ -392,7 +392,10 @@ def bins2atom(bins,link,out=sys.stdout):
     SubElement(author, 'name').text = 'Imaging FlowCytobot'
     SubElement(feed, 'link', href=link, rel='self')
     SubElement(feed, 'id').text = link
-    SubElement(feed, 'updated').text = bins[0].iso8601time
+    if len(bins) > 0:
+        SubElement(feed, 'updated').text = bins[0].iso8601time
+    else:
+        SubElement(feed,'updated').text = iso8601utcnow()
     for bin in bins:
         t = SubElement(feed, 'entry')
         SubElement(t, 'title').text = bin_title(bin)
