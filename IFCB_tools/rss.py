@@ -2,7 +2,7 @@
 from sys import argv, stdout
 import cgi
 import cgitb
-from ifcb.db.feed import latest_bins
+from ifcb.db.feed import latest_bins, day_bins
 from ifcb.io.convert import bins2atom, bins2json_feed, bins2html_feed, bins2rss
 from ifcb.io.path import Filesystem
 from config import FS_ROOTS, FEED
@@ -21,8 +21,18 @@ if __name__=='__main__':
             date = time.strptime(dates+'UTC','%Y-%m-%d%Z') # assume midnight UTC
         elif re.match(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$',dates): # ISO 8601 in YYYY-mm-ddTHH:MM:SSZ?
             date = time.strptime(re.sub('Z$','UTC',dates),'%Y-%m-%dT%H:%M:%S%Z') # parse
+    dayss = cgi.FieldStorage().getvalue('day',None)
+    if dayss is not None:
+        if re.match(r'^\d{4}-\d{2}-\d{2}$',dayss): # is it an unadorned yyyy-mm-dd?
+            date = time.strptime(dayss+'UTC','%Y-%m-%d%Z') # assume midnight UTC
+        elif re.match(r'^\d{4}-\d{3}$',dayss): # is it a julian day (yyyy-jjj)?
+            date = time.strptime(dayss+'UTC','%Y-%j%Z')
     fs = Filesystem(FS_ROOTS)
-    bins = [fs.resolve(pid) for pid in list(latest_bins(size,date))]
+    if dayss is not None:
+        bin_ids = list(day_bins(date))
+    else:
+        bin_ids = list(latest_bins(size,date))
+    bins = [fs.resolve(pid) for pid in bin_ids]
     mime = dict(atom='application/atom+xml', json='application/json', html='text/html', rss='application/rss+xml')[format]
     headers = ['Content-type: %s' % mime,
                'Cache-control: max-age=60',
