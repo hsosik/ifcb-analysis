@@ -17,9 +17,9 @@ pid = char(pid);
 
 if nargin < 2, dir = tempdir; end
 
-dir = [dir filesep lid(pid)];
+image_dir = [dir filesep lid(pid)];
 
-mkdir(dir);
+mkdir(image_dir);
 
 zip_url = [pid '.zip'];
 zip_path = [dir filesep lid(pid) '.zip'];
@@ -28,7 +28,6 @@ zip_path = [dir filesep lid(pid) '.zip'];
 urlwrite(zip_url, zip_path);
 
 targets = open_bin_file(zip_path, dir);
-image_dir = dir;
 
 end
 

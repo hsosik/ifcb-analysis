@@ -7,7 +7,7 @@ function [ ] = day_blobs( in_dir, out_dir )
 % Shut down the pool
 % Report completion status
 
-debug = true;
+debug = false;
 
 function log(msg) % not to be confused with logarithm function
     logmsg(['day_blobs ' msg],debug);
@@ -24,9 +24,24 @@ end
 
 daydir = dir([in_dir filesep '*.zip']);
 
-for daycount = 1:length(daydir)
-    file = daydir(daycount).name;
-    disp(get_bin_file([in_dir filesep file]));
+if not(debug),
+    parfor daycount = 1:length(daydir)
+        bin_blobs(in_dir, daydir(daycount).name, out_dir);
+    end
+else
+    for daycount = 1:length(daydir)
+        bin_blobs(in_dir, daydir(daycount).name, out_dir);
+    end
+end
+
+
+if not(debug),
+    try
+        matlabpool close;
+        log('POOL - stopped');
+    catch e %#ok<NASGU>
+        log('WARNING - workers cannot stop, or already stopped');
+    end;
 end
 
 end
