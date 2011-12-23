@@ -5,15 +5,9 @@ function [ targets ] = get_bin( pid )
 
 [targets, tmp_dir] = open_bin(pid);
 
-ims = {};
+targets = read_unzipped_bin(targets, tmp_dir);
 
-for tix = 1:length(targets.pid),
-    im = get_image(targets.pid(tix), tmp_dir);
-    ims = [ims; im];
-end
-targets.image = ims;
-
-close_bin(pid);
+close_bin(tmp_dir);
 
 end
 

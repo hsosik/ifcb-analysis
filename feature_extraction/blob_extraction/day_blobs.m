@@ -1,0 +1,33 @@
+function [ ] = day_blobs( in_dir, out_dir )
+% Accept parameters specifying a directory full of .zip files (one for each bin) and a directory in which to place the output .zip files
+% Start a matlab pool
+% Process the bins in parallel.
+% Log progress and errors (so the calling script can monitor progress and detect failures)
+% Clean up all temporary storage
+% Shut down the pool
+% Report completion status
+
+debug = true;
+
+function log(msg) % not to be confused with logarithm function
+    logmsg(['day_blobs ' msg],debug);
+end
+
+if not(debug),
+    try
+        matlabpool;
+        log('POOL - started');
+    catch e %#ok<NASGU>
+        log('WARNING - workers cannot start, or already active');
+    end;
+end
+
+daydir = dir([in_dir filesep '*.zip']);
+
+for daycount = 1:length(daydir)
+    file = daydir(daycount).name;
+    disp(get_bin_file([in_dir filesep file]));
+end
+
+end
+

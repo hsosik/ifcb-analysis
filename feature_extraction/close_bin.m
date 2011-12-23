@@ -1,11 +1,7 @@
-function [ ] = close_bin ( pid, dir )
+function [ ] = close_bin ( tmp_dir )
 % clean up temporary storage associated with a bin
 
-if nargin < 2, dir = tempdir; end
-
-dir = [dir filesep lid(pid)];
-
-rmdir(dir,'s');
+rmdir(tmp_dir,'s');
 
 end
 

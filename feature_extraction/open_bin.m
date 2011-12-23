@@ -27,13 +27,7 @@ zip_path = [dir filesep lid(pid) '.zip'];
 % fetch the zipfile. this can take a long time.
 urlwrite(zip_url, zip_path);
 
-% now unzip
-unzip(zip_path, dir);
-
-% now parse the .csv file to produce target output
-csv_data = fileread([dir filesep lid(pid) '.csv']);
-
-targets = csv2targets(csv_data);
+targets = open_bin_file(zip_path, dir);
 image_dir = dir;
 
 end
