@@ -732,6 +732,11 @@ def bin2zip(bin,out=sys.stdout,detail=None):
         z = ZipFile(temp,'w',ZIP_DEFLATED)
         bin2csv(bin,buffer)
         z.writestr(bin.lid + '.csv', buffer.getvalue())
+        buffer.seek(0)
+        buffer.truncate()
+        # xml as well, including header info
+        bin2xml(bin,buffer)
+        z.writestr(bin.lid + '.xml', buffer.getvalue())
         for target in bin:
             buffer.seek(0)
             buffer.truncate()
