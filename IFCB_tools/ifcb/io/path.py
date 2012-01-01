@@ -160,12 +160,30 @@ class Filesystem(Resolver):
     def bin_path(self,pid):
         # the names of the day directory and bin file are in the pid
         (bin, day) = re.match(r'.*((IFCB\d+_\d{4}_\d{3})_\d{6})',pid).groups() 
+        tried = []
         for years in self.years_dirs: # search the years dirs
             bin_path = os.path.join(years.dir, day, bin) + '.' + ADC_EXT
-            # test for existence of ADC path, should check other paths too
+            tried += [bin_path]
+            # test for existence of ADC path, does not check others (reduce I/O, latency)
             if os.path.exists(bin_path):
                 return bin_path
-        raise KeyError('no path to bin '+pid)
+        # OK, that failed. maybe it's in a previous day
+        (instrument, year, doy, timestamp) = re.match(r'.*(IFCB\d+)_(\d{4})_(\d{3})_(\d{6})',pid).groups()
+        (year, doy) = (int(year), int(doy))
+        # avoid doing date arithmetic by testing four cases
+        for years in self.years_dirs: # search the years dirs
+            for yesteryear, yesterday in ((year, ((doy - 2) % 365) + 1),
+                                          (year-1, ((doy - 2) % 365) + 1),
+                                          (year, ((doy - 2) % 366) + 1),
+                                          (year-1, ((doy - 2) % 366) + 1)):
+                day = '%s_%d_%03d' % (instrument, yesteryear, yesterday)
+                # FIXME tile ahead
+                bin_path = os.path.join(years.dir, day, bin) + '.' + ADC_EXT
+                # test for existence of ADC path, does not check others (reduce I/O, latency)
+                tried += [bin_path]
+                if os.path.exists(bin_path):
+                    return bin_path
+        raise KeyError('no path to bin '+pid+ (' '.join(tried)))
             
     # given the pid of a target, return the target_info
     def target(self,pid):
