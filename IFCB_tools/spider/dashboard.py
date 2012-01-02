@@ -27,6 +27,9 @@ def spider(mosaics=200,bins=100):
     feed = json.load(f)
     f.close()
 
+    # also cache rss.py
+    hit_url(DATA_NAMESPACE + 'rss.py')
+
     for bin_pid in [bin['pid'] for bin in feed[:mosaics]]:
         hit_url(bin_pid + '/head.json');
         hit_url(bin_pid + '/short.json');
