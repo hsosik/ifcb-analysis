@@ -395,7 +395,13 @@ class StitchedBin(object):
      # generate all targets
     def __iter__(self):
         return iter(self.iterate())
-                
+
+    def length(self):
+        count = 0
+        for target in self.iterate():
+            count += 1
+        return count
+
     def target(self,n):
         for target in self.iterate(n-1):
             if target.targetNumber == n:
