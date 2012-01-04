@@ -23,7 +23,7 @@ ASPECT_RATIO=0.5625
 
 """Create a mosaic of images from the an IFCB bin"""
 
-def __layout(bin, (width, height), size=0):
+def __layout(bin, (width, height), sort_key, size=0):
     """Fit images into a rectangle using a bin packing algorithm. Returns structures
     describing the layout.
     
@@ -34,7 +34,7 @@ def __layout(bin, (width, height), size=0):
     packer = JimScottRectanglePacker(width, height)
     """Sort by largest first. This does not generate a "representative" mosaic, but one
     that shows large and therefore interesting targets in a layout without much wasted space"""
-    targets = sorted(bin.all_targets(), key=lambda t: 0 - (t.info[HEIGHT] * t.info[WIDTH]))
+    targets = sorted(bin.all_targets(), key=sort_key)
     for target in targets:
         h = target.info[WIDTH] # rotate 90 degrees
         w = target.info[HEIGHT] # rotate 90 degrees
@@ -43,7 +43,7 @@ def __layout(bin, (width, height), size=0):
             if p is not None:
                 yield {'x':p.x, 'y':p.y, WIDTH:w, HEIGHT:h, PID:target.info[PID], TARGET_NUMBER:target.info[TARGET_NUMBER]}
 
-def layout(bin, (width, height), size=0):
+def layout(bin, (width, height), size=0, sort_key=lambda t: 0 - (t.info[HEIGHT] * t.info[WIDTH])):
     """Fit images into a rectangle using a bin packing algorithm. Returns structures
     describing the layout.
     
@@ -51,11 +51,11 @@ def layout(bin, (width, height), size=0):
     bin - the bin to get the images from (instance of BinFile)
     (width, height) - the pixel dimensions of the desired mosaic
     size - size threshold in pixels^2. images below this area threshold will be ignored"""
-    cache_key = ifcb.lid(bin.pid) + '/mosaic/'+str(width)+'.json' # cache the layout
-    tiles = cache_obj(cache_key, lambda: list(__layout(bin, (width, height), size)))
+    cache_key = ifcb.lid(bin.pid) + '/mosaic/'+str(width)+'x'+str(height)+'.json' # cache the layout
+    tiles = cache_obj(cache_key, lambda: list(__layout(bin, (width, height), sort_key, size)))
     return {'width':width, 'height':height, 'tiles':tiles}
     
-def mosaic(bin, (width, height), size=0):
+def mosaic(bin, (width, height), size=0, existing_layout=None):
     """Fit images into a rectangle using a bin packing algorithm. Returns an image.
     
     Parameters:
@@ -64,7 +64,9 @@ def mosaic(bin, (width, height), size=0):
     size - size threshold in pixels^2. images below this area threshold will be ignored"""
     mosaic = Image.new('L', (width, height))
     mosaic.paste(160,(0,0,width,height))
-    for entry in layout(bin, (width, height), size)['tiles']:
+    if existing_layout is None:
+        existing_layout = layout(bin, (width, height), size)
+    for entry in existing_layout['tiles']:
         mosaic.paste(bin.target(entry[TARGET_NUMBER]).image(), (entry['x'], entry['y']))
     return mosaic
            
