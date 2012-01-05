@@ -15,7 +15,7 @@ empty_target = target;
 
 %load output2
 
-for cix = 1:2,%length(classlist),
+for cix = 1:length(classlist),
     clear temp
     disp(classlist(cix))
     roilist = dir([trainpath char(classlist(cix)) '\IFCB*']);
@@ -27,7 +27,7 @@ for cix = 1:2,%length(classlist),
     roinames = {roilist.name};
     %temp.targets = cellstr(char(roilist.name));
     temp.targets = roinames; 
-    for iix = 1:10, %length(roilist), %min([3 length(roilist)]),
+    for iix = 1:length(roilist), %min([3 length(roilist)]),
         if rem(iix,10) == 0, disp(iix), end;
         target = empty_target;
         tname = roilist(iix).name; tname = tname(1:end-4); %get_image expects no extension
