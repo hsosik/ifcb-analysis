@@ -1,4 +1,4 @@
-load output2 %load result file produced by batch_features_train.m
+%load output %load result file produced by batch_features_train.m
 
 classes = fieldnames(output);
 %skip some classes that are empty or not properly annotated

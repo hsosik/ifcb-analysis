@@ -226,21 +226,22 @@ train(isnan(train)) = 0;
 %class_vector_temp = classes(class_vector(1:2:end));
 train_temp = train(i,:)';
 class_vector_temp = classes(class_vector);
+clear a b c i
 
-b3 = TreeBagger(100,train_temp,class_vector_temp,'Method','c','OOBVarImp','on','MinLeaf',1);
+b3 = TreeBagger(300,train_temp,class_vector_temp,'Method','c','OOBVarImp','on','MinLeaf',1);
 figure(2), hold on
-plot(oobError(b3), 'b:');
+plot(oobError(b3), 'b-');
 xlabel('Number of Grown Trees');
 ylabel('Out-of-Bag Classification Error');
 [~,idxvar] = sort(b3.OOBPermutedVarDeltaError, 'descend');
 featitles(i(idxvar(1:50)))
 
-%b2 = TreeBagger(200,train_temp(i(idxvar(1:40)),1:2:end)',class_vector_temp,'Method','c','oobpred', 'on', 'MinLeaf',1);
 b4 = TreeBagger(400,train_temp(:,idxvar(1:50)),class_vector_temp','Method','c','oobpred', 'on', 'MinLeaf',1);
 hold on
 plot(oobError(b4), 'y');
-b2 = growTrees(b2,100);
-plot(oobError(b2), 'g');
+
+b3 = growTrees(b3,250); %specify how many to add
+plot(oobError(b3), 'g');
 
 [Yfit,Sfit] = oobPredict(b3);  %[Yfit,scores,stdevs] = predict(b2,Xunknown);
 %b2 = fillProximities(b2);
@@ -249,22 +250,24 @@ plot(oobError(b2), 'g');
 
 figure, hold on
 for count = 1:length(classes),
+ %[fpr,tpr,thr] = perfcurve(b3.Y,Sfit(:,count), classes{count});
  [fpr,tpr,thr] = perfcurve(b3.Y,Sfit(:,count), classes{count});
   subplot(2,1,1), ph = plot(fpr,tpr, 'r');
   title(classes(count)), xlabel('False pos rate'), ylabel('True pos rate')
+  %[fpr,accu,thr] = perfcurve(b3.Y,Sfit(:,count), classes{count},'ycrit','accu');
   [fpr,accu,thr] = perfcurve(b3.Y,Sfit(:,count), classes{count},'ycrit','accu');
   subplot(2,1,2), hold off, ph2 = plot(thr,accu, 'g'); 
   hold on, ph3 = plot(thr, fpr, 'r'); legend('accuracy', 'false pos rate')
   set(ph, 'color', 'k')
   [maxaccu(count),iaccu] = max(accu);
   maxthre(count) = thr(iaccu);
-  pause
+%  pause
 end;
 
-t = repmat(maxthre,length(class_vector),1);
+t = repmat(maxthre,length(class_vector_temp),1);
 win = (Sfit > t);
 [i,j] =find(win);
-Yfit_max = NaN(size(class_vector));
+Yfit_max = NaN(size(class_vector_temp));
 Yfit_max(i) = j;
 ind = find(sum(win')>1);
 for count = 1:length(ind),
@@ -273,10 +276,22 @@ for count = 1:length(ind),
 end;
 
 ind = find(~isnan(Yfit_max));
-c = confusionmat(b3.Y(ind),classes(Yfit_max(ind)));
+c2 = confusionmat(b3.Y(ind),classes(Yfit_max(ind)));
+total = sum(c2')';
+Pd = diag(c2)./total;
+Sp = 1-(sum(c2)-diag(c2)')./total';
+sum(sum(c2)-diag(c2)')/sum(total)
+Pm = (sum(c1')-sum(c2'))./sum(c1');
+figure, bar([Pd Sp' Pm])
 
-size(find(class_vector==Yfit_max))
-size(find(class_vector~=Yfit_max))
+
+num_correct = length(find(class_vector==Yfit_max))
+num_nanincorrect = length(find(class_vector~=Yfit_max))
+num_nan = length(find(isnan(Yfit_max)))
+num_wrong = num_nanincorrect-num_nan
+acc = num_correct./(num_correct+num_wrong)
+unk_rate = num_nan./(num_correct+num_nanincorrect)
+sum(c')-sum(c2') %num unknown per 
 
 [fpr,accu,thre] = perfcurve(b2.Y,Sfit(:,1),classes{1},'ycrit','accu');
 figure(20);
@@ -284,7 +299,7 @@ plot(thre,accu);
 xlabel(['Threshold for ' classes{1} ' Returns']);
 ylabel('Classification Accuracy');
 
-c = confusionmat(b3.Y,Yfit); %transposed from mine
+c1 = confusionmat(b3.Y,Yfit); %transposed from mine
 total = sum(c')';
 Pd = diag(c)./total;
 Sp = 1-(sum(c)-diag(c)')./total';
