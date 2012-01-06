@@ -1,7 +1,8 @@
 from sys import argv
-from os import makedirs, path
+from os import makedirs, path, uname
 import re
 from zipfile import ZipFile
+from time import strftime, time, gmtime
 
 QUEUE='blobfix20120106a'
 
@@ -35,9 +36,17 @@ def fix(lid):
     for (right,wrong) in zip(bin.namelist()[2:], bad.namelist()):
         bytes = bad.read(wrong) # right data, wrong name
         good.writestr(right,bytes) # now it has the right name
+    # now write a receipt
+    receipt = 'Blob fixed at %s on %s\n' % (strftime('%Y-%m-%dT%H:%M:%SZ',gmtime(time())), ' '.join(uname()))
+    good.writestr('receipt.txt', receipt)
     
     try:
         good.close()
         bad.close()
         bin.close()
+    except:
+        raise
 
+if __name__=='__main__':
+    lid = argv[1]
+    fix(lid)
