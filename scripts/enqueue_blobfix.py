@@ -9,6 +9,8 @@ c.queue_declare(queue=blobfix.QUEUE)
 
 lid = argv[1]
 
+print 'enqueueing %s...' % (lid)
+
 c.basic_publish(exchange='', routing_key=blobfix.QUEUE, body=lid)
 
 conn.close()

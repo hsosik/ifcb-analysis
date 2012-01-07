@@ -4,7 +4,8 @@ import re
 from zipfile import ZipFile
 from time import strftime, time, gmtime
 
-QUEUE='blobfix20120106a'
+QUEUE='blobfix20120106'
+LOG_QUEUE=QUEUE+'_log'
 
 INDIR='/scratch/ifcb'
 BLOBDIR='/scratch/ifcb/blobs'
@@ -37,7 +38,8 @@ def fix(lid):
         bytes = bad.read(wrong) # right data, wrong name
         good.writestr(right,bytes) # now it has the right name
     # now write a receipt
-    receipt = 'Blob fixed at %s on %s\n' % (strftime('%Y-%m-%dT%H:%M:%SZ',gmtime(time())), ' '.join(uname()))
+    utcnow = strftime('%Y-%m-%dT%H:%M:%SZ',gmtime(time()))
+    receipt = '%s blob_fix %s on %s\n' % (utcnow, lid, ' '.join(uname()))
     good.writestr('receipt.txt', receipt)
     
     try:
@@ -46,6 +48,8 @@ def fix(lid):
         bin.close()
     except:
         raise
+
+    return receipt
 
 if __name__=='__main__':
     lid = argv[1]
