@@ -11,8 +11,9 @@ q=argv[1]
 c.queue_declare(queue=q)
 
 def callback(ch, method, properties, body):
-    print body
-    sys.stdout.flush()
+    print body.rstrip('\n')
+    stdout.flush()
+    stdout.flush()
     ch.basic_ack(delivery_tag = method.delivery_tag)
 
 c.basic_consume(callback, queue=q)
