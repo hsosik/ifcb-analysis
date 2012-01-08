@@ -6,6 +6,7 @@ from time import strftime, time, gmtime
 
 QUEUE='blobfix20120106'
 LOG_QUEUE=QUEUE+'_log'
+FAIL_QUEUE=QUEUE+'_fail'
 
 INDIR='/scratch/ifcb'
 BLOBDIR='/scratch/ifcb/blobs'
