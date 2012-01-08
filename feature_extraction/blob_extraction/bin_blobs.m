@@ -27,7 +27,7 @@ for i = 1:nt,
     % compute the blob mask (result in target.blob_image)
     target = blob(target);
     % now output the blob image as a 1-bit png
-    png_path = [png_dir filesep regexprep(file,'.zip',sprintf('_%05d.png',i))];
+    png_path = [png_dir filesep regexprep(file,'.zip',sprintf('_%05d.png',targets.targetNumber(i)))];
     imwrite(target.blob_image,png_path,'bitdepth',1);
     png_paths = [png_paths; {png_path}];
 end
