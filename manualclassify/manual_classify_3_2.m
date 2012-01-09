@@ -36,16 +36,15 @@ filenum2start = 1;  %USER select file number to begin (within the chose day)
 pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
 %pick_mode = 'raw_roi';
 big_only = 0; %case for picking Laboea and tintinnids only
-resultpath = 'D:\work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
-
-classpath = '\\queenrose\ifcb_data_mvco_jun06\class2008_24may07\'; %USER set
+resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
+classpath = '\\queenrose\ifcb_data_mvco_jun06\class2011_24may07\'; %USER set
 basedir = '\\demi\ifcbnew\';  %%USER set, roi files, adc files
 %basedir = '\\demi\ifcbold\G\IFCB\ifcb_data_MVCO_jun06\';  %%USER set, roi files, adc files
-streampath = [basedir 'IFCB1_2010_174\']; %USER set, which year / day to analyze
-stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitch2008\';  %%USER set, roi stitch info files
+streampath = [basedir 'IFCB5_2011_326\']; %USER set, which year / day to analyze
+stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitch2011\';  %%USER set, roi stitch info files
 class_filestr = '_class_24May07'; %USER set, string appended on roi name for class files
 
-filelist = dir([streampath 'IFCB1_2010_174_082*.roi']);
+filelist = dir([streampath 'IFCB5_2011_326_201250*.roi']);
 %filelist = get_filelist_manual([resultpath 'manual_list'],2,[2006]); %manual_list, column to use, year to find
 
 if ~exist(resultpath, 'dir'),
