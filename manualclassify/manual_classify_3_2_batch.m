@@ -38,7 +38,7 @@ batch_classnum = [1:53]; %USER which class do you want to view in batch mode, He
 
 pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
 big_only = 0; %case for picking Laboea and tintinnids only
-resultpath = 'd:\work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
+resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
 classpath = '\\queenrose\ifcb_data_mvco_jun06\class2011_24may07\'; %USER set
 %basedir = '\\demi\ifcbnew\';  %%USER set, roi files, adc files
 basedir = '\\demi\ifcbold\g\IFCB\ifcb_data_MVCO_jun06\';  %%USER set, roi files, adc files
