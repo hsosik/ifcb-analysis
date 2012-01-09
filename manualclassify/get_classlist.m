@@ -40,11 +40,17 @@ if exist([manualfilename], 'file')  %~isempty(tempdir)
     clear class2use_in
     %if strncmp(pick_mode, 'subdiv',6),
     if ~isempty(classnum_default) & ~isempty(classstr),
-        sub_col = strmatch(classstr, list_titles, 'exact');
-        if isempty(sub_col), %start a new one
-            sub_col = size(classlist,2) + 1;
+        %sub_col = strmatch(classstr, list_titles, 'exact');
+        sub_col = 4; %always in col 4 (temporarily) with new method
+        classlist(:,4) = NaN; %initialize
+        %if isempty(sub_col), %start a new one
+        %    sub_col = size(classlist,2) + 1;
+        %    list_titles(sub_col) = {classstr};
+        %    classlist(:,sub_col) = NaN;
+        %end;
+        if exist(['classlist_sub_' classstr], 'var') %overwrite col4 with existing info if available
+            eval(['classlist(:,4) = classlist_sub_' classstr ';'])
             list_titles(sub_col) = {classstr};
-            classlist(:,sub_col) = NaN;
         end;
         classnum = strmatch(classstr, class2use_manual); %default class number from original list
         classlist((classlist(:,manual_col) == classnum & isnan(classlist(:,sub_col))),sub_col) = 2; %classnum_default; %find any new additions to manual start category

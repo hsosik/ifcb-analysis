@@ -26,28 +26,34 @@
 %Also modified to skip saving a result file if no roi categories are changed (includes modifications to get_classlist and selectrois to omit save steps). 
 %1/12/10 modified fillscreen to skip zero-sized rois
 %1/13/10 modified in if change_flag loop so that subdivide ID overrides a previous main manual column ID
-
-%7/27/11 move to SVN version control, starting with manual_classify_3_1.m
-%renamed as manual_classify.m
-%implement change in how subdivided results are stored in output files -
-%make separate vectors for each subdivide and name them classlist_sub_????, where is origin class label, e.g., %classlist_sub_Dinophysis
+%2/1/10 _batch version to "replay" a set of files already manually checked, displaying only selected categories
+%Version 3_2 - Heidi 11/10/11. Modified to address bug with missing class2use_sub? for cases
+%with multiple subdivides; added back -append option on save (previously removed in 1/6/10 version) 
+%includes modifications to get_classlist.m
 
 close all; clear all;
 
-filenum2start = 1;  %USER select file number to begin (within the chosen day)
-pick_mode = 'correct_or_subdivide';%'correct_or_subdivide'; %USER choose one from case list below
+filenum2start = 1;  %USER select file number to begin (within the chose day)
+batch_classnum = [1:53]; %USER which class do you want to view in batch mode, Heidi 10/7/09, only works for correct_or_subdivide for now
+
+pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
 big_only = 0; %case for picking Laboea and tintinnids only
-resultpath = 'C:\work\IFCB3LisaCampbell\Test\class_Jun2010\manual_correct_Dinophysis_New\'; %USER set
+resultpath = 'd:\work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
+classpath = '\\queenrose\ifcb_data_mvco_jun06\class2011_24may07\'; %USER set
+%basedir = '\\demi\ifcbnew\';  %%USER set, roi files, adc files
+basedir = '\\demi\ifcbold\g\IFCB\ifcb_data_MVCO_jun06\';  %%USER set, roi files, adc files
+stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitch2006\';  %%USER set, roi stitch info files
+class_filestr = '_class_24May07'; %USER set, string appended on roi name for class files
 
-%classpath = 'y:\class2009_24may07\'; %USER set
-classpath = 'C:\work\IFCB3LisaCampbell\Test\class_Jun2010\';
-basedir = 'C:\work\IFCB3LisaCampbell\Test\';  %%USER set, roi files, adc files
-streampath = [basedir 'IFCB3_2010_111\']; %USER set, which year / day to analyze
-%stitchpath = 'y:\stitch2009\';  %%USER set, roi stitch info files
-stitchpath = 'C:\work\IFCB3LisaCampbell\Test\stitch2010\';
-class_filestr = '_class_28Sep08'; %USER set, string appended on roi name for class files
+%filelist = dir([resultpath 'IFCB1_2009_???_00*']);
+%filelist = get_filelist_manual([resultpath 'manual_list'],5,[2011], 'all'); %manual_list, column to use, year to find
+%load Ditylum_ciliate_files; filelist = Ditylum_ciliate_files; clear Ditylum_ciliate_files
 
-filelist = dir([streampath 'IFCB*.roi']);
+%case 3 for ciliate, big ciliate, diatoms, ditylum ONLY
+load([resultpath 'manual_list.mat']) %col 2-7: {'all categories','ciliates','ditylum','diatoms','big ciliates','special big only'}
+t = cell2mat(manual_list(2:end,2:end-1));
+ind = find(~t(:,1) & t(:,2) & t(:,3) & t(:,4) & t(:,5) & ~t(:,6));
+filelist = cell2struct(manual_list(ind+1,1),{'name'},2);
 
 if ~exist(resultpath, 'dir'),
     dos(['mkdir ' resultpath]);
@@ -64,9 +70,8 @@ end;
 switch pick_mode
     case 'raw_roi' %pick classes from scratch
 %        class2use = {'class1'; 'class2'; 'other'}; %USER type or load list
-        %load class2use_MVCOmanual2 %load class2use
-        load master_classlist %Campbell lab option
-        classnum_default = strmatch('otherBig', class2use); %USER class for default
+        load class2use_MVCOmanual3 %load class2use
+        classnum_default = strmatch('other', class2use); %USER class for default
         classstr = [];
         class2use_pick1 = class2use; %to set button labels
         class2use_manual = class2use;
@@ -78,6 +83,8 @@ switch pick_mode
     case 'correct_or_subdivide'  %make subcategories starting with an automated class
         %load first file to get class2use, presumes all files have same
         classfile = [classpath filelist(filenum2start).name(1:end-4) class_filestr '.mat'];
+        %classfile(end-48) = classfile(end-29);  %set the correct year, needed for batch case, Heidi 10/6/09
+        %classpath(end-9) = classfile(end-29); %set the correct year, needed for batch case, Heidi 10/6/09
         if exist(classfile),
             load([classpath filelist(filenum2start).name(1:end-4) class_filestr]);
             class2use_auto = class2use;
@@ -87,25 +94,24 @@ switch pick_mode
         class2use = class2use_auto; 
         %if adding new categories
         %class2use = {'class1'; 'class2'; 'other'}; %USER type or load list
-        %load class2use_MVCOmanual2 %load class2use
-        load master_classlist %Campbell lab option
+        load class2use_MVCOmanual3 %load class2use
         [junk, fulldiff] = setdiff(class2use, class2use_auto);
         class2use = [class2use_auto class2use(sort(fulldiff))];  %append new classes on end of auto classes
         class2use_pick1 = class2use;
         class2use_manual = class2use;
-        classstr = 'Dinophysis'; %USER class to start from
+        classstr = 'ciliate'; %USER class to start from
         %class2use_sub = [];  %use this if no subdividing 
         %new subclasses, first one for rois NOT in the class
-        %class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'}; %USER type or load list
-        class2use_sub = {'not_Dinophysis'    'D_ovum_single'    'D_ovum_dividing'    'D_caudata_single'    'D_caudata_dividing'}; %USER type or load list
-        classnum_default = strmatch('not_Dinophysis', class2use_sub); %USER class for default
+        class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'}; %USER type or load list
+        classnum_default = strmatch('not_ciliate', class2use_sub); %USER class for default
         class2use_pick2 = class2use_sub; %to set button labels
         class2view1 = 1:length(class2use); %use this to view all classes
         %[junk, class2view1] = setdiff(class2use_pick1, {'bad', 'mix'});  %use this to exclude some classes
-        %class2view1 = strmatch('Ditylum', class2use_manual);
         class2view1 = sort(class2view1);
+        class2view1 = class2view1(batch_classnum); %set category(ies) to view, needed for batch mode
         %class2view1 = [];  %use this to skip all original auto categories
         class2view2 = 1:length(class2use_sub);
+        class2view2 = []; %Comment out if using a subdivided class
     otherwise
         disp('Invalid pick_mode. Check setting in m-file.')
         return
@@ -121,6 +127,8 @@ border = 3; %to separate images
 
 for filecount = filenum2start:length(filelist),
     streamfile = filelist(filecount).name(1:end-4);
+    streampath = [basedir streamfile(1:14) '\']; % needed for batch case
+    classpath(end-9) = streamfile(10);  %set the correct year, needed for batch case
     disp(['File number: ' num2str(filecount)])
     if ~strcmp(pick_mode, 'raw_roi') & ~exist([resultpath streamfile '.mat']) & ~exist([classpath filelist(filecount).name(1:end-4) class_filestr '.mat']),
     %if ~exist([resultpath streamfile '.mat']) & ~exist([classpath filelist(filecount).name(1:end-4) class_filestr '.mat']),
@@ -145,7 +153,7 @@ for filecount = filenum2start:length(filelist),
     end;
     mark_col = 2; %added back 11 jan 2010
     if ~isempty(sub_col), 
-         %eval(['class2use_sub' num2str(sub_col) '= class2use_sub;']) %no longer needed with new format
+         eval(['class2use_sub' num2str(sub_col) '= class2use_sub;'])
          mark_col = sub_col; %reset col for ID in classlist
     end;
     %save([resultpath streamfile], 'list_titles', 'class2use_auto', 'class2use_manual', 'class2use_sub*', 'classlist', '-append'); %make sure initial file has proper list_titles    
@@ -209,22 +217,10 @@ for filecount = filenum2start:length(filelist),
                             %1/15/10, recast above so the subdivide ID overrides instead (i.e., just skip above line)
                             classlist(classlist(:,sub_col) >= 2,2) = strmatch(classstr, class2use_manual);  %reassign manual column (#2) with relevant sub_col entries
                             classlist(classlist(:,2) == strmatch(classstr, class2use_manual) & isnan(classlist(:,sub_col)), sub_col) = classnum_default;  % = 2; changed 1/15/10 ??correct??
-                            %eval(['class2use_sub' num2str(sub_col) '= class2use_sub;']) %don't need this any more with new format
+                            eval(['class2use_sub' num2str(sub_col) '= class2use_sub;'])
                             mark_col = sub_col; %reset col for ID in classlist %comment out 9/29/09 Heidi
                         end;
-                        %reformat for separate subdivide vector, quick work around for Campbell group, this should be redone more efficiently later...
-                        eval(['classlist_sub_' classstr ' = classlist(:,4);'])
-                        eval(['class2use_sub_' classstr ' = class2use_sub;'])
-                        hold_classlist = classlist;
-                        hold_list_titles = list_titles;
-                        hold_class2use_sub = class2use_sub; clear class2use_sub
-                        classlist = classlist(:,1:3);
-                        list_titles = list_titles(1:3);
-                        save([resultpath streamfile], 'classlist*', 'class2use_auto', 'class2use_manual', 'class2use_sub*', 'list_titles'); %omit append option, 6 Jan 2010
-                        %set them back for 4 columns again for the next round
-                        classlist = hold_classlist;
-                        list_titles = hold_list_titles;
-                        class2use_sub = hold_class2use_sub;
+                        save([resultpath streamfile], 'classlist', 'class2use_auto', 'class2use_manual', 'class2use_sub*', 'list_titles', '-append'); %omit append option, 6 Jan 2010
                     end;
                     clear change_flag
                     if go_back_flag,
