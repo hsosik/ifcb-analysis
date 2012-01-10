@@ -4,9 +4,10 @@ import re
 from zipfile import ZipFile
 from time import strftime, time, gmtime
 
-QUEUE='blobfix20120106'
+QUEUE='blobfix20120109'
 LOG_QUEUE=QUEUE+'_log'
 FAIL_QUEUE=QUEUE+'_fail'
+WIN_QUEUE=QUEUE+'_win'
 
 INDIR='/scratch/ifcb'
 BLOBDIR='/scratch/ifcb/blobs'
