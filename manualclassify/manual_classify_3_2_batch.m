@@ -46,14 +46,14 @@ stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitch2006\';  %%USER set, roi st
 class_filestr = '_class_24May07'; %USER set, string appended on roi name for class files
 
 %filelist = dir([resultpath 'IFCB1_2009_???_00*']);
-%filelist = get_filelist_manual([resultpath 'manual_list'],5,[2011], 'all'); %manual_list, column to use, year to find
+filelist = get_filelist_manual([resultpath 'manual_list'],5,[2011], 'all'); %manual_list, column to use, year to find
 %load Ditylum_ciliate_files; filelist = Ditylum_ciliate_files; clear Ditylum_ciliate_files
 
 %case 3 for ciliate, big ciliate, diatoms, ditylum ONLY
-load([resultpath 'manual_list.mat']) %col 2-7: {'all categories','ciliates','ditylum','diatoms','big ciliates','special big only'}
-t = cell2mat(manual_list(2:end,2:end-1));
-ind = find(~t(:,1) & t(:,2) & t(:,3) & t(:,4) & t(:,5) & ~t(:,6));
-filelist = cell2struct(manual_list(ind+1,1),{'name'},2);
+%load([resultpath 'manual_list.mat']) %col 2-7: {'all categories','ciliates','ditylum','diatoms','big ciliates','special big only'}
+%t = cell2mat(manual_list(2:end,2:end-1));
+%ind = find(~t(:,1) & t(:,2) & t(:,3) & t(:,4) & t(:,5) & ~t(:,6));
+%filelist = cell2struct(manual_list(ind+1,1),{'name'},2);
 
 if ~exist(resultpath, 'dir'),
     dos(['mkdir ' resultpath]);
