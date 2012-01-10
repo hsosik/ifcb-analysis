@@ -51,7 +51,7 @@ if isempty(filter),
     clear ii jj
 end
 
-pixel_pitch = 6.45; %microns
+%pixel_pitch = 6.45; %microns %Heidi 11/29/11 seems unused
 
 %Begin the fourier transform part
 amp_trans = fftshift(fft2(img));

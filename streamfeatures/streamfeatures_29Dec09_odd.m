@@ -8,12 +8,12 @@
 
 warning('off')
 
-roidaypath = '\\Cheese\G on K\IFCB\ifcb_data_MVCO_jun06\ ';
+roidaypath = '\\cheese\J_IFCB\IFCB\ifcb_data_MVCO_jun06\ ';
 feapath = 'd:\work\IFCB1\ifcb_data_MVCO_jun06\features2009\';
-stitchpath = 'd:\work\IFCB1\ifcb_data_MVCO_jun06\stitch2009s\';
+stitchpath = 'd:\work\IFCB1\ifcb_data_MVCO_jun06\stitch2009\';
 numfea = 210;
 time_start = now;
-daydir = dir([roidaypath 'IFCB?_2009_*']);
+daydir = dir([roidaypath 'IFCB?_2011_282*']);
 stitch_info_titles = {'first roi#' 'xpos1', 'ypos1', 'xpos2', 'ypos2'};
 for daycount = 1:length(daydir)
     roipath = [roidaypath daydir(daycount).name '\'];
@@ -45,6 +45,7 @@ for daycount = 1:length(daydir)
                 %      Centroid = NaN.*zeros(2,totalrois);
                 disp('     stitching...')
                 for count = 1:length(stitch_ind);
+                    keyboard
                     n = stitch_ind(count);
                     startbyte_temp = startbyte(n:n+1); x = xsize(n:n+1); y = ysize(n:n+1); xpos = xpos_all(n:n+1); ypos = ypos_all(n:n+1);
                     if x(1) == 0 || x(2) == 0, startbyte = []; end; %skip case with a 0 size rois
