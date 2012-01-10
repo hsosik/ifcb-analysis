@@ -13,7 +13,7 @@ c.queue_declare(queue=blobfix.FAIL_QUEUE)
 def callback(ch, method, properties, body):
     try:
         lid = re.match(r'.*(IFCB.*).zip',body).groups()[0]
-        msg = blobfix.fix(lid)
+        msg = blobfix.fix(lid,skip=True)
         c.basic_publish(exchange='', routing_key=blobfix.LOG_QUEUE, body=msg)
         ch.basic_ack(delivery_tag = method.delivery_tag)
     except:

@@ -13,7 +13,7 @@ BLOBDIR='/scratch/ifcb/blobs'
 OUTDIR='/scratch/ifcb/good_blobs'
 
 # the weekend ... starts here
-def fix(lid):
+def fix(lid,skip=False):
     (day, year) = re.match(r'IFCB._((\d+)_\d+)_\d+',lid).groups()
     try:
         makedirs(path.join(OUTDIR,year,day))
@@ -22,6 +22,10 @@ def fix(lid):
     binzip = path.join(INDIR,year,day,lid+'.zip')
     badblobzip = path.join(BLOBDIR,year,day,lid+'_blobs.zip')
     goodblobzip = path.join(OUTDIR,year,day,lid+'_blobs_v2.zip')
+
+    if skip and path.exists(goodblobzip):
+        receipt = '%s blob_fix skipped %s on %s\n' % (utcnow, lid, ' '.join(uname()))
+        return receipt
 
     # now open all three files.
     try:
