@@ -12,7 +12,7 @@ for figcount = 1:numfig,
     if figcount < numfig,
         subplots = maxsubplots;
     else
-        subplots = length(class2use)-indcount;
+        subplots = length(class2use)-indcount+1;
     end;
     for subcount = 1:subplots,
         subplot(maxsubplots,1,subcount)
