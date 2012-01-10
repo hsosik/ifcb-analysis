@@ -18,19 +18,21 @@ for figcount = 1:numfig,
     for subcount = 1:subplots,
         subplot(maxsubplots,1,subcount)
         nnan = find(~isnan(ymat(:,indcount)));
-        plot(xvec(nnan), ymat(nnan,indcount), '.-')
-        set(gca,'xlim', xl)
-        set(gca, 'xtick', xt)
-        datetick
-        if subcount < subplots,
-            set(gca,'xticklabel', []);
-        end;
-        set(gca, 'xgrid', 'on')
+        %plot(xvec(nnan), ymat(nnan,indcount), '.-')
+        plot(ymat(:,indcount), '.-')
+%         set(gca,'xlim', xl)
+%         set(gca, 'xtick', xt)
+%         datetick
+%         if subcount < subplots,
+%             set(gca,'xticklabel', []);
+%         end;
+%         set(gca, 'xgrid', 'on')
         orient tall
         fpos = get(gcf, 'position');
         set(gcf, 'position', [fpos(1) fpos(2)/10 fpos(3) fpos(4)*1.8])
         yl = ylim;
-        text(xvec(1)+2,.9*yl(2), class2use(indcount), 'interpreter', 'none', 'verticalalignment', 'top')
+        %text(xvec(1)+2,.9*yl(2), class2use(indcount), 'interpreter', 'none', 'verticalalignment', 'top')
+        text(5,.9*yl(2), class2use(indcount), 'interpreter', 'none', 'verticalalignment', 'top')
         indcount = indcount + 1;
     end;
 end
