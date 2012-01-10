@@ -300,11 +300,11 @@ xlabel(['Threshold for ' classes{1} ' Returns']);
 ylabel('Classification Accuracy');
 
 c1 = confusionmat(b3.Y,Yfit); %transposed from mine
-total = sum(c')';
-Pd = diag(c)./total;
-Sp = 1-(sum(c)-diag(c)')./total';
-sum(sum(c)-diag(c)')/sum(total)
-bar([total diag(c) sum(c)'-diag(c)])
+total = sum(c1')';
+Pd = diag(c1)./total;
+Sp = 1-(sum(c1)-diag(c1)')./total';
+sum(sum(c1)-diag(c1)')/sum(total)
+bar([total diag(c1) sum(c1)'-diag(c1)])
 figure, bar([Pd Sp'])
 
 [P,ind] = max(Sfit');
