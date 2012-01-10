@@ -7,8 +7,12 @@ zipfile=$1
 n=`unzip -l $zipfile | grep -e 'csv' -e 'xml' -e 'receipt.txt' | wc -l`
 if [ ! $n -eq 3 ]; then
     echo FAIL $zipfile csv/xml/receipt check failed
+else
+    echo PASS $zipfile csv/xml/receipt check passed
 fi
-n=`unzip -l $zipfile | grep -e 'png' | wc -l`
+n=`unzip -l $zipfile | grep 'png' | wc -l`
 if [ $n -eq 0 ]; then
-    echo WARN $zipfile contains no .png files
+    echo WARN $zipfile contains 0 .png files
+else
+    echo PASS $zipfile contains '>0' .png files
 fi
