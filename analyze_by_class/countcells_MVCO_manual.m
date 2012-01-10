@@ -106,5 +106,5 @@ end;
 
 filelist = filelist_all;
 class2use = class2use_here;
-save count_manual_07Jan2012 matdate ml_analyzed_mat classcount filelist class2use
+save count_manual_10Jan2012 matdate ml_analyzed_mat classcount filelist class2use
 
