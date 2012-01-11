@@ -80,7 +80,7 @@ for loopcount = 1:length(mode_list),
         load([resultpath filename])
         if ~isequal(class2use_manual, class2use_manual_first)
             disp('class2use_manual does not match previous files!!!')
-            keyboard
+       %     keyboard
         end;
         temp = NaN(1,numclass);
         for classnum = 1:numclass1,
