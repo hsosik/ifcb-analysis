@@ -26,7 +26,11 @@ daydir = dir([in_dir filesep '*.zip']);
 
 if not(debug),
     parfor daycount = 1:length(daydir)
-        bin_blobs(in_dir, daydir(daycount).name, out_dir);
+        try
+            bin_blobs(in_dir, daydir(daycount).name, out_dir);
+        catch e
+   	    logmsg(['day_blobs FAIL ' daydir(daycount).name],debug);
+        end
     end
 else
     for daycount = 1:length(daydir)

@@ -7,6 +7,12 @@ function log(msg) % not to be confused with logarithm function
     logmsg(['bin_blobs ' msg],debug);
 end
 
+archive = [out_dir filesep regexprep(file,'.zip','_blobs.zip')];
+if exist(archive,'file'),
+    log(['SKIPPING ' file]);
+    return
+end
+
 % load the zip file
 log(['LOAD ' file]);
 targets = get_bin_file([in_dir filesep file]);
@@ -32,7 +38,6 @@ for i = 1:nt,
     png_paths = [png_paths; {png_path}];
 end
 
-archive = [out_dir filesep regexprep(file,'.zip','_blobs.zip')];
 zip(archive, png_paths, png_dir);
 
 log(['SAVING ' archive]);
