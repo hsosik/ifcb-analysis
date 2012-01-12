@@ -5,8 +5,8 @@
 # need to be handled separately
 
 # set MATLABPATH to include blob/feature extraction code
-SOURCE_DIR=/home/jfutrelle/dev/feature_extraction
-export MATLABPATH=${SOURCE_DIR}:${SOURCE_DIR}/blob_extraction
+SOURCE_DIR=/home/jfutrelle/trunk
+export MATLABPATH=${SOURCE_DIR}/feature_extraction:${SOURCE_DIR}/feature_extraction/blob_extraction:${SOURCE_DIR}/webservice_tools
 
 # dir containing year directories
 DATA_DIR=/scratch/ifcb
@@ -24,10 +24,9 @@ if [ $procs = '0' ]; then
     # look for an unprocessed day
     for day_dir in ${DATA_DIR}/2*/2*; do
 	out_dir=`echo $day_dir | sed -e 's#ifcb/#ifcb/blobs/#'`
-	if [ ! -e $out_dir ]; then
-	    # create the output directory
-	    log creating $out_dir
-	    mkdir -p $out_dir
+	mkdir -p $out_dir
+	if [ ! -e $out_dir/log.txt ]; then
+	    log Processing $day_dir ...
 	    # start the matlab job and log its output
 	    nohup ${MATLAB} -nodisplay -r "try, day_blobs('${day_dir}','${out_dir}'), catch, end, quit" >> ${out_dir}/log.txt &
 	    exit
