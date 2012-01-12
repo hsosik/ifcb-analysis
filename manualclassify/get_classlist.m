@@ -4,6 +4,10 @@ function [ classlist, sub_col, list_titles] = get_classlist( manualfilename, cla
 %Loads existing or sets up new matrix for identification results;
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, 31 May 2009
 %6 January 2010, modified to omit save line (no longer creates result file even if no roi categories are changed)
+%11 November 2011, modified to fix bug with class2use_sub being replaced by value loaded from manual result file 
+%containing (problem in cases with more than one subdivide); add class2use_sub_in to keep input value
+%12 November 2011; further edit to "overlap" case to prevent manual assignment to another category 
+%from being over-ruled by the subdivide category
 
 %INPUTS:
 %manualfilename - mat filename (with path) for manual results
@@ -26,8 +30,10 @@ manual_col = 2;
 auto_col = 3;
 sub_col = [];
 class2use_in = class2use;
+class2use_sub_in = class2use_sub;
 if exist([manualfilename], 'file')  %~isempty(tempdir)
     load([manualfilename])
+    class2use_sub = class2use_sub_in; %make sure any loaded class2use_sub is overwritten
     if length(class2use_in) < length(class2use_manual),
         disp('Existing class2use_manual does not match class2use for ROI picking. You must remap the classes in result file first or change your picking categories.') 
         classlist = [];
@@ -39,25 +45,20 @@ if exist([manualfilename], 'file')  %~isempty(tempdir)
     end;
     clear class2use_in
     %if strncmp(pick_mode, 'subdiv',6),
-    if ~isempty(classnum_default) & ~isempty(classstr),
-        %sub_col = strmatch(classstr, list_titles, 'exact');
-        sub_col = 4; %always in col 4 (temporarily) with new method
-        classlist(:,4) = NaN; %initialize
-        %if isempty(sub_col), %start a new one
-        %    sub_col = size(classlist,2) + 1;
-        %    list_titles(sub_col) = {classstr};
-        %    classlist(:,sub_col) = NaN;
-        %end;
-        if exist(['classlist_sub_' classstr], 'var') %overwrite col4 with existing info if available
-            eval(['classlist(:,4) = classlist_sub_' classstr ';'])
+    if ~isempty(classnum_default) && ~isempty(classstr),
+        sub_col = strmatch(classstr, list_titles, 'exact');
+        if isempty(sub_col), %start a new one
+            sub_col = size(classlist,2) + 1;
             list_titles(sub_col) = {classstr};
+            classlist(:,sub_col) = NaN;
         end;
         classnum = strmatch(classstr, class2use_manual); %default class number from original list
         classlist((classlist(:,manual_col) == classnum & isnan(classlist(:,sub_col))),sub_col) = 2; %classnum_default; %find any new additions to manual start category
         classlist(classlist(:,auto_col) == classnum & isnan(classlist(:,manual_col)) & isnan(classlist(:,sub_col)),sub_col) = classnum_default; %set default from auto
         [overlap, ind_sub, ind] = intersect(class2use_sub, class2use);
         for count1 = 1:length(overlap), %set any overlap categories from previous in sub_col, if not already marked in sub_col
-            classlist(classlist(:,auto_col) == ind(count1) & isnan(classlist(:,sub_col)), sub_col) = ind_sub(count1); %set to new class number in subcol
+            %classlist(classlist(:,auto_col) == ind(count1) & isnan(classlist(:,sub_col)), sub_col) = ind_sub(count1); %set to new class number in subcol
+            classlist(classlist(:,auto_col) == ind(count1) & (isnan(classlist(:,manual_col)) | classlist(:,manual_col) == ind(count1)) & isnan(classlist(:,sub_col)), sub_col) = ind_sub(count1); %11/12/11 Heidi, don't mark in sub_col if manual set to another category
         end;
     end;
     %save(manualfilename, 'list_titles', 'class2use*', 'classlist', '-append'); %make sure initial file has proper list_titles    
