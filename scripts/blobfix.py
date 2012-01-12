@@ -4,7 +4,7 @@ import re
 from zipfile import ZipFile
 from time import strftime, time, gmtime
 
-QUEUE='blobfix20120109'
+QUEUE='bf0112'
 LOG_QUEUE=QUEUE+'_log'
 FAIL_QUEUE=QUEUE+'_fail'
 WIN_QUEUE=QUEUE+'_win'
@@ -25,6 +25,7 @@ def fix(lid,skip=False):
     goodblobzip = path.join(OUTDIR,year,day,lid+'_blobs_v2.zip')
 
     if skip and path.exists(goodblobzip):
+        utcnow = strftime('%Y-%m-%dT%H:%M:%SZ',gmtime(time()))
         receipt = '%s blob_fix skipped %s on %s\n' % (utcnow, lid, ' '.join(uname()))
         return receipt
 

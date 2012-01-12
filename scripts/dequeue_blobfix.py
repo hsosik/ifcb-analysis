@@ -13,12 +13,14 @@ c.queue_declare(queue=blobfix.WIN_QUEUE)
 
 def callback(ch, method, properties, body):
     try:
-        lid = re.match(r'.*(IFCB.*).zip',body).groups()[0]
+        lid = re.match(r'.*(IFCB.*)',body).groups()[0]
+        print 'Fixing %s' % (lid)
         msg = blobfix.fix(lid,skip=True)
         c.basic_publish(exchange='', routing_key=blobfix.LOG_QUEUE, body=msg)
         c.basic_publish(exchange='', routing_key=blobfix.WIN_QUEUE, body=lid)
         ch.basic_ack(delivery_tag = method.delivery_tag)
     except:
+        print 'FAILED %s' % (lid)
         c.basic_publish(exchange='', routing_key=blobfix.FAIL_QUEUE, body=body)
         ch.basic_ack(delivery_tag = method.delivery_tag)
 
