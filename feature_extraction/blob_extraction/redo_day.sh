@@ -4,9 +4,11 @@
 # if for some reason there's an unfinished day, this will not finish the day; that will
 # need to be handled separately
 
+day_dir=$1
+
 # set MATLABPATH to include blob/feature extraction code
-SOURCE_DIR=/home/jfutrelle/dev/feature_extraction
-export MATLABPATH=${SOURCE_DIR}:${SOURCE_DIR}/blob_extraction
+SOURCE_DIR=/home/jfutrelle/trunk
+export MATLABPATH=${SOURCE_DIR}/feature_extraction:${SOURCE_DIR}/feature_extraction/blob_extraction:${SOURCE_DIR}/webservice_tools
 
 # dir containing year directories
 DATA_DIR=/scratch/ifcb/redo
@@ -18,19 +20,17 @@ log() {
     echo `date +%Y-%m-%dT%H:%M:%S%Z` $*
 }
 
+log Checking that Matlab is idle ...
+
 # check for running Matlab jobs
 procs=`ps aux | grep MATLAB | grep -v grep | wc -l | awk '{print $1}'`
 if [ $procs = '0' ]; then
-    # look for an unprocessed day
-    for day_dir in ${DATA_DIR}/2*/2*; do
-	out_dir=`echo $day_dir | sed -e 's#redo/#redo/blobs/#'`
-	if [ ! -e $out_dir ]; then
-	    # create the output directory
-	    log creating $out_dir
-	    mkdir -p $out_dir
-	    # start the matlab job and log its output
-	    nohup ${MATLAB} -nodisplay -r "try, day_blobs('${day_dir}','${out_dir}'), catch, end, quit" >> ${out_dir}/log.txt &
-	    exit
-	fi
-    done
+    out_dir=`echo $day_dir | sed -e 's#redo/#redo/blobs/#'`
+    # create the output directory
+    log creating $out_dir
+    mkdir -p $out_dir
+    # start the matlab job and log its output
+    nohup ${MATLAB} -nodisplay -r "try, day_blobs('${day_dir}','${out_dir}'), catch, end, quit" >> ${out_dir}/log.txt &
+else
+    log Matlab already running
 fi
