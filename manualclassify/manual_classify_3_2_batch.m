@@ -33,20 +33,20 @@
 
 close all; clear all;
 
-filenum2start = 1;  %USER select file number to begin (within the chose day)
-batch_classnum = [25]; %USER which class do you want to view in batch mode, Heidi 10/7/09, only works for correct_or_subdivide for now
+filenum2start = 3;  %USER select file number to begin (within the chose day)
+batch_classnum = [25,46]; %USER which class do you want to view in batch mode, Heidi 10/7/09, only works for correct_or_subdivide for now
 
 pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
 big_only = 0; %case for picking Laboea and tintinnids only
 resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
 classpath = '\\queenrose\ifcb_data_mvco_jun06\class2011_24may07\'; %USER set
-basedir = '\\demi\ifcbnew\';  %%USER set, roi files, adc files
-%basedir = '\\demi\ifcbold\g\IFCB\ifcb_data_MVCO_jun06\';  %%USER set, roi files, adc files
-stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitch2011\';  %%USER set, roi stitch info files
+%basedir = '\\demi\ifcbnew\';  %%USER set, roi files, adc files
+basedir = '\\demi\ifcbold\g\IFCB\ifcb_data_MVCO_jun06\';  %%USER set, roi files, adc files
+stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitch2007\';  %%USER set, roi stitch info files
 class_filestr = '_class_24May07'; %USER set, string appended on roi name for class files
 
 %filelist = dir([resultpath 'IFCB1_2009_???_00*']);
-filelist = get_filelist_manual([resultpath 'manual_list'],7,[2011], 'only'); %manual_list, column to use, year to find
+filelist = get_filelist_manual([resultpath 'manual_list'],7,[2007], 'only'); %manual_list, column to use, year to find
 %load Ditylum_ciliate_files; filelist = Ditylum_ciliate_files; clear Ditylum_ciliate_files
 
 %case 3 for ciliate, big ciliate, diatoms, ditylum ONLY
@@ -145,6 +145,7 @@ for filecount = filenum2start:length(filelist),
     fid=fopen([streampath streamfile '.roi']);
     disp([streampath streamfile]), disp([num2str(size(adcdata,1)) ' total ROI events'])
     [ classlist, sub_col, list_titles ] = get_classlist( [resultpath streamfile '.mat'],[classpath streamfile class_filestr '.mat'], pick_mode, class2use_manual, class2use_sub, classstr, classnum_default, length(x_all) );
+    keyboard
     if isempty(classlist), %indicates bad class2use match
         return
     end;
