@@ -106,5 +106,13 @@ end;
 
 filelist = filelist_all;
 class2use = class2use_here;
-save count_manual_10Jan2012 matdate ml_analyzed_mat classcount filelist class2use
+if ~exist([resultpath 'summary\'], 'dir')
+    mkdir([resultpath 'summary\'])
+end;
+datestr = date; datestr = regexprep(datestr,'-','');
+save([resultpath 'summary\count_manual_' datestr], 'matdate', 'ml_analyzed_mat', 'classcount', 'filelist', 'class2use')
+
+%create and save daily binned results
+[matdate_bin, classcount_bin, ml_analyzed_mat_bin] = make_day_bins(matdate,classcount, ml_analyzed_mat);
+save([resultpath 'summary\count_manual_' datestr '_day'], 'matdate_bin', 'classcount_bin', 'ml_analyzed_mat_bin', 'class2use')
 
