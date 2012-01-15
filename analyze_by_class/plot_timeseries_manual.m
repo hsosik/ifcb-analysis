@@ -1,14 +1,16 @@
-function [ ] = plot_timeseries_manual( countfile , daybin_flag)
+function [ ] = plot_timeseries_manual( countfile , daybin_flag, str2plot)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 load(countfile)
 maxsubplots = 5;
-classind = find(nansum(classcount));
+eval(['x = ' str2plot ';'])
 if daybin_flag,
-    [matdate_bin, classcount_bin, ml_analyzed_mat_bin] = make_day_bins(matdate,classcount, ml_analyzed_mat);
-    make_time_figs(class2use(classind),matdate_bin, classcount_bin(:,classind)./ml_analyzed_mat_bin(:,classind),maxsubplots); 
+    [matdate_bin, x, ml_analyzed_mat_bin] = make_day_bins(matdate,x, ml_analyzed_mat);
+    classind = find(nansum(x));
+    make_time_figs(class2use(classind),matdate_bin, x(:,classind)./ml_analyzed_mat_bin(:,classind),maxsubplots); 
 else
-    make_time_figs(class2use(classind),matdate, classcount(:,classind)./ml_analyzed_mat(:,classind),maxsubplots);    
+    classind = find(nansum(x));
+    make_time_figs(class2use(classind),matdate, x(:,classind)./ml_analyzed_mat(:,classind),maxsubplots);    
 end;
 
 

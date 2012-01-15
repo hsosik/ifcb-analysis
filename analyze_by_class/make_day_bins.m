@@ -13,6 +13,9 @@ for count = 1:length(matdate_bin),
         ml_analyzed_mat_bin(count,:) = nansum(ml_analyzed_mat(idx,:),1);
     end;
 end;
+%no zeros mls should exist, zeros arise from nansum of all NaNs, set them
+%back to NaN
+ml_analyzed_mat_bin((ml_analyzed_mat_bin==0)) = NaN;
 
 end
 
