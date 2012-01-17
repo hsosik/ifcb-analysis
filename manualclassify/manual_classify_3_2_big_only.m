@@ -33,26 +33,28 @@
 close all; clear all;
 
 filenum2start = 1;  %USER select file number to begin (within the chose day)
-pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
-%pick_mode = 'raw_roi';
+%pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
+pick_mode = 'raw_roi';
 big_only = 1; %case for picking Laboea and tintinnids only 
 xbig = 150; ybig = 75;
 resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
 
-classpath = '\\queenrose\ifcb_data_mvco_jun06\class2008_24may07\'; %USER set
-%basedir = '\\demi\ifcbnew\';  %%USER set, roi files, adc files
-basedir = '\\demi\ifcbold\G\IFCB\ifcb_data_MVCO_jun06\';  %%USER set, roi files, adc files
+classpath = '\\queenrose\ifcb_data_mvco_jun06\class2006_24may07\'; %USER set
+basedir = '\\demi\ifcbnew\';  %%USER set, roi files, adc files
+%basedir = '\\demi\ifcbold\G\IFCB\ifcb_data_MVCO_jun06\';  %%USER set, roi files, adc files
 %yeardaystr = '001';
-yeardaystr = '002';
-streampath = [basedir 'IFCB1_2008_' yeardaystr '\']; %USER set, which year / day to analyze
-stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitch2008\';  %%USER set, roi stitch info files
+yeardaystr = '360';
+streampath = [basedir 'IFCB5_2010_' yeardaystr '\']; %USER set, which year / day to analyze
+stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitch2010\';  %%USER set, roi stitch info files
 class_filestr = '_class_24May07'; %USER set, string appended on roi name for class files
 
-filelist = dir([streampath 'IFCB1_2008_' yeardaystr '_16*.roi']);
-filelist = [filelist; dir([streampath 'IFCB1_2008_' yeardaystr '_17*.roi'])];
-filelist = [filelist; dir([streampath 'IFCB1_2008_' yeardaystr '_18*.roi'])];
-filelist = [filelist; dir([streampath 'IFCB1_2008_' yeardaystr '_19*.roi'])];
+%filelist = dir([streampath 'IFCB5_2011_' yeardaystr '_16*.roi']);
+%filelist = [filelist; dir([streampath 'IFCB5_2011_' yeardaystr '_17*.roi'])];
+%filelist = [filelist; dir([streampath 'IFCB5_2011_' yeardaystr '_18*.roi'])];
+%filelist = [filelist; dir([streampath 'IFCB5_2011_' yeardaystr '_19*.roi'])];
 %filelist = get_filelist_manual([resultpath 'manual_list'],2,[2006]); %manual_list, column to use, year to find
+load C:\work\ifcb\code_nov11_mvco\files2addB
+t = char(files2add); t = [t repmat('.mat',size(t,1),1)]; ii = find(t(:,10) == '0'); filelist = cell2struct(cellstr(t(ii,:)), 'name',2);
 
 if ~exist(resultpath, 'dir'),
     dos(['mkdir ' resultpath]);
@@ -123,6 +125,8 @@ border = 3; %to separate images
 
 for filecount = filenum2start:length(filelist),
     streamfile = filelist(filecount).name(1:end-4);
+    %case for loaded filelist
+    streampath = [streampath(1:end-15) streamfile(1:14) '\']; %USER set, which year / day to analyze
     disp(['File number: ' num2str(filecount)])
     if ~strcmp(pick_mode, 'raw_roi') & ~exist([resultpath streamfile '.mat']) & ~exist([classpath filelist(filecount).name(1:end-4) class_filestr '.mat']),
     %if ~exist([resultpath streamfile '.mat']) & ~exist([classpath filelist(filecount).name(1:end-4) class_filestr '.mat']),
