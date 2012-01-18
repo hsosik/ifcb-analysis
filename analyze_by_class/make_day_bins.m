@@ -14,7 +14,8 @@ for count = 1:length(matdate_bin),
     end;
 end;
 %no zeros mls should exist, zeros arise from nansum of all NaNs, set them
-%back to NaN
+%back to NaN; do the same for cellcounts
+cellcount_bin((ml_analyzed_mat_bin==0)) = NaN;
 ml_analyzed_mat_bin((ml_analyzed_mat_bin==0)) = NaN;
 
 end

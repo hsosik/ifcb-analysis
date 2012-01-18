@@ -4,9 +4,18 @@ load ml_analyzed_all %load the milliliters analyzed for all sample files
 biovolpath = '\\queenrose\IFCB1\ifcb_data_mvco_jun06\biovolume\';
 micron_factor = 1/3.4; %microns per pixel
 
+%%%%%%%%%FIX - this set of lines to skip some missing biovol due to missing blobs
+filelist = char(manual_list(2:end,1)); filelist = cellstr(filelist(:,1:end-4));
+t = dir(['\\queenrose\ifcb_data_mvco_jun06\biovolume\IFCB*.mat']);
+t = char(t.name); t = cellstr(t(:,1:end-4)); 
+files_biovol = t; clear t
+[~,ia] = setdiff(filelist, files_biovol); %4985 4977
+manual_list(ia+1,:) = [];  %omit the ones missing biovol
+
 mode_list = manual_list(1,2:end-1);
 %find ml_analyzed matching each manual file
 filelist = char(manual_list(2:end,1)); filelist = cellstr(filelist(:,1:end-4));
+
 [~,ia, ib] = intersect(filelist, filelist_all);
 if length(ia) ~= length(filelist),
     disp('missing some ml_analyzed values; need to make updated ml_analyzed all.mat?')
@@ -71,12 +80,15 @@ for loopcount = 1:length(mode_list),
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)) & ~cell2mat(manual_list(2:end,strmatch('ciliates', mode_list)+1)));
         case 'special big only'
-            [~, class_cat] = intersect(class2use_here, {'Ceratium' 'Eucampia' 'Ephemera' 'bad' 'Dinophysis' 'Lauderia' 'Licmophora' 'Phaeocystis' 'Stephanopyxis' 'Coscinodiscus' 'Odontella' 'Guinardia_striata' 'tintinnid' 'Laboea'});
+            [~, class_cat] = intersect(class2use_here, {'Ceratium' 'Eucampia' 'Ephemera' 'bad' 'Dinophysis' 'Lauderia' 'Licmophora' 'Phaeocystis' 'Stephanopyxis' ...
+                'Coscinodiscus' 'Odontella' 'Guinardia_striata' 'tintinnid' 'Laboea' 'Hemiaulus' 'Paralia' 'Guinardia_flaccida' 'Corethron' 'Dactyliosolen' 'Dictyocha'...
+                'Dinobryon' 'Ditylum' 'Pleurosigma' 'Prorocentrum' 'Rhizosolenia' 'Thalassionema' 'clusterflagellate' 'kiteflagellates' 'Pyramimonas'});
             manual_only = 1;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
     end;
     filelist = cell2struct(manual_list(mode_ind+1,1),{'name'},2);
+    
     for filecount = 1:length(filelist),
         filename = filelist(filecount).name;
         disp(filename)
@@ -108,10 +120,10 @@ for loopcount = 1:length(mode_list),
             end;
             for classnum = 1:numclass2,
                 cind = find(classlist(:,4) == classnum);
+                temp(classnum+numclass1) = length(cind);
+                tempvol(classnum+numclass1) = nansum(targets.Biovolume*micron_factor.^3);
             end;    
         end;
-        temp(classnum+numclass1) = length(cind);
-        tempvol(classnum+numclass1) = nansum(targets.Biovolume*micron_factor.^3);
         classcount(mode_ind(filecount),class_cat) = temp(class_cat);
         classbiovol(mode_ind(filecount),class_cat) = tempvol(class_cat);
         clear class2use_manual class2use_auto class2use_sub* classlist
