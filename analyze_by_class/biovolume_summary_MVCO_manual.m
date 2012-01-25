@@ -5,12 +5,12 @@ biovolpath = '\\queenrose\IFCB1\ifcb_data_mvco_jun06\biovolume\';
 micron_factor = 1/3.4; %microns per pixel
 
 %%%%%%%%%FIX - this set of lines to skip some missing biovol due to missing blobs
-filelist = char(manual_list(2:end,1)); filelist = cellstr(filelist(:,1:end-4));
-t = dir(['\\queenrose\ifcb_data_mvco_jun06\biovolume\IFCB*.mat']);
-t = char(t.name); t = cellstr(t(:,1:end-4)); 
-files_biovol = t; clear t
-[~,ia] = setdiff(filelist, files_biovol); %4985 4977
-manual_list(ia+1,:) = [];  %omit the ones missing biovol
+%filelist = char(manual_list(2:end,1)); filelist = cellstr(filelist(:,1:end-4));
+%t = dir(['\\queenrose\ifcb_data_mvco_jun06\biovolume\IFCB*.mat']);
+%t = char(t.name); t = cellstr(t(:,1:end-4)); 
+%files_biovol = t; clear t
+%[~,ia] = setdiff(filelist, files_biovol); %4985 4977
+%manual_list(ia+1,:) = [];  %omit the ones missing biovol
 
 mode_list = manual_list(1,2:end-1);
 %find ml_analyzed matching each manual file
