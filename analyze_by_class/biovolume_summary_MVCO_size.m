@@ -68,11 +68,11 @@ for filecount = 1:length(filelist),
     count(filecount,3) = length(ind);
 end;
 
-if ~exist([biovolpath 'summary\'], 'dir')
-    mkdir([biovolpath 'summary\'])
+if ~exist([biovolpathbase 'summary\'], 'dir')
+    mkdir([biovolpathbase 'summary\'])
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
-save([biovolpath 'summary\count_biovol_' datestr], 'matdate', 'ml_analyzed', 'count', 'biovol', 'filelist')
+save([biovolpathbase 'summary\count_biovol_' datestr], 'matdate', 'ml_analyzed', 'count', 'biovol', 'filelist')
 
 %create and save daily binned results
 ml_analyzed_mat = repmat(ml_analyzed,1,numsizes);
