@@ -78,5 +78,5 @@ save([biovolpathbase 'summary\count_biovol_' datestr], 'matdate', 'ml_analyzed',
 ml_analyzed_mat = repmat(ml_analyzed,1,numsizes);
 [matdate_bin, count_bin, ml_analyzed_mat_bin] = make_day_bins(matdate,count, ml_analyzed_mat);
 [matdate_bin, biovol_bin, ml_analyzed_mat_bin] = make_day_bins(matdate,biovol, ml_analyzed_mat);
-save([biovolpath 'summary\count_biovol_' datestr '_day'], 'matdate_bin', 'count_bin', 'biovol_bin', 'ml_analyzed_mat_bin')
+save([biovolpathbase 'summary\count_biovol_' datestr '_day'], 'matdate_bin', 'count_bin', 'biovol_bin', 'ml_analyzed_mat_bin', 'bintitles')
 
