@@ -121,7 +121,7 @@ for loopcount = 1:length(mode_list),
             for classnum = 1:numclass2,
                 cind = find(classlist(:,4) == classnum);
                 temp(classnum+numclass1) = length(cind);
-                tempvol(classnum+numclass1) = nansum(targets.Biovolume*micron_factor.^3);
+                tempvol(classnum+numclass1) = nansum(targets.Biovolume(cind)*micron_factor.^3);
             end;    
         end;
         classcount(mode_ind(filecount),class_cat) = temp(class_cat);
