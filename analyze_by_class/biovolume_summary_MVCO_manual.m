@@ -49,7 +49,7 @@ classcount = NaN(length(filelist),numclass);  %initialize output
 classbiovol = classcount;
 classcarbon = classcount;
 ml_analyzed_mat = classcount;
-for loopcount = 1:length(mode_list),
+for loopcount = 1:length(mode_list)+1,
     annotate_mode = char(mode_list(loopcount));
     switch annotate_mode
         case 'all categories'
@@ -86,6 +86,11 @@ for loopcount = 1:length(mode_list),
             manual_only = 1;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
+         case 'ciliates_ditylum'
+            [~, class_cat] = intersect(class2use_here, ['Ditylum' 'ciliate' class2use_first_sub]);
+            manual_only = 0;
+            %list_col = strmatch(annotate_mode, manual_list(1,:));
+            mode_ind = find(~cell2mat(manual_list(2:end,2)) & cell2mat(manual_list(2:end,3)) & cell2mat(manual_list(2:end,4)) & ~cell2mat(manual_list(2:end,5)) & cell2mat(manual_list(2:end,6)));   
     end;
     filelist = cell2struct(manual_list(mode_ind+1,1),{'name'},2);
     
