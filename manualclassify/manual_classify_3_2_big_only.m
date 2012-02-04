@@ -38,23 +38,30 @@ pick_mode = 'raw_roi';
 big_only = 1; %case for picking Laboea and tintinnids only 
 xbig = 150; ybig = 75;
 resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
+classpath = '\\queenrose\IFCB12\ifcb_data_mvco_jun06\classxxxx_24may07_revDec11\'; %USER set
+basedir_all = {'\\demi\ifcbold\g\IFCB\ifcb_data_MVCO_jun06\'; '\\demi\ifcbnew\';};
+stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitchxxxx\';  %%USER set, roi stitch info files
+class_filestr = '_class_24May07_revDec11'; %USER set, string appended on roi name for class files
 
-classpath = '\\queenrose\ifcb_data_mvco_jun06\class2006_24may07\'; %USER set
-basedir = '\\demi\ifcbnew\';  %%USER set, roi files, adc files
-%basedir = '\\demi\ifcbold\G\IFCB\ifcb_data_MVCO_jun06\';  %%USER set, roi files, adc files
-%yeardaystr = '001';
-yeardaystr = '360';
-streampath = [basedir 'IFCB5_2010_' yeardaystr '\']; %USER set, which year / day to analyze
-stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitch2010\';  %%USER set, roi stitch info files
-class_filestr = '_class_24May07'; %USER set, string appended on roi name for class files
+filespec = 'IFCB1_2010_153*'; %USER set; include at least year and day; time optional
+year = filespec(7:10);
+if str2num(year) < 2010,
+    basedir = char(basedir_all(1));
+else
+    basedir = char(basedir_all(2));
+end;
+streampath = [basedir filespec(1:14) '\']; % needed for batch case
+classpath(end-21:end-18) = year;  %set the correct year, needed for batch case
+stitchpath(end-4:end-1) = year;
 
-%filelist = dir([streampath 'IFCB5_2011_' yeardaystr '_16*.roi']);
-%filelist = [filelist; dir([streampath 'IFCB5_2011_' yeardaystr '_17*.roi'])];
-%filelist = [filelist; dir([streampath 'IFCB5_2011_' yeardaystr '_18*.roi'])];
-%filelist = [filelist; dir([streampath 'IFCB5_2011_' yeardaystr '_19*.roi'])];
+filelist = dir([streampath filespec '*.roi']);
+%filelist = dir([streampath filespec '_16*.roi']);
+%filelist = [filelist; dir([streampath filespec '_17*.roi'])];
+%filelist = [filelist; dir([streampath filespec '_18*.roi'])];
+%filelist = [filelist; dir([streampath filespec '_19*.roi'])];
 %filelist = get_filelist_manual([resultpath 'manual_list'],2,[2006]); %manual_list, column to use, year to find
-load C:\work\ifcb\code_nov11_mvco\files2addB
-t = char(files2add); t = [t repmat('.mat',size(t,1),1)]; ii = find(t(:,10) == '0'); filelist = cell2struct(cellstr(t(ii,:)), 'name',2);
+%load C:\work\ifcb\code_nov11_mvco\files2addB
+%t = char(files2add); t = [t repmat('.mat',size(t,1),1)]; ii = find(t(:,10) == '0'); filelist = cell2struct(cellstr(t(ii,:)), 'name',2);
 
 if ~exist(resultpath, 'dir'),
     dos(['mkdir ' resultpath]);

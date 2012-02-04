@@ -32,17 +32,17 @@ close all; clear all;
 filenum2start = 1;  %USER select file number to begin (within the chosen day)
 pick_mode = 'raw_roi';%'correct_or_subdivide'; %USER choose one from case list below
 big_only = 0; %case for picking Laboea and tintinnids only
-resultpath = 'd:\work\IFCB1\ifcb_data_mvco_jun06\Manual\'; %USER set
+resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 
 %classpath = 'y:\class2009_24may07\'; %USER set
-classpath = 'D:\work\IFCB1\ifcb_data_mvco_jun06\class2009_24may07\';
-basedir = '\\Cheese\G on K\IFCB\ifcb_data_MVCO_jun06\';  %%USER set, roi files, adc files
-streampath = [basedir 'IFCB1_2009_001\']; %USER set, which year / day to analyze
-%stitchpath = 'y:\stitch2009\';  %%USER set, roi stitch info files
-stitchpath = 'D:\work\IFCB1\ifcb_data_mvco_jun06\stitch2009\';
+classpath = '\\queenrose\ifcb_data_mvco_jun06\class2011_24may07\'; %USER set
+%basedir = '\\demi\ifcbnew\';  %%USER set, roi files, adc files
+basedir = '\\demi\ifcbold\g\IFCB\ifcb_data_MVCO_jun06\';  %%USER set, roi files, adc files
+streampath = [basedir 'IFCB1_2006_285\']; %USER set, which year / day to analyze
+stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitch2006\';  %%USER set, roi stitch info files
 class_filestr = '_class_24May07'; %USER set, string appended on roi name for class files
 
-filelist = dir([streampath 'IFCB*.roi']);
+filelist = dir([streampath 'IFCB1_2006_285_195010*.roi']);
 
 if ~exist(resultpath, 'dir'),
     dos(['mkdir ' resultpath]);
@@ -59,7 +59,7 @@ end;
 switch pick_mode
     case 'raw_roi' %pick classes from scratch
 %        class2use = {'class1'; 'class2'; 'other'}; %USER type or load list
-        load class2use_MVCOmanual2 %load class2use
+        load class2use_MVCOmanual3 %load class2use
         classnum_default = strmatch('other', class2use); %USER class for default
         classstr = [];
         class2use_pick1 = class2use; %to set button labels
@@ -81,16 +81,16 @@ switch pick_mode
         class2use = class2use_auto; 
         %if adding new categories
         %class2use = {'class1'; 'class2'; 'other'}; %USER type or load list
-        load class2use_MVCOmanual2 %load class2use
+        load class2use_MVCOmanual3 %load class2use
         [junk, fulldiff] = setdiff(class2use, class2use_auto);
         class2use = [class2use_auto class2use(sort(fulldiff))];  %append new classes on end of auto classes
         class2use_pick1 = class2use;
         class2use_manual = class2use;
-        classstr = 'Ditylum'; %USER class to start from
+        classstr = 'ciliate'; %USER class to start from
         %class2use_sub = [];  %use this if no subdividing 
         %new subclasses, first one for rois NOT in the class
-        %class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'}; %USER type or load list
-        class2use_sub = {'not_Ditylum' 'Ditylum'}; %USER type or load list
+        class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'}; %USER type or load list
+        %class2use_sub = {'not_Ditylum' 'Ditylum'}; %USER type or load list
         classnum_default = strmatch('Ditylum', class2use_sub); %USER class for default
         class2use_pick2 = class2use_sub; %to set button labels
         class2view1 = 1:length(class2use); %use this to view all classes
@@ -112,7 +112,7 @@ border = 3; %to separate images
 %make the collage window
 [figure_handle, button_handles1, button_handles2, instructions_handle] = makescreen(class2use_pick1, class2use_pick2);
 
-for filecount = 4%filenum2start:length(filelist),
+for filecount = filenum2start:length(filelist),
     streamfile = filelist(filecount).name(1:end-4);
     disp(['File number: ' num2str(filecount)])
     if ~strcmp(pick_mode, 'raw_roi') & ~exist([resultpath streamfile '.mat']) & ~exist([classpath filelist(filecount).name(1:end-4) class_filestr '.mat']),

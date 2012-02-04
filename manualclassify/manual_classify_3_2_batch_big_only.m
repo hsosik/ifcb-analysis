@@ -34,17 +34,16 @@
 close all; clear all;
 
 filenum2start = 1;  %USER select file number to begin (within the chose day)
-batch_classnum = [25]; %USER which class do you want to view in batch mode, Heidi 10/7/09, only works for correct_or_subdivide for now
+batch_classnum = [1:54]; %USER which class do you want to view in batch mode, Heidi 10/7/09, only works for correct_or_subdivide for now
 
 pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
 big_only = 1; %case for picking Laboea and tintinnids only
 xbig = 150; ybig = 75;
 resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
-classpath = '\\queenrose\ifcb_data_mvco_jun06\class2006_24may07\'; %USER set
-%basedir = '\\demi\ifcbnew\';  %%USER set, roi files, adc files
-basedir = '\\demi\ifcbold\G\IFCB\ifcb_data_MVCO_jun06\';  %%USER set, roi files, adc files
-stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitch2006\';  %%USER set, roi stitch info files
-class_filestr = '_class_24May07'; %USER set, string appended on roi name for class files
+classpath = '\\queenrose\IFCB12\ifcb_data_mvco_jun06\classxxxx_24may07_revDec11\'; %USER set
+basedir_all = {'\\demi\ifcbold\g\IFCB\ifcb_data_MVCO_jun06\'; '\\demi\ifcbnew\';};
+stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitchxxxx\';  %%USER set, roi stitch info files
+class_filestr = '_class_24May07_revDec11'; %USER set, string appended on roi name for class files
 
 %filelist = dir([resultpath 'IFCB1_2009_???_00*']);
 filelist = get_filelist_manual([resultpath 'manual_list'],7,[2006], 'only'); %manual_list, column to use, year to find
@@ -56,10 +55,6 @@ end;
 if isempty(filelist),
     disp('No files found. Check streampath or file specification in m-file.')
     return
-end;
-if ~exist(classpath),
-    disp('classpath does not exist! Check path setting in m-file if you want to load classifier results.')
-    pause
 end;
 
 switch pick_mode
@@ -122,8 +117,19 @@ border = 3; %to separate images
 
 for filecount = filenum2start:length(filelist),
     streamfile = filelist(filecount).name(1:end-4);
+    year = streamfile(7:10);
+    if str2num(year) < 2010,
+        basedir = char(basedir_all(1));
+    else
+        basedir = char(basedir_all(2));
+    end;
     streampath = [basedir streamfile(1:14) '\']; % needed for batch case
-    classpath(end-9) = streamfile(10);  %set the correct year, needed for batch case
+    classpath(end-21:end-18) = year;  %set the correct year, needed for batch case
+    if ~exist(classpath),
+        disp('classpath does not exist! Check path setting in m-file if you want to load classifier results.')
+        pause
+    end;
+    stitchpath(end-4:end-1) = year;
     disp(['File number: ' num2str(filecount)])
     if ~strcmp(pick_mode, 'raw_roi') & ~exist([resultpath streamfile '.mat']) & ~exist([classpath filelist(filecount).name(1:end-4) class_filestr '.mat']),
     %if ~exist([resultpath streamfile '.mat']) & ~exist([classpath filelist(filecount).name(1:end-4) class_filestr '.mat']),
