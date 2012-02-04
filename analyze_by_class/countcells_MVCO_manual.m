@@ -79,7 +79,7 @@ for loopcount = 1:length(mode_list),
             mode_ind = find(~cell2mat(manual_list(2:end,2)) & cell2mat(manual_list(2:end,3)) & cell2mat(manual_list(2:end,4)) & ~cell2mat(manual_list(2:end,5)) & cell2mat(manual_list(2:end,6)));   
     end;
     filelist = cell2struct(manual_list(mode_ind+1,1),{'name'},2);
-    for filecount = 1:3,%length(filelist),
+    for filecount = 1:length(filelist),
         filename = filelist(filecount).name;
         disp(filename)
         ml_analyzed_mat(mode_ind(filecount),class_cat) = ml_analyzed(mode_ind(filecount));
@@ -88,7 +88,7 @@ for loopcount = 1:length(mode_list),
             disp('class2use_manual does not match previous files!!!')
        %     keyboard
         end;
-        temp = NaN(1,numclass);
+        temp = zeros(1,numclass); %init as zeros for case of subdivide checked but none found, classcount will only be zero if in class_cat, else NaN
         for classnum = 1:numclass1,
             if manual_only,
                 temp(classnum) = size(find(classlist(:,2) == classnum),1);

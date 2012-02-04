@@ -107,7 +107,7 @@ for loopcount = 1:length(mode_list),
             disp('class2use_manual does not match previous files!!!')
        %     keyboard
         end;
-        temp = NaN(1,numclass);
+        temp = zeros(1,numclass); %init as zeros for case of subdivide checked but none found, classcount will only be zero if in class_cat, else NaN
         tempvol = temp;
         for classnum = 1:numclass1,
             if manual_only,
