@@ -12,7 +12,7 @@ micron_factor = 1/3.4; %microns per pixel
 %[~,ia] = setdiff(filelist, files_biovol); %4985 4977
 %manual_list(ia+1,:) = [];  %omit the ones missing biovol
 
-mode_list = manual_list(1,2:end-1);
+mode_list = manual_list(1,2:end-1); mode_list = [mode_list 'ciliate_ditylum'];
 %find ml_analyzed matching each manual file
 filelist = char(manual_list(2:end,1)); filelist = cellstr(filelist(:,1:end-4));
 
@@ -49,7 +49,7 @@ classcount = NaN(length(filelist),numclass);  %initialize output
 classbiovol = classcount;
 classcarbon = classcount;
 ml_analyzed_mat = classcount;
-for loopcount = 1:length(mode_list)+1,
+for loopcount = 1:length(mode_list),
     annotate_mode = char(mode_list(loopcount));
     switch annotate_mode
         case 'all categories'

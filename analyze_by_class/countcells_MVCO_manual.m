@@ -2,7 +2,7 @@ resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load ml_analyzed_all %load the milliliters analyzed for all sample files
 
-mode_list = manual_list(1,2:end-1);
+mode_list = manual_list(1,2:end-1); mode_list = [mode_list 'ciliate_ditylum'];
 %find ml_analyzed matching each manual file
 filelist = char(manual_list(2:end,1)); filelist = cellstr(filelist(:,1:end-4));
 [~,ia, ib] = intersect(filelist, filelist_all);
@@ -36,7 +36,7 @@ numclass = numclass1 + numclass2;
 class2use_here = [class2use_manual_first class2use_sub4];
 classcount = NaN(length(filelist),numclass);  %initialize output
 ml_analyzed_mat = classcount;
-for loopcount = 1:length(mode_list)+1,
+for loopcount = 1:length(mode_list),
     annotate_mode = char(mode_list(loopcount));
     switch annotate_mode
         case 'all categories'
@@ -73,13 +73,13 @@ for loopcount = 1:length(mode_list)+1,
             manual_only = 1;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
-        case 'ciliates_ditylum'
+        case 'ciliate_ditylum'
             [~, class_cat] = intersect(class2use_here, ['Ditylum' 'ciliate' class2use_first_sub]);
             manual_only = 0;
             mode_ind = find(~cell2mat(manual_list(2:end,2)) & cell2mat(manual_list(2:end,3)) & cell2mat(manual_list(2:end,4)) & ~cell2mat(manual_list(2:end,5)) & cell2mat(manual_list(2:end,6)));   
     end;
     filelist = cell2struct(manual_list(mode_ind+1,1),{'name'},2);
-    for filecount = 1:length(filelist),
+    for filecount = 1:3,%length(filelist),
         filename = filelist(filecount).name;
         disp(filename)
         ml_analyzed_mat(mode_ind(filecount),class_cat) = ml_analyzed(mode_ind(filecount));
