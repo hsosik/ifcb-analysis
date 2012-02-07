@@ -5,7 +5,7 @@ function with_json_request(url, fn) {
     $.ajax({
         url : url,
         type : 'GET',
-        datatype : 'json',
+        dataType : 'json',
         success : fn
     });
 }
