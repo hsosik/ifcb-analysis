@@ -59,6 +59,11 @@ $(document).ready(function() {
 	    onClose: function(datetext) {
 	        location.href = 'dashboard.html?date=' + datetext;
 	    }
+	}).end().append('<a href="#">A week ago</a>').click(function (event) {
+	    var d = new Date((new Date()).getTime() - 604800000); /* number of ms in a week */
+	    location.href = 'dashboard.html?date=' + iso8601(d);
+	}).end().append('<a href="#">A month ago</a>').click(function (event) {
+	}).end().append('<a href="#">A year ago</a>').click(function (event) {
 	});
 });
 </script>

@@ -20,9 +20,9 @@ function describe_bin(pid, tag) {
     with_metadata(pid, function(bin) {
         var instrument = bin['instrument']; /* instrument number */
         var time = bin['time']; /* time */
-	var dayhref = pid.replace(/(IFCB._\d+_\d+).*/,'$1.html');
-	var time_href = time.replace(/(\d+-\d+-\d+)/,'<a href="'+dayhref+'">$1</a>');
-	var time_href = time_href.replace(/(\d\d:\d\d:\d\d)/,'<a href="'+pid+'.html">$1</a>');
+        var dayhref = pid.replace(/(IFCB._\d+_\d+).*/,'$1.html');
+        var time_href = time.replace(/(\d+-\d+-\d+)/,'<a href="'+dayhref+'">$1</a>');
+        var time_href = time_href.replace(/(\d\d:\d\d:\d\d)/,'<a href="'+pid+'.html">$1</a>');
         var temp = Math.round(bin['temperature']) + '&deg;C'; /* temperature */
         $('#' + tag + 'd').html('<br>IFCB#' + instrument + ' ' + time_href + ' (<abbr class="timeago" title="' + time + '"></abbr>), ' + temp + ' (<a href="'+pid+'.csv">CSV</a> <a href="'+pid+'.xml">XML</a> <a href="'+pid+'.rdf">RDF</a>)').find('abbr').timeago();
         /* "timeago" converts absolute time to constantly updated relative time e.g., "about 5 minutes ago" */
@@ -49,8 +49,8 @@ function render(bin, width, size, tag, targetLinks) {
         /* load the mosaic image */
         var img = new Image();
         $(img).bind('load', function(event) {
-		ctx.drawImage(this, 0, 0, width, width * aspect_ratio); // 16:9
-	    red = 1;
+            ctx.drawImage(this, 0, 0, width, width * aspect_ratio); // 16:9
+            red = 1;
         });
         img.src = bin['pid'] + '/mosaic/' + size + '.jpg';
         /* on the top mosaic, targetLinks is true and a click takes you to the target */
@@ -59,7 +59,7 @@ function render(bin, width, size, tag, targetLinks) {
             $(canvas).bind('click', {
                 date : bin['time']
             }, function(event) {
-		/* change the date */
+                /* change the date */
                 asof(event.data.date);
                 /* push a corresponding URL to the history */
                 window.history.pushState('ignore', 'IFCB Dashboard', 'dashboard.html?date=' + event.data.date);
@@ -117,12 +117,12 @@ function render(bin, width, size, tag, targetLinks) {
                 if (mx >= event.data.left && mx <= event.data.right && my >= event.data.top && my <= event.data.bottom) {
                     /* hovering over this rectangle means to select this target */
                     if (selected != event.data.pid) { /* if it's not already selected */
-			if(red==1) {
+                        if(red==1) {
                             ctx.drawImage(img, 0, 0, width, width * aspect_ratio); /* erase any current selection by redrawing the mosaic */
-			    ctx.strokeStyle = '#f00'; // red
-			    /* draw the red rectangle */
-			    ctx.strokeRect(event.data.left + 1, event.data.top + 1, event.data.w - 2, event.data.h - 2);
-			}
+                            ctx.strokeStyle = '#f00'; // red
+                            /* draw the red rectangle */
+                            ctx.strokeRect(event.data.left + 1, event.data.top + 1, event.data.w - 2, event.data.h - 2);
+                        }
                         selected = event.data.pid; /* note that we've done it */
                         showTheMetadataForTheThang(event.data.pid); /* display this target's metadata */
                     }
@@ -130,9 +130,9 @@ function render(bin, width, size, tag, targetLinks) {
             });
             /* if we're leaving this canvas we need to erase any lingering selection rectangles */
             $(canvas).bind('mouseleave', function(event) {
-		    if(red==1) {
-                ctx.drawImage(img, 0, 0, width, width * aspect_ratio);
-		    }
+                if(red==1) {
+                    ctx.drawImage(img, 0, 0, width, width * aspect_ratio);
+                }
             });
         }
     });
