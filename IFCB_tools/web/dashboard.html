@@ -62,8 +62,12 @@ $(document).ready(function() {
 	}).end().append('<a href="#">A week ago</a>').click(function (event) {
 	    var d = new Date((new Date()).getTime() - 604800000); /* number of ms in a week */
 	    location.href = 'dashboard.html?date=' + iso8601(d);
-	}).end().append('<a href="#">A month ago</a>').click(function (event) {
-	}).end().append('<a href="#">A year ago</a>').click(function (event) {
+	}).append('<a href="#">A month ago</a>').click(function (event) {
+	    var d = new Date((new Date()).getTime() - 2592000000); /* number of ms in 30 days */
+	    location.href = 'dashboard.html?date=' + iso8601(d);
+	}).append('<a href="#">A year ago</a>').click(function (event) {
+	    var d = new Date((new Date()).getTime() - 31536000000); /* number of ms in 365 days */
+	    location.href = 'dashboard.html?date=' + iso8601(d);
 	});
 });
 </script>
