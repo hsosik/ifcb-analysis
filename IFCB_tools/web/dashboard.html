@@ -59,13 +59,16 @@ $(document).ready(function() {
 	    onClose: function(datetext) {
 	        location.href = 'dashboard.html?date=' + datetext;
 	    }
-	}).end().append('<a href="#">A week ago</a>').click(function (event) {
+	}).end().append('<a href="#">A week ago</a><br>').find('a:last').click(function (event) {
 	    var d = new Date((new Date()).getTime() - 604800000); /* number of ms in a week */
 	    location.href = 'dashboard.html?date=' + iso8601(d);
-	}).append('<a href="#">A month ago</a>').click(function (event) {
+	}).end().append('<a href="#">A month ago</a><br>').find('a:last').click(function (event) {
 	    var d = new Date((new Date()).getTime() - 2592000000); /* number of ms in 30 days */
 	    location.href = 'dashboard.html?date=' + iso8601(d);
-	}).append('<a href="#">A year ago</a>').click(function (event) {
+	}).end().append('<a href="#">3 months ago</a><br>').find('a:last').click(function (event) {
+	    var d = new Date((new Date()).getTime() - (2592000000 * 3)); /* number of ms in 30 days */
+	    location.href = 'dashboard.html?date=' + iso8601(d);
+	}).end().append('<a href="#">A year ago</a><br><br>').find('a:last').click(function (event) {
 	    var d = new Date((new Date()).getTime() - 31536000000); /* number of ms in 365 days */
 	    location.href = 'dashboard.html?date=' + iso8601(d);
 	});

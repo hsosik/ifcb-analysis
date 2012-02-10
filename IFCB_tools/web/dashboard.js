@@ -142,7 +142,7 @@ function asof(date, fn) {
     /* clear the handlers */
     $('#topc').unbind('click').unbind('mousemove').unbind('mouseleave');
     /* fetch the feed */
-    with_json_request('/feed.json&date=' + date, function(bin) {
+    with_json_request('/test/feed.json&date=' + date, function(bin) {
         /* the first item is the large (800px wide) mosaic at the top */
         render(bin[0], 800, 'medium', 'top', true);
         /* the following 4 items are the small mosaics below */
