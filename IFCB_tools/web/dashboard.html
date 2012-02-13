@@ -49,28 +49,29 @@ $(document).ready(function() {
     window.onpopstate = function() {
         go_to_date_param();
     };
+    function go_back(nDays) {
+        var dtext = iso8601(new Date((new Date()).getTime() - (86400000 * nDays)));
+	$('#datepicker').val(dtext);
+	asof(dtext);
+    }
     /* add date picker */
     $('#controls').append('Select date:<br><input id="datepicker" type="text"><p>').find('#datepicker')
         .datepicker({
 	    dateFormat: 'yy-mm-dd',
 	    onSelect: function(datetext) {
-	        location.href = 'dashboard.html?date=' + datetext;
+	        asof(datetext);
 	    },
 	    onClose: function(datetext) {
-	        location.href = 'dashboard.html?date=' + datetext;
+                asof(datetext);
 	    }
 	}).end().append('<a href="#">A week ago</a><br>').find('a:last').click(function (event) {
-	    var d = new Date((new Date()).getTime() - 604800000); /* number of ms in a week */
-	    location.href = 'dashboard.html?date=' + iso8601(d);
+            go_back(7);
 	}).end().append('<a href="#">A month ago</a><br>').find('a:last').click(function (event) {
-	    var d = new Date((new Date()).getTime() - 2592000000); /* number of ms in 30 days */
-	    location.href = 'dashboard.html?date=' + iso8601(d);
+            go_back(30);
 	}).end().append('<a href="#">3 months ago</a><br>').find('a:last').click(function (event) {
-	    var d = new Date((new Date()).getTime() - (2592000000 * 3)); /* number of ms in 30 days */
-	    location.href = 'dashboard.html?date=' + iso8601(d);
+            go_back(90);
 	}).end().append('<a href="#">A year ago</a><br><br>').find('a:last').click(function (event) {
-	    var d = new Date((new Date()).getTime() - 31536000000); /* number of ms in 365 days */
-	    location.href = 'dashboard.html?date=' + iso8601(d);
+            go_back(365);
 	});
 });
 </script>

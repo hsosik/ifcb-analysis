@@ -39,8 +39,8 @@ function render(bin, width, size, tag, targetLinks) {
     } else {
         ctx = canvas.getContext('2d');
     }
-    //ctx.fillStyle = '#999'; /* gray */
-    //ctx.fillRect(0, 0,  width, width * aspect_ratio);
+    ctx.fillStyle = '#999'; /* gray */
+    ctx.fillRect(0, 0,  width, width * aspect_ratio);
     /* get the mosaic layout */
     with_mosaic(bin['pid'], size, function(mosaic) {
         var tile, x, y, w, h, pid;
