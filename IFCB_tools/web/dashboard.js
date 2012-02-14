@@ -61,8 +61,6 @@ function render(bin, width, size, tag, targetLinks) {
             }, function(event) {
                 /* change the date */
                 asof(event.data.date);
-                /* push a corresponding URL to the history */
-                window.history.pushState('ignore', 'IFCB Dashboard', 'dashboard.html?date=' + event.data.date);
             });
         }
         /* while the image is loading, draw its layout as a bunch of gray boxes */
@@ -141,6 +139,8 @@ function render(bin, width, size, tag, targetLinks) {
 function asof(date, fn) {
     /* clear the handlers */
     $('#topc').unbind('click').unbind('mousemove').unbind('mouseleave');
+    /* push a corresponding URL to the history */
+    window.history.pushState('ignore', 'IFCB Dashboard', 'dashboard.html?date=' + date);
     /* fetch the feed */
     with_json_request('/test/feed.json&date=' + date, function(bin) {
         /* the first item is the large (800px wide) mosaic at the top */
