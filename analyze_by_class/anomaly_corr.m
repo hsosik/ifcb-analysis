@@ -9,7 +9,7 @@ maxy = ceil(max(yall(:))./stdy);
 stdx = nanstd(xall(:));
 maxx = ceil(max(xall(:))./stdx);
 if subplotwidth > 0,
-    figure
+    figure(1)
     subplotheight = ceil(size(month_bins,1)./subplotwidth);
 end;
 for c = 1:size(month_bins,1), 
