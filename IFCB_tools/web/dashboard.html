@@ -23,6 +23,10 @@ function cell(id,width,colspan) {
         '<span id="'+id+'d"></span>' +
         '</td>';
 }
+function push_date(date) {
+    history.pushState('ignore', 'IFCB Dashboard', 'dashboard.html?date=' + date);
+    go_to_date_param();
+}
 function go_to_date_param() {
     /* make the feed query */
     date = query_param('date','now');
@@ -45,34 +49,28 @@ $(document).ready(function() {
         html += '</tr>';
     }
     $('#root').html(html);
-    go_to_date_param();
-    window.onpopstate = function() {
+    $(window).bind('popstate', function() {
         go_to_date_param();
-    };
-    function go_back(nDays) {
-        var dtext = iso8601(new Date((new Date()).getTime() - (86400000 * nDays)));
-	$('#datepicker').val(dtext);
-	asof(dtext);
+    });
+    go_to_date_param();
+    function ago(nDays) {
+        return iso8601(new Date((new Date()).getTime() - (86400000 * nDays)));
     }
     /* add date picker */
     $('#controls').append('Select date:<br><input id="datepicker" type="text"><p>').find('#datepicker')
         .datepicker({
 	    dateFormat: 'yy-mm-dd',
 	    onSelect: function(datetext) {
-	        asof(datetext);
+	        push_date(datetext);
 	    },
 	    onClose: function(datetext) {
-                asof(datetext);
+                push_date(datetext);
 	    }
-	}).end().append('<a href="#">A week ago</a><br>').find('a:last').click(function (event) {
-            go_back(7);
-	}).end().append('<a href="#">A month ago</a><br>').find('a:last').click(function (event) {
-            go_back(30);
-	}).end().append('<a href="#">3 months ago</a><br>').find('a:last').click(function (event) {
-            go_back(90);
-	}).end().append('<a href="#">A year ago</a><br><br>').find('a:last').click(function (event) {
-            go_back(365);
-	});
+	}).end()
+	.append('<a href="dashboard.html?date='+ago(7)+'">A week ago</a><br>')
+	.append('<a href="dashboard.html?date='+ago(30)+'">A month ago</a><br>')
+	.append('<a href="dashboard.html?date='+ago(90)+'">3 months ago</a><br>')
+	.append('<a href="dashboard.html?date='+ago(365)+'">A year ago</a><br><br>');
 });
 </script>
 <title>Imaging FlowCytobot @ MVCO</title>
