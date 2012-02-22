@@ -33,8 +33,8 @@
 
 close all; clear all;
 
-filenum2start = 1;  %USER select file number to begin (within the chose day)
-batch_classnum = [1:54]; %USER which class do you want to view in batch mode, Heidi 10/7/09, only works for correct_or_subdivide for now
+filenum2start = 306;  %USER select file number to begin (within the chose day)
+batch_classnum = [46, 25]; %USER which class do you want to view in batch mode, Heidi 10/7/09, only works for correct_or_subdivide for now
 
 pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
 big_only = 1; %case for picking Laboea and tintinnids only
@@ -46,7 +46,7 @@ stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitchxxxx\';  %%USER set, roi st
 class_filestr = '_class_24May07_revDec11'; %USER set, string appended on roi name for class files
 
 %filelist = dir([resultpath 'IFCB1_2009_???_00*']);
-filelist = get_filelist_manual([resultpath 'manual_list'],7,[2006], 'only'); %manual_list, column to use, year to find
+filelist = get_filelist_manual([resultpath 'manual_list'],7,[2006:2011], 'only'); %manual_list, column to use, year to find
 %load Ditylum_ciliate_files; filelist = Ditylum_ciliate_files; clear Ditylum_ciliate_files
 
 if ~exist(resultpath, 'dir'),
@@ -101,7 +101,7 @@ switch pick_mode
         class2view1 = class2view1(batch_classnum); %set category(ies) to view, needed for batch mode
         %class2view1 = [];  %use this to skip all original auto categories
         class2view2 = 1:length(class2use_sub);
-        class2view2 = []; %Comment out if using a subdivided class
+        %class2view2 = [2]; %Comment out if using a subdivided class
     otherwise
         disp('Invalid pick_mode. Check setting in m-file.')
         return

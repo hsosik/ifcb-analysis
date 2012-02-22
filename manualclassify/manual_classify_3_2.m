@@ -42,7 +42,7 @@ basedir_all = {'\\demi\ifcbold\g\IFCB\ifcb_data_MVCO_jun06\'; '\\demi\ifcbnew\';
 stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitchxxxx\';  %%USER set, roi stitch info files
 class_filestr = '_class_24May07_revDec11'; %USER set, string appended on roi name for class files
 
-filespec = 'IFCB1_2010_153*'; %USER set; include at least year and day; time optional
+filespec = 'IFCB1_2008_114*'; %USER set; include at least year and day; time optional
 
 year = filespec(7:10);
 if str2num(year) < 2010,
@@ -107,7 +107,7 @@ switch pick_mode
         class2view1 = 1:length(class2use); %use this to view all classes
         %[junk, class2view1] = setdiff(class2use_pick1, {'bad', 'mix'});  %use this to exclude some classes
         class2view1 = sort(class2view1);
-        %class2view1 = [];  %use this to skip all original auto categories-Emily Brownlee can use this to look at just ciliates. Recomment with % to see everything.
+        class2view1 = [];  %use this to skip all original auto categories-Emily Brownlee can use this to look at just ciliates. Recomment with % to see everything.
         class2view2 = 1:length(class2use_sub);
     otherwise
         disp('Invalid pick_mode. Check setting in m-file.')
