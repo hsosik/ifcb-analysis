@@ -7,8 +7,28 @@
 <script type="text/javascript" src="../js/jquery-1.5.1.min.js"></script>
 <script type="text/javascript" src="../js/jquery-ui-1.8.14.custom.min.js"></script>
 <style type="text/css">
-img {
+td.img img {
   width: 275px;
+}
+div.footer {
+  width: 100%;
+  text-align: center;
+  margin-top: 40px;
+}
+div.slide {
+  display: table-cell;
+  vertical-align: middle;
+  padding: 20px;
+  height: 275px;
+  overflow: hidden;
+}
+div.header {
+  width: 100%;
+  text-align: center;
+}
+img.logo {
+  height: 80px;
+  padding: 10px;
 }
 body {
   font-family: sans-serif;
@@ -24,6 +44,7 @@ td.img {
 h1 {
   font-size: 50px;
   text-align: center;
+  margin-bottom: 5px;
 }
 .caption {
   padding: 6px;
@@ -102,9 +123,14 @@ $(document).ready(function() {
 <body>
 <table width="100%">
 <h1>About Imaging FlowCytobot</h1>
+<div class="header">
+Heidi Sosik and Robert Olson, Woods Hole Oceanographic Institution<br>
+hsosik@whoi.edu, rolson@whoi.edu
+</div>
 <tr>
   <td class="img">
     <img src="marineFoodwebCarbonFlux.png">
+    <div class="caption">Modified from Chisholm 2000</div>
   </td>
   <td class="text">
 A drop of seawater contains hundreds, even thousands of tiny
@@ -115,8 +141,13 @@ dioxide and produce oxygen along the way. In fact, these single-celled
 microbes produce half the oxygen we breathe every day.
   </td>
   <td class="img">
-    <img src="mvcoDiagram.png" style="width: 300px">
-    <img src="ifcbDunk.png" style="width: 100px">
+    <div style="display: inline-block; width: 300px">
+      <img src="mvcoDiagram.png" style="width: 300px">
+    </div>
+    <div style="display: inline-block; width: 100px">
+      <img src="ifcbDunk.png" style="width: 100px">
+      <div class="caption">Photo credit: T. Crockford</div>
+    </div>
   </td>
   <td class="text">
 At the <a href="http://www.whoi.edu/mvco/description/description2.html">Martha's Vineyard Coastal Observatory</a>, IFCBs are working around
@@ -157,6 +188,7 @@ tubes ensures that only a few objects flow past the camera at a time.
 <tr>
   <td class="img">
     <img src="heidiHappyIFCB.png">
+    <div class="caption">Photo credit: T. Kleindinst</div>
   </td>
   <td class="text">
 WHOI scientists are working to open access to images being produced by
@@ -168,7 +200,7 @@ phytoplankton and other small particles are speeding by the video
 camera in a thin stream of seawater.
   </td>
   <td class="img">
-    <img src="timeseries2.png">
+    <img src="timeseries2.png" style="width: 400px">
   </td>
   <td class="text">
 For scientists, this series of images provides a new way to
@@ -180,5 +212,14 @@ also show us how the invisible world of plankton adjusts to
 environmental changes.
   </td>
 </tr>
+</table>
+<div class="footer">
+<a href="http://www.nsf.gov/"><img class="logo" src="nsf.png"></a>
+<a href="http://www.nasa.gov/"><img class="logo" src="nasa.png"></a>
+<a href="http://www.onr.navy.mil/"><img class="logo" src="onr.png"></a>
+<a href="http://www.moore.org/"><img class="logo" src="gbmf.png"></a>
+<a href="http://www.nopp.org/"><img class="logo" src="nopp.png"></a>
+</div>
 </body>
 </html>
+
