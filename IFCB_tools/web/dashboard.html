@@ -67,6 +67,7 @@ $(document).ready(function() {
                 push_date(datetext);
 	    }
 	}).end()
+        .append('<a href="dashboard.html?date=now">Latest</a><br>')
 	.append('<a href="dashboard.html?date='+ago(7)+'">A week ago</a><br>')
 	.append('<a href="dashboard.html?date='+ago(30)+'">A month ago</a><br>')
 	.append('<a href="dashboard.html?date='+ago(90)+'">3 months ago</a><br>')
@@ -95,7 +96,15 @@ $(document).ready(function() {
   </div>
   <div id="root" class="root"></div>
 <p>
-  <div class="subtitle">
+  <div class="footer">
+    <a href="http://www.nsf.gov/"><img class="logo" src="help/nsf.png"></a>
+    <a href="http://www.nasa.gov/"><img class="logo" src="help/nasa.png"></a>
+    <a href="http://www.onr.navy.mil/"><img class="logo" src="help/onr.png"></a>
+    <a href="http://www.moore.org/"><img class="logo" src="help/gbmf.png"></a>
+    <a href="http://www.nopp.org/"><img class="logo" src="help/nopp.png"></a>
+    <br>
+    <a href="mailto:hsosik@whoi.edu">Heidi Sosik</a>, <a href="mailto:rolson@whoi.edu">Robert Olson</a> @ <a href="http://www.whoi.edu/">Woods Hole Oceanographic Institution</a>
+    <br>
     <a href="help/">About</a> /
     <a href="help.html" target="_none">Help</a>
   </div>
