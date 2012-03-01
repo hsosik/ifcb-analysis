@@ -33,20 +33,20 @@
 
 close all; clear all;
 
-filenum2start = 1;  %USER select file number to begin (within the chose day)
+filenum2start = 159;  %USER select file number to begin (within the chose day)
 batch_classnum = [1:54]; %USER which class do you want to view in batch mode, Heidi 10/7/09, only works for correct_or_subdivide for now
 
 pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
 big_only = 1; %case for picking Laboea and tintinnids only
 xbig = 150; ybig = 75;
 resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
-classpath = '\\queenrose\IFCB12\ifcb_data_mvco_jun06\classxxxx_24may07_revDec11\'; %USER set
+classpath = '\\queenrose\g_work_IFCB1\ifcb_data_mvco_jun06\classxxxx_24may07_revDec11\'; %USER set
 basedir_all = {'\\demi\ifcbold\g\IFCB\ifcb_data_MVCO_jun06\'; '\\demi\ifcbnew\';};
 stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitchxxxx\';  %%USER set, roi stitch info files
 class_filestr = '_class_24May07_revDec11'; %USER set, string appended on roi name for class files
 
 %filelist = dir([resultpath 'IFCB1_2009_???_00*']);
-filelist = get_filelist_manual([resultpath 'manual_list'],7,[2006:2011], 'only'); %manual_list, column to use, year to find
+filelist = get_filelist_manual([resultpath 'manual_list'],7,[2011], 'only'); %manual_list, column to use, year to find
 %load Ditylum_ciliate_files; filelist = Ditylum_ciliate_files; clear Ditylum_ciliate_files
 
 if ~exist(resultpath, 'dir'),
@@ -175,7 +175,9 @@ for filecount = filenum2start:length(filelist),
             roi_ind = get_roi_indices(classlist, classnum, pick_mode, sub_col, view_num);            
             startbyte_temp = startbyte_all(classlist(roi_ind,1)); x = x_all(classlist(roi_ind,1)); y = y_all(classlist(roi_ind,1));
             startbyte = startbyte_all(roi_ind); x = x_all(roi_ind); y = y_all(roi_ind); %heidi 11/5/09
-            big_ind = find(x > xbig & y <= ybig);
+            big_ind = find(x > xbig & y <= ybig);%to sort big only_thin
+            %big_ind = find(x <= xbig & y > ybig);%to sort tall and thin
+            %big_ind = find(x <= xbig & y <= ybig);%to sort small in both directions
             roi_ind = roi_ind(big_ind);
             startbyte = startbyte(big_ind); x = x(big_ind); y = y(big_ind);
             %if (startbyte_temp - startbyte), disp('CHECK for error!'), keyboard, end;
