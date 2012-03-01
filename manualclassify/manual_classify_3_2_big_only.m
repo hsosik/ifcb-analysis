@@ -38,7 +38,7 @@ pick_mode = 'raw_roi';
 big_only = 1; %case for picking Laboea and tintinnids only 
 xbig = 150; ybig = 75;
 resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
-classpath = '\\queenrose\IFCB12\ifcb_data_mvco_jun06\classxxxx_24may07_revDec11\'; %USER set
+classpath = '\\queenrose\g_work_IFCB1\ifcb_data_mvco_jun06\classxxxx_24may07_revDec11\'; %USER set
 basedir_all = {'\\demi\ifcbold\g\IFCB\ifcb_data_MVCO_jun06\'; '\\demi\ifcbnew\';};
 stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitchxxxx\';  %%USER set, roi stitch info files
 class_filestr = '_class_24May07_revDec11'; %USER set, string appended on roi name for class files
