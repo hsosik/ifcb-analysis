@@ -34,7 +34,7 @@
 close all; clear all;
 
 filenum2start = 1;  %USER select file number to begin (within the chose day)
-batch_classnum = [4]; %USER which class do you want to view in batch mode, Heidi 10/7/09, only works for correct_or_subdivide for now
+batch_classnum = [7]; %USER which class do you want to view in batch mode, Heidi 10/7/09, only works for correct_or_subdivide for now
 
 pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
 big_only = 0; %case for picking Laboea and tintinnids only
@@ -45,7 +45,7 @@ basedir_all = {'\\demi\ifcbold\g\IFCB\ifcb_data_MVCO_jun06\'; '\\demi\ifcbnew\';
 stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitchxxxx\';  %%USER set, roi stitch info files
 class_filestr = '_class_24May07_revDec11'; %USER set, string appended on roi name for class files
 
-%filelist = dir([resultpath 'IFCB1_2009_???_00*']);
+%filelist = dir([resultpath 'IFCB1_2008_135*']);
 filelist = get_filelist_manual([resultpath 'manual_list'],7,[2006], 'only'); %manual_list, column to use, year to find
 %load checksmall_filelist; filelist = cellstr([char(filelist) repmat('.mat', length(filelist),1)]);
 %filelist = cell2struct(filelist,{'name'},2);
