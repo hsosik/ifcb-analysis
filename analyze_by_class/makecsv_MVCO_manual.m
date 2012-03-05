@@ -18,7 +18,7 @@ numclass = numclass1 + numclass2;
 class2use_here = [class2use_manual_first class2use_sub4];
 ciliate_num = strmatch('ciliate', class2use_here, 'exact');
 other_num = strmatch('other', class2use_here, 'exact');
-for loopcount = 6:6, %1:length(mode_list),
+for loopcount = 3:3, %1:length(mode_list),
     annotate_mode = char(mode_list(loopcount));
     switch annotate_mode
         case 'all categories'
@@ -35,7 +35,7 @@ for loopcount = 6:6, %1:length(mode_list),
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
         case 'ditylum'
-            [~, class_cat] = intersect(class2use_here, 'ditylum');
+            [~, class_cat] = intersect(class2use_here, 'Ditylum');
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)) & ~cell2mat(manual_list(2:end,strmatch('diatoms', mode_list)+1)));
@@ -53,7 +53,7 @@ for loopcount = 6:6, %1:length(mode_list),
         case 'special big only'
             [~, class_cat] = intersect(class2use_here, {'Ceratium' 'Eucampia' 'Ephemera' 'bad' 'Dinophysis' 'Lauderia' 'Licmophora' 'Phaeocystis' 'Stephanopyxis' ...
                 'Coscinodiscus' 'Odontella' 'Guinardia_striata' 'tintinnid' 'Laboea' 'Hemiaulus' 'Paralia' 'Guinardia_flaccida' 'Corethron' 'Dactyliosolen' 'Dictyocha'...
-                'Dinobryon' 'Ditylum' 'Pleurosigma' 'Prorocentrum' 'Rhizosolenia' 'Thalassionema' 'clusterflagellate' 'kiteflagellates' 'Pyramimonas' 'ciliate_mix' 'Myrionecta'});
+                'Dinobryon' 'Ditylum' 'Pleurosigma' 'Prorocentrum' 'Rhizosolenia' 'Thalassionema' 'clusterflagellate' 'kiteflagellates' 'Pyramimonas' 'ciliate_mix' 'Myrionecta' 'not_ciliate'});
             manual_only = 1;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
@@ -84,17 +84,22 @@ for loopcount = 6:6, %1:length(mode_list),
                 else
                     ind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum));
                 end;
+                %disp(classnum)
+                disp(ind)
             else
                 if classnum ~= ciliate_num %skip ciliate since done as subdivide in all cases when ciliates exist
                     ind = find(classlist(:,2) == classnum); %case for "off task" annotations (consider manual only)
                 end;
-                if classnum == other_num & annotate_mode == 'special big only',
+                if classnum == other_num & strmatch('special big only', annotate_mode),
                     ind = [];
                 end;
+                %disp('else')
+                %disp(ind)
             end;
             roinumtemp = [roinumtemp; ind];
             labeltemp = [labeltemp; repmat(class2use_here(classnum), length(ind),1)];
         end;
+        pause
         persontemp = repmat({'EPeacock'}, length(roinumtemp),1);
         if exist('class2use_sub4', 'var'),
              if ~isequal(class2use_sub4, class2use_first_sub)
