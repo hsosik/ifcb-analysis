@@ -51,7 +51,7 @@ for loopcount = 1:length(mode_list),
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
         case 'ditylum'
-            [~, class_cat] = intersect(class2use_here, 'ditylum');
+            [~, class_cat] = intersect(class2use_here, 'Ditylum');
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)) & ~cell2mat(manual_list(2:end,strmatch('diatoms', mode_list)+1)));
