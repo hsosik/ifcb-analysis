@@ -1,4 +1,4 @@
-load '\\raspberry\d_work\ifcb1\ifcb_data_mvco_jun06\manual_fromClass\summary\count_biovol_manual_04Feb2012_day'
+load '\\raspberry\d_work\ifcb1\ifcb_data_mvco_jun06\manual_fromClass\summary\count_biovol_manual_01Mar2012_day'
 ii = find(floor(matdate_bin) == datenum('2-9-2010')); %skip this day with one partial sample
 classbiovol_bin(ii,:) = []; classcount_bin(ii,:) = []; ml_analyzed_mat_bin(ii,:) = []; matdate_bin(ii) = [];
 
@@ -56,6 +56,7 @@ x = classbiovol_bin(indall,ind_diatoms)./ml_analyzed_mat_bin(indall,ind_diatoms)
 [~, cind] = sort(sum(x), 'descend'); %rank order biomass
 
 x = classbiovol_bin(:,ind_diatoms)./ml_analyzed_mat_bin(:,ind_diatoms);
+xsum = sum(x,2);
 dv = datevec(matdate_bin);
 yd = (1:366)';
 year_ifcb = (2006:2011);
@@ -66,6 +67,7 @@ for count = 1:length(year_ifcb),
     for day = 1:366,
         ii = find(floor(yd_ifcb(iii)) == day);
         Dallday(day,count,:) = nanmean(x(iii(ii),:),1);
+        Dsumday(day,count) = nanmean(xsum(iii(ii)),1);
     end;
 end;
 Dallmean = squeeze(nanmean(Dallday,2));
@@ -75,6 +77,8 @@ end;
 for count = 1:length(year_ifcb),
     Dallanom_sm(:,count,:) = squeeze(Dallday(:,count,:)) - Dallmean_sm;
 end;
+
+Dsumanom = Dsumday-repmat(smooth(nanmean(Dsumday,2)),1,length(year_ifcb));
 
 x = classbiovol_bin(:,ind_ciliate)./ml_analyzed_mat_bin(:,ind_ciliate);
 %x = classcount_bin(:,ind_ciliate)./ml_analyzed_mat_bin(:,ind_ciliate);
@@ -184,6 +188,17 @@ subplot(1,4,1)
 xlabel('Temperature anomaly (relative)', 'fontsize', 16)
 subplot(1,4,1)
 ylabel(['\it' class2use{ind_diatoms(classnum)} '\rm anomaly (biovolume, relative)'], 'fontsize', 14)
+
+figure
+xanom = Tanom_ifcb;
+yanom = Dsumanom;
+month_bins = (1:12)'; subplotwidth = 4;
+anomaly_corr(xanom, yanom, yd, month_bins,subplotwidth);
+orient tall
+subplot(3,4,10)
+xlabel('Temperature anomaly (relative)', 'fontsize', 16)
+subplot(3,4,5)
+ylabel(['Diatom anomaly (biovolume, relative)'], 'fontsize', 14)
 
 for classnum = 1:0, %length(ind_ciliate),
     xanom = Tanom_ifcb;
