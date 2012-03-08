@@ -33,7 +33,7 @@
 
 close all; clear all;
 
-filenum2start = 306;  %USER select file number to begin (within the chose day)
+filenum2start = 1398;  %USER select file number to begin (within the chose day)
 batch_classnum = [46, 25]; %USER which class do you want to view in batch mode, Heidi 10/7/09, only works for correct_or_subdivide for now
 
 pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
