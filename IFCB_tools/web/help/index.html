@@ -20,6 +20,7 @@ div.slide {
   vertical-align: middle;
   padding: 20px;
   height: 375px;
+  width: 275px;
   overflow: hidden;
 }
 div.header {
@@ -37,6 +38,7 @@ body {
 td.text {
   width: 25%;
   padding: 20px;
+  font-size: 15.5px;
 }
 td.img {
   text-align: center;
@@ -49,6 +51,14 @@ h1 {
 .caption {
   padding: 6px;
   font-size: 12px;
+}
+div.number {
+  padding: 5px;
+  margin: 10px;
+  border: 3px solid;
+  font-size: 20px;
+  font-weight: bold;
+  float: left;
 }
 </style>
 <script type="text/javascript">
@@ -107,9 +117,11 @@ var slides = [
 var onslide = 0;
 function advanceSlide() {
     var pid = slides[onslide]['img'];
-    $('#slide').empty().append('<a href="'+pid+'.html"><img src="'+pid+'.jpg" class="slide"></a>');
-    $('#caption').empty().append(slides[onslide]['caption']);
-    onslide = (onslide + 1) % slides.length;
+    $('#slide').append('<img src="'+pid+'.jpg" style="display:none;">').find('img').bind('load', function() {
+       $('#slide').empty().append('<a href="'+pid+'.html"><img src="'+pid+'.jpg" class="slide"></a>');
+       $('#caption').empty().append(slides[onslide]['caption']);
+       onslide = (onslide + 1) % slides.length;
+    });
 }
 $(document).ready(function() {
     advanceSlide();
@@ -128,36 +140,6 @@ $(document).ready(function() {
 </div>
 <tr>
   <td class="img">
-    <img src="marineFoodwebCarbonFlux.png">
-    <div class="caption">Modified from Chisholm 2000</div>
-  </td>
-  <td class="text">
-A drop of seawater contains hundreds, even thousands of tiny
-phytoplankton, organisms so small they can only be seen with a
-microscope. Like land plants, phytoplankton use energy from the sun to
-photosynthesize and make new organic matter. And they use up carbon
-dioxide and produce oxygen along the way. In fact, these single-celled
-microbes produce half the oxygen we breathe every day.
-  </td>
-  <td class="img">
-    <div style="display: inline-block; width: 300px">
-      <img src="mvcoDiagram.png" style="width: 300px">
-    </div>
-    <div style="display: inline-block; width: 100px">
-      <img src="ifcbDunk.png" style="width: 100px">
-      <div class="caption">Photo credit: T. Crockford</div>
-    </div>
-  </td>
-  <td class="text">
-At the <a href="http://www.whoi.edu/mvco/description/description2.html">Martha's Vineyard Coastal Observatory</a>, IFCBs are working around
-the clock in the ocean to capture high resolution images of
-plankton and relay them to shore. Using the <a href="http://ifcb-data.whoi.edu/">IFCB data dashboard web site</a>,
-anyone can access those images within minutes of collection. Plus browse
-hundreds of millions of images taken over the last 6 years.
-  </td>
-</tr>
-<tr>
-  <td class="img">
   <div class="slideshow">
     <div id="slide" class="slide"></div>
     <div id="caption" class="caption"></div>
@@ -165,23 +147,31 @@ hundreds of millions of images taken over the last 6 years.
   </div>
   </td>
   <td class="text">
-Phytoplankton thrive under all kinds of conditions everywhere in the
-ocean where even the tiniest amount of sunlight penetrates. They
-manage this by being extremely diverse&mdash;they come in a huge range of
-shapes and sizes and have evolved many intricate patterns of life. And
-according to the scientists studying them at WHOI, that diversity is
-so beautiful that everyone should be able to peek into the invisible
-world of plankton.
+<div class="number">1</div> A drop of seawater contains hundreds, even
+thousands of tiny phytoplankton, organisms so small they can only be
+seen with a microscope. Despite being so tiny they are incredibly
+interesting and beautifully diverse. According to the scientists
+studying them at WHOI, that diversity is so beautiful that everyone
+should be able to peek into the invisible world of plankton. And that
+is being made possible by a new invention called Imaging FlowCytobot.
   </td>
   <td class="img">
-    <iframe width="420" height="315" src="http://www.youtube.com/embed/KTUAZQFnEsc?rel=0" frameborder="0" allowfullscreen></iframe>
+    <a href="chisolmFull.jpg">
+      <img src="marineFoodwebCarbonFlux.png">
+    </a>
+    <div class="caption">Modified from Chisholm 2000</div>
   </td>
   <td class="text">
-This video shows images captured by IFCB from about a &frac14; teaspoon of ocean water.
-IFCB takes a picture whenever it sees chlorophyll in the stream of water
-flowing past its camera. The video shows where IFCB found plankton and other
-objects in each picture it took. A system of pumps, filters, and small
-tubes ensures that only a few objects flow past the camera at a time.
+<div class="number">2</div>
+Like land plants, phytoplankton use energy from the sun to
+photosynthesize and make new organic matter. And they use up carbon
+dioxide and produce oxygen along the way. In fact, these single-celled
+microbes produce half the oxygen we breathe every day. Phytoplankton
+thrive under all kinds of conditions everywhere in the ocean where
+even the tiniest amount of sunlight penetrates – from icy waters of
+the Arctic to balmy tropical reefs. They manage this by being
+extremely diverse—they come in a huge range of shapes and sizes and
+have evolved many intricate patterns of life.
   </td>
 </tr>
 <tr>
@@ -190,25 +180,65 @@ tubes ensures that only a few objects flow past the camera at a time.
     <div class="caption">Photo credit: T. Kleindinst</div>
   </td>
   <td class="text">
-WHOI scientists are working to open access to images being produced by
-a new invention, an automated underwater microscope called Imaging
-FlowCytobot, or IFCB for short. Rob Olson and Heidi Sosik build IFCBs
-from lasers, video cameras, microscope parts, and small
-computers. IFCB can take more than 10 pictures per second as
-phytoplankton and other small particles are speeding by the video
-camera in a thin stream of seawater.
+<div class="number">3</div>
+WHOI scientists are working to show off that diversity by opening
+access to images being produced by Imaging FlowCytobot, or IFCB for
+short. IFCB is an automated underwater microscope designed by Rob
+Olson and Heidi Sosik. They build IFCBs from lasers, video cameras,
+microscope parts, and small computers. IFCB can take more than 10
+pictures per second as phytoplankton and other small particles are
+speeding by the video camera in a thin stream of seawater.
   </td>
   <td class="img">
-    <img src="timeseries2.png" style="width: 400px">
+    <div style="display: inline-block; width: 250px">
+      <a href="mvcoDiagramLarge.jpg">
+        <img src="mvcoDiagram.png" style="width: 250px">
+      </a>
+    </div>
+    <div style="display: inline-block; width: 100px">
+      <a href="ifcbDunkLarge.jpg">
+        <img src="ifcbDunk.png" style="width: 100px">
+      </a>
+      <div class="caption">Photo credit: T. Crockford</div>
+    </div>
   </td>
   <td class="text">
-For scientists, this series of images provides a new way to
-view the natural ebb and flow of phytoplankton communities as the
-seasons change and years go by. This will help us understand the
-processes that produce the oxygen we breathe and support the ocean food
-webs that include fish, whales, and seabirds. Long time series will
-also show us how the invisible world of plankton adjusts to
-environmental changes.
+<div class="number">4</div>
+At the <a href="http://www.whoi.edu/mvco/description/description2.html">Martha's Vineyard Coastal Observatory</a>, IFCBs are working around
+the clock in the ocean to capture high resolution images of
+plankton and relay them to shore. At the <a href="http://ifcb-data.whoi.edu/">IFCB data dashboard web site</a>,
+anyone can access those images within minutes of collection. Plus browse
+hundreds of millions of images taken over the last 6 years.
+  </td>
+</tr>
+<tr>
+  <td class="img">
+<!-- orig 420x315 -->
+<!-- 336x252 -->
+    <iframe width="336" height="252" src="http://www.youtube.com/embed/KTUAZQFnEsc?rel=0" frameborder="0" allowfullscreen></iframe>
+  </td>
+  <td class="text">
+<div class="number">5</div>
+This video shows images captured by IFCB from about a &frac14; teaspoon of ocean water.
+IFCB takes a picture whenever it detects chlorophyll in the stream of water
+flowing past its camera. The video shows where IFCB found plankton and other
+objects in each picture it took. A system of pumps, filters, and small
+tubes ensures that only a few objects flow past the camera at a time.
+  </td>
+  <td class="img">
+    <a href="timeseries2.png">
+      <img src="timeseries2.png" style="width: 400px">
+    </a>
+  </td>
+  <td class="text">
+<div class="number">6</div>
+For scientists, this series of images provides a new way to view the
+natural ebb and flow of phytoplankton communities as the seasons
+change and years go by. Long time series like these show us how the
+invisible world of plankton adjusts to environmental
+changes. Ultimately this knowledge will help us understand the
+processes that produce the oxygen we breathe and support the ocean
+food webs that include fish, whales, and seabirds.
   </td>
 </tr>
 </table>
