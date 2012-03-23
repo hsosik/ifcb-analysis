@@ -33,8 +33,8 @@
 
 close all; clear all;
 
-filenum2start = 1;  %USER select file number to begin (within the chose day)
-batch_classnum = [25]; %USER which class do you want to view in batch mode, Heidi 10/7/09, only works for correct_or_subdivide for now
+filenum2start = 886;  %USER select file number to begin (within the chose day)
+batch_classnum = [46 25]; %USER which class do you want to view in batch mode, Heidi 10/7/09, only works for correct_or_subdivide for now
 
 pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
 big_only = 1; %case for picking Laboea and tintinnids only
@@ -48,8 +48,8 @@ class_filestr = '_class_24May07_revDec11'; %USER set, string appended on roi nam
 %filelist = dir([resultpath 'IFCB1_2009_???_00*']);
 filelist = get_filelist_manual([resultpath 'manual_list'],7,[2006:2011], 'only'); %manual_list, column to use, year to find
 %load Ditylum_ciliate_files; filelist = Ditylum_ciliate_files; clear Ditylum_ciliate_files
-%load checksmall_filelist; filelist = cellstr([char(filelist) repmat('.mat', length(filelist),1)]);
-%filelist = cell2struct(filelist,{'name'},2);
+load checksmall_filelist2; filelist = cellstr([char(filelist) repmat('.mat', length(filelist),1)]);
+filelist = cell2struct(filelist,{'name'},2);
 
 if ~exist(resultpath, 'dir'),
     dos(['mkdir ' resultpath]);
@@ -101,7 +101,7 @@ switch pick_mode
         %[junk, class2view1] = setdiff(class2use_pick1, {'bad', 'mix'});  %use this to exclude some classes
         class2view1 = sort(class2view1);
         class2view1 = class2view1(batch_classnum); %set category(ies) to view, needed for batch mode
-        class2view1 = [];  %use this to skip all original auto categories
+        %class2view1 = [];  %use this to skip all original auto categories
         class2view2 = 1:length(class2use_sub);
         %class2view2 = []; %Comment out if using a subdivided class
     otherwise
@@ -177,9 +177,9 @@ for filecount = filenum2start:length(filelist),
             roi_ind = get_roi_indices(classlist, classnum, pick_mode, sub_col, view_num);            
             startbyte_temp = startbyte_all(classlist(roi_ind,1)); x = x_all(classlist(roi_ind,1)); y = y_all(classlist(roi_ind,1));
             startbyte = startbyte_all(roi_ind); x = x_all(roi_ind); y = y_all(roi_ind); %heidi 11/5/09
-            big_ind = find(x > xbig & y <= ybig);%to sort big only_thin
+            %big_ind = find(x > xbig & y <= ybig);%to sort big only_thin
             %big_ind = find(x <= xbig & y > ybig);%to sort tall and thin
-            %big_ind = find(x <= xbig & y <= ybig);%to sort small in both directions
+            big_ind = find(x <= xbig & y <= ybig);%to sort small in both directions
             roi_ind = roi_ind(big_ind);
             startbyte = startbyte(big_ind); x = x(big_ind); y = y(big_ind);
             %if (startbyte_temp - startbyte), disp('CHECK for error!'), keyboard, end;
