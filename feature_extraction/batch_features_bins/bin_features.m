@@ -47,7 +47,7 @@ out = temp;
 fileout = regexprep(file, 'zip', 'mat')
 save([out_dir fileout], 'out')
 
-log(['SAVING ' file]);
+log(['SAVING ' fileout]);
 
 %rmdir(png_dir,'s');
 
