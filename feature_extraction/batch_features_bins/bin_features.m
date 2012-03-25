@@ -1,4 +1,4 @@
-function [ ] = bin_volume( in_dir, file, out_dir )
+function [ ] = bin_features( in_dir, file, out_dir )
 %BIN_BLOBS Summary of this function goes here
 %modified from bin_blobs
 
@@ -42,7 +42,7 @@ for i = 1:nt,
 %        temp.images(i).blob_image_rotated = target.blob_image_rotated;
 %        temp.images(i).image = target.image;
 end
-
+temp.pid = targets.pid;
 out = temp;
 fileout = regexprep(file, 'zip', 'mat')
 save([out_dir fileout], 'out')
