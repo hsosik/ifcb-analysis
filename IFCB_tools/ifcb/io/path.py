@@ -7,6 +7,7 @@ import os.path
 from cache import cache_obj
 import calendar
 import math
+from ifcb.io.pids import OldPid
 
 """Resolution of IFCB global identifiers to local filesystem paths"""
 
@@ -158,31 +159,13 @@ class Filesystem(Resolver):
 
     # search for a bin in the filesystem
     def bin_path(self,pid):
-        # the names of the day directory and bin file are in the pid
-        (bin, day) = re.match(r'.*((IFCB\d+_\d{4}_\d{3})_\d{6})',pid).groups() 
+        oid = OldPid(pid)
         tried = []
-        for years in self.years_dirs: # search the years dirs
-            bin_path = os.path.join(years.dir, day, bin) + '.' + ADC_EXT
+        for path in oid.paths([yd.dir for yd in self.years_dirs]):
+            bin_path = path + '.' + ADC_EXT
             tried += [bin_path]
-            # test for existence of ADC path, does not check others (reduce I/O, latency)
             if os.path.exists(bin_path):
                 return bin_path
-        # OK, that failed. maybe it's in a previous day
-        (instrument, year, doy, timestamp) = re.match(r'.*(IFCB\d+)_(\d{4})_(\d{3})_(\d{6})',pid).groups()
-        (year, doy) = (int(year), int(doy))
-        # avoid doing date arithmetic by testing four cases
-        for years in self.years_dirs: # search the years dirs
-            for yesteryear, yesterday in ((year, ((doy - 2) % 365) + 1),
-                                          (year-1, ((doy - 2) % 365) + 1),
-                                          (year, ((doy - 2) % 366) + 1),
-                                          (year-1, ((doy - 2) % 366) + 1)):
-                day = '%s_%d_%03d' % (instrument, yesteryear, yesterday)
-                # FIXME tile ahead
-                bin_path = os.path.join(years.dir, day, bin) + '.' + ADC_EXT
-                # test for existence of ADC path, does not check others (reduce I/O, latency)
-                tried += [bin_path]
-                if os.path.exists(bin_path):
-                    return bin_path
         raise KeyError('no path to bin '+pid+ (' '.join(tried)))
             
     # given the pid of a target, return the target_info
@@ -190,18 +173,18 @@ class Filesystem(Resolver):
         return self.__target(pid)
     
     def __target(self,pid):
-        (target, bin_lid, target_no) = re.match(r'((IFCB\d+_\d{4}_\d{3}_\d{6})_(\d+))',ifcb.lid(pid)).groups()
-        bin = self.bin(ifcb.pid(bin_lid))
-        return bin.target(int(target_no)) # bin.target is 0-based
+        oid = OldPid(pid)
+        bin = self.bin(ifcb.pid(oid.bin_lid))
+        return bin.target(int(oid.target)) # bin.target is 0-based
     
     def resolve(self,pid):
         """Resolve a pid in this filesystem"""
-        lid = ifcb.lid(pid)
-        if re.match(r'^IFCB\d+_\d{4}_\d{3}$',lid): # day pattern
+        oid = OldPid(pid)
+        if oid.isday:
             return self.day(pid)
-        elif re.match(r'^IFCB\d+_\d{4}_\d{3}_\d{6}$',lid): # bin pattern
+        elif oid.isbin:
             return self.bin(pid)
-        elif re.match(r'^IFCB\d+_\d{4}_\d{3}_\d{6}_\d+$',lid): # target pattern
+        elif oid.istarget:
             return self.target(pid)
         raise KeyError('unrecognized pid '+pid)
         

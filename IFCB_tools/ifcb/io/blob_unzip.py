@@ -5,14 +5,19 @@ from config import BLOB_ROOTS, DATA_TTL
 from os import path
 from sys import stdout
 from shutil import copyfileobj
+from ifcb.io.pids import OldPid
 
 def zip_path(pid):
-    lid = ifcb.lid(pid)
-    (bin, day, year) = re.match(r'(IFCB._((\d+)_\d+)_\d+).*',lid).groups()
+    oid = OldPid(pid)
+    bin = oid.bin_lid
+    day = oid.yearday
+    year = oid.year
+    tried = []
     for blob_root in BLOB_ROOTS:
         blobzip = path.join(blob_root,year,day,bin+'_blobs_v2.zip')
         if path.exists(blobzip):
             return blobzip
+        tried += [blobzip]
     raise KeyError(pid+' blob not found')
 
 # write the blob zip to out

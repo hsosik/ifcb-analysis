@@ -13,7 +13,7 @@ import pickle
 from cache import cache_io, cache_obj, cache_file
 from config import STITCH, MOD_ROOTS
 from ifcb.io.stitching import StitchedBin
-
+from ifcb.io.pids import OldPid # FIXME ID format
 import mmap
 
 """Parsing of IFCB data formats including header files, metadata, and imagery"""
@@ -58,7 +58,7 @@ class BinFile(Timestamped):
     parsing the raw data files lives"""
     id = ''
     dir = ''
-    time_format = '%Y_%j_%H%M%S'
+    time_format = '%Y_%j_%H%M%S' # FIXME ID format
     __corrected_adc_path = None
 
     # determine PID, local id, instrument number, and timestamp from path
@@ -67,9 +67,10 @@ class BinFile(Timestamped):
         file = os.path.basename(path)
         (self.id, ext) = os.path.splitext(file)
         # the timestamp is the approximate time the syringe was sampled and flow began
-        self.time_string = re.sub('^IFCB\\d+_','',self.id)
         self.pid = ifcb.pid(self.id)
-        self.instrument = re.sub(r'^IFCB(\d+)_.*',r'\1',self.id)
+        self.oid = OldPid(self.id)
+        self.time_string = self.oid.datetime
+        self.instrument = self.oid.instrument_number
     
     def __repr__(self):
         return '{Bin ' + self.pid + '}'
@@ -88,7 +89,7 @@ class BinFile(Timestamped):
             return self.__corrected_adc_path
         else:
             for r in MOD_ROOTS:
-                dd = re.sub('_\\d+$','',self.id)
+                dd = self.oid.day_lid
                 p = os.path.join(r,dd,self.id + '.adc.mod')
                 if os.path.exists(p):
                     self.__corrected_adc_path = p

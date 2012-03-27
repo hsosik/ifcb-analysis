@@ -4,6 +4,7 @@ from file import newBin
 import re
 from ifcb.io import Timestamped, ADC_EXT, HDR_EXT, ROI_EXT
 from ifcb.util import gen2list
+from ifcb.io.pids import OldPid
 import os.path
 
 """Interpretation and traversal of IFCB directory structure"""
@@ -14,11 +15,11 @@ class DayDir(Timestamped):
 	
 	Iterable: returns all bins"""
 	dir = '.'
-	time_format = '%Y_%j'
+	time_format = '%Y_%j' # FIXME ID format
 	
 	def __init__(self, dir='.'):
 		self.dir = dir
-		self.time_string = re.sub('^IFCB\\d+_','',ifcb.lid(self.pid)) 
+		self.time_string = OldPid(self.pid).yearday
 				
 	def __repr__(self):
 		return '{DayDir ' + self.pid +' @ '+str(self.dir)+'}'
@@ -69,7 +70,7 @@ class YearsDir:
 		try:
 			for item in sorted(os.listdir(self.dir)):
 				f = os.path.join(self.dir, item)
-				if re.search(r'IFCB'+str(self.instrument)+r'_\d\d\d\d_\d\d\d',f):
+				if OldPid(f).isday:
 					yield DayDir(os.path.abspath(f))
 		except OSError:
 			noop = None # FIXME log

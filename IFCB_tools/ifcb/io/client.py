@@ -5,7 +5,7 @@ from ifcb.io import Timestamped
 from ifcb.io.path import Resolver
 from ifcb.io import TARGET_INFO
 import re
-
+from ifcb.io.pids import OldPid
 import urllib2 as urllib
 from PIL import Image
 from cStringIO import StringIO
@@ -110,10 +110,10 @@ class Client(Resolver):
         return self.latest_bins(1)[0]
     
     def resolve(self,pid):
-        lid = ifcb.lid(pid)
-        if re.match(r'^IFCB\d+_\d{4}_\d{3}_\d{6}$',lid): # bin pattern # FIXME tile
+        oid = OldPid(pid)
+        if oid.isbin:
             return Bin(pid)
-        elif re.match(r'^IFCB\d+_\d{4}_\d{3}_\d{6}_\d+$',lid): # target pattern # FIXME tile
+        elif oid.istarget:
             return Target(pid)
         # FIXME add day dir
         raise KeyError('unrecognized pid '+pid)
