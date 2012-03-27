@@ -5,6 +5,8 @@ import os
 class OldPid(object):
     def __init__(self,pid):
         self.lid = ifcb.lid(pid)
+        self.date_format = '%Y_%j'
+        self.datetime_format = '%Y_%j_%H%M%S'
     def mod(self,regex,what='ID'):
         """match or die"""
         try:
@@ -75,20 +77,84 @@ class OldPid(object):
                     day = '%s_%d_%03d' % (instrument, yesteryear, yesterday)
                     yield os.path.join(basedir, day, bin)
 
+class NewPid(OldPid):
+    def __init__(self,pid):
+        self.lid = ifcb.lid(pid)
+        self.date_format = '%Y%m%d'
+        self.datetime_format = '%Y%m%dT%H%M%S'
+    @property
+    def year(self):
+        return self.mod(r'^D(\d{4})','year')
+    @property
+    def yearday(self):
+        return self.mod(r'^D(\d{8})','year/day')
+    @property
+    def day(self):
+        return self.mod(r'^D\d{4}(\d{4})','day')
+    @property
+    def datetime(self):
+        return self.mod(r'^D(\d{8}T\d{6})','datetime')
+    @property
+    def target(self):
+        return self.mod(r'^D\d{8}T\d{6}_(\d+)','target')
+    @property
+    def isday(self):
+        return re.match(r'^D(\d{8})','year/day')
+    @property
+    def isbin(self):
+        return re.match(r'D\d{8}T\d{6}_IFCB\d+$',self.lid)
+    @property
+    def istarget(self):
+        return re.match(r'^D\d{8}T\d{6}_\d+_IFCB\d+$',self.lid)
+    @property
+    def day_lid(self):
+        if self.isday:
+            return self.lid
+        else:
+            return re.sub(r'(^D\d{8}).*',r'\1',self.lid)
+    @property
+    def bin_lid(self):
+        if self.isbin:
+            return self.lid
+        else:
+            return re.sub(r'(^D\d{8}T\d{6}).*',r'\1',self.lid)
+    @property
+    def as_lid(self):
+        return self.lid
+    @property
+    def as_pid(self):
+        return ifcb.pid(self.lid)
+    def paths(self,basedirs=['.']):
+        """Given a bin ID, generate candidate paths, in order of likelihood"""
+        (bin, day, instrument_name) = re.match(r'.*((D\d{8})T\d{6}).*(IFCB\d+)',self.lid).groups() 
+        for basedir in basedirs:
+            yield os.path.join(basedir, day, '%s_%s' % (bin, instrument_name))
+        # FIXME deal with "new year bug"
+
+def parse_id(pid):
+    lid = ifcb.lid(pid)
+    # attempt to guess format
+    if re.match('^IFCB',lid):
+        return OldPid(lid)
+    elif re.match('.*IFCB\d+$',lid):
+        return NewPid(lid)
+    else:
+        raise KeyError('unrecognized ID format %s' % lid)
 
 if __name__=='__main__':
-    pid = OldPid('IFCB4_1973_004_231422')
+    #pid = parse_id('IFCB4_1973_004_231422')
+    pid = parse_id('D21120403T121314_IFCB010')
+    print pid
     if pid.isday:
         print 'is day'
-    print pid.instrument_name
-    print pid.year
-    print pid.yearday
-    print pid.day
-    print pid.datetime
+    print 'instrument = ' + pid.instrument_name
+    print 'year = ' + pid.year
+    print 'yearday = ' + pid.yearday
+    print 'day = ' + pid.day
+    print 'datetime = ' + pid.datetime
     for path in pid.paths(['foo','bar']):
         print path
-    print pid.target
-
+    print 'target = ' + pid.target
 
 
     

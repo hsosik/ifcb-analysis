@@ -5,7 +5,7 @@ from ifcb.io import Timestamped
 from ifcb.io.path import Resolver
 from ifcb.io import TARGET_INFO
 import re
-from ifcb.io.pids import OldPid
+from ifcb.io.pids import parse_id
 import urllib2 as urllib
 from PIL import Image
 from cStringIO import StringIO
@@ -110,7 +110,7 @@ class Client(Resolver):
         return self.latest_bins(1)[0]
     
     def resolve(self,pid):
-        oid = OldPid(pid)
+        oid = parse_id(pid)
         if oid.isbin:
             return Bin(pid)
         elif oid.istarget:

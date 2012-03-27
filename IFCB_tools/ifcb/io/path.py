@@ -7,7 +7,7 @@ import os.path
 from cache import cache_obj
 import calendar
 import math
-from ifcb.io.pids import OldPid
+from ifcb.io.pids import parse_id
 
 """Resolution of IFCB global identifiers to local filesystem paths"""
 
@@ -159,7 +159,7 @@ class Filesystem(Resolver):
 
     # search for a bin in the filesystem
     def bin_path(self,pid):
-        oid = OldPid(pid)
+        oid = parse_id(pid)
         tried = []
         for path in oid.paths([yd.dir for yd in self.years_dirs]):
             bin_path = path + '.' + ADC_EXT
@@ -173,13 +173,13 @@ class Filesystem(Resolver):
         return self.__target(pid)
     
     def __target(self,pid):
-        oid = OldPid(pid)
+        oid = parse_id(pid)
         bin = self.bin(ifcb.pid(oid.bin_lid))
         return bin.target(int(oid.target)) # bin.target is 0-based
     
     def resolve(self,pid):
         """Resolve a pid in this filesystem"""
-        oid = OldPid(pid)
+        oid = parse_id(pid)
         if oid.isday:
             return self.day(pid)
         elif oid.isbin:

@@ -5,10 +5,10 @@ from config import BLOB_ROOTS, DATA_TTL
 from os import path
 from sys import stdout
 from shutil import copyfileobj
-from ifcb.io.pids import OldPid
+from ifcb.io.pids import parse_id
 
 def zip_path(pid):
-    oid = OldPid(pid)
+    oid = parse_id(pid)
     bin = oid.bin_lid
     day = oid.yearday
     year = oid.year
