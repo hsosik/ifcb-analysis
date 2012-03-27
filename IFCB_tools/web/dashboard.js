@@ -2,6 +2,11 @@ var selected = '';
 var target_html = {};
 var aspect_ratio = 0.5625; /* 16:9 */
 var time_series_prefix = '/mvco';
+function read_prefix() {
+    var regex = /.*\/\/[^\/]+(\/[^\/]+)\/.*/;
+    var groups = regex.exec(window.location.href);
+    time_series_prefix = groups[1];
+}
 function with_json_request(url, fn) {
     $.ajax({
         url : url,
