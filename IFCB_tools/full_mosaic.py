@@ -13,7 +13,7 @@ if __name__=='__main__':
     bin = Filesystem(FS_ROOTS).resolve(pid) # fetch the bin
     nrois = bin.length()
     width = 2400
-    height = 2400
+    height = nrois * 4
     while True:
         print 'Fitting ...'
         lo = mosaic.layout(bin, (width, height), sort_key=lambda t: t.processingEndTime)
@@ -28,12 +28,9 @@ if __name__=='__main__':
             thumb_height = int(round(0.426667 * height))
             print 'downscaling to %d x %d ...' % (thumb_width, thumb_height)
             thumb = mosaic.thumbnail(image, (thumb_width, thumb_height))
-            fn = ifcb.lid(pid) + '.png'
+            (ext, fmt) = ('.jpg', 'JPEG')
+            fn = ifcb.lid(pid) + ext
             print 'saving to disk in %s...' % fn
             with open(fn, 'wb') as out:
-                thumb.save(fn, 'PNG')
+                thumb.save(fn, fmt)
             break
-
-            
-            
-
