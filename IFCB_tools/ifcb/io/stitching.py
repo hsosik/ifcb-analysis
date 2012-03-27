@@ -242,6 +242,7 @@ def stitch(targets,images=None,roi_file=None):
     mask_pix = gaps_mask.load()
     noise = Image.new('L',(h,w),mean)
     noise_pix = noise.load()
+    np.random.seed(0)
     gaussian = np.random.normal(0, 1.0, size=(h,w)) # it's normal
     std_dev *= 0.66 # err on the side of smoother rather than noisier
     timings['random'] = time.time() - then
