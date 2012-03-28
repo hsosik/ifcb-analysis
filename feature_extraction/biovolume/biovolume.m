@@ -28,7 +28,8 @@ for ii = 1:length(t),
        b =  bwboundaries(blob_now,8,'noholes');
        [M N] = size(blob_now);
        perim_img = bound2im(b{1},M,N);
-       volume(ii) = rep_dist(perim_img);
+       %volume(ii) = rep_dist(perim_img);
+       volume(ii) = distmap_volume(perim_img);
     end;
 end;
 target.Biovolume = volume;
