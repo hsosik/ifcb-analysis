@@ -12,17 +12,19 @@ class2use_sub4 = { 'not_ciliate'    'ciliate_mix'    'tintinnid'    'Myrionecta'
 list_titles = {'roi number'    'manual'    'Trees-auto' 'ciliate'}; 
 ciliate_classnum = strmatch('ciliate', class2use, 'exact');
 
+firstfile = 0;
 for filecount = 1:length(filelist),
     filename = filelist(filecount).name;
     disp(['load ' filename])
     if ~exist([class_path filename], 'file'), 
+        firstfile = firstfile + 1;
         load([feature_path filename])
         t = char(out.pid);
         roi_num = str2num(t(:,end-4:end));
         disp('format features')
         [ feature_mat, featitles ] = format_features( out );
         [ feature_mat, featitles ] = add_derived_features( feature_mat, featitles);
-        if filecount == 1,
+        if firstfile == 1,
             [~,i] = setdiff(featitles, {'FilledArea' 'summedFilledArea' 'Area' 'ConvexArea' 'MajorAxisLength' 'MinorAxisLength' 'Perimeter'}');
             featitles = featitles(i);
         end;
