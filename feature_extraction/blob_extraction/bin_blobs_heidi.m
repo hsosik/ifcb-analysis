@@ -7,7 +7,7 @@ function log(msg) % not to be confused with logarithm function
     logmsg(['bin_blobs ' msg],debug);
 end
 
-archive = [out_dir filesep regexprep(file,'.zip','_blobs.zip')];
+archive = [out_dir filesep regexprep(file,'.zip','_blobs_v2.zip')];
 if exist(archive,'file'),
     log(['SKIPPING ' file]);
     return

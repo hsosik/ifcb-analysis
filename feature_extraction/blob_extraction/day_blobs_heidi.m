@@ -24,18 +24,23 @@ end
 
 %daydir = dir([in_dir filesep '*.zip']);
 %daydir = dir(['\\demi\ifcbnew\ifcb5_2012_009\*.roi']);
-days = dir(['\\demi\ifcbnew\ifcb5_2012*']);
+days = dir(['\\demi\ifcbnew\ifcb5_2012_009*']);
 daydir = [];
 for ii = 1:length(days),
     daydir = [daydir; dir(['\\demi\ifcbnew\' days(ii).name '\*.roi'])];
 end;
+daydir_done = dir([out_dir '*.zip']);
+done = {daydir_done.name}';
+done = regexprep(done, '_blobs.zip', '');
+daydir = {daydir.name}';
+daydir = regexprep(daydir, '.roi', '');
+daydir = setdiff(daydir, done);
 
 if not(debug),
     parfor daycount = 1:length(daydir)
         try
             %bin_blobs_heidi(in_dir, daydir(daycount).name, out_dir);
-            zipname = regexprep(daydir(daycount).name,'roi','zip');
-            bin_blobs_heidi(in_dir, zipname, out_dir);
+            bin_blobs_heidi(in_dir, [char(daydir(daycount)) '.zip'], out_dir);
         catch e
    	    logmsg(['day_blobs FAIL ' daydir(daycount).name],debug);
         end
@@ -43,8 +48,7 @@ if not(debug),
 else
     for daycount = 1:length(daydir)
         %bin_blobs_heidi(in_dir, daydir(daycount).name, out_dir);
-        zipname = regexprep(daydir(daycount).name,'roi','zip');
-        bin_blobs_heidi(in_dir, zipname, out_dir);
+        bin_blobs_heidi(in_dir, [char(daydir(daycount)) '.zip'], out_dir);
     end
 end
 
