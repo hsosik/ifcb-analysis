@@ -72,8 +72,11 @@ class YearsDir:
 		try:
 			for item in sorted(os.listdir(self.dir)):
 				f = os.path.join(self.dir, item)
-				if parse_id(f).isday:
-					yield DayDir(os.path.abspath(f))
+				try:
+					if parse_id(item).isday:
+						yield DayDir(os.path.abspath(f))
+				except:
+					pass
 		except OSError:
 			noop = None # FIXME log
 				
