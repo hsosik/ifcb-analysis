@@ -24,7 +24,8 @@ end
 
 %daydir = dir([in_dir filesep '*.zip']);
 %daydir = dir(['\\demi\ifcbnew\ifcb5_2012_009\*.roi']);
-days = dir(['\\demi\ifcbnew\ifcb5_2012_009*']);
+days = [dir(['\\demi\ifcbnew\ifcb5_2012_009*']); dir(['\\demi\ifcbnew\ifcb5_2012_029*']); dir(['\\demi\ifcbnew\ifcb5_2012_039*']);...
+    dir(['\\demi\ifcbnew\ifcb5_2012_046*']); dir(['\\demi\ifcbnew\ifcb5_2012_052*']); dir(['\\demi\ifcbnew\ifcb5_2012_066*']); dir(['\\demi\ifcbnew\ifcb5_2012_078*'])];
 daydir = [];
 for ii = 1:length(days),
     daydir = [daydir; dir(['\\demi\ifcbnew\' days(ii).name '\*.roi'])];
