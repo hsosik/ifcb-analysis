@@ -1,7 +1,7 @@
 resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load ml_analyzed_all %load the milliliters analyzed for all sample files
-biovolpath = '\\queenrose\IFCB1\ifcb_data_mvco_jun06\biovolume\';
+biovolpath_base = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\';
 micron_factor = 1/3.4; %microns per pixel
 
 mode_list = manual_list(1,2:end-1); mode_list = [mode_list 'ciliate_ditylum'];
@@ -99,6 +99,7 @@ for loopcount = 1:length(mode_list),
             ml_analyzed_struct.(char(class2use_here(class_cat(classnum))))(mode_ind(filecount)) = ml_analyzed(mode_ind(filecount));
         end;
         load([resultpath filename])
+        biovolpath = [biovolpath_base 'biovolume' num2str(year(filecount)) '\'];
         load([biovolpath filename]) %targets
         tind = char(targets.pid); %find the ROI indices excluding second in stitched pair
         tind = str2num(tind(:,end-4:end));

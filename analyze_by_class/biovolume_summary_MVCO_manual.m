@@ -1,7 +1,7 @@
 resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load ml_analyzed_all %load the milliliters analyzed for all sample files
-biovolpath = '\\queenrose\IFCB1\ifcb_data_mvco_jun06\biovolume\';
+biovolpath_base = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\';
 micron_factor = 1/3.4; %microns per pixel
 
 %%%%%%%%%FIX - this set of lines to skip some missing biovol due to missing blobs
@@ -36,7 +36,7 @@ hour = str2num(fstr(:,16:17));
 min = str2num(fstr(:,18:19));
 sec = str2num(fstr(:,20:21));
 matdate = datenum(year,0,yearday,hour,min,sec);
-clear fstr year yearday hour min sec
+clear fstr yearday hour min sec
 
 load([resultpath char(manual_list(2,1))]) %read first file to get classes
 class2use_manual_first = class2use_manual;
@@ -86,7 +86,7 @@ for loopcount = 1:length(mode_list),
             manual_only = 1;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
-         case 'ciliates_ditylum'
+         case 'ciliate_ditylum'
             [~, class_cat] = intersect(class2use_here, ['Ditylum' 'ciliate' class2use_first_sub]);
             manual_only = 0;
             %list_col = strmatch(annotate_mode, manual_list(1,:));
@@ -99,6 +99,7 @@ for loopcount = 1:length(mode_list),
         disp(filename)
         ml_analyzed_mat(mode_ind(filecount),class_cat) = ml_analyzed(mode_ind(filecount));
         load([resultpath filename])
+        biovolpath = [biovolpath_base 'biovolume' filename(7:10) '\'];
         load([biovolpath filename]) %targets
         tind = char(targets.pid); %find the ROI indices excluding second in stitched pair
         tind = str2num(tind(:,end-4:end));
