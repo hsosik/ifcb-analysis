@@ -1,5 +1,5 @@
 %load output %load result file produced by batch_features_train.m
-outdir = 'C:\work\IFCB\code_svn\feature_extraction\out\';
+outdir = 'C:\work\IFCB\ifcb_data_MVCO_jun06\train_04Nov2011_fromWebServices\';
 temp = dir([outdir '*.mat']);
 classes = {temp.name};
 for i = 1:length(classes),
@@ -10,7 +10,7 @@ end;
 %skip some classes that are empty or not properly annotated
 classes = setdiff(classes, {'config' 'Eucampia_groenlandica' 'Tropidoneis' 'dino10' 'roundCell' 'other' 'flagellate' 'crypto'});
 %classes = setdiff(classes, {'config' 'Eucampia_groenlandica' 'Tropidoneis' 'dino10' 'roundCell' 'other' 'flagellate' 'crypto' 'Lauderia' 'Odontella' 'Stephanopyxis'});
-maxn = 250;
+maxn = 350;
 class_vector = [];
 targets = [];
 for classcount = 1:length(classes),
@@ -28,8 +28,9 @@ for classcount = 1:length(classes),
     largest_ind = [1 cumsum(n(1:end-1))+1];
     
     fields = fieldnames(s_temp);
-    for i = 1:length(fields),
-        field = char(fields(i));
+    fieldstemp = setdiff(fields, {'RotatedArea' 'RotatedBoundingBox_xwidth' 'RotatedBoundingBox_ywidth'})';
+    for i = 1:length(fieldstemp),
+        field = char(fieldstemp(i));
         list = [s_temp.(field)];
         if length(list) > length(n),
             s_largest.(field) = list(largest_ind);
@@ -37,6 +38,23 @@ for classcount = 1:length(classes),
             s_largest.(field) = list;
         end;
     end;
+    %special case for Rotated features since sometimes fewer blobs
+    fieldstemp = {'RotatedArea' 'RotatedBoundingBox_xwidth' 'RotatedBoundingBox_ywidth'};
+    n_rot = zeros(1,length(s_temp));
+    for i = 1:length(s_temp),
+        n_rot(i) = size(s_temp(i).RotatedArea,2);
+    end;
+    largest_ind = [1 cumsum(n_rot(1:end-1))+1];
+    for i = 1:length(fieldstemp),
+        field = char(fieldstemp(i));
+        list = [s_temp.(field)];
+        if length(list) > length(n_rot),
+            s_largest.(field) = list(largest_ind);
+        else
+            s_largest.(field) = list;
+        end;
+    end;
+    
     output_largest.(class).features = s_largest;
     temp = struct2cell(s_largest);    
     feamat{classcount} = [cell2mat(temp); Wedges; Rings; HOG];
@@ -48,6 +66,7 @@ for classcount = 1:length(classes),
     end;
     class_vector = [class_vector repmat(classcount,1,min(maxn,n_class(classcount)))];
     targets = [targets; t_temp'];
+    clear s_largest
 end;
 
 train = cell2mat(feamat);
@@ -63,7 +82,7 @@ train(isnan(train)) = 0;
 
 clear temp s_largest classcount i largest_ind field s_temp n temp list fields class ind nhog nring nwedge 
 clear outdir ans HOG Rings Wedges maxn out n_class t_temp
-clear output output_largest 
+clear output output_largest n_rot fieldstemp
 
 return
 

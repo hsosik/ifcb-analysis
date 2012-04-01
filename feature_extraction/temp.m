@@ -1,4 +1,5 @@
-    %[coeff,score,latent] = princomp(feamat');
+%get output from compile_train_features2 first
+%[coeff,score,latent] = princomp(feamat');
 
 a = strmatch('Area', featitles, 'exact'); b = strmatch('Perimeter', featitles, 'exact'); 
 train = [train; train(a,:)./train(b,:).^2; train(a,:)./train(b,:)]; %A/P^2 compactness or circularity index; A/P roundness index

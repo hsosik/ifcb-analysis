@@ -1,6 +1,6 @@
 %basedir = '\\demi\ifcbold\G\IFCB\ifcb_data_MVCO_jun06\';  %%USER set, roi files, adc files
 basedir = '\\demi\ifcbnew\';  %%USER set, roi files, adc files
-daylist = dir([basedir 'IFCB5_2011_35*']); 
+daylist = dir([basedir 'IFCB5_2011_350*']); 
 %daylist = dir([basedir 'IFCB*']); 
 daylist = daylist([daylist.isdir]);
 t = char(daylist.name); ind = find(t(:,10) ~= '2'); %skip 2012
@@ -56,7 +56,7 @@ out_dir_all = {'\\Queenrose\ifcb12\ifcb_data_mvco_jun06\biovolume\biovolume2006\
     '\\Queenrose\ifcb12\ifcb_data_mvco_jun06\biovolume\biovolume2009\'...
     '\\Queenrose\ifcb12\ifcb_data_mvco_jun06\biovolume\biovolume2010\'...
     '\\Queenrose\ifcb12\ifcb_data_mvco_jun06\biovolume\biovolume2011\'};
-in_dir = 'http://ifcb-data.whoi.edu/test/';
+in_dir = 'http://ifcb-data.whoi.edu/';
 %files_done = dir([out_dir 'IFCB*.mat']);
 files_done = dir([out_dir 'IFCB*.mat']);
 for count = 1:length(out_dir_all),
