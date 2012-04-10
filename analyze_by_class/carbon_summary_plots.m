@@ -1,4 +1,5 @@
 load c:\work\mvco\carbon\IFCB_carbon_manual_March2012
+load c:\work\mvco\carbon\carbon_summary_fcb.mat
 
 %FIX later! Omit one really extreme value during Phaeocystis bloom in 2009 
 C20_infphyto_mat(C20_infphyto_mat(:) > 300) = NaN;
@@ -82,3 +83,27 @@ ylabel('\itSynechococcus\rm (\mugC mL^{-1})', 'fontsize', 14)
 set(get(ph(2), 'ylabel'), 'string',  '\itG. delicatula \rm ( \mugC mL^{-1})', 'fontsize', 14, 'color', 'r')
 set(ph(2), 'ycolor', 'r')
 set(gcf, 'position', [ 520   511   698   287])
+
+
+load C:\work\mvco\VGPM\carbon
+win = 20;
+iwin = win/2:win/2:366;
+mvco_carbon = squeeze(nanmean(carbon(5:6,6,:),1));
+shelf_carbon = squeeze(carbon(12,6,:));
+[ mdate_mat, Carbon_mat, yearlist, yd ] = timeseries2ydmat( startday',  mvco_carbon); 
+[ Cmn, Cstd ] = smoothed_climatology( Carbon_mat , win);
+[ mdate_mat, Carbon_shelf_mat, yearlist, yd ] = timeseries2ydmat( startday',  shelf_carbon); 
+[ C_shelf_mn, C_shelf_std ] = smoothed_climatology( Carbon_shelf_mat , win);
+
+figure, set(gcf, 'position', [   520   485   431   313])
+plot(yd(iwin), totalCmn(iwin), 'b', 'linewidth', 3), hold on
+%plot(yd(4:8:end), t(1:8:end), '-')
+plot(yd(iwin), Cmn(iwin), 'r', 'linewidth', 3)
+plot(yd(iwin), C_shelf_mn(iwin), 'g', 'linewidth', 3)
+lh = legend('MVCO in situ', 'MVCO MODIS', 'Mid-shelf MODIS', 'location','northwest');
+ylim([0 175])
+set(lh, 'fontsize', 12, 'box', 'off'), set(gca, 'fontsize', 14)
+ylabel('Phytoplankton carbon (mg m  ^{-3)}', 'fontsize', 14)
+datetick('x', 3)
+
+
