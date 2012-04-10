@@ -1,5 +1,5 @@
-%load '\\raspberry\d_work\ifcb1\ifcb_data_mvco_jun06\manual_fromClass\summary\count_biovol_size_manual_29Mar2012.mat'
-load 'C:\work\ifcb\ifcb_data_MVCO_jun06\manual_fromClass\summary\count_biovol_size_manual_29Mar2012.mat'
+load '\\raspberry\d_work\ifcb1\ifcb_data_mvco_jun06\manual_fromClass\summary\count_biovol_size_manual_10Apr2012.mat'
+%load 'C:\work\ifcb\ifcb_data_MVCO_jun06\manual_fromClass\summary\count_biovol_size_manual_29Mar2012.mat'
 ii = find(floor(matdate) == datenum('2-9-2010')); %skip this day with one partial sample
 matdate(ii) = []; filelist(ii) = [];
 fnames = fields(biovol);

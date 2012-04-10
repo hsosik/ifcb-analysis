@@ -80,9 +80,9 @@ for loopcount = 1:length(mode_list),
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)) & ~cell2mat(manual_list(2:end,strmatch('ciliates', mode_list)+1)));
         case 'special big only'
-            [~, class_cat] = intersect(class2use_here, {'Ceratium' 'Eucampia' 'Ephemera' 'bad' 'Dinophysis' 'Lauderia' 'Licmophora' 'Phaeocystis' 'Stephanopyxis' ...
-                'Coscinodiscus' 'Odontella' 'Guinardia_striata' 'tintinnid' 'Laboea' 'Hemiaulus' 'Paralia' 'Guinardia_flaccida' 'Corethron' 'Dactyliosolen' 'Dictyocha'...
-                'Dinobryon' 'Ditylum' 'Pleurosigma' 'Prorocentrum' 'Rhizosolenia' 'Thalassionema' 'clusterflagellate' 'kiteflagellates' 'Pyramimonas'});
+            [~, class_cat] = intersect(class2use_here, ['Ceratium' 'Eucampia' 'Ephemera' 'bad' 'Dinophysis' 'Lauderia' 'Licmophora' 'Phaeocystis' 'Stephanopyxis' ...
+                'Coscinodiscus' 'Odontella' 'Guinardia_striata' 'Hemiaulus' 'Paralia' 'Guinardia_flaccida' 'Corethron' 'Dactyliosolen' 'Dictyocha'...
+                'Dinobryon' 'Ditylum' 'Pleurosigma' 'Prorocentrum' 'Rhizosolenia' 'Thalassionema' 'clusterflagellate' 'kiteflagellates' 'Pyramimonas' 'ciliate' class2use_first_sub]);
             manual_only = 1;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
@@ -131,7 +131,6 @@ for loopcount = 1:length(mode_list),
                 eqdiam.(char(class2use_here(classnum)))(mode_ind(filecount)) = {targets.EquivDiameter(cind)*micron_factor};
             end;
         end;
-
         if exist('class2use_sub4', 'var'),
              if ~isequal(class2use_sub4, class2use_first_sub)
                 disp('class2use_sub4 does not match previous files!!!')
@@ -140,8 +139,8 @@ for loopcount = 1:length(mode_list),
             for classnum = 1:numclass2,
                 cind = find(classlist(:,4) == classnum);
                 if ~isempty(cind),
-                    biovol.(char(class2use_here(classnum)))(mode_ind(filecount)) = {targets.Biovolume(cind)*micron_factor.^3};
-                    eqdiam.(char(class2use_here(classnum)))(mode_ind(filecount)) = {targets.EquivDiameter(cind)*micron_factor};
+                    biovol.(char(class2use_here(classnum+numclass1)))(mode_ind(filecount)) = {targets.Biovolume(cind)*micron_factor.^3};
+                    eqdiam.(char(class2use_here(classnum+numclass1)))(mode_ind(filecount)) = {targets.EquivDiameter(cind)*micron_factor};
                 end;
             end;
         end;
