@@ -11,7 +11,7 @@ bin_lid = lid(bin_pid);
 
 archive = [out_dir filesep [bin_lid '_blobs_v2.zip']];
 if exist(archive,'file'),
-    log(['SKIPPING ' file]);
+    log(['SKIPPING ' bin_lid]);
     return
 end
 
