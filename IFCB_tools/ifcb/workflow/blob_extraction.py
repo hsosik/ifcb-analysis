@@ -1,33 +1,30 @@
 import sys
 import re
 import os
+from ifcb.io.pids import parse_id
 from oii.ifcb import client
 from oii.workflow.rabbit import Job, WIN, PASS, FAIL, SKIP
 from oii.matlab import Matlab
 import shutil
 
 MATLAB_PATH=[
-'/home/ifcb/trunk/feature_extraction',
-'/home/ifcb/trunk/feature_extraction/blob_extraction',
-'/home/ifcb/trunk/webservice_tools',
-'/home/ifcb/trunk/dipum_toolbox_2.0.1'
+'/home/ifcb/test/trunk/feature_extraction',
+'/home/ifcb/test/trunk/feature_extraction/blob_extraction',
+'/home/ifcb/test/trunk/webservice_tools',
+'/home/ifcb/test/trunk/dipum_toolbox_2.0.1'
 ]
 
 tmp_dir='/home/ifcb/test_out'
 blob_years='/data/vol4/blobs'
 
-# FIXME use ifcb.io.pids
-# FIXME only supports <=MVCO id format
 def lid(pid):
-    return re.sub(r'.*/','',pid)
+    return parse_id(pid).as_lid
 
 def year(pid):
-    (t,i,y,j) = re.split(r'[:/_]+',pid)[2:6]
-    return y
+    return parse_id(pid).year
 
 def year_day(pid):
-    (t,i,y,j) = re.split(r'[:/_]+',pid)[2:6]
-    return '%s_%s' % (y,j)
+    return parse_id(pid).yearday
 
 def zipname(pid):
     return lid(pid)+'_blobs_v2.zip'

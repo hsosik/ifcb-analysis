@@ -1,12 +1,14 @@
-from flask import Flask, url_for
+from flask import Flask, url_for, Response, request
 from blob_extraction import dest 
 import shutil
 from StringIO import StringIO
 from ifcb.util import iso8601utcnow
 import sys
 import os
+import json
 
 app = Flask(__name__)
+app.debug = True
 
 @app.route('/deposit/<path:pid>',methods=['POST'])
 def deposit(pid):
@@ -27,6 +29,7 @@ def deposit(pid):
         pid=pid,
         path=destpath
     )
+    return Response(json.dumps(receipt), mimetype='application/json')
 
 if __name__=='__main__':
     try:
