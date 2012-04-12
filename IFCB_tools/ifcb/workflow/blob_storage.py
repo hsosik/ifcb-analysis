@@ -2,6 +2,7 @@ import re
 import os
 from ifcb.io.pids import parse_id
 
+# FIXME hardcoded path
 blob_years='/data/vol4/blobs'
 
 def lid(pid):

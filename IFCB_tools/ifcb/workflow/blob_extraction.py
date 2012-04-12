@@ -8,14 +8,21 @@ from ifcb.workflow.blob_deposit import BlobDeposit
 from oii.matlab import Matlab
 import shutil
 
-MATLAB_PATH=[
-'/home/ifcb/test/trunk/feature_extraction',
-'/home/ifcb/test/trunk/feature_extraction/blob_extraction',
-'/home/ifcb/test/trunk/webservice_tools',
-'/home/ifcb/test/trunk/dipum_toolbox_2.0.1'
+# FIXME hardcoded paths
+MATLAB_BASE='/home/jfutrelle/ifcb/trunk'
+MATLAB_DIRS=[
+'feature_extraction',
+'feature_extraction/blob_extraction',
+'webservice_tools',
+'dipum_toolbox_2.0.1'
 ]
 
-tmp_dir='/home/ifcb/test_out'
+MATLAB_PATH=[os.path.join(MATLAB_BASE,pc) for pc in MATLAB_DIRS]
+
+# FIXME hardcoded
+MATLAB_EXEC_PATH='/usr/local/MATLAB/R2011b/bin/matlab'
+
+tmp_dir='/home/jfutrelle/ifcb/test_out'
 
 class BlobExtraction(Job):
     def run_callback(self,message):
@@ -27,7 +34,7 @@ class BlobExtraction(Job):
             self.log('SKIPPING %s - already present in destination directory' % bin_pid)
             return SKIP
         tmp_file = os.path.join(tmp_dir, zipname(bin_pid))
-        matlab = Matlab('/usr/bin/matlab',MATLAB_PATH,output_callback=selflog)
+        matlab = Matlab(MATLAB_EXEC_PATH,MATLAB_PATH,output_callback=selflog)
         cmd = 'bin_blobs(\'%s\',\'%s\')' % (bin_pid, tmp_dir)
         matlab.run(cmd)
         selflog('staging completed blob zip to %s' % dest_file)
