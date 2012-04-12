@@ -1,9 +1,10 @@
 import sys
 import re
 import os
-from ifcb.io.pids import parse_id
+from blob_storage import lid, dest, zipname
 from oii.ifcb import client
 from oii.workflow.rabbit import Job, WIN, PASS, FAIL, SKIP
+from ifcb.workflow.blob_deposit import BlobDeposit
 from oii.matlab import Matlab
 import shutil
 
@@ -15,22 +16,6 @@ MATLAB_PATH=[
 ]
 
 tmp_dir='/home/ifcb/test_out'
-blob_years='/data/vol4/blobs'
-
-def lid(pid):
-    return parse_id(pid).as_lid
-
-def year(pid):
-    return parse_id(pid).year
-
-def year_day(pid):
-    return parse_id(pid).yearday
-
-def zipname(pid):
-    return lid(pid)+'_blobs_v2.zip'
-
-def dest(pid):
-    return os.path.join(blob_years,year(pid),year_day(pid),zipname(pid))
 
 class BlobExtraction(Job):
     def run_callback(self,message):
@@ -38,7 +23,7 @@ class BlobExtraction(Job):
             self.log(line)
         bin_pid = message
         dest_file = dest(bin_pid)
-        if os.path.exists(dest_file):
+        if (self.deposit is not None and self.deposit.exists(bin_pid)) or os.path.exists(dest_file):
             self.log('SKIPPING %s - already present in destination directory' % bin_pid)
             return SKIP
         tmp_file = os.path.join(tmp_dir, zipname(bin_pid))
@@ -46,11 +31,11 @@ class BlobExtraction(Job):
         cmd = 'bin_blobs(\'%s\',\'%s\')' % (bin_pid, tmp_dir)
         matlab.run(cmd)
         selflog('staging completed blob zip to %s' % dest_file)
-        try:
-            os.makedirs(os.path.dirname(dest_file))
-        except:
-            pass
-        shutil.move(tmp_file,dest_file)
+        if self.deposit is not None:
+            self.deposit.deposit(bin_pid,tmp_file)
+            os.remove(tmp_file)
+        else:
+            local_deposit(bin_pid,tmp_file)
     def enqueue_feed(self,namespace,n=4):
         feed = client.list_bins(namespace=namespace,n=n)
         for bin in feed:
@@ -67,6 +52,7 @@ class BlobExtraction(Job):
 
 if __name__=='__main__':
     job = BlobExtraction('blob_extraction',host='demi.whoi.edu')
+    job.deposit = BlobDeposit('http://demi.whoi.edu:5000')
     command = sys.argv[1]
     if command == 'q':
         for pid in sys.argv[2:]:

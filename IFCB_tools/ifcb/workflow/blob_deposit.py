@@ -1,5 +1,5 @@
 from flask import Flask, url_for, Response, request
-from blob_extraction import dest 
+from blob_storage import dest 
 import shutil
 from StringIO import StringIO
 from ifcb.util import iso8601utcnow
