@@ -1,5 +1,5 @@
 resultpath = '\\floatcoat\laneylab\projects\HLY1001\work\manual_fromClass\underway\summary\';
-load([resultpath 'count_manual_12Apr2012'])
+load([resultpath 'count_manual_16Apr2012'])
 [ lat, lon ] = get_healy2010_latlon( matdate );
 
 ii = 7; %pick a number from class2use
