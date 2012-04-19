@@ -10,7 +10,7 @@ end;
 %skip some classes that are empty or not properly annotated
 classes = setdiff(classes, {'config' 'Eucampia_groenlandica' 'Tropidoneis' 'dino10' 'roundCell' 'other' 'flagellate' 'crypto'});
 %classes = setdiff(classes, {'config' 'Eucampia_groenlandica' 'Tropidoneis' 'dino10' 'roundCell' 'other' 'flagellate' 'crypto' 'Lauderia' 'Odontella' 'Stephanopyxis'});
-maxn = 350;
+maxn = 350000;
 class_vector = [];
 targets = [];
 for classcount = 1:length(classes),
@@ -18,9 +18,8 @@ for classcount = 1:length(classes),
     load([outdir char(classes(classcount))])
     
     [ feature_mat, featitles ] = format_features( out );
-    keyboard
     [ feature_mat, featitles ] = add_derived_features( feature_mat, featitles);
-    if classcount == 1,
+    if classcount == length(classes) | classcount == 1 ,
         [~,i] = setdiff(featitles, {'FilledArea' 'summedFilledArea' 'Area' 'ConvexArea' 'MajorAxisLength' 'MinorAxisLength' 'Perimeter'}');
        % i = sort(i);
         featitles = featitles(i);
@@ -39,7 +38,7 @@ for classcount = 1:length(classes),
     targets = [targets; t_temp'];
 end;
 
-train = cell2mat(feamat)';
+train = cell2mat(feamat);
 
 %featitles = fieldnames(output_largest.(class).features);
 %nring = size(Rings,1); nwedge = size(Wedges,1); nhog = size(HOG,1);
