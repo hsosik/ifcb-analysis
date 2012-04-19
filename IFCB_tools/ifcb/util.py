@@ -77,3 +77,26 @@ def sha1_filelike(filelike):
 def sha1_file(pathname):
     with open(pathname,'rb') as fl:
         return sha1_filelike(fl)
+
+def get_config(pathname,subconf_name):
+    config = {}
+    current_subconf = None
+    with open(pathname,'r') as configfile:
+        for line in configfile:
+            line = line.rstrip().lstrip()
+            if re.match('^#',line): # comment
+                continue
+            try:
+                current_subconf = re.match(r'^\[(.*)\]',line).groups(0)[0].lstrip().rstrip()
+            except:
+                pass
+            try:
+                (key, value) = re.match(r'^([^=]+)=(.*)',line).groups()
+                key = key.rstrip().lstrip()
+                value = value.rstrip().lstrip()
+                if current_subconf is None or current_subconf == subconf_name:
+                    config[key] = value
+            except:
+                pass
+        return config
+        
