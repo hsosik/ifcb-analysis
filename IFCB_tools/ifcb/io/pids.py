@@ -2,6 +2,12 @@ import re
 import ifcb
 import os
 
+# FIXME #1202
+import config
+
+def no_day_dirs():
+    return 'NO_DAY_DIRS' in dir(config) and config.NO_DAY_DIRS
+
 class OldPid(object):
     def __init__(self,pid):
         self.lid = ifcb.lid(pid)
@@ -63,9 +69,15 @@ class OldPid(object):
         return ifcb.pid(self.lid)
     def paths(self,basedirs=['.']):
         """Given a bin ID, generate candidate paths, in order of likelihood"""
-        (bin, day) = re.match(r'.*((IFCB\d+_\d{4}_\d{3})_\d{6})',self.lid).groups() 
-        for basedir in basedirs:
-            yield os.path.join(basedir, day, bin)
+        if no_day_dirs:
+            bin = re.match(r'.*(IFCB\d+_\d{4}_\d{3}_\d{6})',self.lid).groups()[0]
+            for basedir in basedirs:
+                yield os.path.join(basedir, bin)
+            return
+        else:
+            (bin, day) = re.match(r'.*((IFCB\d+_\d{4}_\d{3})_\d{6})',self.lid).groups() 
+            for basedir in basedirs:
+                yield os.path.join(basedir, day, bin)
         # OK, that failed. maybe it's in a previous day
         (instrument, year, doy) = (self.instrument_name, int(self.year), int(self.day))
         if doy < 2 or doy > 364:

@@ -7,6 +7,12 @@ from ifcb.util import gen2list
 from ifcb.io.pids import parse_id
 import os.path
 
+# FIX q&d fix for #1202
+import config
+
+def no_day_dirs():
+	return 'NO_DAY_DIRS' in dir(config) and config.NO_DAY_DIRS
+
 """Interpretation and traversal of IFCB directory structure"""
 
 # represents a directory containing a single day's worth of data for a single instrument
@@ -19,15 +25,20 @@ class DayDir(Timestamped):
 	
 	def __init__(self, dir='.'):
 		self.dir = dir
-		oid = parse_id(self.pid)
-		self.time_format = oid.date_format
-		self.time_string = oid.yearday
+		if not no_day_dirs():
+			oid = parse_id(self.pid)
+			self.time_format = oid.date_format
+			self.time_string = oid.yearday
+		else:
+			self.time_string = '2000_001'
 				
 	def __repr__(self):
 		return '{DayDir ' + self.pid +' @ '+str(self.dir)+'}'
 	
 	@property
 	def pid(self):
+		if no_day_dirs():
+			return self.dir
 		return ifcb.pid(os.path.basename(self.dir))
 	
 	def __all_exist(self,path):
@@ -69,6 +80,9 @@ class YearsDir:
 		self.instrument = instrument
 
 	def __iter__(self):
+		if 'NO_DAY_DIRS' in dir(config) and config.NO_DAY_DIRS:
+			yield DayDir(os.path.abspath(self.dir))
+			return
 		try:
 			for item in sorted(os.listdir(self.dir)):
 				f = os.path.join(self.dir, item)
