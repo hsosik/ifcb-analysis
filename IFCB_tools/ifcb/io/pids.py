@@ -69,7 +69,7 @@ class OldPid(object):
         return ifcb.pid(self.lid)
     def paths(self,basedirs=['.']):
         """Given a bin ID, generate candidate paths, in order of likelihood"""
-        if no_day_dirs:
+        if no_day_dirs():
             bin = re.match(r'.*(IFCB\d+_\d{4}_\d{3}_\d{6})',self.lid).groups()[0]
             for basedir in basedirs:
                 yield os.path.join(basedir, bin)
