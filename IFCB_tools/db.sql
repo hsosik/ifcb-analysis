@@ -30,3 +30,49 @@ CREATE INDEX ix_bins_sample_time
   ON bins
   USING btree
   (sample_time );
+
+-- Table: fixity
+
+-- DROP TABLE fixity;
+
+CREATE TABLE fixity
+(
+  lid text,
+  length integer,
+  filename text,
+  filetype text,
+  sha1 text,
+  fix_time timestamp with time zone,
+  local_path text
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE fixity OWNER TO jfutrelle;
+
+-- Index: ix_fixity_length
+
+-- DROP INDEX ix_fixity_length;
+
+CREATE INDEX ix_fixity_length
+  ON fixity
+  USING btree
+  (length);
+
+-- Index: ix_fixity_lid
+
+-- DROP INDEX ix_fixity_lid;
+
+CREATE INDEX ix_fixity_lid
+  ON fixity
+  USING hash
+  (lid);
+
+-- Index: ix_fixity_sha1
+
+-- DROP INDEX ix_fixity_sha1;
+
+CREATE INDEX ix_fixity_sha1
+  ON fixity
+  USING hash
+  (sha1);
