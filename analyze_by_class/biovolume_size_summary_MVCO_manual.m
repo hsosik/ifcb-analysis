@@ -129,6 +129,7 @@ for loopcount = 1:length(mode_list),
             if ~isempty(cind),
                 biovol.(char(class2use_here(classnum)))(mode_ind(filecount)) = {targets.Biovolume(cind)*micron_factor.^3};
                 eqdiam.(char(class2use_here(classnum)))(mode_ind(filecount)) = {targets.EquivDiameter(cind)*micron_factor};
+                roiID.(char(class2use_here(classnum)))(mode_ind(filecount)) = {targets.pid(cind)};
             end;
         end;
         if exist('class2use_sub4', 'var'),
@@ -141,6 +142,7 @@ for loopcount = 1:length(mode_list),
                 if ~isempty(cind),
                     biovol.(char(class2use_here(classnum+numclass1)))(mode_ind(filecount)) = {targets.Biovolume(cind)*micron_factor.^3};
                     eqdiam.(char(class2use_here(classnum+numclass1)))(mode_ind(filecount)) = {targets.EquivDiameter(cind)*micron_factor};
+                    roiID.(char(class2use_here(classnum+numclass1)))(mode_ind(filecount)) = {targets.pid(cind)};
                 end;
             end;
         end;
@@ -155,7 +157,7 @@ if ~exist([resultpath 'summary\'], 'dir')
     mkdir([resultpath 'summary\'])
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
-save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed_struct', 'biovol', 'filelist', 'eqdiam')
+save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed_struct', 'biovol', 'filelist', 'eqdiam', 'roiID')
 
 return
 
