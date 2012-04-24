@@ -5,9 +5,13 @@ function [ targets ] = get_bin( pid )
 
 [targets, tmp_dir] = open_bin(pid);
 
-targets = read_unzipped_bin(targets, tmp_dir);
-
-close_bin(tmp_dir);
+try
+  targets = read_unzipped_bin(targets, tmp_dir);
+  close_bin(tmp_dir);
+catch ME
+  close_bin(tmp_dir);
+  rethrow(ME)
+end
 
 end
 

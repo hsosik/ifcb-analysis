@@ -3,13 +3,16 @@ import re
 import os
 from blob_storage import lid, dest, zipname
 from oii.ifcb import client
+from oii.utils import gen_id
+from oii.times import iso8601
 from oii.workflow.rabbit import Job, WIN, PASS, FAIL, SKIP
 from ifcb.workflow.blob_deposit import BlobDeposit
 from oii.matlab import Matlab
 import shutil
+import platform
 
 # FIXME hardcoded paths
-MATLAB_BASE='/home/jfutrelle/ifcb/trunk'
+MATLAB_BASE='/home/ifcb/trunk'
 MATLAB_DIRS=[
 'feature_extraction',
 'feature_extraction/blob_extraction',
@@ -22,38 +25,69 @@ MATLAB_PATH=[os.path.join(MATLAB_BASE,pc) for pc in MATLAB_DIRS]
 # FIXME hardcoded
 MATLAB_EXEC_PATH='/usr/local/MATLAB/R2011b/bin/matlab'
 
-tmp_dir='/home/jfutrelle/ifcb/test_out'
+tmp_dir='/home/ifcb/test_out'
+
+def is_done(bin_pid):
+    dest_file = dest(bin_pid)
+    return os.path.exists(dest_file)
+
+def was_attempted(bin_pid):
+    work_dir = os.path.join(tmp_dir, lid(bin_pid))
+    return os.path.exists(work_dir)
+
+def should_skip(bin_pid):
+    if was_attempted(bin_pid):
+        print 'SKIPPING %s - found temporary files' % bin_pid
+        return True
+    elif is_done(bin_pid):
+        print 'SKIPPING %s - found completed blob zip' % bin_pid
+        return True
+    else:
+        return False
 
 class BlobExtraction(Job):
+    def exists(self,bin_pid):
+        return (self.deposit is not None and self.deposit.exists(bin_pid)) or os.path.exists(dest(bin_pid))
     def run_callback(self,message):
+        jobid = '%s_%s' % (platform.node(), gen_id()[:5])
         def selflog(line):
-            self.log(line)
+            self.log('%s %s %s' % (iso8601(), jobid, line))
         bin_pid = message
         dest_file = dest(bin_pid)
-        if (self.deposit is not None and self.deposit.exists(bin_pid)) or os.path.exists(dest_file):
-            self.log('SKIPPING %s - already present in destination directory' % bin_pid)
+        if self.exists(bin_pid):
+            selflog('SKIPPING %s - already completed' % bin_pid)
             return SKIP
-        tmp_file = os.path.join(tmp_dir, zipname(bin_pid))
+        job_dir = os.path.join(tmp_dir, gen_id())
+        try:
+            os.makedirs(job_dir)
+        except:
+            selflog('WARNING cannot create temporary directory %s' % job_dir)
+        tmp_file = os.path.join(job_dir, zipname(bin_pid))
         matlab = Matlab(MATLAB_EXEC_PATH,MATLAB_PATH,output_callback=selflog)
-        cmd = 'bin_blobs(\'%s\',\'%s\')' % (bin_pid, tmp_dir)
-        matlab.run(cmd)
-        selflog('staging completed blob zip to %s' % dest_file)
-        if self.deposit is not None:
-            self.deposit.deposit(bin_pid,tmp_file)
-            os.remove(tmp_file)
-        else:
-            local_deposit(bin_pid,tmp_file)
+        cmd = 'bin_blobs(\'%s\',\'%s\')' % (bin_pid, job_dir)
+        try:
+            matlab.run(cmd)
+            if not os.path.exists(tmp_file):
+                selflog('WARNING bin_blobs succeeded but produced no output for %s' % bin_pid)
+            elif not self.exists(bin_pid): # check to make sure another worker hasn't finished it in the meantime
+                if self.deposit is not None:
+                    selflog('DEPOSITING blob zip for %s to deposit service' % bin_pid)
+                    self.deposit.deposit(bin_pid,tmp_file)
+                else:
+                    selflog('SAVING completed blob zip for %s to %s' % (bin_pid, dest_file))
+                    local_deposit(bin_pid,tmp_file)
+            else:
+                selflog('NOT SAVING - blobs already present at output destination')
+        finally:
+            try:
+                shutil.rmtree(job_dir)
+            except:
+                selflog('WARNING cannot remove temporary directory %s' % job_dir)
     def enqueue_feed(self,namespace,n=4):
         feed = client.list_bins(namespace=namespace,n=n)
         for bin in feed:
             bin_pid = bin['pid']
-            dest_file = dest(bin_pid)
-            work_dir = os.path.join(tmp_dir, lid(bin_pid))
-            if os.path.exists(work_dir):
-                print 'SKIPPING %s - found temporary files at %s' % (bin_pid, work_dir)
-            elif os.path.exists(dest_file):
-                print 'SKIPPING %s - found completed blob zip at %s' % (bin_pid, dest_file)
-            else:
+            if not should_skip(bin_pid):
                 print 'queueing %s' % bin_pid
                 self.enqueue(bin_pid)
 
@@ -64,6 +98,14 @@ if __name__=='__main__':
     if command == 'q':
         for pid in sys.argv[2:]:
             job.enqueue(pid)
+    elif command == 'rq':
+        for pid in sys.argv[2:]:
+            if not should_skip(pid):
+                job.enqueue(pid)
+    elif command == 'check':
+        for pid in sys.argv[2:]:
+            if not should_skip(pid):
+                print 'TODO %s' % pid
     elif command == 'log':
         job.consume_log()
     elif command == 'w':

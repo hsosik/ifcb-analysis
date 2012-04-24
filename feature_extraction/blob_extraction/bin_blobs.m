@@ -17,8 +17,17 @@ end
 
 % load the zip file
 log(['LOAD ' bin_pid]);
-targets = get_bin(bin_pid);
-nt = length(targets.targetNumber);
+try
+    targets = get_bin(bin_pid);
+    nt = length(targets.targetNumber);
+catch ME
+    idSegLast = regexp(ME.identifier, '(?<=:)\w+$', 'match');
+    if strcmp(idSegLast, 'NoInput')
+        log(['WARNING missing data in ' bin_pid]);
+        nt = 0;
+    end
+end
+
 log(['PROCESSING ' num2str(nt) ' target(s) from ' bin_pid]);
 
 png_dir = [out_dir filesep bin_lid];
@@ -41,9 +50,13 @@ for i = 1:nt,
     png_paths = [png_paths; {png_path}];
 end
 
-log(['SAVING ' archive]);
+if nt > 0
+    log(['SAVING ' archive]);
 
-zip(archive, png_paths, png_dir);
+    zip(archive, png_paths, png_dir);
+else
+    log(['NOT SAVING zip file: missing data in ' bin_pid])
+end
 
 log('DELETING temporary files...')
 
