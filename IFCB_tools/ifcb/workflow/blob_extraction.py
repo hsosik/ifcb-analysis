@@ -45,6 +45,21 @@ def should_skip(bin_pid):
     else:
         return False
 
+def preflight():
+    for p in MATLAB_PATH:
+        assert os.path.exists(p)
+    assert os.path.exists(tmp_dir)
+    try:
+        tempfile = os.path.join(tmp_dir,gen_id()+'.txt')
+        with open(tempfile,'w') as tf:
+            tf.write('test')
+            tf.flush()
+        assert os.path.exists(tempfile)
+        os.remove(tempfile)
+        assert not os.path.exists(tempfile)
+    except:
+        raise
+
 class BlobExtraction(Job):
     def exists(self,bin_pid):
         return (self.deposit is not None and self.deposit.exists(bin_pid)) or os.path.exists(dest(bin_pid))
@@ -92,6 +107,7 @@ class BlobExtraction(Job):
                 self.enqueue(bin_pid)
 
 if __name__=='__main__':
+    preflight()
     job = BlobExtraction('blob_extraction',host='demi.whoi.edu')
     job.deposit = BlobDeposit('http://demi.whoi.edu:5000')
     command = sys.argv[1]
