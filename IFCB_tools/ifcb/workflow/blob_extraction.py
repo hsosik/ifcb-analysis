@@ -64,7 +64,7 @@ class BlobExtraction(Job):
     def exists(self,bin_pid):
         return (self.deposit is not None and self.deposit.exists(bin_pid)) or os.path.exists(dest(bin_pid))
     def run_callback(self,message):
-        jobid = '%s_%s' % (platform.node(), gen_id()[:5])
+        jobid = ('%s_%s' % (platform.node(), gen_id()))[:16]
         def selflog(line):
             self.log('%s %s %s' % (iso8601(), jobid, line))
         bin_pid = message
