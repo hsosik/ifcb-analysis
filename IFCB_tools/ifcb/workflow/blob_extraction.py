@@ -60,6 +60,8 @@ def preflight():
     except:
         raise
 
+CHECK_EVERY = 200
+
 class BlobExtraction(Job):
     def exists(self,bin_pid):
         return (self.deposit is not None and self.deposit.exists(bin_pid)) or os.path.exists(dest(bin_pid))
@@ -67,6 +69,14 @@ class BlobExtraction(Job):
         jobid = ('%s_%s' % (platform.node(), gen_id()))[:16]
         def selflog(line):
             self.log('%s %s %s' % (iso8601(), jobid, line))
+        def self_check_log(line,bin_pid):
+            selflog(line)
+            self.output_check -= 1
+            if self.output_check <= 0:
+                if self.exists(bin_pid):
+                    selflog('STOPPING JOB - completed by another worker')
+                    raise
+                self.output_check = CHECK_EVERY
         bin_pid = message
         dest_file = dest(bin_pid)
         if self.exists(bin_pid):
@@ -78,9 +88,10 @@ class BlobExtraction(Job):
         except:
             selflog('WARNING cannot create temporary directory %s' % job_dir)
         tmp_file = os.path.join(job_dir, zipname(bin_pid))
-        matlab = Matlab(MATLAB_EXEC_PATH,MATLAB_PATH,output_callback=selflog)
+        matlab = Matlab(MATLAB_EXEC_PATH,MATLAB_PATH,output_callback=lambda l: self_check_log(l, bin_pid))
         cmd = 'bin_blobs(\'%s\',\'%s\')' % (bin_pid, job_dir)
         try:
+            self.output_check = CHECK_EVERY
             matlab.run(cmd)
             if not os.path.exists(tmp_file):
                 selflog('WARNING bin_blobs succeeded but produced no output for %s' % bin_pid)
@@ -102,9 +113,9 @@ class BlobExtraction(Job):
         feed = client.list_bins(namespace=namespace,n=n)
         for bin in feed:
             bin_pid = bin['pid']
-            if not should_skip(bin_pid):
-                print 'queueing %s' % bin_pid
-                self.enqueue(bin_pid)
+            #if not should_skip(bin_pid):
+            print 'queueing %s' % bin_pid
+            self.enqueue(bin_pid)
 
 if __name__=='__main__':
     preflight()
