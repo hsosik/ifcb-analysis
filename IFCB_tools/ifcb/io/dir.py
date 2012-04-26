@@ -86,11 +86,10 @@ class YearsDir:
 		try:
 			for item in sorted(os.listdir(self.dir)):
 				f = os.path.join(self.dir, item)
-				try:
-					if parse_id(item).isday:
-						yield DayDir(os.path.abspath(f))
-				except:
-					pass
+				if parse_id(item).isday:
+					yield DayDir(os.path.abspath(f))
+				else:
+					print '%s is not a day' % item # FIXME debug
 		except OSError:
 			noop = None # FIXME log
 				

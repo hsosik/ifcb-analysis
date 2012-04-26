@@ -88,6 +88,8 @@ class OldPid(object):
                                               (year-1, ((doy - 2) % 366) + 1)):
                     day = '%s_%d_%03d' % (instrument, yesteryear, yesterday)
                     yield os.path.join(basedir, day, bin)
+    def __repr__(self):
+        return ifcb.pid(self.lid)
 
 class NewPid(OldPid):
     def __init__(self,pid):
@@ -108,16 +110,16 @@ class NewPid(OldPid):
         return self.mod(r'^D(\d{8}T\d{6})','datetime')
     @property
     def target(self):
-        return self.mod(r'^D\d{8}T\d{6}_(\d+)','target')
+        return self.mod(r'^D\d{8}T\d{6}_IFCB\d+_(\d+)$','target')
     @property
     def isday(self):
-        return re.match(r'^D(\d{8})','year/day')
+        return re.match(r'^D\d{8}$',self.lid)
     @property
     def isbin(self):
         return re.match(r'D\d{8}T\d{6}_IFCB\d+$',self.lid)
     @property
     def istarget(self):
-        return re.match(r'^D\d{8}T\d{6}_\d+_IFCB\d+$',self.lid)
+        return re.match(r'^D\d{8}T\d{6}_IFCB\d+_\d+$',self.lid)
     @property
     def day_lid(self):
         if self.isday:
@@ -128,6 +130,8 @@ class NewPid(OldPid):
     def bin_lid(self):
         if self.isbin:
             return self.lid
+        elif self.istarget:
+            return re.sub(r'_\d+$','',self.lid)
         else:
             return re.sub(r'(^D\d{8}T\d{6}).*',r'\1',self.lid)
     @property
@@ -146,16 +150,19 @@ class NewPid(OldPid):
 def parse_id(pid):
     lid = ifcb.lid(pid)
     # attempt to guess format
-    if re.match('^IFCB',lid):
+    if re.match(r'^IFCB',lid):
         return OldPid(lid)
-    elif re.match('.*IFCB\d+$',lid):
+    elif re.match(r'D.*IFCB\d+_?\d*$',lid):
+        return NewPid(lid)
+    elif re.match(r'^D\d+$',lid): # day dir in new format
         return NewPid(lid)
     else:
         raise KeyError('unrecognized ID format %s' % lid)
 
 if __name__=='__main__':
     #pid = parse_id('IFCB4_1973_004_231422')
-    pid = parse_id('D21120403T121314_IFCB010')
+    #pid = parse_id('D21120403T121314_IFCB010')
+    pid = parse_id('D20120325')
     print pid
     if pid.isday:
         print 'is day'

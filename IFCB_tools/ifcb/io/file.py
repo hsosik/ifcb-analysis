@@ -116,17 +116,23 @@ class BinFile(Timestamped):
     def headers(self):
         with open(self.hdr_path,'r') as hdr:
             lines = [line.rstrip() for line in hdr]
-        # "context" is what the text on lines 2-4 is called in the header file
-        props = { CONTEXT: [lines[n].strip('"') for n in range(3)] }
+        props = {}
         # add an "instrument" property
         props['instrument'] = self.instrument # FIXME move to properties
-        # now handle format variants
-        if len(lines) >= 6: # don't fail on original header format
-            columns = re.split(' +',re.sub('"','',lines[4])) # columns of metadata in CSV format
-            values = re.split(' +',re.sub(r'[",]',' ',lines[5]).strip()) # values of those columns in CSV format
-            # for each column take the string and cast it to the schema's column type
-            for (column, (name, cast), value) in zip(HDR_COLUMNS, HDR_SCHEMA, values):
-                props[name] = cast(value)
+        if lines[0] == 'Imaging FlowCytobot Acquisition Software version 2.0; May 2010':
+            props = { CONTEXT: [lines[0]] } # FIXME parse
+        elif re.match(r'^softwareVersion:',lines[0]):
+            props = { CONTEXT: [lines[0]] } # FIXME parse
+        else:
+            # "context" is what the text on lines 2-4 is called in the header file
+            props = { CONTEXT: [lines[n].strip('"') for n in range(3)] }
+            # now handle format variants
+            if len(lines) >= 6: # don't fail on original header format
+                columns = re.split(' +',re.sub('"','',lines[4])) # columns of metadata in CSV format
+                values = re.split(' +',re.sub(r'[",]',' ',lines[5]).strip()) # values of those columns in CSV format
+                # for each column take the string and cast it to the schema's column type
+                for (column, (name, cast), value) in zip(HDR_COLUMNS, HDR_SCHEMA, values):
+                    props[name] = cast(value)
         return props
     
     def __parse_row(self,row,target_number):
