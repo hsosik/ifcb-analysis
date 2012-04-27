@@ -13,7 +13,5 @@ for ii = 1:length(filelist),
     if exist('class2use_sub4', 'var'),
         class2use_sub4 = class2use_sub4new;
         save([resultpath filelist{ii}], 'class2use_sub4', '-append');
-    else
-        keyboard
     end;
 end;
