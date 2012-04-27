@@ -103,7 +103,23 @@ plot(yd(iwin), C_shelf_mn(iwin), 'g', 'linewidth', 3)
 lh = legend('MVCO in situ', 'MVCO MODIS', 'Mid-shelf MODIS', 'location','northwest');
 ylim([0 175])
 set(lh, 'fontsize', 12, 'box', 'off'), set(gca, 'fontsize', 14)
-ylabel('Phytoplankton carbon (mg m  ^{-3)}', 'fontsize', 14)
+ylabel('Phytoplankton carbon (mg m  ^{-3})', 'fontsize', 14)
 datetick('x', 3)
 
+figure, set(gcf, 'position', [   520   485   431   313])
+plot(yd(iwin), totalCmn(iwin), 'b', 'linewidth', 3), hold on
+%plot(yd(4:8:end), t(1:8:end), '-')
+plot(yd(iwin), Cmn(iwin), 'r', 'linewidth', 3)
+lh = legend('MVCO in situ', 'MVCO MODIS', 'location','northwest');
+ylim([0 175])
+set(lh, 'fontsize', 12, 'box', 'off'), set(gca, 'fontsize', 14)
+ylabel('Phytoplankton carbon (mg m  ^{-3})', 'fontsize', 14)
+datetick('x', 3)
 
+figure
+[ Cdiatom_mdate_mat, Cdiatom_mat, yearlist, yd ] = timeseries2ydmat( Cmdate_day, C_diatom );
+[ xmean, xstd ] = smoothed_climatology_median( Cdiatom_mat , 30);
+plot(1:366, smooth(xmean,10), 'r-', 'linewidth', 3)
+datetick('x', 3)
+ylabel('Diatoms (mgC m  ^{-3})', 'fontsize', 14)
+set(gca, 'fontsize', 14)
