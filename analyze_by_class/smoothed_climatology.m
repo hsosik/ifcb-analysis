@@ -1,4 +1,5 @@
 function [ xmean, xstd ] = smoothed_climatology( x , win)
+%function [ xmean, xstd ] = smoothed_climatology( x , win)
 %assume input vector or matrix with dimensions yearday x number of years
 %outputs running mean and std with span +/- value specified in win, pooling observations from all years
  
