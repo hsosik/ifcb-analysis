@@ -1,4 +1,5 @@
 function [ carbon ] = vol2C_lgdiatom( volume )
+%function [ carbon ] = vol2C_lgdiatom( volume )
 %conversion from biovolume in microns^3 to carbon in picograms
 %for large diatoms (> 2000 micron^3) 
 %according to Menden-Deuer and Lessard 2000
