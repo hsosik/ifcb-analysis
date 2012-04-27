@@ -24,8 +24,8 @@ catch ME
     idSegLast = regexp(ME.identifier, '(?<=:)\w+$', 'match');
     if strcmp(idSegLast, 'NoInput')
         log(['WARNING missing data in ' bin_pid]);
-        nt = 0;
     end
+    nt = 0;
 end
 
 log(['PROCESSING ' num2str(nt) ' target(s) from ' bin_pid]);
