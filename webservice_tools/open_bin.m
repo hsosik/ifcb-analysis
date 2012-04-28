@@ -1,4 +1,4 @@
-function [ targets, image_dir ] = open_bin ( pid, dir )
+function [ targets, image_dir, zip_path ] = open_bin ( pid, dir )
 % download all data from a bin and stage it to a temporary directory.
 % returns a structure with target metadata and images, and the directory
 % containing the images.
@@ -27,7 +27,7 @@ zip_path = [dir filesep lid(pid) '.zip'];
 % fetch the zipfile. this can take a long time.
 urlwrite(zip_url, zip_path);
 
-targets = open_bin_file(zip_path, dir);
+targets= open_bin_file(zip_path, dir);
 
 end
 

@@ -3,13 +3,13 @@ function [ targets ] = get_bin( pid )
 % can take a long time, but afterwards all image data and metadata
 % is available in the output structure.
 
-[targets, tmp_dir] = open_bin(pid);
+[targets, tmp_dir, zip_path] = open_bin(pid);
 
 try
   targets = read_unzipped_bin(targets, tmp_dir);
-  close_bin(tmp_dir);
+  close_bin(tmp_dir, zip_path);
 catch ME
-  close_bin(tmp_dir);
+  close_bin(tmp_dir, zip_path);
   rethrow(ME)
 end
 

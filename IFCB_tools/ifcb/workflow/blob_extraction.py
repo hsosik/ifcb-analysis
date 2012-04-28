@@ -5,14 +5,14 @@ from blob_storage import lid, dest, zipname
 from oii.ifcb import client
 from oii.utils import gen_id
 from oii.times import iso8601
-from oii.workflow.rabbit import Job, WIN, PASS, FAIL, SKIP
+from oii.workflow.rabbit import Job, WIN, PASS, FAIL, SKIP, DIE
 from ifcb.workflow.blob_deposit import BlobDeposit
 from oii.matlab import Matlab
 import shutil
 import platform
 
 # FIXME hardcoded paths
-MATLAB_BASE='/home/ifcb/trunk'
+MATLAB_BASE='/home/jfutrelle/ifcb/trunk'
 MATLAB_DIRS=[
 'feature_extraction',
 'feature_extraction/blob_extraction',
@@ -25,7 +25,7 @@ MATLAB_PATH=[os.path.join(MATLAB_BASE,pc) for pc in MATLAB_DIRS]
 # FIXME hardcoded
 MATLAB_EXEC_PATH='/usr/local/MATLAB/R2011b/bin/matlab'
 
-tmp_dir='/home/ifcb/test_out'
+tmp_dir='/scratch/tmp'
 
 def is_done(bin_pid):
     dest_file = dest(bin_pid)
@@ -104,6 +104,9 @@ class BlobExtraction(Job):
                     local_deposit(bin_pid,tmp_file)
             else:
                 selflog('NOT SAVING - blobs already present at output destination')
+        except KeyboardInterrupt:
+            selflog('KeyboardInterrupt, requeueing job before exit')
+            return DIE
         finally:
             try:
                 shutil.rmtree(job_dir)
