@@ -12,20 +12,7 @@ import shutil
 import platform
 
 # FIXME hardcoded paths
-MATLAB_BASE='/home/jfutrelle/ifcb/trunk'
-MATLAB_DIRS=[
-'feature_extraction',
-'feature_extraction/blob_extraction',
-'webservice_tools',
-'dipum_toolbox_2.0.1'
-]
-
-MATLAB_PATH=[os.path.join(MATLAB_BASE,pc) for pc in MATLAB_DIRS]
-
-# FIXME hardcoded
-MATLAB_EXEC_PATH='/usr/local/MATLAB/R2011b/bin/matlab'
-
-tmp_dir='/scratch/tmp'
+from blob_config import MATLAB_DIRS, MATLAB_PATH, MATLAB_EXEC_PATH, tmp_dir
 
 def is_done(bin_pid):
     dest_file = dest(bin_pid)
@@ -122,8 +109,8 @@ class BlobExtraction(Job):
 
 if __name__=='__main__':
     preflight()
-    job = BlobExtraction('blob_extraction',host='demi.whoi.edu')
-    job.deposit = BlobDeposit('http://demi.whoi.edu:5000')
+    job = BlobExtraction('saltpond_blob_extraction',host='demi.whoi.edu')
+    job.deposit = BlobDeposit('http://demi.whoi.edu:5001')
     command = sys.argv[1]
     if command == 'q':
         for pid in sys.argv[2:]:
