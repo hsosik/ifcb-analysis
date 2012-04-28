@@ -49,6 +49,7 @@ for classnum = 1:length(class2use_here),
     %biovol.(char(class_ciliate(classnum))) = num2cell(NaN(1,length(ml_analyzed)));
 end;
 eqdiam = biovol;
+roiID = biovol;
 for loopcount = 1:length(mode_list),
     annotate_mode = char(mode_list(loopcount));
     switch annotate_mode
@@ -98,7 +99,7 @@ for loopcount = 1:length(mode_list),
     
     for filecount = 1:length(filelist),
         filename = filelist(filecount).name;
-        disp(filename)
+        disp([annotate_mode ': ' filename])
         for classnum = 1:length(class_cat),
             ml_analyzed_struct.(char(class2use_here(class_cat(classnum))))(mode_ind(filecount)) = ml_analyzed(mode_ind(filecount));
         end;
@@ -129,7 +130,7 @@ for loopcount = 1:length(mode_list),
             if ~isempty(cind),
                 biovol.(char(class2use_here(classnum)))(mode_ind(filecount)) = {targets.Biovolume(cind)*micron_factor.^3};
                 eqdiam.(char(class2use_here(classnum)))(mode_ind(filecount)) = {targets.EquivDiameter(cind)*micron_factor};
-                roiID.(char(class2use_here(classnum)))(mode_ind(filecount)) = {targets.pid(cind)};
+                roiID.(char(class2use_here(classnum)))(mode_ind(filecount)) = {char(targets.pid(cind))};
             end;
         end;
         if exist('class2use_sub4', 'var'),
@@ -142,7 +143,7 @@ for loopcount = 1:length(mode_list),
                 if ~isempty(cind),
                     biovol.(char(class2use_here(classnum+numclass1)))(mode_ind(filecount)) = {targets.Biovolume(cind)*micron_factor.^3};
                     eqdiam.(char(class2use_here(classnum+numclass1)))(mode_ind(filecount)) = {targets.EquivDiameter(cind)*micron_factor};
-                    roiID.(char(class2use_here(classnum+numclass1)))(mode_ind(filecount)) = {targets.pid(cind)};
+                    roiID.(char(class2use_here(classnum+numclass1)))(mode_ind(filecount)) = {char(targets.pid(cind))};
                 end;
             end;
         end;
