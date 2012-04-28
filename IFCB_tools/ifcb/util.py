@@ -83,17 +83,17 @@ def get_config(pathname,subconf_name):
     current_subconf = None
     with open(pathname,'r') as configfile:
         for line in configfile:
-            line = line.rstrip().lstrip()
+            line = line.strip()
             if re.match('^#',line): # comment
                 continue
             try:
-                current_subconf = re.match(r'^\[(.*)\]',line).groups(0)[0].lstrip().rstrip()
+                current_subconf = re.match(r'^\[(.*)\]',line).groups(0)[0].strip()
             except:
                 pass
             try:
                 (key, value) = re.match(r'^([^=]+)=(.*)',line).groups()
-                key = key.rstrip().lstrip()
-                value = value.rstrip().lstrip()
+                key = key.strip()
+                value = value.strip()
                 if current_subconf is None or current_subconf == subconf_name:
                     config[key] = value
             except:

@@ -12,7 +12,7 @@ import shutil
 import platform
 
 # FIXME hardcoded paths
-from blob_config import MATLAB_DIRS, MATLAB_PATH, MATLAB_EXEC_PATH, tmp_dir
+from blob_config import MATLAB_DIRS, MATLAB_PATH, MATLAB_EXEC_PATH, tmp_dir, AMQP_HOST, AMQP_QUEUE, BLOB_DEPOSIT
 
 def is_done(bin_pid):
     dest_file = dest(bin_pid)
@@ -109,8 +109,8 @@ class BlobExtraction(Job):
 
 if __name__=='__main__':
     preflight()
-    job = BlobExtraction('saltpond_blob_extraction',host='demi.whoi.edu')
-    job.deposit = BlobDeposit('http://demi.whoi.edu:5001')
+    job = BlobExtraction(AMQP_QUEUE,host=AMQP_HOST)
+    job.deposit = BlobDeposit(BLOB_DEPOSIT)
     command = sys.argv[1]
     if command == 'q':
         for pid in sys.argv[2:]:
