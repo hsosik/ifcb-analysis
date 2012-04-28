@@ -92,6 +92,7 @@ for loopcount = 1:length(mode_list),
             %list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(~cell2mat(manual_list(2:end,2)) & cell2mat(manual_list(2:end,3)) & cell2mat(manual_list(2:end,4)) & ~cell2mat(manual_list(2:end,5)) & cell2mat(manual_list(2:end,6)));   
     end;
+
     filelist = cell2struct(manual_list(mode_ind+1,1),{'name'},2);
     
     for filecount = 1:length(filelist),
