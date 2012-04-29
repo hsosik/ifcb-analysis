@@ -1,57 +1,51 @@
 import sys
 import re
 import os
-from blob_storage import lid, dest, zipname
+from blob_storage import BlobStorage
 from oii.ifcb import client
 from oii.utils import gen_id
 from oii.times import iso8601
+from oii.config import get_config
 from oii.workflow.rabbit import Job, JobExit, WIN, PASS, FAIL, SKIP, DIE
 from ifcb.workflow.blob_deposit import BlobDeposit
 from oii.matlab import Matlab
 import shutil
 import platform
 
-# FIXME hardcoded paths
-from blob_config import MATLAB_DIRS, MATLAB_PATH, MATLAB_EXEC_PATH, tmp_dir, AMQP_HOST, AMQP_QUEUE, BLOB_DEPOSIT, NAMESPACE
-
-def is_done(bin_pid):
-    dest_file = dest(bin_pid)
-    return os.path.exists(dest_file)
-
-def was_attempted(bin_pid):
-    work_dir = os.path.join(tmp_dir, lid(bin_pid))
-    return os.path.exists(work_dir)
-
-def should_skip(bin_pid):
-    if was_attempted(bin_pid):
-        print 'SKIPPING %s - found temporary files' % bin_pid
-        return True
-    elif is_done(bin_pid):
-        print 'SKIPPING %s - found completed blob zip' % bin_pid
-        return True
-    else:
-        return False
-
-def preflight():
-    for p in MATLAB_PATH:
-        assert os.path.exists(p)
-    assert os.path.exists(tmp_dir)
-    try:
-        tempfile = os.path.join(tmp_dir,gen_id()+'.txt')
-        with open(tempfile,'w') as tf:
-            tf.write('test')
-            tf.flush()
-        assert os.path.exists(tempfile)
-        os.remove(tempfile)
-        assert not os.path.exists(tempfile)
-    except:
-        raise
-
 CHECK_EVERY = 200
 
+MATLAB_DIRS=[
+'feature_extraction',
+'feature_extraction/blob_extraction',
+'webservice_tools',
+'dipum_toolbox_2.0.1'
+]
+
 class BlobExtraction(Job):
+    def __init__(self, config_path, timeseries):
+        self.configure(config_path, timeseries)
+        super(BlobExtraction,self).__init__(self.config.amqp_queue, self.config.amqp_host)
+    def configure(self,config_path, timeseries):
+        self.config = get_config(config_path, timeseries)
+        self.config.matlab_path = [os.path.join(self.config.matlab_base, md) for md in MATLAB_DIRS]
+        self.deposit = BlobDeposit(self.config.blob_deposit)
+        self.storage = BlobStorage(config_path, timeseries)
     def exists(self,bin_pid):
-        return (self.deposit is not None and self.deposit.exists(bin_pid)) or os.path.exists(dest(bin_pid))
+        return (self.deposit is not None and self.deposit.exists(bin_pid)) or os.path.exists(self.storage.dest(bin_pid))
+    def preflight(self):
+        for p in self.config.matlab_path:
+            assert os.path.exists(p)
+        assert os.path.exists(self.config.tmp_dir)
+        try:
+            tempfile = os.path.join(self.config.tmp_dir,gen_id()+'.txt')
+            with open(tempfile,'w') as tf:
+                tf.write('test')
+                tf.flush()
+            assert os.path.exists(tempfile)
+            os.remove(tempfile)
+            assert not os.path.exists(tempfile)
+        except:
+            raise
     def run_callback(self,message):
         jobid = ('%s_%s' % (platform.node(), gen_id()))[:16]
         def selflog(line):
@@ -65,17 +59,17 @@ class BlobExtraction(Job):
                     raise JobExit(bin_pid, SKIP)
                 self.output_check = CHECK_EVERY
         bin_pid = message
-        dest_file = dest(bin_pid)
+        dest_file = self.storage.dest(bin_pid)
         if self.exists(bin_pid):
             selflog('SKIPPING %s - already completed' % bin_pid)
             return SKIP
-        job_dir = os.path.join(tmp_dir, gen_id())
+        job_dir = os.path.join(self.config.tmp_dir, gen_id())
         try:
             os.makedirs(job_dir)
         except:
             selflog('WARNING cannot create temporary directory %s' % job_dir)
-        tmp_file = os.path.join(job_dir, zipname(bin_pid))
-        matlab = Matlab(MATLAB_EXEC_PATH,MATLAB_PATH,output_callback=lambda l: self_check_log(l, bin_pid))
+        tmp_file = os.path.join(job_dir, self.storage.zipname(bin_pid))
+        matlab = Matlab(self.config.matlab_exec_path,self.config.matlab_path,output_callback=lambda l: self_check_log(l, bin_pid))
         cmd = 'bin_blobs(\'%s\',\'%s\')' % (bin_pid, job_dir)
         try:
             self.output_check = CHECK_EVERY
@@ -99,8 +93,8 @@ class BlobExtraction(Job):
                 shutil.rmtree(job_dir)
             except:
                 selflog('WARNING cannot remove temporary directory %s' % job_dir)
-    def enqueue_feed(self,namespace,n=4):
-        feed = client.list_bins(namespace=namespace,n=n)
+    def enqueue_feed(self,n=4):
+        feed = client.list_bins(namespace=self.config.namespace,n=n)
         for bin in feed:
             bin_pid = bin['pid']
             #if not should_skip(bin_pid):
@@ -108,27 +102,13 @@ class BlobExtraction(Job):
             self.enqueue(bin_pid)
 
 if __name__=='__main__':
-    preflight()
-    job = BlobExtraction(AMQP_QUEUE,host=AMQP_HOST)
-    job.deposit = BlobDeposit(BLOB_DEPOSIT)
-    command = sys.argv[1]
+    timeseries = sys.argv[1]
+    job = BlobExtraction('./blob.conf',timeseries)
+    job.preflight()
+    command = sys.argv[2]
     if command == 'q':
-        for pid in sys.argv[2:]:
+        for pid in sys.argv[3:]:
             job.enqueue(pid)
-    elif command == 'rq':
-        for pid in sys.argv[2:]:
-            if not should_skip(pid):
-                job.enqueue(pid)
-    elif command == 'check':
-        for pid in sys.argv[2:]:
-            if not should_skip(pid):
-                print 'TODO %s' % pid
-    elif command == 'check_feed':
-        feed = client.list_bins(namespace=NAMESPACE,n=100)
-        for bin in feed:
-            bin_pid = bin['pid']
-            if not should_skip(bin_pid):
-                print 'TODO %s' % bin_pid
     elif command == 'log':
         job.consume_log()
     elif command == 'w':
@@ -136,5 +116,5 @@ if __name__=='__main__':
     elif command == 'r':
         job.retry_failed(filter=lambda x: len(x)>3)
     elif command == 'cron':
-        job.enqueue_feed(namespace=NAMESPACE,n=25)
+        job.enqueue_feed(n=25)
 

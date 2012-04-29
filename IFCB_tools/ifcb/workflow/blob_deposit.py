@@ -1,5 +1,4 @@
 from flask import Flask, url_for, Response, request
-from blob_storage import dest 
 import shutil
 from StringIO import StringIO
 from ifcb.util import iso8601utcnow
@@ -7,6 +6,8 @@ import sys
 import os
 import json
 import urllib2 as urllib
+from blob_storage import BlobStorage
+import re
 
 app = Flask(__name__)
 app.debug = True
@@ -17,7 +18,7 @@ def jsonr(s):
 @app.route('/deposit/blobs/<path:pid>',methods=['POST'])
 def deposit_impl(pid):
     zipdata = request.data
-    destpath = dest(pid)
+    destpath = app.config['BLOB_STORAGE'].dest(pid)
     try:
         os.makedirs(os.path.dirname(destpath))
     except:
@@ -36,7 +37,7 @@ def deposit_impl(pid):
                      
 @app.route('/exists/blobs/<path:pid>')
 def exists_impl(pid):
-    destpath = dest(pid)
+    destpath = app.config['BLOB_STORAGE'].dest(pid)
     exists = os.path.exists(destpath)
     if exists:
         message = '%s %s FOUND at %s' % (iso8601utcnow(), pid, destpath)
@@ -71,7 +72,7 @@ class BlobDeposit(object):
             return resp
 
 if __name__=='__main__':
-    try:
-        app.run(host=sys.argv[1])
-    except:
-        app.run(host='0.0.0.0')
+    blob_storage = BlobStorage('./blob.conf', sys.argv[1])
+    app.config['BLOB_STORAGE'] = blob_storage
+    (h,p) = re.match(r'http://(.*):(\d+)/',blob_storage.config.blob_deposit).groups()
+    app.run(host=h, port=int(p))

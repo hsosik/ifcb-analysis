@@ -6,11 +6,14 @@ import os
 import config
 
 def no_day_dirs():
-    return 'NO_DAY_DIRS' in dir(config) and config.NO_DAY_DIRS
+    try:
+        return 'NO_DAY_DIRS' in dir(config) and config.NO_DAY_DIRS
+    except:
+        return False
 
 class OldPid(object):
-    def __init__(self,pid):
-        self.lid = ifcb.lid(pid)
+    def __init__(self,pid,namespace=None):
+        self.lid = ifcb.lid(pid,namespace)
         self.date_format = '%Y_%j'
         self.datetime_format = '%Y_%j_%H%M%S'
     def mod(self,regex,what='ID'):
@@ -92,8 +95,8 @@ class OldPid(object):
         return ifcb.pid(self.lid)
 
 class NewPid(OldPid):
-    def __init__(self,pid):
-        self.lid = ifcb.lid(pid)
+    def __init__(self,pid,namespace=None):
+        self.lid = ifcb.lid(pid,namespace)
         self.date_format = '%Y%m%d'
         self.datetime_format = '%Y%m%dT%H%M%S'
     @property
@@ -147,8 +150,8 @@ class NewPid(OldPid):
             yield os.path.join(basedir, day, '%s_%s' % (bin, instrument_name))
         # FIXME deal with "new year bug"
 
-def parse_id(pid):
-    lid = ifcb.lid(pid)
+def parse_id(pid,namespace=None):
+    lid = ifcb.lid(pid,namespace)
     # attempt to guess format
     if re.match(r'^IFCB',lid):
         return OldPid(lid)

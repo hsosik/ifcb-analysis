@@ -1,32 +1,34 @@
 import re
 import os
 from ifcb.io.pids import parse_id
+from oii.config import get_config
 
-# FIXME hardcoded path
-blob_years='/data/vol4/blobs'
-
-def lid(pid):
-    return parse_id(pid).as_lid
-
-def year(pid):
-    return parse_id(pid).year
-
-def year_day(pid):
-    return parse_id(pid).yearday
-
-def zipname(pid):
-    return lid(pid)+'_blobs_v2.zip'
-
-def dest(pid):
-    return os.path.join(blob_years,year(pid),year_day(pid),zipname(pid))
-
-def local_exists(bin_pid):
-    return os.path.exists(dest(bin_pid))
-
-def local_deposit(bin_pid,zipfile):
-    dest_file = dest(bin_pid)
-    try:
-        os.makedirs(os.path.dirname(dest_file))
-    except:
-        pass
-    shutil.move(zipfile,dest_file)
+class BlobStorage(object):
+    def __init__(self, config_path, timeseries):
+        self.config = get_config(config_path, timeseries)
+    def lid(self, pid):
+        """Local ID part of pathname based on configured namespace"""
+        return parse_id(pid, self.config.namespace).as_lid
+    def year(self, pid):
+        """Year part of pathname based on configured namespace"""
+        return parse_id(pid, self.config.namespace).year
+    def year_day(self, pid):
+        """Year/day dir path of pathname based on configured namespace"""
+        return parse_id(pid, self.config.namespace).yearday
+    def zipname(self, pid):
+        """Name of zipfile"""
+        return self.lid(pid)+'_blobs_v2.zip'
+    def dest(self, pid):
+        """Absolute path of zip file in filesystem according to configuration"""
+        return os.path.join(self.config.blob_years,self.year(pid),self.year_day(pid),self.zipname(pid))
+    def local_exists(self, bin_pid):
+        """Does the zip file exist for this bin"""
+        return os.path.exists(self.dest(bin_pid))
+    def local_deposit(self, bin_pid, zipfile):
+        """Copy a local file to its destination"""
+        dest_file = self.storage.dest(bin_pid)
+        try:
+            os.makedirs(os.path.dirname(dest_file))
+        except:
+            pass
+        shutil.move(zipfile,dest_file)
