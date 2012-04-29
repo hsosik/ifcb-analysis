@@ -5,14 +5,14 @@ from blob_storage import lid, dest, zipname
 from oii.ifcb import client
 from oii.utils import gen_id
 from oii.times import iso8601
-from oii.workflow.rabbit import Job, WIN, PASS, FAIL, SKIP, DIE
+from oii.workflow.rabbit import Job, JobExit, WIN, PASS, FAIL, SKIP, DIE
 from ifcb.workflow.blob_deposit import BlobDeposit
 from oii.matlab import Matlab
 import shutil
 import platform
 
 # FIXME hardcoded paths
-from blob_config import MATLAB_DIRS, MATLAB_PATH, MATLAB_EXEC_PATH, tmp_dir, AMQP_HOST, AMQP_QUEUE, BLOB_DEPOSIT
+from blob_config import MATLAB_DIRS, MATLAB_PATH, MATLAB_EXEC_PATH, tmp_dir, AMQP_HOST, AMQP_QUEUE, BLOB_DEPOSIT, NAMESPACE
 
 def is_done(bin_pid):
     dest_file = dest(bin_pid)
@@ -62,7 +62,7 @@ class BlobExtraction(Job):
             if self.output_check <= 0:
                 if self.exists(bin_pid):
                     selflog('STOPPING JOB - completed by another worker')
-                    raise
+                    raise JobExit(bin_pid, SKIP)
                 self.output_check = CHECK_EVERY
         bin_pid = message
         dest_file = dest(bin_pid)
@@ -123,11 +123,18 @@ if __name__=='__main__':
         for pid in sys.argv[2:]:
             if not should_skip(pid):
                 print 'TODO %s' % pid
+    elif command == 'check_feed':
+        feed = client.list_bins(namespace=NAMESPACE,n=100)
+        for bin in feed:
+            bin_pid = bin['pid']
+            if not should_skip(bin_pid):
+                print 'TODO %s' % bin_pid
     elif command == 'log':
         job.consume_log()
     elif command == 'w':
         job.work(True)
     elif command == 'r':
-        job.retry_failed()
+        job.retry_failed(filter=lambda x: len(x)>3)
     elif command == 'cron':
-        job.enqueue_feed(namespace='http://ifcb-data.whoi.edu/mvco/')
+        job.enqueue_feed(namespace=NAMESPACE,n=25)
+
