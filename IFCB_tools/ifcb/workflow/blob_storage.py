@@ -1,11 +1,10 @@
 import re
 import os
 from ifcb.io.pids import parse_id
-from oii.config import get_config
 
 class BlobStorage(object):
-    def __init__(self, config_path, timeseries):
-        self.config = get_config(config_path, timeseries)
+    def __init__(self, config):
+        self.config = config
     def lid(self, pid):
         """Local ID part of pathname based on configured namespace"""
         return parse_id(pid, self.config.namespace).as_lid

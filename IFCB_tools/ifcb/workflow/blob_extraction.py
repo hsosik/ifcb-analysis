@@ -22,14 +22,14 @@ MATLAB_DIRS=[
 ]
 
 class BlobExtraction(Job):
-    def __init__(self, config_path, timeseries):
-        self.configure(config_path, timeseries)
+    def __init__(self, config):
+        self.configure(config)
         super(BlobExtraction,self).__init__(self.config.amqp_queue, self.config.amqp_host)
-    def configure(self,config_path, timeseries):
-        self.config = get_config(config_path, timeseries)
+    def configure(self, config):
+        self.config = config
         self.config.matlab_path = [os.path.join(self.config.matlab_base, md) for md in MATLAB_DIRS]
         self.deposit = BlobDeposit(self.config.blob_deposit)
-        self.storage = BlobStorage(config_path, timeseries)
+        self.storage = BlobStorage(self.config)
     def exists(self,bin_pid):
         return (self.deposit is not None and self.deposit.exists(bin_pid)) or os.path.exists(self.storage.dest(bin_pid))
     def preflight(self):
@@ -103,7 +103,8 @@ class BlobExtraction(Job):
 
 if __name__=='__main__':
     timeseries = sys.argv[1]
-    job = BlobExtraction('./blob.conf',timeseries)
+    config = get_config('./blob.conf',timeseries)
+    job = BlobExtraction(config)
     job.preflight()
     command = sys.argv[2]
     if command == 'q':

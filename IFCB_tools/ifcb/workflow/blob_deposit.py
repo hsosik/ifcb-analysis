@@ -8,6 +8,7 @@ import json
 import urllib2 as urllib
 from blob_storage import BlobStorage
 import re
+from oii.config import get_config
 
 app = Flask(__name__)
 app.debug = True
@@ -72,7 +73,8 @@ class BlobDeposit(object):
             return resp
 
 if __name__=='__main__':
-    blob_storage = BlobStorage('./blob.conf', sys.argv[1])
+    config = get_config('./blob.conf', sys.argv[1])
+    blob_storage = BlobStorage(config)
     app.config['BLOB_STORAGE'] = blob_storage
-    (h,p) = re.match(r'http://(.*):(\d+)/',blob_storage.config.blob_deposit).groups()
+    (h,p) = re.match(r'http://(.*):(\d+)/',config.blob_deposit).groups()
     app.run(host=h, port=int(p))
