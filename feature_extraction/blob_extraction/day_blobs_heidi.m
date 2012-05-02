@@ -23,20 +23,23 @@ if not(debug),
 end
 
 %daydir = dir([in_dir filesep '*.zip']);
-%daydir = dir(['\\demi\ifcbnew\ifcb5_2012_009\*.roi']);
-days = [dir(['\\demi\ifcbnew\ifcb5_2012_009*']); dir(['\\demi\ifcbnew\ifcb5_2012_029*']); dir(['\\demi\ifcbnew\ifcb5_2012_039*']);...
+%daydir = dir(['\\demi\ifcbnew\ifcb5_2012_001\*.roi']);
+days =  dir(['\\demi\ifcbnew\ifcb5_2012_02*']);
+days2 = [dir(['\\demi\ifcbnew\ifcb5_2012_009*']); dir(['\\demi\ifcbnew\ifcb5_2012_029*']); dir(['\\demi\ifcbnew\ifcb5_2012_039*']);...
     dir(['\\demi\ifcbnew\ifcb5_2012_046*']); dir(['\\demi\ifcbnew\ifcb5_2012_052*']); dir(['\\demi\ifcbnew\ifcb5_2012_066*']); dir(['\\demi\ifcbnew\ifcb5_2012_078*'])];
+[~,ii] = setdiff({days.name}, {days2.name});
+days = days(ii);
 daydir = [];
 for ii = 1:length(days),
-    daydir = [daydir; dir(['\\demi\ifcbnew\' days(ii).name '\*.roi'])];
+    daydir = [daydir; dir(['\\demi\ifcbnew\' days(ii).name '\*.adc'])];
 end;
 daydir_done = dir([out_dir '*.zip']);
 done = {daydir_done.name}';
-done = regexprep(done, '_blobs.zip', '');
+done = regexprep(done, '_blobs_v2.zip', '');
 daydir = {daydir.name}';
-daydir = regexprep(daydir, '.roi', '');
+daydir = regexprep(daydir, '.adc', '');
 daydir = setdiff(daydir, done);
-
+disp(['processing ' num2str(length(daydir)) ' files'])
 if not(debug),
     parfor daycount = 1:length(daydir)
         try

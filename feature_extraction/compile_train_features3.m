@@ -1,5 +1,5 @@
 %load output %load result file produced by batch_features_train.m
-outdir = 'C:\work\IFCB\ifcb_data_MVCO_jun06\train_04Nov2011_fromWebServices\';
+outdir = 'G:\Rob\SaltPond\training_set\';
 temp = dir([outdir '*.mat']);
 classes = {temp.name};
 for i = 1:length(classes),
@@ -8,37 +8,38 @@ end;
 
 %classes = fieldnames(output);
 %skip some classes that are empty or not properly annotated
-classes = setdiff(classes, {'config' 'Eucampia_groenlandica' 'Tropidoneis' 'dino10' 'roundCell' 'other' 'flagellate' 'crypto'});
-%classes = setdiff(classes, {'config' 'Eucampia_groenlandica' 'Tropidoneis' 'dino10' 'roundCell' 'other' 'flagellate' 'crypto' 'Lauderia' 'Odontella' 'Stephanopyxis'});
-maxn = 350000;
+classes = setdiff(classes, {'config' 'Cochlodinium' 'Dinobryon' 'Guinardia striata' 'Odontella' 'Prorocentrum gracile' 'Protoperidinium'});
+maxn = 500;
 class_vector = [];
 targets = [];
 for classcount = 1:length(classes),
     class = char(classes(classcount));
     load([outdir char(classes(classcount))])
     
-    [ feature_mat, featitles ] = format_features( out );
-    [ feature_mat, featitles ] = add_derived_features( feature_mat, featitles);
-    if classcount == length(classes) | classcount == 1 ,
-        [~,i] = setdiff(featitles, {'FilledArea' 'summedFilledArea' 'Area' 'ConvexArea' 'MajorAxisLength' 'MinorAxisLength' 'Perimeter'}');
-       % i = sort(i);
-        featitles = featitles(i);
-    end;
-    feamat{classcount} = feature_mat(i,:);
-    n = [out.features.numBlobs];
-    n_class(classcount) = length(n);
-    
-    t_temp = out.targets;
-    if maxn < n_class(classcount),
-        ind = randi(n_class(classcount),maxn,1);
-        feamat{classcount} = feamat{classcount}(:,ind);
-        t_temp = t_temp(ind);
-    end;
-    class_vector = [class_vector repmat(classcount,1,min(maxn,n_class(classcount)))];
-    targets = [targets; t_temp'];
+    %if length(out.targets), %skip classes with no examples
+        [ feature_mat, featitles ] = format_features( out );
+        [ feature_mat, featitles ] = add_derived_features( feature_mat, featitles);
+        if classcount == length(classes) | classcount == 1 ,
+            [~,i] = setdiff(featitles, {'FilledArea' 'summedFilledArea' 'Area' 'ConvexArea' 'MajorAxisLength' 'MinorAxisLength' 'Perimeter'}');
+           % i = sort(i);
+            featitles = featitles(i);
+        end;
+        feamat{classcount} = feature_mat(i,:);
+        n = [out.features.numBlobs];
+        n_class(classcount) = length(n);
+
+        t_temp = out.targets;
+        if maxn < n_class(classcount),
+            ind = randi(n_class(classcount),maxn,1);
+            feamat{classcount} = feamat{classcount}(:,ind);
+            t_temp = t_temp(ind);
+        end;
+        class_vector = [class_vector repmat(classcount,1,min(maxn,n_class(classcount)))];
+        targets = [targets; t_temp'];
+    %end;
 end;
 
-train = cell2mat(feamat);
+train = cell2mat(feamat)';
 
 %featitles = fieldnames(output_largest.(class).features);
 %nring = size(Rings,1); nwedge = size(Wedges,1); nhog = size(HOG,1);
