@@ -44,7 +44,7 @@ for i = 1:nt,
 end
 temp.pid = targets.pid;
 out = temp;
-fileout = regexprep(file, 'zip', 'mat')
+fileout = regexprep(file, 'zip', 'mat');
 save([out_dir fileout], 'out')
 
 log(['SAVING ' fileout]);
