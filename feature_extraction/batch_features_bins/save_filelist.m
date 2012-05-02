@@ -1,3 +1,13 @@
+
+filelist = {...
+'IFCB5_2012_078_060738'
+'IFCB5_2012_078_063051'
+'IFCB5_2012_078_065403'};
+
+save list2012A filelist
+
+return
+
 filelist = {...
 'IFCB5_2012_009_212600'
 'IFCB5_2012_009_214911'
