@@ -51,6 +51,7 @@ train = cell2mat(feamat)';
 %clear output output_largest n_rot fieldstemp
 
 clear t_temp classcount i n maxn temp output outdir out class ind feature_mat
+save compiled_train 
 
 return
 
