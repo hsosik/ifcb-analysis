@@ -1,4 +1,4 @@
-function [ bins, next_date ] = list_bins( date )
+function [ bins, next_date ] = list_bins( date, n )
 % given a date (or with no argument, now), list the URL's of the most
 % recent bins up to that date.
 
@@ -6,7 +6,11 @@ if nargin < 1 || isempty(date)
     date = 'now';
 end
 
-feed = wget_xml([ifcb.DATA_NAMESPACE 'rss.py?format=atom&date=' date]);
+if nargin < 2 || isempty(n)
+    n = 25;
+end
+
+feed = wget_xml([ifcb.DATA_NAMESPACE 'rss.py?format=atom&date=' date '&n=' num2str(n)]);
 item_nodes = feed.getElementsByTagNameNS('http://www.w3.org/2005/Atom', 'entry');
 n = item_nodes.getLength;
 bins = cell(1,n);
