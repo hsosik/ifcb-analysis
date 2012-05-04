@@ -3,6 +3,8 @@ function [ targets ] = get_bin( pid )
 % can take a long time, but afterwards all image data and metadata
 % is available in the output structure.
 
+warning off MATLAB:MKDIR:DirectoryExists
+
 tmp = [tempdir filesep gen_id()];
 
 mkdir(tmp);

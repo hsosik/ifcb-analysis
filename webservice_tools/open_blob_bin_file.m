@@ -1,5 +1,7 @@
 function [ targets, image_dir ] = open_blob_bin_file ( zip_path, dir1 )
 
+warning off MATLAB:MKDIR:DirectoryExists
+
 [~, lid] = fileparts(zip_path);
 
 if nargin < 2, dir1 = tempdir; end
