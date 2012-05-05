@@ -11,7 +11,7 @@ feature_mat = [feature_mat; feature_mat(b,:)./feature_mat(a,:); feature_mat(b,:)
 featitles = [featitles; 'H90/Hflip'; 'H90/H180'; 'Hflip/H180'];
 
 a = strmatch('summedConvexPerimeter', featitles, 'exact'); b = strmatch('summedPerimeter', featitles, 'exact'); 
-feature_mat = [feature_mat; feature_mat(a,:)./feature_mat(b,:).^2]; %A/P^2 compactness or circularity index; A/P roundness index
+feature_mat = [feature_mat; feature_mat(a,:)./feature_mat(b,:)]; 
 featitles = [featitles; 'summedConvexPerimeter/Perimeter'];
 
 a = strmatch('RotatedBoundingBox_xwidth', featitles, 'exact'); b = strmatch('RotatedBoundingBox_ywidth', featitles, 'exact'); c = strmatch('RotatedArea', featitles, 'exact'); 
