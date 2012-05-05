@@ -1,11 +1,10 @@
 %load(['list2012A']) %load the list of bins to process
 
-filelist = {'IFCB5_2011_063_214358'};
 basepath = '\\mellon\saltpond\D2012\';
 daylist = dir([basepath 'D*']);
 daylist = {daylist.name}';
 filelist = [];
-for ii = 1:2, %length(daylist),
+for ii = 1:length(daylist),
     temp = dir([basepath daylist{ii} '\D*.adc']);
     temp = regexprep({temp.name}', '.adc', '');
     filelist = [filelist; temp];

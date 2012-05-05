@@ -17,7 +17,8 @@ end
 
 if not(debug),
     try
-        matlabpool;
+        %matlabpool;
+        matlabpool local 4;
         log('POOL - started');
     catch e %#ok<NASGU>
         log('WARNING - workers cannot start, or already active');

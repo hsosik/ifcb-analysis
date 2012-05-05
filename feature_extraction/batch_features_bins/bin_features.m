@@ -44,7 +44,6 @@ for i = 1:nt,
 %        temp.images(i).image = target.image;
 end
 temp.pid = targets.pid;
-keyboard
 [ feature_mat, featitles, multiblob_features, multiblob_titles ] = make_feature_matrices(temp);
 
 %write the compiled feature csv file
