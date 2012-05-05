@@ -1,8 +1,9 @@
 function [ ] = bin_features( in_dir, file, out_dir )
-%BIN_BLOBS Summary of this function goes here
+%function [ ] = bin_features( in_dir, file, out_dir )
+%BIN_FEATURES Summary of this function goes here
 %modified from bin_blobs
 
-debug = false;
+debug = true;
 
 function log(msg) % not to be confused with logarithm function
     logmsg(['bin_features ' msg],debug);
@@ -43,12 +44,24 @@ for i = 1:nt,
 %        temp.images(i).image = target.image;
 end
 temp.pid = targets.pid;
-out = temp;
-fileout = regexprep(file, 'zip', 'mat');
-save([out_dir fileout], 'out')
+keyboard
+[ feature_mat, featitles, multiblob_features, multiblob_titles ] = make_feature_matrices(temp);
 
+%write the compiled feature csv file
+fileout = regexprep(file, '.zip', '_fea_v1.csv');
 log(['SAVING ' fileout]);
+fid = fopen([out_dir fileout], 'w');
+for ii = 1:length(featitles)-1, fprintf(fid, '%s, ', char(featitles(ii)));, end; 
+fprintf(fid, '%s\n ', char(featitles(end))); fclose(fid);
+dlmwrite([out_dir fileout], feature_mat, '-append')
+%write the raw multi-blob features to separate csv file
+fileout = regexprep(file, '.zip', '_multiblob_v1.csv');
+fid = fopen([out_dir fileout], 'w');
+for ii = 1:length(multiblob_titles)-1, fprintf(fid, '%s, ', char(multiblob_titles(ii))); end; 
+fprintf(fid, '%s\n ', char(multiblob_titles(end))); fclose(fid);
+dlmwrite([out_dir fileout], multiblob_features, '-append')
 
+%save([out_dir fileout], 'out')
 %rmdir(png_dir,'s');
 
 log(['DONE ' file]);
