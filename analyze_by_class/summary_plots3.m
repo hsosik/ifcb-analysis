@@ -61,8 +61,8 @@ xsum = sum(x,2);
 dv = datevec(matdate_bin);
 yd = (1:366)';
 year_ifcb = (dv(1,1):dv(end,1));
-mdate_year = datenum(year_ifcb,0,0);
-mdate = repmat(yd,1,length(year_ifcb))+repmat(mdate_year,length(yd),1);
+mdate_year_ifcb = datenum(year_ifcb,0,0);
+mdate_ifcb = repmat(yd,1,length(year_ifcb))+repmat(mdate_year_ifcb,length(yd),1);
 for count = 1:length(year_ifcb),    
     iii = find(dv(:,1) == year_ifcb(count));
     for day = 1:366,
@@ -99,7 +99,7 @@ for count = 1:length(year_ifcb),
 end;
 
 figure(99)
-for c = 1:length(ind_ciliate),
+for c = 1:0, %length(ind_ciliate),
     subplot(5,1,c)
     plot(yd, squeeze(Callday(:,:,c))/1e6, '.k') 
     hold on
@@ -158,14 +158,14 @@ Wanom_ifcb = Wday(:,ii) - repmat(Wmean,1,length(year_ifcb));
 clear Temp* Saln* v* Solar* Daily* yd_ocn* yd_adcp* yd_met* yd_seacat* temp* saln* mdate_seacat*
 
 load c:\work\mvco\carbon\conc_summary_fcb
-mdate_year = datenum(yearall,0,0);
-mdate = repmat(yd_fcb,1,length(yearall))+repmat(mdate_year,length(yd_fcb),1);
+mdate_year_fcb = datenum(yearall,0,0);
+mdate_fcb = repmat(yd_fcb,1,length(yearall))+repmat(mdate_year_fcb,length(yd_fcb),1);
 Synmean = nanmean(log10(synperml),2);
 Synanom = log10(synperml) - repmat(Synmean,1,length(yearall));
 Picoeukmean = nanmean(log10(picoeukperml),2);
 Picoeukanom = log10(picoeukperml) - repmat(Picoeukmean,1,length(yearall));
 
-for classnum = 1:length(ind_diatoms),
+for classnum = 1:0, %length(ind_diatoms),
     xanom = Tanom_ifcb;
     %xanom = Wanom_ifcb;
     yanom = Dallanom_sm(:,:,classnum);
@@ -184,7 +184,8 @@ classnum = 9;
 xanom = Tanom_ifcb;
 yanom = Dallanom_sm(:,:,classnum);
 subplotwidth = 4;
-month_bins = [1 4 7 12]';
+%month_bins = [1 4 7 12]';
+month_bins = (1:12)';
 [~] = anomaly_corr(xanom, yanom, yd, month_bins, subplotwidth, year_ifcb);
 orient tall
 subplot(1,4,1)
@@ -228,7 +229,7 @@ xlabel('Temperature anomaly (relative)', 'fontsize', 16)
 subplot(1,subplotwidth,1)
 ylabel(['\itSynechococcus\rm anomaly (log10 mL{-1}, relative)'], 'fontsize', 14)
 
-month_bins = (1:12)'; subplotwidth = 6; subplotheight = ceil(length(month_bins)/subplotwidth);
+month_bins = (1:12)'; subplotwidth = 4; subplotheight = ceil(length(month_bins)/subplotwidth);
 [rsyn,slope_syn,n_syn,p_syn,r_sig_syn,slope_sig_syn] = anomaly_corr(Tanom_fcb, Synanom, yd, month_bins, subplotwidth,yearall);
 %subplot(subplotheight,subplotwidth,)
 xlabel('Temperature anomaly (relative)', 'fontsize', 16)
