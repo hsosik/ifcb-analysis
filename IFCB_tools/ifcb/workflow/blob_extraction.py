@@ -47,15 +47,15 @@ class BlobExtraction(Job):
         except:
             raise
     def run_callback(self,message):
-        jobid = ('%s_%s' % (platform.node(), gen_id()))[:16]
+        jobid = gen_id()[:5]
         def selflog(line):
-            self.log('%s %s %s' % (iso8601(), jobid, line))
+            self.log('%s %s' % (jobid, line))
         def self_check_log(line,bin_pid):
             selflog(line)
             self.output_check -= 1
             if self.output_check <= 0:
                 if self.exists(bin_pid):
-                    selflog('STOPPING JOB - completed by another worker')
+                    selflog('STOPPING JOB - %s completed by another worker' % bin_pid)
                     raise JobExit(bin_pid, SKIP)
                 self.output_check = CHECK_EVERY
         bin_pid = message
@@ -84,7 +84,7 @@ class BlobExtraction(Job):
                     selflog('SAVING completed blob zip for %s to %s' % (bin_pid, dest_file))
                     local_deposit(bin_pid,tmp_file)
             else:
-                selflog('NOT SAVING - blobs already present at output destination')
+                selflog('NOT SAVING - blobs for %s already present at output destination' % bin_pid)
         except KeyboardInterrupt:
             selflog('KeyboardInterrupt, requeueing job before exit')
             return DIE
@@ -118,4 +118,3 @@ if __name__=='__main__':
         job.retry_failed(filter=lambda x: len(x)>3)
     elif command == 'cron':
         job.enqueue_feed(n=25)
-

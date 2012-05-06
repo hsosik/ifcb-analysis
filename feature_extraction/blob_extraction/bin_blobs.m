@@ -4,7 +4,7 @@ function [ ] = bin_blobs( bin_pid, out_dir )
 debug = false;
 
 function log(msg) % not to be confused with logarithm function
-    logmsg(['bin_blobs ' msg],debug);
+    disp(['bin_blobs ' msg])
 end
 
 bin_lid = lid(bin_pid);
