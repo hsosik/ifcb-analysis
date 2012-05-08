@@ -3,7 +3,8 @@ feature_path = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\features2012_v0\';
 
 class_path = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\class2012_tbv0\';
 filelist = dir([feature_path 'IFCB*.mat']);
-load trees_compact_24Mar2012
+%load trees_compact_24Mar2012
+load MVCO_trees_07May2012
 load class2use_MVCOmanual3
 nclass = length(class2use);
 class2use_auto = class2use;
@@ -30,7 +31,7 @@ for filecount = 1:length(filelist),
         end;
         feature_mat = feature_mat(i,:)';
         disp('classifying...')
-        Y = predict(tb_24Mar2012,feature_mat);
+        Y = predict(b,feature_mat);
         numrois = roi_num(end);
         classlist = NaN(numrois,4);
         classlist(:,1) = 1:numrois;
