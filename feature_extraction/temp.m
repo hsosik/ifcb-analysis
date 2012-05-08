@@ -226,6 +226,7 @@ train(isnan(train)) = 0;
 %train_temp = train(i,1:2:end)';
 %class_vector_temp = classes(class_vector(1:2:end));
 train_temp = train(i,:)';
+%train_temp = train(:,i);
 class_vector_temp = classes(class_vector);
 clear a b c i
 

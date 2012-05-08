@@ -35,5 +35,5 @@ legend('Pd', 'Sp')
 h = histc(Pd, [0:.1:1]); b = 0:10:100;
 bar(fliplr(b)+5,cumsum(flipud(h)/length(Pd)),'width', 1)
 set(gca, 'xtick', 0:10:100, 'xlim', [-5 105], 'xdir', 'rev')
-cumsum(flipud(h./length(Pd)))
-fliplr(b)*100-10
+cumsum(flipud(h./length(Pd)))'
+fliplr(b)
