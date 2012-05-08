@@ -2,7 +2,7 @@
 load compiled_train
 datestring = datestr(now, 'ddmmmyyyy');
 
-class_vector = classes(class_vector);
+%class_vector = classes(class_vector);
 disp('Growing trees...please be patient')
 b = TreeBagger(300,train,class_vector,'Method','c','OOBVarImp','on','MinLeaf',1);
 figure, hold on
@@ -12,7 +12,7 @@ ylabel('Out-of-Bag Classification Error');
 
 %b = growTrees(b,250); %specify how many to add
 %plot(oobError(b3), 'g');
-save(['SaltPond_trees_' datestring],'b', 'targets', 'featitles', 'classes')
+save(['MVCO_trees_' datestring],'b', 'targets', 'featitles', 'classes')
 [Yfit,Sfit] = oobPredict(b);  
 c1 = confusionmat(b.Y,Yfit); %transposed from mine
 
@@ -31,3 +31,9 @@ set(gca, 'xtick', 1:length(classes), 'xticklabel', [])
 text(1:length(classes), -text_offset.*ones(size(classes)), classes, 'interpreter', 'none', 'horizontalalignment', 'right', 'rotation', 45) 
 set(gca, 'position', [ 0.13 0.35 0.8 0.6])
 legend('Pd', 'Sp')
+
+h = histc(Pd, [0:.1:1]); b = 0:10:100;
+bar(fliplr(b)+5,cumsum(flipud(h)/length(Pd)),'width', 1)
+set(gca, 'xtick', 0:10:100, 'xlim', [-5 105], 'xdir', 'rev')
+cumsum(flipud(h./length(Pd)))
+fliplr(b)*100-10
