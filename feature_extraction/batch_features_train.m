@@ -15,12 +15,12 @@ empty_target = target;
 
 %load output2
 
-for cix = 41:length(classlist),
+for cix = 1:length(classlist),
     clear temp
     disp(classlist(cix))
     roilist = dir([trainpath char(classlist(cix)) '\D*']);
     %roinames = {};
-    %for idx = 1:length(roilist), %reformat with zero padding on roi num to 5 digits
+o    %for idx = 1:length(roilist), %reformat with zero padding on roi num to 5 digits
     %    t = char(roilist(idx).name);
     %    roinames(idx,1) = cellstr([t(1:22) repmat('0',1,31-length(t)) t(23:end)]);
     %end;
