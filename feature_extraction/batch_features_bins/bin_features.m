@@ -58,7 +58,7 @@ fileout = regexprep(file, '.zip', '_multiblob_v1.csv');
 fid = fopen([out_dir fileout], 'w');
 for ii = 1:length(multiblob_titles)-1, fprintf(fid, '%s,', char(multiblob_titles(ii))); end; 
 fprintf(fid, '%s\r\n', char(multiblob_titles(end))); fclose(fid);
-dlmwrite([out_dir fileout], multiblob_features, '-append')
+dlmwrite([out_dir 'multiblob\' fileout], multiblob_features, '-append')
 
 %save([out_dir fileout], 'out')
 %rmdir(png_dir,'s');
