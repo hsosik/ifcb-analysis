@@ -8,4 +8,5 @@ files_done = dir([out_dir 'IFCB*fea_v1.csv']);
 files_done = char(files_done.name);
 files_done = cellstr(files_done(:,1:end-11));
 filelist2 = setdiff(filelist, files_done); 
+disp(['processing ' num2str(length(filelist2)) ' files'])
 batch_features( in_dir, filelist2, out_dir );
