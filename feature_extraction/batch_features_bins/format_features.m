@@ -50,7 +50,7 @@ feature_mat(isnan(feature_mat)) = 0;
   
 featitles = fieldnames(output_largest.features);
 nring = size(Rings,1); nwedge = size(Wedges,1); nhog = size(HOG,1);
-featitles = [featitles; cellstr([repmat('Wedge:',nwedge,1) num2str((1:nwedge)')]); cellstr([repmat('Ring:',nring,1) num2str((1:nring)')]); cellstr([repmat('HOG:',nhog,1) num2str((1:nhog)')])];
+featitles = [featitles; cellstr([repmat('Wedge',nwedge,1) num2str((1:nwedge)','%02d')]); cellstr([repmat('Ring',nring,1) num2str((1:nring)','%02d')]); cellstr([repmat('HOG',nhog,1) num2str((1:nhog)','%02d')])];
 
 end
 

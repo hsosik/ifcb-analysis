@@ -50,14 +50,14 @@ temp.pid = targets.pid;
 fileout = regexprep(file, '.zip', '_fea_v1.csv');
 log(['SAVING ' fileout]);
 fid = fopen([out_dir fileout], 'w');
-for ii = 1:length(featitles)-1, fprintf(fid, '%s, ', char(featitles(ii)));, end; 
-fprintf(fid, '%s\n ', char(featitles(end))); fclose(fid);
+for ii = 1:length(featitles)-1, fprintf(fid, '%s,', char(featitles(ii)));, end; 
+fprintf(fid, '%s\r\n ', char(featitles(end))); fclose(fid);
 dlmwrite([out_dir fileout], feature_mat, '-append')
 %write the raw multi-blob features to separate csv file
 fileout = regexprep(file, '.zip', '_multiblob_v1.csv');
 fid = fopen([out_dir fileout], 'w');
-for ii = 1:length(multiblob_titles)-1, fprintf(fid, '%s, ', char(multiblob_titles(ii))); end; 
-fprintf(fid, '%s\n ', char(multiblob_titles(end))); fclose(fid);
+for ii = 1:length(multiblob_titles)-1, fprintf(fid, '%s,', char(multiblob_titles(ii))); end; 
+fprintf(fid, '%s\r\n', char(multiblob_titles(end))); fclose(fid);
 dlmwrite([out_dir fileout], multiblob_features, '-append')
 
 %save([out_dir fileout], 'out')

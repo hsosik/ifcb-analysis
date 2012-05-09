@@ -11,7 +11,7 @@ tempfea = out.features(ii);
 n = [tempfea.numBlobs];
 roinum_multi = [];
 for count = 1:length(ii), 
-    roinum_multi = [roinum_multi repmat(roinum(ii(count)),1,n(count));];
+    roinum_multi = [roinum_multi [repmat(roinum(ii(count)),1,n(count)); 1:n(count)];];
 end;
 %omit fields that don't apply to separate blobs
 names = fields(tempfea);
@@ -33,7 +33,7 @@ multiblob_features = [roinum_multi; cell2mat(squeeze(struct2cell(tempfea)))]';
 %    multiblob_features(:,ii) = [tempfea.(names{ii})]'; 
 %end;
 %multiblob_features = [roinum' multiblob_features];
-multiblob_titles = ['roi_number' fields(tempfea)'];
+multiblob_titles = ['roi_number' 'blob_number' fields(tempfea)'];
 
 %all features in compiled version (summed or largest in case of multiple blobs
 [ feature_mat, featitles ] = format_features( out );
