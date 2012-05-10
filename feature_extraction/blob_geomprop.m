@@ -5,11 +5,12 @@ prop_list = target.config.blob_props;
 
 geomprops = regionprops(logical(target.blob_image), prop_list);
 %[~,ind] = sort([geomprops.FilledArea], 2,'descend');
-[~,ind] = sort([target.blob_props.Area], 2,'descend');
+[~,ind] = sort([geomprops.Area], 2,'descend');
 if length(ind) > 1,
     geomprops = geomprops(ind); %sort largest to smallest
     target.blob_props.Area = target.blob_props.Area(ind);
 end;
+target.blob_props.numBlobs = length(ind);
 
 geomprops(1).ConvexPerimeter = 0; %initialize at zero
 geomprops(1).FeretDiameter = 0; %initialize at zero
