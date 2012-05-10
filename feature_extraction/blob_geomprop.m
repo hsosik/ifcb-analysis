@@ -8,7 +8,6 @@ geomprops = regionprops(logical(target.blob_image), prop_list);
 [~,ind] = sort([geomprops.Area], 2,'descend');
 if length(ind) > 1,
     geomprops = geomprops(ind); %sort largest to smallest
-    target.blob_props.Area = target.blob_props.Area(ind);
 end;
 target.blob_props.numBlobs = length(ind);
 
