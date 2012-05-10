@@ -13,6 +13,8 @@ end
 log(['LOAD ' file]);
 %http://ifcb-data.whoi.edu/mvco/IFCB1_2009_174_055621_blob.zip
 targets = get_bin_file([in_dir file]);
+targets_blob = get_blob_bin_file([in_dir regexprep(file, '.zip', '_blob.zip')]);
+
 nt = length(targets.pid);
 log(['PROCESSING ' num2str(nt) ' target(s) from ' file]);
 
@@ -25,11 +27,11 @@ for i = 1:nt,
     target = empty_target;
     % get the image
     target.image = cell2mat(targets.image(i));
-    target = blob(target);
-    target = apply_blob_min( target ); %get rid of blobs < blob_min
-
-    target = blob_rotate(target);
+    target.blob_image = cell2mat(targets_blob.image(i));
+    %target = blob(target);
+    %target = apply_blob_min( target ); %get rid of blobs < blob_min
     target = blob_geomprop(target); 
+    target = blob_rotate(target);
     target = blob_texture(target);
     target = blob_invmoments(target);
     target = blob_shapehist_stats(target);
