@@ -1,18 +1,20 @@
 %run compile_train_features3.m to generate train and class_vector
-load compiled_train
+load compiled_train_saltpond
 datestring = datestr(now, 'ddmmmyyyy');
 
 %class_vector = classes(class_vector);
 disp('Growing trees...please be patient')
-b = TreeBagger(300,train,class_vector,'Method','c','OOBVarImp','on','MinLeaf',1);
+b = TreeBagger(50,train,class_vector,'Method','c','OOBVarImp','on','MinLeaf',1);
 figure, hold on
 plot(oobError(b), 'b-');
 xlabel('Number of Grown Trees');
 ylabel('Out-of-Bag Classification Error');
 
 %b = growTrees(b,250); %specify how many to add
-%plot(oobError(b3), 'g');
-save(['MVCO_trees_' datestring],'b', 'targets', 'featitles', 'classes')
+%plot(oobError(b), 'g');
+save(['SaltPond_trees_' datestring],'b', 'targets', 'featitles', 'classes')
+
+return
 
 [Yfit,Sfit] = oobPredict(b);  
 c1 = confusionmat(b.Y,Yfit); %transposed from mine
