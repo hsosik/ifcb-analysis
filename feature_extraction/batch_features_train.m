@@ -20,7 +20,7 @@ for cix = 1:length(classlist),
     disp(classlist(cix))
     roilist = dir([trainpath char(classlist(cix)) '\D*']);
     %roinames = {};
-o    %for idx = 1:length(roilist), %reformat with zero padding on roi num to 5 digits
+    %for idx = 1:length(roilist), %reformat with zero padding on roi num to 5 digits
     %    t = char(roilist(idx).name);
     %    roinames(idx,1) = cellstr([t(1:22) repmat('0',1,31-length(t)) t(23:end)]);
     %end;
@@ -34,7 +34,6 @@ o    %for idx = 1:length(roilist), %reformat with zero padding on roi num to 5 d
         if rem(iix,10) == 0, disp(iix), end;
         target = empty_target;
         tname = roilist(iix).name; tname = tname(1:end-4); %get_image expects no extension
-        tname = [tname([1:16, 23:end]) tname(17:22)]; %kludge here to adjust for change in new roi names - FIX by editing export png
         target.image = get_image([urlbase tname]);
         %target.image = imread([trainpath char(classlist(cix)) '\' tname '.png']);
         %target = blob(target);
@@ -61,7 +60,7 @@ o    %for idx = 1:length(roilist), %reformat with zero padding on roi num to 5 d
     %save output2 output
     out = temp;
    % save([trainpath char(classlist(cix))], 'out', 'output')
-    save(['G:\Rob\SaltPond\training_set\' char(classlist(cix))], 'out', 'output')
+    save(['G:\Rob\SaltPond\training_set2\' char(classlist(cix))], 'out', 'output')
 end;
 
 %feamat = struct2cell(output.features);
