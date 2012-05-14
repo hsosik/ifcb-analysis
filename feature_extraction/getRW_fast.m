@@ -56,7 +56,8 @@ end
 %Begin the fourier transform part
 amp_trans = fftshift(fft2(img));
 int_trans = (amp_trans.*conj(amp_trans));
-int_trans = imresize(int_trans, [dim dim], 'bilinear', 0);
+%int_trans = imresize(int_trans, [dim dim], 'bilinear', 0); %use this code for matlab before v5.4
+int_trans = imresize(int_trans, [dim dim], 'bilinear');
 clear amp_trans;
 clear input_image;
 
