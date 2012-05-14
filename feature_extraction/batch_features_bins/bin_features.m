@@ -57,10 +57,10 @@ fprintf(fid, '%s\r\n ', char(featitles(end))); fclose(fid);
 dlmwrite([out_dir fileout], feature_mat, '-append')
 %write the raw multi-blob features to separate csv file
 fileout = regexprep(file, '.zip', '_multiblob_v1.csv');
-fid = fopen([out_dir 'multiblob\' fileout], 'w');
+fid = fopen([out_dir 'multiblob' filesep fileout], 'w');
 for ii = 1:length(multiblob_titles)-1, fprintf(fid, '%s,', char(multiblob_titles(ii))); end; 
 fprintf(fid, '%s\r\n', char(multiblob_titles(end))); fclose(fid);
-dlmwrite([out_dir 'multiblob\' fileout], multiblob_features, '-append')
+dlmwrite([out_dir 'multiblob' filesep fileout], multiblob_features, '-append')
 
 log(['DONE ' file]);
 
