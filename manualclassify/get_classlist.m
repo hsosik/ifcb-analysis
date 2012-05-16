@@ -73,7 +73,9 @@ else
         case 'correct_or_subdivide'  %make subcategories starting with an automated class
             if exist(classfilename),
                 load(classfilename) %load SVM results
-                classlist(:,auto_col)  = PreLabels(:,1);
+                if ~exist('classlist', 'var'), %this for old case, new treebagger output has classlist already
+                    classlist(:,auto_col)  = PreLabels(:,1);
+                end;
             end;
             if ~isempty(classnum_default),               
                 classlist(:,sub_col) = NaN;
