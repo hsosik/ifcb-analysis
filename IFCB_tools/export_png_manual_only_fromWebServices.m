@@ -15,8 +15,8 @@ resultfilelist = get_filelist_manual([resultpath 'manual_list'],3,[2006:2011], '
 resultfilelist = char(resultfilelist.name);
 resultfilelist = cellstr(resultfilelist(:,1:end-4));
 
-for count = 1:length(resultfilelist),
-    resultfile = char(resultfilelist(count));    
+for filecount = 1:length(resultfilelist),
+    resultfile = char(resultfilelist(filecount));    
     load([resultpath resultfile])
 
     %USER CHOOSE A LINE AND EDIT FOR YOUR CASE
