@@ -1,9 +1,15 @@
-function [output] = batch_features_train( )
+function [] = batch_features_train(trainpath,maxn_perclass,urlbase)
+%function [] = batch_features_train(trainpath,maxn_perclass,urlbase)
+%trainpath is location of example pngs organized in subdirectories by class
+%maxn is maximum number to randomly draw from examples in each class
+%urlbase is webservice location, if urlbase is not passed in pngs are loaded from trainpath
+%urlbase = 'http://ifcb-data.whoi.edu/saltpond/';
+%trainpath = '\\mellon\saltpond\manual_fromWeb\';
 
 config = configure();
 
-urlbase = 'http://ifcb-data.whoi.edu/saltpond/';
-trainpath = '\\mellon\saltpond\manual_fromWeb\';
+webflag = 0; %read pngs from local path
+if exist('urlbase', 'var'), webflag = 1; end; %otherwise get via webservices
 
 classlist = dir(trainpath);
 classlist = cellstr(char(classlist(cat(1,classlist.isdir)).name));
@@ -13,31 +19,26 @@ target.config = config;
 output.config = config;
 empty_target = target;
 
-%load output2
-
 for cix = 1:length(classlist),
     clear temp
     disp(classlist(cix))
-    roilist = dir([trainpath char(classlist(cix)) '\D*']);
-    %roinames = {};
-    %for idx = 1:length(roilist), %reformat with zero padding on roi num to 5 digits
-    %    t = char(roilist(idx).name);
-    %    roinames(idx,1) = cellstr([t(1:22) repmat('0',1,31-length(t)) t(23:end)]);
-    %end;
-    if length(roilist) > 1000,
+    roilist = dir([trainpath char(classlist(cix)) '\*.png']);
+    if length(roilist) > maxn_perclass,
         roilist = roilist(randi(length(roilist),1000));
     end;
     roinames = {roilist.name};
-    %temp.targets = cellstr(char(roilist.name));
     temp.targets = roinames; 
     for iix = 1:length(roilist), %min([3 length(roilist)]),
         if rem(iix,10) == 0, disp(iix), end;
         target = empty_target;
         tname = roilist(iix).name; tname = tname(1:end-4); %get_image expects no extension
-        target.image = get_image([urlbase tname]);
-        %target.image = imread([trainpath char(classlist(cix)) '\' tname '.png']);
-        %target = blob(target);
-        target.blob_image = get_image([urlbase tname '_blob']);
+        if webflag,
+            target.image = get_image([urlbase tname]);
+            target.blob_image = get_image([urlbase tname '_blob']);
+        else
+            target.image = imread([trainpath char(classlist(cix)) '\' tname '.png']);
+            target = blob(target);
+        end;
         %FIX!!! only need for numblobs??
         target = apply_blob_min( target ); %get rid of blobs < blob_min
         
@@ -56,21 +57,8 @@ for cix = 1:length(classlist),
         temp.images(iix).blob_image_rotated = target.blob_image_rotated;
         temp.images(iix).image = target.image;
     end;
-    %eval(['output.' char(classlist(cix)) ' = temp;'])
-    %save output2 output
     out = temp;
-   % save([trainpath char(classlist(cix))], 'out', 'output')
-    save(['G:\Rob\SaltPond\training_set2\' char(classlist(cix))], 'out', 'output')
+    save([trainpath char(classlist(cix))], 'out', 'output')
 end;
 
-%feamat = struct2cell(output.features);
-%feamat = cell2mat(squeeze(feamat)');
-%featitles = fieldnames(output.features)';
-
-%f = fields(output);
-%for c = 1:length(f),
-%    disp(f{c})
-%    out = output.(f{c});
-%    save(f{c}, 'out')
-%end;
     
