@@ -1,4 +1,4 @@
-function [] = batch_features_train(trainpath,maxn_perclass,urlbase)
+cfunction [] = batch_features_train(trainpath,maxn_perclass,urlbase)
 %function [] = batch_features_train(trainpath,maxn_perclass,urlbase)
 %trainpath is location of example pngs organized in subdirectories by class
 %maxn is maximum number to randomly draw from examples in each class
