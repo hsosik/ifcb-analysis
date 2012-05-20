@@ -119,7 +119,7 @@ for loopcount = 1:length(mode_list),
             end;
             temp(classnum) = length(cind);
             tempvol(classnum) = nansum(targets.Biovolume(cind)*micron_factor.^3);
-            keyboard
+ %           keyboard
         end;
         if exist('class2use_sub4', 'var'),
              if ~isequal(class2use_sub4, class2use_first_sub)
