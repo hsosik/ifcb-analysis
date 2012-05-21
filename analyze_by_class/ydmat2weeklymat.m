@@ -1,5 +1,5 @@
 function [  y_wkmat, mdate_wkmat, yd_wk ] = ydmat2weeklymat( y_ydmat, yearlist )
-%function [ y_wkmat, mdate_wkmat, yd_wk ] = ydmat2weeklymat( y_ydmat )
+%function [ y_wkmat, mdate_wkmat, yd_wk ] = ydmat2weeklymat( y_ydmat, yearlist )
 %accept an input matrix of mean values for each yearday by year (y_ydmat)
 %output a matrix of mean values for each week by year (y_wkmat) 
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, May 2012

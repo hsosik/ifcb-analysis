@@ -1,5 +1,5 @@
 function [r,slope,n,p,r_sig,slope_sig] = anomaly_corr(xall, yall, yearday, month_bins, subplotwidth, years)
-%[r,slope,n,p,r_sig,slope_sig] = anomaly_corr(xanom, ynanom, month_bins, subplotwidth)
+%[r,slope,n,p,r_sig,slope_sig] = anomaly_corr(xall, yall, yearday, month_bins, subplotwidth, years)
 %   Detailed explanation goes here
 
 mon_str = {'Jan' 'Feb' 'Mar' 'Apr' 'May' 'Jun' 'Jul' 'Aug' 'Sep' 'Oct' 'Nov' 'Dec'};
