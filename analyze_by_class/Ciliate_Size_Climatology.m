@@ -107,6 +107,29 @@ h_anom=meanh-rep_h_clim; %creating normalized anomaly matrix
 % end
 
 
+for year_count=1:length(year_list);
+    figure(year_count)
+    for month=1:12
+        subplot(4,3,month)
+        ind = find(dv(:,1) == year_list(year_count) & dv(:,2) == month & ~isnan([ml_day.ciliate_mix]')); %finds years and months
+        h=nan(length(diambins),length(ind));%creates an empty 3D matrix to accomadate for the amount of bins, months, and years
+        for j=1:length(ind)% loops over every individual month and year
+            day_index = ind(j);%the amount of individual days found in each month and year
+            h(:,j)=hist(eqdiam_day(day_index).ciliate_mix, diambins)./ml_day(day_index).ciliate_mix;
+        end;
+        if ~isempty(ind),
+            plot(diambins, h)
+            title([num2str(year_list(year_count)) ' month ' num2str(month)])
+            xlim([0 50]);
+            ylim([0 1.5]);
+            xlabel('diameter (\mum)')
+            ylabel('Cells (mL^{-1}\mum^{-1} )')
+            set(gca,'xtick', 0:10:50)
+        end;
+    end
+    set(gcf, 'position', [680   170   980   930])
+end
+
 
 
 for year_count=1:length(year_list);%loops over each year
