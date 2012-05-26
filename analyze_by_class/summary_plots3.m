@@ -1,5 +1,5 @@
 %load '\\raspberry\d_work\ifcb1\ifcb_data_mvco_jun06\manual_fromClass\summary\count_biovol_manual_29Mar2012_day'
-load 'C:\work\ifcb\ifcb_data_MVCO_jun06\manual_fromClass\summary\count_biovol_manual_14May2012_day.mat'
+load 'C:\work\ifcb\ifcb_data_MVCO_jun06\manual_fromClass\summary\count_biovol_manual_18May2012_day.mat'
 ii = find(floor(matdate_bin) == datenum('2-9-2010')); %skip this day with one partial sample
 classbiovol_bin(ii,:) = []; classcount_bin(ii,:) = []; ml_analyzed_mat_bin(ii,:) = []; matdate_bin(ii) = [];
 
