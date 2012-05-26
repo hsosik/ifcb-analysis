@@ -12,7 +12,6 @@ slope = fit(1); b = fit(2);
 r = corrcoef(x(ii),y(ii));
 [tau,p_rho] = corr(x(ii),y(ii), 'type', 'kendall'); %Kendall's rank
 r = r(2);
-keyboard
 r(2) = tau; % same value as returned by corrcoef
 n = length(ii);
 t = abs(r).*sqrt((n-2)./(1-r.^2));
