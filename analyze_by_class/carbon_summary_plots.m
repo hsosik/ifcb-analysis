@@ -1,4 +1,4 @@
-load c:\work\mvco\carbon\IFCB_carbon_manual_March2012
+load c:\work\mvco\carbon\IFCB_carbon_manual_May2012.mat
 load c:\work\mvco\carbon\carbon_summary_fcb.mat
 
 %FIX later! Omit one really extreme value during Phaeocystis bloom in 2009 
@@ -71,7 +71,7 @@ c = strmatch('Guinardia', classes, 'exact');
 ii = find(~isnan(C_day_mat(:,c)));
 figure
 ph = plotyy(mdate(:), synCperml(:), Cmdate_day(ii), C_day_mat(ii,c));
-set(ph, 'xlim', datenum(['1-0-2006'; '1-1-2012']))
+set(ph, 'xlim', datenum(['1-0-2006'; '5-1-2012']))
 datetick('x', 'keeplimits')
 set(ph(2), 'xtick', get(ph(1), 'xtick'), 'xticklabel', [], 'ylim', [0 60], 'ytick', [0 30 60])
 set(ph, 'linewidth', 2, 'fontsize', 14)
