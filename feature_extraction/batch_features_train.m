@@ -1,4 +1,4 @@
-cfunction [] = batch_features_train(trainpath,maxn_perclass,urlbase)
+function [] = batch_features_train(trainpath,maxn_perclass,urlbase)
 %function [] = batch_features_train(trainpath,maxn_perclass,urlbase)
 %trainpath is location of example pngs organized in subdirectories by class
 %maxn is maximum number to randomly draw from examples in each class
@@ -24,7 +24,7 @@ for cix = 1:length(classlist),
     disp(classlist(cix))
     roilist = dir([trainpath char(classlist(cix)) '\*.png']);
     if length(roilist) > maxn_perclass,
-        roilist = roilist(randi(length(roilist),1000));
+        roilist = roilist(randi(length(roilist),maxn_perclass));
     end;
     roinames = {roilist.name};
     temp.targets = roinames; 
