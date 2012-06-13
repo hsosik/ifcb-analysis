@@ -1,5 +1,5 @@
 %run compile_train_features3.m to generate train and class_vector
-load compiled_train_tamu
+load compiled_train_tamu2
 datestring = datestr(now, 'ddmmmyyyy');
 
 %class_vector = classes(class_vector);
@@ -93,3 +93,11 @@ acc = num_correct./(num_correct+num_wrong)
 unk_rate = num_nan./(num_correct+num_nanincorrect)
 sum(c')-sum(c2') %num unknown per 
 
+
+ind = find(total>75);
+
+figure, bar([Pd(ind) Sp(ind)'])
+set(gca, 'xtick', 1:length(classes(ind)), 'xticklabel', [])
+text(1:length(classes(ind)), -text_offset.*ones(size(classes(ind))), classes(ind), 'interpreter', 'none', 'horizontalalignment', 'right', 'rotation', 45) 
+set(gca, 'position', [ 0.13 0.35 0.8 0.6])
+legend('Pd', 'Sp')
