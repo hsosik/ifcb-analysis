@@ -12,7 +12,7 @@ end;
 matdate = IFCB_file2date(filelist);
 [year,~,~] = datevec(matdate);
 files = char(filelist);
-sep = repmat('\',length(year),1);
+sep = repmat(filesep,length(year),1);
 base = repmat(char(basepath), length(year),1);
 if files(1,1) == 'D',
     basepath = [base files(:,1:5) sep files(:,1:9) sep];
