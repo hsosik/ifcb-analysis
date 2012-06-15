@@ -33,35 +33,11 @@ while 1
     numbering = input('label each roi number? [ENTER(default=n) or y]','s');
     file_chosen = 0;
     if strmatch(new_file,'y','exact'); %if data has been read already (reprocess=1), don't re-read
-        %                 [file path] = uigetfile('\\128.128.111.147\IFCB9_data\*.roi'); %ifcb5 -- all data is in data subdirectory
-%        [file path] = uigetfile('\\128.128.108.90\data\D20120426*.roi'); %ifcb7 -- all data is in data subdirectory
-%        [file path] = uigetfile('\\128.128.108.90\data\D20120610*.roi'); %ifcb7 -- all data is in data subdirectory
-%        [file path] = uigetfile('\\128.128.108.51\data\D20120610*.roi'); %ifcb10 -- all data is in data subdirectory
-  
-%          [file path] = uigetfile('\\128.128.108.82\data\D20120614*.roi'); %ifcb10 -- all data is in data subdirectory
-         [file path] = uigetfile('\\128.128.108.82\data\beads\D20120615*'); %ifcb10 -- all data is in data subdirectory
+          [file path] = uigetfile('C:\work\IFCB11\D2012\D20120615\D20120615*.roi'); %ifcb11
+          %[file path] = uigetfile('\\128.128.108.82\data\D20120615*.roi'); %ifcb10 -- all data is in data subdirectory
+%         [file path] = uigetfile('\\128.128.108.82\data\beads\D20120615*'); %ifcb10 -- all data is in data subdirectory
 
-       %        [file path] = uigetfile('\\128.128.111.200\data\*.roi'); %ifcb7 -- all data is in data subdirectory
-%        [file path] = uigetfile('C:\IFCB7\data\D20120503*.roi'); %ifcb7 -- all data is in data subdirectory
-%        [file path] = uigetfile('C:\IFCB7\data\D20120504*.roi'); %ifcb7 -- all data is in data subdirectory
        
-%        [file path] = uigetfile('\\128.128.111.147\data\D20120503*.roi'); %ifcb9 -- all data is in data subdirectory
-%         [file path] = uigetfile('\\128.128.110.88\data\IFCB*.roi'); %ifcb5 -- all data is in data subdirectory
-%         [file path] = uigetfile('C:\IFCB7\data\IFCB7_2012_040*.roi'); %ifcb5 -- all data is in data subdirectory
-%         [file path] = uigetfile('\\128.128.108.51\data\D2012*.roi'); %ifcb5 -- all data is in data subdirectory
-
-%         [file path] = uigetfile('W:\beads\D2012*.roi'); %mellon\saltpond
-%         [file path] = uigetfile('\\Mellon\saltpond\beads\*.roi'); %ifcb5 -- all data is in data subdirectory
-
-%         [file path] = uigetfile('W:\D2012\D20120611\*.roi'); %ifcb5 -- all data is in data subdirectory
-% 
-%         [file path] = uigetfile('C:\rob\proposals\AccessToTheSea2011\data\D*.roi'); %ifcb5 -- all data is in data subdirectory
-%         [file path] = uigetfile('IFCB9_con*.roi'); %ifcb5 -- all data is in data subdirectory
-%         [file path] = uigetfile('C:\IFCB7\pico6\data\IFCB9\VB_data\IFCB*.roi'); %ifcb5 -- all data is in data subdirectory
-%                  [file path] = uigetfile('\\128.128.108.203\data\IFCB*.roi'); %ifcb5 -- all data is in data subdirectory
-        %         [file path] = uigetfile('C:\IFCB1\ifcb_data_mvco_jun06\beads\*.roi'); %ifcb5 -- all data is in data subdirectory
-%                  [file path] = uigetfile('c:\IFCB7\data\IFCB*.roi'); %ifcb7 -- all data is in data subdirectory
-        
         file = file(1:findstr(file, '.')-1);
         disp(file)
         fname = [path file '.adc'];
@@ -106,28 +82,18 @@ while 1
         %           17 = roiSizeY
         %           18 = StartByte
         
-%         dotpos = findstr(fname,'.'); dotpos = dotpos(end);
         slashpos = findstr(fname,'\'); slashpos = slashpos(end);
         instr_num = fname(slashpos+5);
-%         if str2num(instr_num)>6 | str2num(instr_num)==0 % new IFCBs using Martin's software
             xsize = adcdata(:,16);  ysize = adcdata(:,17); startbyte = adcdata(:,18);
             peakA = adcdata(:,7); peakB = adcdata(:,8); peakc = adcdata(:,9); peakD = adcdata(:,10);
             xpos = adcdata(:,14); ypos = adcdata(:,15); PMTA = adcdata(:,3); PMTB = adcdata(:,4);
             GrabtimeStart = adcdata(:,12); GrabtimeEnd = adcdata(:,13);
-%         else
-%             xsize = adcdata(:,12);  ysize = adcdata(:,13); startbyte = adcdata(:,14);
-%             xpos = adcdata(:,10); ypos = adcdata(:,11); PMTA_low = -adcdata(:,3); PMTC_low = -adcdata(:,5);
-%             PMTA = -adcdata(:,4); PMTB = -adcdata(:,6); % (high gain) A=chl, B=ssc, opposite new IFCBs
-%             GrabtimeStart = adcdata(:,8); GrabtimeEnd = adcdata(:,9);
-%         end
     end
     disp(file)
     
 
     y2plot = PMTB; ylab = 'PMT B';
     x2plot = PMTA; xlab = 'PMT A';
-%     x2plot(find(x2plot<=0)) = NaN;  %get rid of -9.997's -- why are they present?
-%     y2plot(find(y2plot<=0)) = NaN;
     dur_plot = 'n';
     dur_plot = input('plot signal duration rather than SSC? [ENTER(default=n) or y]  ','s');
     if strmatch(dur_plot,'y','exact');
@@ -137,7 +103,6 @@ while 1
     end
     
     close all
-%     h1 = figure(1); set(h1,'position',[10 10 1380/1.5 1038/1.5])
     h1 = figure(1); set(h1,'position',[10 10 1380/1.1 1038/1.1])
     axis square
     
@@ -153,7 +118,6 @@ while 1
         end
     else
         loglog(x2plot,y2plot,'.');
-%         loglog(x2plot(xsize>0),y2plot(ysize>0),'.'); % don't show odd-looking correlated signals with no rois
         hold on
         if show_non_roi_triggers
             loglog(x2plot(tind),y2plot(tind),'r.');
@@ -162,40 +126,29 @@ while 1
     if ~isnan(ymax)
         axis([0 abs(xmax) 0 abs(ymax)])
     end
-%     axis([0 1    0 1]); disp('axis restricted for testing')
     set(gca,'fontname','times','fontsize',18);
     xlabel(xlab, 'fontsize',18); ylabel(ylab, 'fontsize',18);
     
     if strmatch(all_signals,'y','exact'); % to do all the points without drawing poly
-        %     if all_sifgnals; % to do all the points without drawing poly
         xpoly = [min(x2plot); max(x2plot); max(x2plot); min(x2plot)];
         ypoly = [min(y2plot); min(y2plot); max(y2plot); max(y2plot)];
     else
         [xpoly,ypoly] = ginput; %choose a region to see images of
-        
-        %eval(['print -dpng c:\rob\AGU2004IFCB\sscchl_' file])
-        %save chaetpoly xpoly ypoly
     end
-%     isin = find(isinpoly(xpos, ypos, xpoly, ypoly));
-isin = find(isinpoly(x2plot, y2plot, xpoly, ypoly));
+    isin = find(isinpoly(x2plot, y2plot, xpoly, ypoly));
     hold on
     p = plot([xpoly; xpoly(1)], [ypoly; ypoly(1)], 'r', 'linewidth', 4);
     hold off
     pause%(.5)
     set(gcf, 'visible','off')  %to show command line screen again...
-%     pause(.5)
     
-    
-    %test to see if roi pos affects focus of images
-
-    
+    %test to see if roi pos affects focus of images   
     roipos_focus = input('see images from a region of roipos? [ENTER(default=n) or y]  ','s');
     if strmatch(roipos_focus,'y','exact');
         figure(97); plot(xpos,ypos,'.r');hold on; xlabel('xpos'); ylabel('ypos'); axis([0 1400 0 1040])
         [xpoly,ypoly] = ginput; %choose a region to see images of
         p2 = plot([xpoly; xpoly(1)], [ypoly; ypoly(1)], 'r', 'linewidth', 4);
         isin2 = isin;
-%         isin = find(isinpoly(xpos, ypos, xpoly, ypoly));
         isin = intersect(isin2,find(isinpoly(xpos, ypos, xpoly, ypoly)));
     else
         if strmatch(dur_plot,'y','exact');
@@ -261,31 +214,20 @@ isin = find(isinpoly(x2plot, y2plot, xpoly, ypoly));
     set(h2,'position',[width*0 height*0.1 width*.8 height*.85])
     colormap(gray);
     set(gcf,'color', [1 1 1]);
-    %toobigflag=0; %rob 28Jun07
     count = 0; pagefull = 0; rownum = 1; newrow = 1; yrowmaxall=[];
-    %     while pagefull < 1 & count < length(startbyte)-1
-    %keyboard
-    %while pagefull < 1 & count < length(startbyte)-1 & count < length(isin)
     while pagefull < 1 & count < length(startbyte) & count < length(isin) % with "count < length(startbyte)-1", it doesn't do last roi (e.g., IFCB2_2009_284_221426)
         count = count + 1;
         if count >= length(startbyte), pagefull=1; end % so the last page of images is shown
-        %if count >= length(startbyte)-1, pagefull=1; end % so the last page of images is shown
-        %         if count >= length(isin)-1, pagefull=1; end % so the last page of images is shown
         if newpageflag == 1,
             newpageflag = 0; xcum = 0; ycum = 0; yrowmax = 0;
         end % to avoid skipping an image when the new image is too big to fit on the same page...
-%         keyboard
         position = startbyte(isin(count)); %sum(xsize(1:test-1) .* ysize(1:test-1));
         fseek(fid, position, -1);
         data = fread(fid, xsize(isin(count)).*ysize(isin(count)), 'ubit8');
         imagedat = reshape(data, xsize(isin(count)), ysize(isin(count)));
         x = size(imagedat,1); y = size(imagedat,2);
-        %if isin(count)==1609, keyboard, end %testing - rob
         if ycum + y <= camy & xcum + x <= camx, %stay on same page and same row
             h = imagesc(imagedat', 'xdata', [xcum+border xcum+x], 'ydata', [ycum+border ycum+y]); colormap(gray); shading flat; hold on; axis([1 1380 1 1034]);
-            %             h = image(imagedat', 'xdata', [xcum+border xcum+x], 'ydata', [ycum+border ycum+y]); colormap(gray); shading flat; hold on; axis([1 1380 1 1034]);
-%             keyboard
-%             num = isin(count);
             if strmatch(numbering,'y','exact') & x > 0  % don't put numbers for non-existent rois
                 text(xcum+border,ycum+border,num2str(isin(count)))  %label each image
             end
@@ -311,12 +253,9 @@ isin = find(isinpoly(x2plot, y2plot, xpoly, ypoly));
             end
             if newpageflag == 0
                 h = imagesc(imagedat', 'xdata', [xcum+border xcum+x], 'ydata', [ycum+border ycum+y]); colormap(gray); shading flat; hold on; axis([1 1380 1 1034]);
-                %                 h = image(imagedat', 'xdata', [xcum+border xcum+x], 'ydata', [ycum+border ycum+y]); colormap(gray); shading flat; hold on; axis([1 1380 1 1034]);
-                %set(gca,'position',[xpos/1378 1-(ypos/1012+size(imagedat,1)/1012) size(imagedat,2)/1378 size(imagedat,1)/1012])
                 if strmatch(numbering,'y','exact')
                     text(xcum+border,ycum+border,num2str(isin(count)))  %label each image
                 end
-%                 keyboard
                 xcum = xcum + x;
                 temp = [get(h,'xdata') get(h,'ydata')];
                 if y > yrowmax, yrowmax = y; end
@@ -329,9 +268,6 @@ isin = find(isinpoly(x2plot, y2plot, xpoly, ypoly));
             delete(gca)
             startroi = count;% - 1;
             newpageflag = 1;
-            %             if y+ycum>=camy | x+xcum>=camx %rob 28Jun07
-            %                 toobigflag=1;
-            %             end
             count = count - 1;
         end
     end
