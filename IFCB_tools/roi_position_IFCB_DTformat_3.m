@@ -82,7 +82,7 @@ while 1
         %           17 = roiSizeY
         %           18 = StartByte
         
-        slashpos = findstr(fname,'\'); slashpos = slashpos(end);
+        slashpos = findstr(fname,filesep); slashpos = slashpos(end);
         instr_num = fname(slashpos+5);
             xsize = adcdata(:,16);  ysize = adcdata(:,17); startbyte = adcdata(:,18);
             peakA = adcdata(:,7); peakB = adcdata(:,8); peakc = adcdata(:,9); peakD = adcdata(:,10);
