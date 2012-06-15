@@ -8,7 +8,7 @@
 %Revised 31 May 2009 for use with new manual_classify scripts (_2_0.m and
 %after); %figure_handle in place of h2
 
-global category button_flag
+global category button_flag figure_handle button_handles1 button_handles2 instructions_handle
 
 rb = gco;
 button_flag = 1;
