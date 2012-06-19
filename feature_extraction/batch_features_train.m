@@ -24,7 +24,8 @@ for cix = 1:length(classlist),
     disp(classlist(cix))
     roilist = dir([trainpath char(classlist(cix)) '\*.png']);
     if length(roilist) > maxn_perclass,
-        roilist = roilist(randi(length(roilist),maxn_perclass));
+        ind = randperm(length(roilist));
+        roilist = roilist(ind(1:maxn_perclass));
     end;
     roinames = {roilist.name};
     temp.targets = roinames; 
