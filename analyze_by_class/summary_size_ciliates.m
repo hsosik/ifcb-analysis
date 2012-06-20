@@ -180,18 +180,6 @@ biovol40_inf_mat = squeeze(cell2mat(struct2cell(biovol40_inf)))'./ml_day_mat; bi
 [ind_ciliate] = get_ciliate_ind(classes,classes);
 ciliate_flag = zeros(size(classes));
 
-for year_count=1:length(year_list);%loops over each year
-for month=1:12 %in each year loops over each month
-ind = find(dv(:,1) == year_list(year_count) & dv(:,2) == month & ~isnan([ml_day.ciliate_mix]')); %finds years and months
-h=nan(length(diambins),length(ind));%creates an empty 3D matrix to accomadate for the amount of bins, months, and years
-for j=1:length(ind)% loops over every individual month and year
-    day_index = ind(j);%the amount of individual days found in each month and year
-    h(:,j)=hist(eqdiam0_10(day_index).ciliate_mix, diambins)./ml_day(day_index).ciliate_mix; %stores a histogram amount of cells in each diameter bin/ml for each day
-end
-meanh(:,month,year_count) = mean(h,2); %average all bins across days of each month
-end
-end
-
 
 
 eqdiam0_10ciliate = sum(eqdiam0_10_mat(:,ind_ciliate(4)),2);
@@ -231,8 +219,10 @@ totalbiovol_ciliate = biovol0_10ciliate + biovol10_20ciliate + biovol20_30ciliat
 ciliate_biovol_fraction0_10 = (biovol0_10ciliate_mat./totalbiovol_ciliate_mat);
 ciliate_biovol_fraction10_20 = (biovol10_20ciliate_mat./totalbiovol_ciliate_mat);
 ciliate_biovol_fraction20_30 = (biovol20_30ciliate_mat./totalbiovol_ciliate_mat);
+ciliate_biovol_fraction30_40 = (biovol30_40ciliate_mat./totalbiovol_ciliate_mat);
+ciliate_biovol_fraction40_inf = (biovol40_infciliate_mat./totalbiovol_ciliate_mat);
 
-
+plot(yd, ciliate_biovol_fraction10_20(:,1), 'r*')
 
 % [ Cmdate_mat, C0_10phyto_mat, yearlist, yd ] = timeseries2ydmat( unqday, C0_10phyto );
 % [ Cmdate_mat, C10_20phyto_mat, yearlist, yd ] = timeseries2ydmat( unqday, C10_20phyto );
