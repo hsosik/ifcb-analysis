@@ -68,14 +68,18 @@ switch pick_mode
         %if adding new categories
         %class2use = {'class1'; 'class2'; 'other'}; %USER type or load list
         %load class2use_MVCOmanual3 %load class2use
-        [junk, fulldiff] = setdiff(class2use, class2use_auto);
-        class2use = [class2use_auto(:)' class2use(sort(fulldiff))];  %append new classes on end of auto classes
+        %keyboard
+        %[junk, fulldiff] = setdiff(class2use, class2use_auto);
+        %class2use = [class2use_auto(:)' class2use(sort(fulldiff))];  %append new classes on end of auto classes
         class2use_pick1 = class2use;
         class2use_manual = class2use;
         classstr = 'ciliate'; %USER class to start from
         class2use_sub = [];  %use this if no subdividing 
         %new subclasses, first one for rois NOT in the class
-        %class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'}; %USER type or load list
+        class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'}; %USER type or load list
+        class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
+            'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium 2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
+            'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
         classnum_default = strmatch('ciliate_mix', class2use_sub); %USER class for default
         class2use_pick2 = class2use_sub; %to set button labels
         class2view1 = 1:length(class2use); %use this to view all classes
