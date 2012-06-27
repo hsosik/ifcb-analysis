@@ -4,7 +4,7 @@
 %[ filelist, feafiles ] = resolve_MVCOfeafiles( filelist, feafilestr );
 
 feapath = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\features2006_v1\';
-filelist = dir([feapath '*.csv');
+filelist = dir([feapath '*.csv']);
 filelist = {filelist.name}';
 filesdone = dir('\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\class2006_v1\*.mat');
 filesdone = {filesdone.name}';
