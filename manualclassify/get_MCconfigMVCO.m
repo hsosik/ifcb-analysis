@@ -2,7 +2,7 @@ function [ MCconfig ] = get_MCconfigMVCO(  )
 %function [ MCconfig ] = get_MCconfigMVCO(  )
 %   Detailed explanation goes here
 
-MCconfig.filenum2start = 1;  %USER select file number to begin (within the chosen set)
+MCconfig.filenum2start = 13;  %USER select file number to begin (within the chosen set)
 
 MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one from case list
 %MCconfig.pick_mode = 'raw_roi';
