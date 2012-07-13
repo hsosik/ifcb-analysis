@@ -1,6 +1,6 @@
-% LOWPASSFILTER - Constructs a low-pass butterworth filter.
+% LOWPASSBUTTERWORTHFILTER - Constructs a low-pass butterworth filter.
 %
-% usage: f = lowpassfilter(sze, cutoff, n)
+% usage: f = lowpassbutterworthfilter(sze, cutoff, n)
 % 
 % where: sze    is a two element vector specifying the size of filter 
 %               to construct [rows cols].
@@ -37,7 +37,7 @@
 % August  2005 - Fixed up frequency ranges for odd and even sized filters
 %                (previous code was a bit approximate)
 
-function f = lowpassfilter(sze, cutoff, n)
+function f = lowpassbutterworthfilter(sze, cutoff, n)
 
     if cutoff < 0 | cutoff > 0.5
 	error('cutoff frequency must be between 0 and 0.5');

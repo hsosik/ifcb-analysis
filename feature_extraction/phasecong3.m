@@ -133,7 +133,7 @@
 % The software is provided "as is", without warranty of any kind.
 
 function [M, m, or, featType, PC, EO, T, pcSum] = phasecong3(varargin)
-    
+
 % Get arguments and/or default values    
     [im, nscale, norient, minWaveLength, mult, sigmaOnf, ...
                    k, cutOff, g, noiseMethod] = checkargs(varargin(:));     
@@ -187,7 +187,7 @@ function [M, m, or, featType, PC, EO, T, pcSum] = phasecong3(varargin)
     sintheta = sin(theta);
     costheta = cos(theta);
     clear x; clear y; clear theta;    % save a little memory
-    
+
     % Filters are constructed in terms of two components.
     % 1) The radial component, which controls the frequency band that the filter
     %    responds to
@@ -202,7 +202,7 @@ function [M, m, or, featType, PC, EO, T, pcSum] = phasecong3(varargin)
     % incorporated as this seems to upset the normalisation process when
     % calculating phase congrunecy.
     
-    lp = lowpassfilter([rows,cols],.45,15);   % Radius .45, 'sharpness' 15
+    lp = lowpassbutterworthfilter([rows,cols],.45,15);   % Radius .45, 'sharpness' 15
 
     logGabor = cell(1,nscale);
 
@@ -216,7 +216,7 @@ function [M, m, or, featType, PC, EO, T, pcSum] = phasecong3(varargin)
     end
     
     %% The main loop...
-    
+
     for o = 1:norient                    % For each orientation...
         % Construct the angular filter spread function
         angl = (o-1)*pi/norient;           % Filter angle.
