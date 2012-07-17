@@ -57,7 +57,9 @@ class DayDir(Timestamped):
 					(lid,ext) = re.match('.*/(.*)\.([a-z]+)$',f).groups()
 					if lid not in exts:
 						exts[lid] = []
-					exts[lid].append(ext)
+					# exclude bins with roi files 2 bytes in length
+					if not (ext=='roi' and os.stat(f).st_size == 2):
+						exts[lid].append(ext)
 					if 'hdr' in exts[lid] and 'adc' in exts[lid] and 'roi' in exts[lid]:
 						yield newBin(f)
 		except OSError:
@@ -86,9 +88,12 @@ class YearsDir:
 		try:
 			for item in sorted(os.listdir(self.dir)):
 				f = os.path.join(self.dir, item)
-				if parse_id(item).isday:
-					yield DayDir(os.path.abspath(f))
-				else:
+				try:
+					if parse_id(item).isday:
+						yield DayDir(os.path.abspath(f))
+					else:
+						raise KeyError
+				except KeyError:
 					print '%s is not a day' % item # FIXME debug
 		except OSError:
 			noop = None # FIXME log
