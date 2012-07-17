@@ -10,8 +10,6 @@ CREATE TABLE bins
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE bins
-  OWNER TO jfutrelle;
 
 -- Index: ix_bins_lid
 
@@ -48,7 +46,6 @@ CREATE TABLE fixity
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE fixity OWNER TO jfutrelle;
 
 -- Index: ix_fixity_length
 
