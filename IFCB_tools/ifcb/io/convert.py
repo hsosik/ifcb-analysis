@@ -5,7 +5,7 @@ from ifcb.io import PID, ADC_SCHEMA, HDR_SCHEMA, CONTEXT, TARGET_NUMBER, FRAME_G
 from lxml import etree
 from lxml.etree import ElementTree, QName, Element, SubElement
 import sys
-import simplejson
+import json
 import string
 from ifcb.util import order_keys, decamel, iso8601utcnow
 from array import array
@@ -209,7 +209,7 @@ def day2json(day,out=sys.stdout):
     """
     j = { 'date': day.iso8601time }
     j['bins'] = [bin.pid for bin in day]
-    return simplejson.dump(j,out)
+    return json.dump(j,out)
 
 # raw data
 
@@ -478,7 +478,7 @@ def bins2json_feed(bins,out=sys.stdout):
     date - the latest date to return (default: now)
     out - where to write the feed (default: stdout)
     """
-    simplejson.dump([bin.properties(True) for bin in bins],out)
+    json.dump([bin.properties(True) for bin in bins],out)
 
 def pretty_property_name(propName):
     """Decamelize a property name"""
@@ -638,7 +638,7 @@ def bin2json(bin,out=sys.stdout,detail=DETAIL_FULL):
     detail - level of detail (default: DETAIL_SHORT)
     """
     result = bin_as_json(bin,detail)
-    return simplejson.dump(result,out)
+    return json.dump(result,out)
 
 def target2json(target,out=sys.stdout):
     """Output JSON representing a given target
@@ -647,7 +647,7 @@ def target2json(target,out=sys.stdout):
     target - instance of Target
     out - where to write the representation (default: stdout)
     """
-    return simplejson.dump(target.info,out)
+    return json.dump(target.info,out)
 
 # this is the only method of writing images that works for all of PIL's formats
 def __stream_image(target,format,out,scale=1.0):
