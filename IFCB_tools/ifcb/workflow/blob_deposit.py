@@ -24,8 +24,10 @@ def deposit_impl(pid):
         os.makedirs(os.path.dirname(destpath))
     except:
         pass
-    with open(destpath,'w') as out:
+    destpath_part = destpath+'.part'
+    with open(destpath_part,'w') as out:
         shutil.copyfileobj(StringIO(zipdata), out)
+    os.rename(destpath_part, destpath)
     utcnow = iso8601utcnow()
     message = '%s wrote %d bytes to %s' % (utcnow, len(zipdata), destpath)
     return jsonr(dict(
@@ -76,5 +78,5 @@ if __name__=='__main__':
     config = get_config('./blob.conf', sys.argv[1])
     blob_storage = BlobStorage(config)
     app.config['BLOB_STORAGE'] = blob_storage
-    (h,p) = re.match(r'http://(.*):(\d+)/',config.blob_deposit).groups()
+    (h,p) = re.match(r'http://(.*):(\d+)',config.blob_deposit).groups()
     app.run(host=h, port=int(p))
