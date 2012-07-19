@@ -106,22 +106,25 @@ def doit(pid,size='medium',format='jpg',headers=True,out=sys.stdout,fs_roots=FS_
     tw = {'icon':48, 'thumb':128, 'small':320, 'medium':800, 'large':1024, '720p':1280, '1080p':1920, 'max':2400}[size]
     wh = box(tw,ASPECT_RATIO)
     size_thresh = 1200
-    bin = Filesystem(fs_roots).resolve(pid) # fetch the bin
-    # all mosaics are created at 2400 x 1260 and then scaled down
-    fullarea = box(2400,ASPECT_RATIO)
-    if format == 'json': # if the caller just wants the layout
-        if headers:
-            for h in ['Content-type: application/json',
-                      'Cache-control: max-age=31622400',
-                      '']:
-                print h
-        json.dump(layout(bin, fullarea, size_thresh),out) # give it to em
-    else:
-        if headers:
-            cache_key = ifcb.lid(pid) + '/mosaic/'+str(tw)+'.'+format
-            cache_io(cache_key, lambda o: http(bin, fullarea, size_thresh, wh, o, format), out)
+    try:
+        bin = Filesystem(fs_roots).resolve(pid) # fetch the bin
+        # all mosaics are created at 2400 x 1260 and then scaled down
+        fullarea = box(2400,ASPECT_RATIO)
+        if format == 'json': # if the caller just wants the layout
+            if headers:
+                for h in ['Content-type: application/json',
+                          'Cache-control: max-age=31622400',
+                          '']:
+                    print h
+            json.dump(layout(bin, fullarea, size_thresh),out) # give it to em
         else:
-            stream(thumbnail(mosaic(bin,fullarea,size_thresh),wh),out,format)
+            if headers:
+                cache_key = ifcb.lid(pid) + '/mosaic/'+str(tw)+'.'+format
+                cache_io(cache_key, lambda o: http(bin, fullarea, size_thresh, wh, o, format), out)
+            else:
+                stream(thumbnail(mosaic(bin,fullarea,size_thresh),wh),out,format)
+    except KeyError:
+        print 'Status: 404\n'
 
 def save_mosaic(bin,outfile=None,format='PNG',size=2400):
     if len(sys.argv) > 2:

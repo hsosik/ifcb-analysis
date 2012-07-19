@@ -7,7 +7,7 @@ import re
 from config import DATA_TTL
 import sys
 from zipfile import ZipFile
-from ifcb.io.blob_unzip import pid2blobpng, pid2blobzip
+from ifcb.io.blob_unzip import pid2blobpng, pid2blobzip, zip_path
 
 """RESTful service resolving an IFCB permanent ID (pid) + format parameter to an appropriate representation"""
 
@@ -30,13 +30,21 @@ if __name__ == '__main__':
                'Cache-control: max-age=%d' % DATA_TTL,
                '']
     if format == 'png':
-        png = pid2blobpng(pid)
-        for h in headers:
-            print h
-        sys.stdout.write(png)
-        sys.stdout.flush()
+        try:
+            png = pid2blobpng(pid)
+            for h in headers:
+                print h
+            sys.stdout.write(png)
+            sys.stdout.flush()
+        except KeyError:
+            print 'Status: 404\n'
     elif format == 'zip':
-        for h in headers:
-            print h
-        pid2blobzip(pid,sys.stdout)
+        try:
+            zip_path(pid)
+            for h in headers:
+                print h
+            pid2blobzip(pid,sys.stdout)
+        except KeyError:
+            print 'Status: 404\n'
+
     

@@ -11,7 +11,6 @@ import time
 import datetime
 
 if __name__=='__main__':
-    cgitb.enable()
     format = cgi.FieldStorage().getvalue('format','atom') # default format is atom
     size = int(cgi.FieldStorage().getvalue('n','25')) # default number of bins to return is 25
     date = None

@@ -43,7 +43,6 @@ IMAGE_FORMATS = {
 }
 
 if __name__ == '__main__':
-    cgitb.enable()
     out = sys.stdout
     pid = cgi.FieldStorage().getvalue('pid')
     format = 'rdf' # default format is RDF, to support "linked open data"
@@ -53,33 +52,35 @@ if __name__ == '__main__':
     format = cgi.FieldStorage().getvalue('format',format) # specified format overrides
     detail = cgi.FieldStorage().getvalue('detail', DETAIL_SHORT) # default detail is "short"
     scale = float(cgi.FieldStorage().getvalue('scale','1.0')) # default scale is "1.0"
-    object = Filesystem(FS_ROOTS).resolve(pid) # resolve the object
-    mime_type = MIME_MAP[format] # compute its MIME type
-    headers = ['Content-type: %s' % mime_type,
-               'Cache-control: max-age=%d' % DATA_TTL,
-               '']
-    for h in headers:
-        print h
-    if isinstance(object,BinFile) or isinstance(object,StitchedBin): # is the object a bin?
-        { 'rdf': bin2rdf,
-          'xml': bin2xml,
-          'html': bin2html,
-          'json': bin2json,
-          'adc': bin2adc,
-          'csv': bin2csv,
-          'roi': bin2roi,
-          'hdr': bin2hdr,
-          'zip': bin2zip }[format](object,out,detail) # convert it to format
-    elif re.search('^image/', mime_type): # is it an image?
-        target2image(object, IMAGE_FORMATS[mime_type], out, scale) # produce the image
-    elif isinstance(object,Target) or isinstance(object,StitchedTarget): # is it a target?
-        { 'rdf': target2rdf,
-          'xml': target2xml,
-          'html': target2html,
-          'json': target2json }[format](object) # convert it to format
-    elif isinstance(object,DayDir): # is it a day dir?
-        { 'rdf': day2rdf,
-          'xml': day2xml,
-          'html': day2html,
-          'json': day2json }[format](object) # convert it to format
-    
+    try:
+        object = Filesystem(FS_ROOTS).resolve(pid) # resolve the object
+        mime_type = MIME_MAP[format] # compute its MIME type
+        headers = ['Content-type: %s' % mime_type,
+                   'Cache-control: max-age=%d' % DATA_TTL,
+                   '']
+        for h in headers:
+            print h
+        if isinstance(object,BinFile) or isinstance(object,StitchedBin): # is the object a bin?
+            { 'rdf': bin2rdf,
+              'xml': bin2xml,
+              'html': bin2html,
+              'json': bin2json,
+              'adc': bin2adc,
+              'csv': bin2csv,
+              'roi': bin2roi,
+              'hdr': bin2hdr,
+              'zip': bin2zip }[format](object,out,detail) # convert it to format
+        elif re.search('^image/', mime_type): # is it an image?
+            target2image(object, IMAGE_FORMATS[mime_type], out, scale) # produce the image
+        elif isinstance(object,Target) or isinstance(object,StitchedTarget): # is it a target?
+            { 'rdf': target2rdf,
+              'xml': target2xml,
+              'html': target2html,
+              'json': target2json }[format](object) # convert it to format
+        elif isinstance(object,DayDir): # is it a day dir?
+            { 'rdf': day2rdf,
+              'xml': day2xml,
+              'html': day2html,
+              'json': day2json }[format](object) # convert it to format
+    except KeyError:
+        print 'Status: 404\n'
