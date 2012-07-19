@@ -1,7 +1,6 @@
 #!/usr/bin/python
 from sys import argv, stdout
 import cgi
-import cgitb
 from ifcb.db.feed import latest_bins, day_bins
 from ifcb.io.convert import bins2atom, bins2json_feed, bins2html_feed, bins2rss
 from ifcb.io.path import Filesystem

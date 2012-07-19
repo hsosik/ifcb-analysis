@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import ifcb
 import cgi
-import cgitb
 import os.path
 import re
 from config import DATA_TTL
@@ -12,7 +11,6 @@ from ifcb.io.blob_unzip import pid2blobpng, pid2blobzip, zip_path
 """RESTful service resolving an IFCB permanent ID (pid) + format parameter to an appropriate representation"""
 
 if __name__ == '__main__':
-    cgitb.enable()
     out = sys.stdout
     pid = cgi.FieldStorage().getvalue('pid')
     format = 'png'

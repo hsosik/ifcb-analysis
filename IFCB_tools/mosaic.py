@@ -137,7 +137,6 @@ def save_mosaic(bin,outfile=None,format='PNG',size=2400):
        stream(m,sys.stdout,format)
 
 if __name__=='__main__':
-    cgitb.enable()
     pid = cgi.FieldStorage().getvalue('pid')
     size = cgi.FieldStorage().getvalue('size','medium')
     format = cgi.FieldStorage().getvalue('format','jpg')
