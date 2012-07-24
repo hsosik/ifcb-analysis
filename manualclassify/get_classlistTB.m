@@ -64,34 +64,39 @@ if exist([manualfilename], 'file')  %~isempty(tempdir)
     %save(manualfilename, 'list_titles', 'class2use*', 'classlist', '-append'); %make sure initial file has proper list_titles    
 else 
     clear class2use_in
-    classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
-    classlist(:,1) = 1:total_roi;
     list_titles = {'roi number' 'manual' 'SVM-auto'};
     switch pick_mode
         case 'raw_roi' %pick classes from scratch
+            classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
+            classlist(:,1) = 1:total_roi;
             classlist(:,manual_col) = classnum_default; %strmatch(classstr, class2use, 'exact');
         case 'correct_or_subdivide'  %make subcategories starting with an automated class
             if exist(classfilename),
                 load(classfilename) %load SVM results
-                keyboard
                 if ~exist('classlist', 'var'), %this for old case, new treebagger output has classlist already
+                    classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
+                    classlist(:,1) = 1:total_roi;
          %           classlist(:,auto_col)  = PreLabels(:,1);
                         %new case for TBclassification July 2012, Heidi
-                     [~,ia] = ismember(TBclass_above_threshold, class2useTB);
-                     classlist(:,auto_col)  = ia;   
+                     [~,ia] = ismember(TBclass_above_threshold, class2use);
+                     classlist(roinum,auto_col)  = ia;   
                 end;
+            else
+                classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
+                classlist(:,1) = 1:total_roi;
             end;
             if ~isempty(classnum_default),               
                 %classlist(:,sub_col) = NaN;
-                classnum = strmatch(classstr, class2use); %default class number from original list
+                classnum = strmatch(classstr, class2use, 'exact'); %default class number from original list
                 sub_col = 4; %first one
                 classlist(:,sub_col) = NaN;
                 list_titles(sub_col) = {classstr};            
                 classlist(classlist(:,auto_col) == classnum, sub_col) = classnum_default; %set to default new class
-                [overlap, ind_sub, ind] = intersect(class2use_sub, class2use);
-                keyboard
+                [overlap, ind_sub, ind] = intersect(class2use_sub, class2useTB);
+                %keyboard
                 for count1 = 1:length(overlap),
                     classlist(classlist(:,auto_col) == ind(count1), sub_col) = ind_sub(count1); %set to new class number in subcol
+                    classlist(classlist(:,auto_col) == ind(count1), auto_col) = classnum; %set to parent class number in autocol
                 end;
             end;
 %        case 'subdivide_from_manual'  %make subcategories starting with an automated class
