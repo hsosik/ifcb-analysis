@@ -7,9 +7,19 @@ function [ img ] = get_image( pid, image_dir )
 pid = char(pid);
 
 if nargin < 2,
-    img = imread([pid '.png'], 'PNG');
+    try
+        img = imread([pid '.png'], 'PNG');
+    catch
+        disp([pid '.png unreadable'])
+        img = [];
+    end;
 else
-    img = imread([image_dir filesep lid(pid) '.png'], 'PNG');
+    try 
+        img = imread([image_dir filesep lid(pid) '.png'], 'PNG');
+    catch
+        disp([pid '.png unreadable'])
+        img = [];
+    end;
 end
 
 end
