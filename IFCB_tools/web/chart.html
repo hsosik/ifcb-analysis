@@ -11,10 +11,11 @@
 <script type="text/javascript" src="js/jquery.jqplot.min.js"></script>
 <link type="text/css" href="css/jquery.jqplot.css" rel="Stylesheet"/>
 <script type="text/javascript">
+// FIXME plottable fields should not be hardcoded, yet no endpoint provides this list
 var plottables = [
 "bottom",
-"byteOffset",
-"comparatorPulse",
+//"byteOffset",
+//"comparatorPulse",
 "fluorescenceHigh",
 "fluorescenceLow",
 "frameGrabTime",
@@ -23,7 +24,7 @@ var plottables = [
 "processingEndTime",
 "scatteringHigh",
 "scatteringLow",
-"stitched",
+//"stitched",
 "targetNumber",
 "trigger",
 "triggerOpenTime",
@@ -46,9 +47,12 @@ function drawChart(dataPoints) {
         }]
     });
 }
-function plot(endpoint, xAxis,yAxis) {
+function plot() {
     $('#plot').attr('disabled','true');
-    $.getJSON(endpoint, function(r) {
+    var xAxis = $('#xAxis').val();
+    var yAxis = $('#yAxis').val();
+    var endpoint = $('#sample').val();
+     $.getJSON(endpoint, function(r) {
         var dataPoints = [];
         $.each(r.targets, function(i,target) {
             dataPoints.push([target[xAxis], target[yAxis]]);
@@ -67,12 +71,8 @@ $(document).ready(function() {
         $.each(r, function(i,entry) {
             $('#sample').append('<option value="'+entry.pid+'/full.json">'+entry.time+'</option>');
         });
-        $('#plot').click(function() {
-            var xAxis = $('#xAxis').val();
-            var yAxis = $('#yAxis').val();
-            var endpoint = $('#sample').val();
-            plot(endpoint, xAxis, yAxis);
-        });
+        $('#plot').click(plot);
+        $('#sample').change(plot);
         $('#plot').removeAttr('disabled');
     });
 });
