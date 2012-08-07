@@ -88,7 +88,7 @@ def stream(image,out,format):
 def box(w,aspectratio):
     return (w, int(w * aspectratio))
 
-def http(bin, fullarea, size_thresh, wh, out, format):
+def http(bin, fullarea, size_thresh, wh, out, format, page=0):
     try:
         m = mosaic(bin, fullarea, size=size_thresh, page=page)
         # FIXME should print to out
@@ -125,7 +125,7 @@ def doit(pid,size='medium',format='jpg',headers=True,out=sys.stdout,fs_roots=FS_
         else:
             if headers:
                 cache_key = ifcb.lid(pid) + '/mosaic/'+str(tw)+'.'+format
-                cache_io(cache_key, lambda o: http(bin, fullarea, size_thresh, wh, o, format), out)
+                cache_io(cache_key, lambda o: http(bin, fullarea, size_thresh, wh, o, format, page=page), out)
             else:
                 stream(thumbnail(mosaic(bin,fullarea,size_thresh,page=page),wh),out,format)
     except KeyError:
