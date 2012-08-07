@@ -124,7 +124,7 @@ def doit(pid,size='medium',format='jpg',headers=True,out=sys.stdout,fs_roots=FS_
             json.dump(layout(bin, fullarea, size_thresh, page=page),out) # give it to em
         else:
             if headers:
-                cache_key = ifcb.lid(pid) + '/mosaic/'+str(tw)+'.'+format
+                cache_key = ifcb.lid(pid) + '/mz/p'+str(page)+'/'+str(tw)+'.'+format
                 cache_io(cache_key, lambda o: http(bin, fullarea, size_thresh, wh, o, format, page=page), out)
             else:
                 stream(thumbnail(mosaic(bin,fullarea,size_thresh,page=page),wh),out,format)
