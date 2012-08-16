@@ -21,12 +21,13 @@ feed = wget_xml([data_namespace 'rss.py?format=atom&date=' date_param '&n=150'])
 item_nodes = feed.getElementsByTagNameNS('http://www.w3.org/2005/Atom', 'entry');
 n = item_nodes.getLength;
 bins = cell(1,0);
+prev_date = date;
 for count = 1:n
     entry = item_nodes.item(count-1);
     id = char(entry.getElementsByTagNameNS(ifcb.ATOM_NAMESPACE, 'id').item(0).getTextContent);
     entry_date = char(entry.getElementsByTagNameNS(ifcb.ATOM_NAMESPACE, 'updated').item(0).getTextContent);
     entry_day = regexprep(entry_date,'T.*','');
-    if count > 1 && ~strcmp(entry_day,prev_date),
+    if ~strcmp(entry_day,prev_date),
         break;
     end
     bins{count} = id;
