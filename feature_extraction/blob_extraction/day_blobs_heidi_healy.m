@@ -24,13 +24,20 @@ if not(debug),
 end
 
 %bins =  dir(['\\floatcoat\LaneyLab\projects\HLY1001\data\imager\asb\ifcb*.adc']);
-bins =  dir(['\\floatcoat\LaneyLab\projects\HLY1001\data\imager\ice_stations\ice_cores\STA101\Light_Ice\ifcb*.adc']);
+
+%bins =  dir(['\\floatcoat\LaneyLab\projects\HLY1101\data\IFCB8\sta53_67_casts\ifcb*.adc']);
+%bins =  dir(['\\floatcoat\LaneyLab\projects\HLY1101\data\IFCB8\sta55_56_transit\ifcb*.adc']);
+%bins =  dir(['\\floatcoat\LaneyLab\projects\HLY1101\data\IFCB8\sta75_76_transit\ifcb*.adc']);
+bins =  dir(['\\floatcoat\LaneyLab\projects\HLY1101\data\IFCB8\underway\ifcb*.adc']);
+bins = bins(find([bins.bytes]>0));
 bins2 = dir([out_dir 'ifcb*']);
 bins = regexprep({bins.name}, '.adc', ''); 
 %load icelist
-bins2 = regexprep({bins2.name}, '.zip', '');
+bins2 = regexprep({bins2.name}, '_blobs_v2.zip', '');
 [~,ii] = setdiff(bins, bins2);
 bins = bins(ii);
+bins = setdiff(bins, {'IFCB8_2011_177_002813' 'IFCB8_2011_178_025716' 'IFCB8_2011_178_220757' 'IFCB8_2011_178_064346' 'IFCB8_2011_206_131152'}); %gives zip error
+bins = {'IFCB8_2011_210_011714'};
 
 disp(['processing ' num2str(length(bins)) ' files'])
 if not(debug),
