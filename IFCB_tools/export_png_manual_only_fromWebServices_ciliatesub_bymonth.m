@@ -21,7 +21,10 @@ resultfilelist = cellstr(resultfilelist(:,1:end-4));
 unqmonth = unique(month);
 unqyr = unique(yr);
 %category = {'ciliate_mix' 'tintinnid'}; %use this syntax to export ONLY the listed categories
-category = {'ciliate_mix'}; %use this syntax to export ONLY the listed categories
+%category = {'ciliate_mix'}; %use this syntax to export ONLY the listed categories
+category = {'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
+            'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
+            'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'};
 for count = 1:length(category),
     %if ~exist([outputpath char(category(count))], 'dir'),
     %    mkdir([outputpath char(category(count))]);
