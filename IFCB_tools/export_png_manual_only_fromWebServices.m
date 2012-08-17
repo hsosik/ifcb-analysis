@@ -2,9 +2,11 @@
 %where are your manual classification results? same resultpath as for manual_classify_stream2b.m
 resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 outputpath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\manual_fromWeb\'; %USER where to write out pngs
+%outputpath = '\\raspberry\d_work\IFCB1\ifcb_data_MVCO_jun06\manual_fromWeb\'; %USER where to write out pngs
 urlbase = 'http://ifcb-data.whoi.edu/mvco/';
 
 resultfilelist = get_filelist_manual([resultpath 'manual_list'],3,[2006:2011], 'all'); %manual_list, column to use, year to find, Copied here by Emily P. from manual_classify_batch_3_1
+%resultfilelist = get_filelist_manual([resultpath 'manual_list'],7,[2006:2011], 'only');
 %resultfilelist = [dir([resultpath 'IFCB1_2006_???_00*.mat']); dir([resultpath 'IFCB1_2007_???_00*.mat'])];
 %case 3 for ciliate, big ciliate, diatoms, ditylum ONLY
 %load([resultpath 'manual_list.mat']) %col 2-7: {'all categories','ciliates','ditylum','diatoms','big ciliates','special big only'}
@@ -23,9 +25,9 @@ for filecount = 1:length(resultfilelist),
     %category = setdiff(class2use_manual, {'bad' 'ciliate' 'crypto' 'dino30' 'roundCell' 'clusterflagellate' 'other' 'mix' 'detritus' 'mix_elongated' 'flagellate' });  %use this syntax to export all EXCEPT the listed categories
     %keyboard
     %category = class2use_manual; %use this syntax to export ALL categories
-    %category = {'Pleurosigma' 'Thalassionema'}; %use this syntax to export ONLY the listed categories
+    %category = {'Euglena'}; %use this syntax to export ONLY the listed categories
     category = {'ciliate'}; %use this syntax to export ONLY the listed categories
-
+    
     disp(resultfile)
     %make subdirs for tiffs
     for count = 1:length(category),
