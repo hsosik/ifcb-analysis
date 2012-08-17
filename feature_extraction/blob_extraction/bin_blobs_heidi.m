@@ -7,19 +7,25 @@ function log(msg) % not to be confused with logarithm function
     logmsg(['bin_blobs ' msg],debug);
 end
 
-archive = [out_dir filesep regexprep(file,'.zip','_blobs_v2.zip')];
+archive = [out_dir filesep file '_blobs_v2.zip'];
 if exist(archive,'file'),
     log(['SKIPPING ' file]);
     return
 end
 
-% load the zip file
-log(['LOAD ' file]);
-targets = get_bin_file([in_dir  file]);
-nt = length(targets.targetNumber);
-log(['PROCESSING ' num2str(nt) ' target(s) from ' file]);
+try
+    %targets = get_bin(bin_pid);
+    targets = get_rois([in_dir filesep file]);
+    nt = length(targets.targetNumber);
+catch ME
+    idSegLast = regexp(ME.identifier, '(?<=:)\w+$', 'match');
+    if strcmp(idSegLast, 'NoInput')
+        log(['WARNING missing data in ' bin_pid]);
+    end
+    nt = 0;
+end
 
-png_dir = [out_dir filesep regexprep(file,'.zip','')];
+png_dir = [in_dir filesep file];
 mkdir(png_dir);
 
 png_paths = {};
@@ -33,7 +39,7 @@ for i = 1:nt,
     % compute the blob mask (result in target.blob_image)
     target = blob(target);
     % now output the blob image as a 1-bit png
-    png_path = [png_dir filesep regexprep(file,'.zip',sprintf('_%05d.png',targets.targetNumber(i)))];
+    png_path = [png_dir filesep file sprintf('_%05d.png',targets.targetNumber(i))];
     imwrite(target.blob_image,png_path,'bitdepth',1);
     png_paths = [png_paths; {png_path}];
 end
