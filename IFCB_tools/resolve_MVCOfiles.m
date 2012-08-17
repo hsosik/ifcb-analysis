@@ -8,7 +8,7 @@ if isstruct(filelist),
     [~, ~, ext] = fileparts(filelist{1});
     filelist = regexprep(filelist, ext, ''); %strip off extension
 end;
-classpath = ['\\queenrose\g_work_IFCB1\ifcb_data_mvco_jun06\classxxxx_v1\']; 
+classpath = ['\\queenrose\g_work_IFCB1\ifcb_data_mvco_jun06\classxxxx_24may07_' class_filestr 'revDec11\']; 
 basedir_all = {'\\demi\vol1'; '\\demi\vol2'; '\\demi\vol3'};
 stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitchxxxx\';  %%USER set, roi stitch info files
 
