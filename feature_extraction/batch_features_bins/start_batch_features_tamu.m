@@ -7,8 +7,8 @@ out_base_dir = 'c:\work\test\features2\'; %USER main blob output location
 year = 2012; %USER
 %USER choose start and end day to encompass range to process; already
 %completed or non-existent days will be skipped automatically
-start_day = '2012-08-20';  %USER
-end_day = '2012-08-21'; %USER
+start_day = '2012-08-08';  %USER
+end_day = '2012-08-10'; %USER
 
 out_dir = [out_base_dir num2str(year) filesep];
 if ~exist(out_dir, 'dir'),

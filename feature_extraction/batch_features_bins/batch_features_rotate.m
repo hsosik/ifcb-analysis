@@ -11,7 +11,7 @@ function [ ] = batch_features_rotate(in_dir, filelist, out_dir )
 debug = false;
 
 function log(msg) % not to be confused with logarithm function
-    logmsg(['batch_features' msg],debug);
+    logmsg([' batch_features ' msg],debug);
 end
 
 if not(debug),

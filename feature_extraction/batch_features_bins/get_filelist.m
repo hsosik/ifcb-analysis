@@ -9,7 +9,8 @@ end_day = datenum(end_day);
 for daycount = start_day:end_day,
     filelist = [filelist list_day(datestr(daycount,29), in_url)];
 end
-[p,~] = fileparts(filelist{1});
-filelist = regexprep(filelist,[p '/'], '')';
-
+if length(filelist) > 0,
+    [p,~] = fileparts(filelist{1});
+    filelist = regexprep(filelist,[p '/'], '')';
+end;
 end
