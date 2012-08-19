@@ -3,7 +3,7 @@
 %NOTE: This is currently set for rotated camera. 
 
 in_url = 'http://toast.tamu.edu/ifcb7_new_data/'; %USER web services to access data
-out_base_dir = 'c:\work\test\features2\'; %USER main blob output location
+out_base_dir = 'c:\work\test\features\'; %USER main blob output location
 year = 2012; %USER
 %USER choose start and end day to encompass range to process; already
 %completed or non-existent days will be skipped automatically
