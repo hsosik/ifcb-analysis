@@ -1,5 +1,4 @@
-
-function [ ] = batch_features(in_dir, filelist, out_dir )
+function [ ] = batch_features_rotate(in_dir, filelist, out_dir )
 % Accept a list of bin files to process and a directory in which to place the output volume files
 % Start a matlab pool
 % Process the bins in parallel.
@@ -12,7 +11,7 @@ function [ ] = batch_features(in_dir, filelist, out_dir )
 debug = false;
 
 function log(msg) % not to be confused with logarithm function
-    logmsg([' ' msg],debug);
+    logmsg(['batch_features' msg],debug);
 end
 
 if not(debug),
@@ -26,14 +25,16 @@ if not(debug),
 end
 
 %daydir = dir([in_dir filesep '*.zip']);
-
+disp('WARNING: you are processing assuming rotated camera')
+disp('Hit ENTER to continue')
+pause
 if not(debug),
     parfor filecount = 1:length(filelist)
-        bin_features(in_dir, [char(filelist(filecount)) '.zip'], out_dir);
+        bin_features_rotate(in_dir, [char(filelist(filecount)) '.zip'], out_dir);
     end
 else
     for filecount = 1:length(filelist)
-        bin_features(in_dir, [char(filelist(filecount)) '.zip'], out_dir);
+        bin_features_rotate(in_dir, [char(filelist(filecount)) '.zip'], out_dir);
     end
 end
 
