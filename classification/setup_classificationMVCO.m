@@ -3,10 +3,10 @@
 %feafilestr = '_fea_v1';
 %[ filelist, feafiles ] = resolve_MVCOfeafiles( filelist, feafilestr );
 
-feapath = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\features2006_v1\';
+feapath = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\features2012_v1\';
 filelist = dir([feapath '*.csv']);
 filelist = {filelist.name}';
-filesdone = dir('\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\class2006_v1\*.mat');
+filesdone = dir('\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\class2012_v1\*.mat');
 filesdone = {filesdone.name}';
 f1 = regexprep(filelist, '_fea_v1.csv', '');
 f2 = regexprep(filesdone, '_class_v1.mat', '');
@@ -18,8 +18,8 @@ classifierName = 'MVCO_trees_25Jun2012';
 header = textread([feapath feafiles{1}], '%s',235, 'delimiter', ',');
 [~,feaorder] = setdiff(header, {'FilledArea' 'summedFilledArea' 'Area' 'ConvexArea' 'MajorAxisLength' 'MinorAxisLength' 'Perimeter', 'roi_number'});
 featitles_file = header(feaorder);
-num2dostr = num2str(length(filelist))
-for filecount = 1:length(filelist),
+num2dostr = num2str(length(feafiles));
+for filecount = 1:length(feafiles),
     disp(['classifying ' num2str(filecount) ' of ' num2dostr])
     apply_TBclassifierMVCO([feapath feafiles{filecount}], feaorder, classifierName);
 end;

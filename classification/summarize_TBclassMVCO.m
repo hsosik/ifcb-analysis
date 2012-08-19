@@ -2,10 +2,10 @@ function [classcount, classcount_above_optthresh, classcount_above_adhocthresh, 
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-
 load(classfile)
 classcount = NaN(length(class2useTB),1);
 classcount_above_optthresh = classcount;
+classcount_above_adhocthresh = classcount;
 
 if exist('adhocthresh', 'var'),
     classcount_above_adhocthresh = classcount;

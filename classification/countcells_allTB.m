@@ -1,7 +1,7 @@
 classpath_generic = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\classxxxx_v1\';
 
 classfiles = [];
-for yr = 2007, %:2012,
+for yr = 2008, %:2012,
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'I*.mat']);
     pathall = repmat(classpath, length(temp),1);
@@ -35,7 +35,7 @@ adhocthresh = 0.5.*ones(size(class2use));
 adhocthresh(strmatch('Ditylum', class2use, 'exact')) = 0.45;
 class2list = strmatch('Ditylum', class2use, 'exact');
 %%
-for filecount = 1:100,%length(classfiles)
+for filecount = 1:length(classfiles)
     if ~rem(filecount,10), disp(['reading ' num2str(filecount) ' of ' num2dostr]), end;
     [classcount(filecount,:), classcount_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), class2useTB, roiid_list] = summarize_TBclassMVCO(classfiles{filecount}, adhocthresh, class2list);
     roiids{filecount} = roiid_list;
@@ -49,4 +49,4 @@ ml_analyzedTB = ml_analyzed_list;
 mdateTB = mdate;
 filelistTB = filelist;
 
-save(['summary_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'classcountTB_above_adhocthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'adhocthresh', 'classpath_generic', 'roiids')
+save(['summary_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'classcountTB_above_adhocthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'adhocthresh', 'classpath_generic', 'roiids', 'class2list')
