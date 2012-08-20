@@ -72,25 +72,28 @@ end;
 ind = find(isnan(Yfit_max));
 Yfit_max(ind) = 0; %unclassified
 %c2 = confusionmat(b.Y(ind),classes(Yfit_max(ind)));
-[c2all, gord] = confusionmat(str2num(char(b.Y)),Yfit_max);
-c2 = c2all(2:end,2:end); %skip the unclassified row/col
+ind = find(Yfit_max);
+[c2, gord] = confusionmat(b.Y(ind),classes(Yfit_max(ind)));
+%[c2all, gord] = confusionmat(str2num(char(b.Y)),Yfit_max);
+%c2 = c2all(2:end,2:end); %skip the unclassified row/col
 total = sum(c2')';
 Pd2 = diag(c2)./total; %true pos rate among accepted classifications
 Pr2 = 1-(sum(c2)-diag(c2)')./total'; %precision of accepted classifications
 sum(sum(c2)-diag(c2)')/sum(total)
 Pm2 = (sum(c1')-sum(c2'))./sum(c1'); %miss rate (true pos in unclassified)
-figure, bar([Pd2 Sp2' Pm2'])
+figure, bar([Pd2 Pr2' Pm2'])
 set(gca, 'xtick', 1:length(classes), 'xticklabel', [])
 text(1:length(classes), -text_offset.*ones(size(classes)), classes, 'interpreter', 'none', 'horizontalalignment', 'right', 'rotation', 45) 
 set(gca, 'position', [ 0.13 0.35 0.8 0.6])
 legend('true pos rate', 'Sp', 'Pmissed')
 set(gca, 'position', [ 0.13 0.35 0.8 0.6])
 
+return
 %what difference if add back unclassified according to max score (even if below maxthre
 ind = find(Yfit_max == 0);
 Yfit_max(ind) = str2num(char(Yfit(ind))); %unclassified
-%c2 = confusionmat(b.Y(ind),classes(Yfit_max(ind)));
-[c3, gord] = confusionmat(str2num(char(b.Y)),Yfit_max);
+c3 = confusionmat(b.Y(ind),classes(Yfit_max(ind)));
+%[c3, gord] = confusionmat(str2num(char(b.Y)),Yfit_max);
 %c2 = c2all(2:end,2:end); %skip the unclassified row/col
 total = sum(c3')';
 Pd3 = diag(c3)./total; %true pos rate among accepted classifications
