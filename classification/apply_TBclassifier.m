@@ -1,4 +1,4 @@
-function [ ] = apply_TBclassifier(feafile, feaorder, classifierName ) % TBclassifier, TBmaxthre);
+function [ ] = apply_TBclassifier(feafile, feaorder, classifierName , classfile) % TBclassifier, TBmaxthre);
 %function [roinum, class, scores, class_above_threshold] = apply_TBclassifier(feafile, feaorder ) % TBclassifier, TBmaxthre);
 %function [roi_num, class, scores, above_threshold] = apply_TBclassifier(feafiles{filecount}, feaorder, b, maxthre);
 %UNTITLED2 Summary of this function goes here
@@ -31,10 +31,7 @@ for count = 1:length(ind),
     [~,ii] = max(TBscores(ind(count),:));
     TBclass_above_threshold(ind(count)) = TBclassifier.ClassNames(ii);
 end;
-outfile = regexprep(feafile, 'features', 'class');
-outfile = regexprep(outfile, 'fea', 'class');
-outfile = regexprep(outfile, '.csv', '');
-save(outfile, 'class2useTB', 'TBclass', 'roinum', 'TBscores', 'TBclass_above_threshold', 'classifierName')
+save(classfile, 'class2useTB', 'TBclass', 'roinum', 'TBscores', 'TBclass_above_threshold', 'classifierName')
 
 end
 
