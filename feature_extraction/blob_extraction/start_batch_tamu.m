@@ -3,7 +3,7 @@
 
 in_url = 'http://toast.tamu.edu/ifcb7_new_data/'; %USER web services to access data
 %in_url = 'http://ifcb-data.whoi.edu/saltpond/'; %USER web services to access data
-out_base_dir = 'G:\work\test\blobs\'; %USER main blob output location
+out_base_dir = 'c:\work\test\blobs\'; %USER main blob output location
 year = 2012; %USER
 
 final_day = 365;
@@ -27,7 +27,7 @@ for daycount = 220:final_day,
         if ~exist(out_dir, 'dir'),
             mkdir(out_dir)
         end;
-        bins2 = dir([out_dir 'D*']);
+        bins2 = dir([out_dir 'D*.zip']);
         bins2 = regexprep({bins2.name}, '_blobs_v2.zip', '');
         [~,ii] = setdiff(bins, bins2);
         bins = bins(ii);
