@@ -27,7 +27,7 @@ for daycount = 220:final_day,
         if ~exist(out_dir, 'dir'),
             mkdir(out_dir)
         end;
-        bins2 = dir([out_dir 'D*.zip']);
+        bins2 = dir([out_dir '*.zip']);
         bins2 = regexprep({bins2.name}, '_blobs_v2.zip', '');
         [~,ii] = setdiff(bins, bins2);
         bins = bins(ii);
