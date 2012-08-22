@@ -11,8 +11,10 @@ unzip(zip_path, dir);
 
 % now parse the .csv file to produce target output
 csv_data = fileread([dir filesep lid '.csv']);
-
-targets = csv2targets(csv_data);
+targets = NaN; %default for case with no targets
+if ~isequal(csv_data, ''), 
+    targets = csv2targets(csv_data);
+end;
 image_dir = dir;
 
 end
