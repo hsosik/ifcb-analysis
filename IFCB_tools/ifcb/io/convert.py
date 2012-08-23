@@ -329,12 +329,9 @@ def bin2csv(bin,out=sys.stdout,detail=DETAIL_FULL):
     Parameters:
     bin - instance of Bin
     out - where to write the representation (default: stdout)"""
-    header_done = False
+    columns = [column for column,type in ADC_SCHEMA] + ['binID', 'pid', 'stitched', 'targetNumber']
+    print >>out, ','.join(columns)
     for target in bin:
-        if not header_done: # emit header
-            columns = order_keys(target.info, [column for column,type in ADC_SCHEMA])
-            print >>out, ','.join(columns)
-            header_done = True
         row = []
         for c in columns:
             # add binID, pid, and targetNumber to the row
