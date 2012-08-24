@@ -41,6 +41,10 @@ for i = 1:nt,
     png_paths = [png_paths; {png_path}];
 end
 
+<<<<<<< .mine
+if nt > 0,
+    zip(archive, png_paths, png_dir);
+=======
 if isstruct(targets),
     zip(archive, png_paths, png_dir);
     log(['SAVING ' archive]);
@@ -49,6 +53,17 @@ if isstruct(targets),
 else
     log(['NO targets ' file]);
 end;
+>>>>>>> .r646
 
+<<<<<<< .mine
+    log(['SAVING ' archive]);
+end;
+
+rmdir(png_dir,'s');
+
+log(['DONE ' file]);
+
+=======
+>>>>>>> .r646
 end
 
