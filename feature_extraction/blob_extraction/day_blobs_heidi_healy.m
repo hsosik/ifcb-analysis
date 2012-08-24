@@ -6,9 +6,9 @@ function [ ] = day_blobs_heidi( in_dir, out_dir )
 % Clean up all temporary storage
 % Shut down the pool
 % Report completion status
-%day_blobs_heidi_healy('http://ifcb-data.whoi.edu/underway/', 'G:\work\Healy1001\blobs\');
+%day_blobs_heidi_healy('http://ifcb-data.whoi.edu/Healy1101_underway/', 'G:\work\Healy1101\blobs\');
 
-debug = false;
+debug = true;
 
 function log(msg) % not to be confused with logarithm function
     logmsg(['day_blobs ' msg],debug);
