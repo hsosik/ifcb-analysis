@@ -16,12 +16,11 @@ end
 % load the zip file
 log(['LOAD ' file]);
 targets = get_bin_file([in_dir  file]);
-nt = 0; %default for case with no targets
-if isstruct(targets),
-    nt = length(targets.targetNumber);  
-    png_dir = [out_dir filesep regexprep(file,'.zip','')];
-    mkdir(png_dir);
-end;
+
+nt = length(targets.targetNumber);  
+png_dir = [out_dir filesep regexprep(file,'.zip','')];
+mkdir(png_dir);
+
 log(['PROCESSING ' num2str(nt) ' target(s) from ' file]);
 
 
@@ -41,29 +40,15 @@ for i = 1:nt,
     png_paths = [png_paths; {png_path}];
 end
 
-<<<<<<< .mine
+
 if nt > 0,
     zip(archive, png_paths, png_dir);
-=======
-if isstruct(targets),
-    zip(archive, png_paths, png_dir);
     log(['SAVING ' archive]);
-    rmdir(png_dir,'s');
     log(['DONE ' file]);
 else
     log(['NO targets ' file]);
 end;
->>>>>>> .r646
 
-<<<<<<< .mine
-    log(['SAVING ' archive]);
-end;
-
-rmdir(png_dir,'s');
-
-log(['DONE ' file]);
-
-=======
->>>>>>> .r646
+    rmdir(png_dir,'s');
 end
 
