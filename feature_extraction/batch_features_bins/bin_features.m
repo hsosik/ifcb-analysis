@@ -55,17 +55,15 @@ if nt > 0,
     %write the compiled feature csv file
     fileout = regexprep(file, '.zip', '_fea_v1.csv');
     log(['SAVING ' fileout]);
-    fid = fopen([out_dir fileout], 'w');
-    for ii = 1:length(featitles)-1, fprintf(fid, '%s,', char(featitles(ii)));, end;
-    fprintf(fid, '%s\r\n ', char(featitles(end))); fclose(fid);
-    dlmwrite([out_dir fileout], feature_mat, '-append')
-    %write the raw multi-blob features to separate csv file
-    fileout = regexprep(file, '.zip', '_multiblob_v1.csv');
-    fid = fopen([out_dir 'multiblob' filesep fileout], 'w');
-    for ii = 1:length(multiblob_titles)-1, fprintf(fid, '%s,', char(multiblob_titles(ii))); end;
-    fprintf(fid, '%s\r\n', char(multiblob_titles(end))); fclose(fid);
-    dlmwrite([out_dir 'multiblob' filesep fileout], multiblob_features, '-append')
+   
+    ds = dataset([feature_mat featitles]);
+    export(ds, 'file', [out_dir fileout], 'delimiter', ',');
     
+    %write the raw multi-blob features to separate csv file
+    fileout = regexprep(file, '.zip', '_multiblob_v1.csv');   
+    ds = dataset([multiblob_features multiblob_titles]);
+    export(ds, 'file', [out_dir 'multiblob' filesep fileout], 'delimiter', ',');
+     
     log(['DONE ' file]);
 else
     log(['no targets SKIPPING ' file]);
