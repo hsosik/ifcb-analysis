@@ -12,7 +12,7 @@ temp = datenum(year,0,366); temp = datevec(temp);
 if temp(1) == year, final_day = 366; end;
 
 %loop over all possible days in year
-for daycount = 179:final_day,
+for daycount = 160:final_day,
     daystr = datestr([year,0,daycount,0,0,0],29);
     bins = list_day(daystr,in_url);
     if ~isempty(bins),
