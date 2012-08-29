@@ -24,6 +24,7 @@ filelist = get_filelist(in_url, start_day, end_day);
 
 files_done = dir([out_dir 'D*.csv']);
 files_done = char(files_done.name);
-files_done = cellstr(files_done(:,1:end-4));
+files_done = cellstr(files_done);
+files_done = regexprep(files_done, '_fea_v1.csv', '');
 filelist2 = setdiff(filelist, files_done); 
 batch_features( in_url, filelist2, out_dir );

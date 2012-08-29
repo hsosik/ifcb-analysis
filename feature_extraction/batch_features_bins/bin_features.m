@@ -13,9 +13,11 @@ end
 log(['LOAD ' file]);
 %http://ifcb-data.whoi.edu/mvco/IFCB1_2009_174_055621_blob.zip
 targets = get_bin_file([in_dir file]);
-targets_blob = get_blob_bin_file([in_dir regexprep(file, '.zip', '_blob.zip')]);
-
 nt = length(targets.pid);
+if nt > 0,
+    targets_blob = get_blob_bin_file([in_dir regexprep(file, '.zip', '_blob.zip')]);
+end;
+
 log(['PROCESSING ' num2str(nt) ' target(s) from ' file]);
 
 config = configure();
@@ -45,24 +47,28 @@ for i = 1:nt,
 %        temp.images(i).blob_image_rotated = target.blob_image_rotated;
 %        temp.images(i).image = target.image;
 end
-temp.pid = targets.pid;
-[ feature_mat, featitles, multiblob_features, multiblob_titles ] = make_feature_matrices(temp);
 
-%write the compiled feature csv file
-fileout = regexprep(file, '.zip', '_fea_v1.csv');
-log(['SAVING ' fileout]);
-fid = fopen([out_dir fileout], 'w');
-for ii = 1:length(featitles)-1, fprintf(fid, '%s,', char(featitles(ii)));, end; 
-fprintf(fid, '%s\r\n ', char(featitles(end))); fclose(fid);
-dlmwrite([out_dir fileout], feature_mat, '-append')
-%write the raw multi-blob features to separate csv file
-fileout = regexprep(file, '.zip', '_multiblob_v1.csv');
-fid = fopen([out_dir 'multiblob' filesep fileout], 'w');
-for ii = 1:length(multiblob_titles)-1, fprintf(fid, '%s,', char(multiblob_titles(ii))); end; 
-fprintf(fid, '%s\r\n', char(multiblob_titles(end))); fclose(fid);
-dlmwrite([out_dir 'multiblob' filesep fileout], multiblob_features, '-append')
-
-log(['DONE ' file]);
-
+if nt > 0,
+    temp.pid = targets.pid;
+    [ feature_mat, featitles, multiblob_features, multiblob_titles ] = make_feature_matrices(temp);
+    
+    %write the compiled feature csv file
+    fileout = regexprep(file, '.zip', '_fea_v1.csv');
+    log(['SAVING ' fileout]);
+    fid = fopen([out_dir fileout], 'w');
+    for ii = 1:length(featitles)-1, fprintf(fid, '%s,', char(featitles(ii)));, end;
+    fprintf(fid, '%s\r\n ', char(featitles(end))); fclose(fid);
+    dlmwrite([out_dir fileout], feature_mat, '-append')
+    %write the raw multi-blob features to separate csv file
+    fileout = regexprep(file, '.zip', '_multiblob_v1.csv');
+    fid = fopen([out_dir 'multiblob' filesep fileout], 'w');
+    for ii = 1:length(multiblob_titles)-1, fprintf(fid, '%s,', char(multiblob_titles(ii))); end;
+    fprintf(fid, '%s\r\n', char(multiblob_titles(end))); fclose(fid);
+    dlmwrite([out_dir 'multiblob' filesep fileout], multiblob_features, '-append')
+    
+    log(['DONE ' file]);
+else
+    log(['no targets SKIPPING ' file]);
+end;
 end
 
