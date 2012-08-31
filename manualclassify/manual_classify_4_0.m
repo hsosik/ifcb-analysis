@@ -139,6 +139,12 @@ for filecount = filenum2start:length(filelist),
         classfile_temp = classfiles{filecount};
     end;
     [ classlist, sub_col, list_titles ] = get_classlistTB( [resultpath outfile],classfile_temp, pick_mode, class2use_manual, class2use_sub, classstr, classnum_default, length(x_all) );
+    %special case to segregate dirt spots in Healy1101 data
+    if length(unique(classlist(:,2))) == 1, %probably new file
+        if isequal(outfile(1:10), 'IFCB8_2011') && unique(classlist(:,2)) == classnum_default,
+            classlist((adcdata(:,10) == 1118 & adcdata(:,11) == 290),2) = strmatch('bad', class2use_manual);
+        end;
+    end;
     if isempty(classlist), %indicates bad class2use match
         return
     end;
