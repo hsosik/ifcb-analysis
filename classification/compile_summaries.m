@@ -13,5 +13,14 @@ for yr = 2006:2012,
     ml_analyzedTBall = [ ml_analyzedTBall; temp.ml_analyzedTB];
     mdateTBall = [ mdateTBall; temp.mdateTB];
     filelistTBall = [ filelistTBall; temp.filelistTB];
+    class2useTB = temp.class2useTB;
     clear temp
 end;
+
+return
+
+ind = 19; figure
+[xmat, ymat ] = timeseries2ydmat(mdateTBall, classcountTB_above_adhocthreshall(:,ind)./ml_analyzedTBall);
+plot(xmat(:), ymat(:))
+title(class2useTB(ind))
+datetick, set(gca, 'xgrid', 'on')
