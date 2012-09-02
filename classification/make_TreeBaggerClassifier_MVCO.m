@@ -109,15 +109,18 @@ return
 
 figure, hold on
 for count = 1:length(classes),
- [fpr,tpr,thr] = perfcurve(b.Y,Sfit(:,count), num2str(count));
+ %[fpr,tpr,thr] = perfcurve(b.Y,Sfit(:,count), num2str(count));
+  [fpr,tpr,thr, acu, optrocpt] = perfcurve(b.Y,Sfit(:,count), classes{count});
   subplot(2,1,1), ph = plot(fpr,tpr, 'r');
   title(classes(count)), xlabel('False pos rate'), ylabel('True pos rate')
-  [fpr,accu,thr] = perfcurve(b.Y,Sfit(:,count), num2str(count),'ycrit','accu');
+  %[fpr,accu,thr] = perfcurve(b.Y,Sfit(:,count), num2str(count),'ycrit','accu');
+  [fpr,accu,thr] = perfcurve(b.Y,Sfit(:,count), classes{count},'ycrit','accu');
   subplot(2,1,2), hold off, ph2 = plot(thr,accu, 'g'); 
   hold on, ph3 = plot(thr, 1-fpr, 'r'); legend('accuracy', '1-false pos rate')
   set(ph, 'color', 'k'), set(gca, 'ylim', [max(accu)*.99 1])
-  [maxaccu(count),iaccu] = max(accu);
-  maxthre(count) = thr(iaccu);
+%  [maxaccu(count),iaccu] = max(accu);
+%  maxthre(count) = thr(iaccu);
+  maxthre(count) = thr(find(fpr == optrocpt(1) & tpr == optrocpt(2)));
   line(maxthre(count)*[1 1], ylim, 'linestyle', ':')
   xlabel('Threshold for ''good'' Returns');
   subplot(2,1,1), hold on, plot(fpr(iaccu), tpr(iaccu), 'g*')
