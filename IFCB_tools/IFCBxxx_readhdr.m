@@ -2,8 +2,23 @@ function [ hdr ] = IFCBxxx_readhdr( fullfilename )
 %import IFCBxxx series header file as separate text lines, parse to get
 %target values and return them in structure (hdr)
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, April 2012
+%
+%Sept 2012, modified to accept URL file locations from web services
+
+if isequal(fullfilename(1:4), 'http'), 
+    [filestr,status] = urlwrite(fullfilename, 'temp.hdr');
+    if status,
+        fullfilename = filestr;
+    else
+        disp(['Error reading ' fullfilename]);
+        hdr = '';
+        return
+    end;
+end;
 
 t = importdata(fullfilename,'', 150);
+%remove temporary file if read from URL
+if exist('status', 'var'), delete(filestr); end;
 ii = strmatch('runTime:', t);
     
 if ~isempty(ii),
