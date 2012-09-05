@@ -42,7 +42,7 @@ targets.Biovolume = biovol;
 targets.EquivDiameter = eqvdiam;
 targets.MajorAxisLength = majoraxis;
 targets.MinorAxisLength = minoraxis;
-archive = [out_dir regexprep(file,'_blobs_v2.zip','')];
+archive = [out_dir regexprep(file,'_blob.zip','')];
 save(archive, 'targets');
 
 log(['SAVING ' archive]);
