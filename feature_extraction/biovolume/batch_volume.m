@@ -28,13 +28,13 @@ end
 
 if not(debug),
     parfor filecount = 1:length(filelist)
-        %bin_volume(in_dir, [char(filelist(filecount)) '_blob.zip'], out_dir);
-        bin_volume(in_dir, [char(filelist(filecount)) '_blobs_v2.zip'], out_dir);
+        bin_volume(in_dir, [char(filelist(filecount)) '_blob.zip'], out_dir);
+        %bin_volume(in_dir, [char(filelist(filecount)) '_blobs_v2.zip'], out_dir);
     end
 else
     for filecount = 1:length(filelist)
-        %bin_volume(in_dir, [char(filelist(filecount)) '_blob.zip'], out_dir);
-        bin_volume(in_dir, [char(filelist(filecount)) '_blobs_v2.zip'], out_dir);
+        bin_volume(in_dir, [char(filelist(filecount)) '_blob.zip'], out_dir);
+        %bin_volume(in_dir, [char(filelist(filecount)) '_blobs_v2.zip'], out_dir);
     end
 end
 
