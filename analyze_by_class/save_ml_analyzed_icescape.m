@@ -7,6 +7,7 @@ flowrate = ml_per_step * steps_per_sec;  %ml/sec
 extra_proc = 0; %best guess for IFCB8 in 2010
 adcpath = roipath;
 filelist = dir([roipath '*.adc']);
+filelist([filelist.bytes] == 0) = []; %skip 0-sized files
 runtime = NaN(length(filelist),1);  %initialize large to avoid growing vectors
 looktime = runtime;
 numtriggers = runtime;
@@ -18,24 +19,11 @@ for count = 1:length(filelist),
     temp = dir([roipath filename '.roi']);
     disp([num2str(count) ' of ' num2str(length(filelist)) ': ' filename])
     adcdata = importdata([adcpath filename '.adc'], ',');  %robust to last line having a few missing values...
-    %rob - fix time stamps for files that span midnight
-    negind = find(adcdata(:,8)<0);
-    if ~isempty(negind),
-        keyboard
-    end;
-    adcdata(negind,8) = adcdata(negind,8) + 24*60*60;
-    negind = find(adcdata(:,9)<0);
-    if ~isempty(negind),
-        keyboard
-    end;
-    adcdata(negind,9) = adcdata(negind,9) + 24*60*60;
-    adctime = adcdata(:,8:9)';
     runtime(count) = adcdata(end,9); %Heidi, added in place of earlier version after Rob fixed midnight crossing problem above
     proc = adcdata(:,9)-adcdata(:,8); ii = find(proc >0);
     looktime2(count) = adcdata(end,9) - sum(proc(ii)*1000*.586 + 156)/1000;
     sumproc(count) = sum(proc(ii));
     looktime(count) = adcdata(end,9) - sumproc(count) - adcdata(end,1)*extra_proc;  %seems like no lag before first trigger on Healy 2010 with IFCB8
-    keyboard
     numtriggers(count) = adcdata(end,1);
     numrois(count) = size(adcdata,1);
 end;
