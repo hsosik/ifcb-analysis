@@ -17,7 +17,15 @@ if nargin < 2 || isempty(data_namespace)
     data_namespace = ifcb.DATA_NAMESPACE;
 end
 
-feed = wget_xml([data_namespace 'rss.py?format=atom&date=' date_param '&n=150']);
+try
+    % use the IFCB V2 web services API
+    start_param = [date 'T00:00:00Z'];
+    end_param = [date 'T23:59:59Z'];
+    feed = wget_xml([data_namespace 'api/feed/start/' start_param '/end/' end_param '/format/atom'])
+catch
+    % that didn't work. maybe we're talking to a V1 server?
+    feed = wget_xml([data_namespace 'rss.py?format=atom&date=' date_param '&n=150']);
+end
 item_nodes = feed.getElementsByTagNameNS('http://www.w3.org/2005/Atom', 'entry');
 n = item_nodes.getLength;
 bins = cell(1,0);
