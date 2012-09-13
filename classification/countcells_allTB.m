@@ -1,7 +1,7 @@
 classpath_generic = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\classxxxx_v1\';
 
 classfiles = [];
-for yr = 2011, %:2012,
+for yr = 2012, %:2012,
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'I*.mat']);
     pathall = repmat(classpath, length(temp),1);
