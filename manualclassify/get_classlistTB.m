@@ -75,7 +75,7 @@ else
             classlist(:,manual_col) = classnum_default; %strmatch(classstr, class2use, 'exact');
         case 'correct_or_subdivide'  %make subcategories starting with an automated class
             if exist(classfilename),
-                load(classfilename) %load SVM results
+                load(classfilename) %load SVM resultsc
                 if ~exist('classlist', 'var'), 
                     classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
                     classlist(:,1) = 1:total_roi;
