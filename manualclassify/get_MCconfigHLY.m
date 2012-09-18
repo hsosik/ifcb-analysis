@@ -2,12 +2,13 @@ function [ MCconfig ] = get_MCconfigHLY(  )
 %function [ MCconfig ] = get_MCconfigHLY(  )
 %   Detailed explanation goes here
 
-MCconfig.filenum2start = 5;  %USER select file number to begin (within the chosen set)
+MCconfig.filenum2start = 1;  %USER select file number to begin (within the chosen set)
 
-%MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one from case list
-MCconfig.pick_mode = 'raw_roi';
+MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one from case list
+%MCconfig.pick_mode = 'raw_roi';
 
 MCconfig.resultpath = '\\floatcoat\LaneyLab\projects\HLY1101\work_IFCB8\Manual\'; %USER set
+MCconfig.classpath = '\\floatcoat\IFCBdata\IFCB8_HLY1101\classTB\2011\'; %USER set
 MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
 
 temp = load('\\floatcoat\LaneyLab\projects\HLY1101\work_IFCB8\code_Aug2012\class2use_HLY1101', 'class2use');

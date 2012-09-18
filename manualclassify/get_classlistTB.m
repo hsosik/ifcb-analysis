@@ -1,5 +1,5 @@
-function [ classlist, sub_col, list_titles] = get_classlistTB( manualfilename, classfilename, pick_mode, class2use, class2use_sub, classstr, classnum_default, total_roi );
-%function [ classlist, sub_col, list_titles] = get_classlist( manualfilename, classfilename, pick_mode, class2use, class2use_sub, classstr, classnum_default, total_roi );
+function [ classlist, sub_col, list_titles, newclasslist_flag] = get_classlistTB( manualfilename, classfilename, pick_mode, class2use, class2use_sub, classstr, classnum_default, classnum_default_sub, total_roi );
+%function [ classlist, sub_col, list_titles] = get_classlist( manualfilename, classfilename, pick_mode, class2use, class2use_sub, classstr, classnum_default, classnum_default_sub, total_roi );
 %For Imaging FlowCytobot roi picking; Use with manual_classify scripts;
 %Loads existing or sets up new matrix for identification results;
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, 31 May 2009
@@ -18,7 +18,8 @@ function [ classlist, sub_col, list_titles] = get_classlistTB( manualfilename, c
 %class2use - cell array of main classes
 %class2use_sub - cell array of classes for sub-categories
 %classstr - category label for starting class for case of "subdivide"
-%classnum_default - class number from class2use_pick2 (sub) for ROI default
+%classnum_default - class number from class2usefor ROI default in case no class from auto classifier
+%classnum_default_sub - class number from class2use_pick2 (sub) for ROI default
 %total_roi - number of ROIs in file
 %
 %OUTPUTS:
@@ -31,6 +32,7 @@ auto_col = 3;
 sub_col = [];
 class2use_in = class2use;
 class2use_sub_in = class2use_sub;
+newclasslist_flag = 0; %default to false
 if exist([manualfilename], 'file')  %~isempty(tempdir)
     load([manualfilename])
     class2use_sub = class2use_sub_in; %make sure any loaded class2use_sub is overwritten
@@ -45,7 +47,7 @@ if exist([manualfilename], 'file')  %~isempty(tempdir)
     end;
     clear class2use_in
     %if strncmp(pick_mode, 'subdiv',6),
-    if ~isempty(classnum_default) && ~isempty(classstr),
+    if ~isempty(classnum_default_sub) && ~isempty(classstr),
         sub_col = strmatch(classstr, list_titles, 'exact');
         if isempty(sub_col), %start a new one
             sub_col = size(classlist,2) + 1;
@@ -65,6 +67,7 @@ if exist([manualfilename], 'file')  %~isempty(tempdir)
 else 
     clear class2use_in
     list_titles = {'roi number' 'manual' 'SVM-auto'};
+    newclasslist_flag = 1; %set to true
     switch pick_mode
         case 'raw_roi' %pick classes from scratch
             classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
@@ -73,40 +76,31 @@ else
         case 'correct_or_subdivide'  %make subcategories starting with an automated class
             if exist(classfilename),
                 load(classfilename) %load SVM results
-                if ~exist('classlist', 'var'), %this for old case, new treebagger output has classlist already
+                if ~exist('classlist', 'var'), 
                     classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
                     classlist(:,1) = 1:total_roi;
          %           classlist(:,auto_col)  = PreLabels(:,1);
-                        %new case for TBclassification July 2012, Heidi
+                     %new case for TBclassification July 2012, Heidi
                      [~,ia] = ismember(TBclass_above_threshold, class2use);
-                     classlist(roinum,auto_col)  = ia;   
+                     classlist(roinum,auto_col)  = ia;
+                     classlist(classlist(:,auto_col) == 0,auto_col) = classnum_default;
                 end;
             else
                 classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
                 classlist(:,1) = 1:total_roi;
             end;
-            if ~isempty(classnum_default),               
-                %classlist(:,sub_col) = NaN;
+            if ~isempty(classnum_default_sub),               
                 classnum = strmatch(classstr, class2use, 'exact'); %default class number from original list
                 sub_col = 4; %first one
                 classlist(:,sub_col) = NaN;
                 list_titles(sub_col) = {classstr};            
-                classlist(classlist(:,auto_col) == classnum, sub_col) = classnum_default; %set to default new class
+                classlist(classlist(:,auto_col) == classnum, sub_col) = classnum_default_sub; %set to default new class
                 [overlap, ind_sub, ind] = intersect(class2use_sub, class2useTB);
-                %keyboard
                 for count1 = 1:length(overlap),
                     classlist(classlist(:,auto_col) == ind(count1), sub_col) = ind_sub(count1); %set to new class number in subcol
                     classlist(classlist(:,auto_col) == ind(count1), auto_col) = classnum; %set to parent class number in autocol
                 end;
-            end;
-%        case 'subdivide_from_manual'  %make subcategories starting with an automated class
-%            sub_col = 4; %first one
-%            classnum = strmatch(classstr, class2use); %default class number from original list
-%            classlist(classlist(:,auto_col) == classnum, sub_col) = classnum_default; %set to default new class
-%            [overlap, ind_sub, ind] = intersect(class2use_sub, class2use);
-%            for count1 = 1:length(overlap),
-%                classlist(classlist(:,auto_col) == ind(count1), sub_col) = ind_sub(count1); %set to new class number in subcol
-%            end;
+             end;                        
     end;
 %    save(manualfilename, 'list_titles', 'class2use*', 'classlist'); %make sure initial file has proper list_titles    
 end;

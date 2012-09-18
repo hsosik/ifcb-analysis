@@ -3,18 +3,17 @@ function [MCconfig, filelist, classfiles ] = get_MCfilelistHLY( MCconfig )
 %   Detailed explanation goes here
 
 basepath = '\\floatcoat\IFCBdata\IFCB8_HLY1101\data\';
-%classpath = MCconfig.classpath;
-load \\floatcoat\LaneyLab\projects\HLY1101\work_IFCB8\code_Aug2012\filelist_stn34_45 %contains var filelist
+classpath = MCconfig.classpath;
+load \\floatcoat\LaneyLab\projects\HLY1101\work_IFCB8\code_Aug2012\filelist_underway_end_section %contains var filelist
 %add path to filelist
-filelist = cellstr([repmat(char(basepath),length(filelist),1) char(filelist)])
+%filelist = cellstr([repmat(char(basepath),length(filelist),1) char(filelist)])
 
 if isempty(filelist),
 %    disp('No files found. Check paths or file specification in get_MCconfig.')
     classfiles = [];
     return
 end;
-
-classfiles = [];
+[filelist, classfiles] = resolve_files(filelist, basepath, classpath, MCconfig.class_filestr);
 
 [~,f]= fileparts(filelist{1}); 
 if f(1) == 'I',
