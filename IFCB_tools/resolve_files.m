@@ -16,8 +16,10 @@ sep = repmat(filesep,length(year),1);
 base = repmat(char(basepath), length(year),1);
 if files(1,1) == 'D',
     basepath = [base files(:,1:5) sep files(:,1:9) sep];
-else
-    basepath = [base sep files(:,1:14) sep];
+elseif files(1,1:5) == 'IFCB8'
+    basepath = base;
+else      
+    basepath = [base files(:,1:14) sep];
 end;
 filelist = cellstr([basepath files]);
 
