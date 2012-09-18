@@ -64,10 +64,10 @@ switch pick_mode
         classstr = 'ciliate'; %USER class to start from
         class2use_sub = [];  %use this if no subdividing 
         %new subclasses, first one for rois NOT in the class
-        class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'}; %USER type or load list
-        class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
-            'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
-            'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
+        %class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'}; %USER type or load list
+        %class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
+        %    'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
+        %    'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
         classnum_default_sub = strmatch('ciliate_mix', class2use_sub); %USER class for default
         class2use_pick2 = class2use_sub; %to set button labels
         [~,class2view1] = intersect(class2use, MCconfig.class2view1); %1:length(class2use);
