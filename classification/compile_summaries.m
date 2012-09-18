@@ -19,8 +19,26 @@ end;
 
 return
 
-ind = 19; figure
+
+load \\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_biovol_manual_13Sep2012_day
+figure, set(gcf, 'paperposition', [.25 2.5 8 2.5], 'units', 'inches')
+set(gcf, 'position', [5 4 8 2.5])
+
+ind = 13;
 [xmat, ymat ] = timeseries2ydmat(mdateTBall, classcountTB_above_adhocthreshall(:,ind)./ml_analyzedTBall);
-plot(xmat(:), ymat(:))
-title(class2useTB(ind))
-datetick, set(gca, 'xgrid', 'on')
+hold on, plot(xmat(:), ymat(:), 'linewidth', 1.5)
+plot(matdate_bin, classcount_bin(:,10)./ml_analyzed_mat_bin(:,10), 'r.')
+%text(datenum(2007,1,1), 10, ['\it' class2useTB(ind)])
+datetick, set(gca, 'xgrid', 'on', 'box', 'on')
+ylim([0 12])
+legend('automated', 'manual')
+ylabel('Cells mL^{-1}')
+
+img = imread('http://ifcb-data.whoi.edu/mvco/IFCB5_2011_017_134444_01637.png');
+t = size(img,1)/1000*1.0; s = size(img,2)/1000*1.0;
+i3 = axes('position', [-.05 .65 s t]);
+imshow(img)
+title('\itDitylum brightwellii')
+
+print Ditylum_timeseries -depsc
+print Ditylum_timeseries -dpng

@@ -30,7 +30,7 @@ for classcount = 1:length(classes),
 
         t_temp = out.targets;
         if maxn < n_class(classcount),
-            ind = randi(n_class(classcount),maxn,1);
+            ind = randi(n_class(classcount),maxn,1); %THIS IS WRONG!!!
             feamat{classcount} = feamat{classcount}(:,ind);
             t_temp = t_temp(ind);
         end;
