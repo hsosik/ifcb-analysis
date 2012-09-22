@@ -1,4 +1,5 @@
 function [ ind_out, class_label ] = get_diatom_ind( class2use, class_label )
+%function [ ind_out, class_label ] = get_diatom_ind( class2use, class_label )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
