@@ -1,3 +1,4 @@
+resultpath = '\\raspberry\d_work\ifcb1\ifcb_data_mvco_jun06\manual_fromClass\summary\';
 classpath_generic = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\classxxxx_v1\';
 biovolpath_generic = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\biovolumexxxx\';
 classfiles = [];
@@ -49,4 +50,4 @@ ml_analyzedTB = ml_analyzed_list;
 mdateTB = mdate;
 filelistTB = filelist;
 
-save(['summary_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'classcountTB_above_adhocthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'adhocthresh', 'classpath_generic', 'roiids', 'class2list')
+save([resultpath 'summary_biovol_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'classcountTB_above_adhocthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'adhocthresh', 'classpath_generic', 'roiids', 'class2list')
