@@ -72,11 +72,7 @@ lgdiatom_flag = zeros(size(class2use_here)); lgdiatom_flag(diatom_ind) = 1;
         temp = zeros(1,numclass); %init as zeros for case of subdivide checked but none found, classcount will only be zero if in class_cat, else NaN
         tempvol = temp;
         for classnum = 1:numclass,
-            %if manual_only,
-                cind = find(classlist(:,2) == classnum);
-            %else
-            %    cind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum));
-            %end;
+            cind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum));
             temp(classnum) = length(cind);
             tempvol(classnum) = nansum(targets.Biovolume(cind)*micron_factor.^3); %cubic microns
             tempcarbon(classnum) =  nansum(biovol2carbon(targets.Biovolume(cind)*micron_factor.^3,lgdiatom_flag(classnum))); %picograms
