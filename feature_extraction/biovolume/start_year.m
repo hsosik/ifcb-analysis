@@ -1,5 +1,3 @@
-%basedir = '\\demi\ifcbold\G\IFCB\ifcb_data_MVCO_jun06\';  %%USER set, roi files, adc files
-basedir = '\\demi\vol1\';  %%USER set, roi files, adc files
 basedir2 = '\\demi\blobs\2012\';
 daystr = '2012_';
 daylist = dir([basedir2 daystr '*']); 
@@ -15,7 +13,7 @@ filelist = {filelist.name}';
 filelist = regexprep(filelist,'_blobs_v2.zip','');
 
 %in_dir = ['\\demi\blobs\2012\' daystr '\'];
-out_dir = '\\Queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\biovolume2012\'; %G-drive share
+out_dir = '\\Queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\biovolume2011\'; %G-drive share
 %out_dir = '/mnt/queenrose/ifcb_data_mvco_jun06/biovolume/biovolume2012/'; %G-drive share
 
 %out_dir_all = {'\\Queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\biovolume2006\'...
@@ -25,7 +23,7 @@ out_dir = '\\Queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\biovolume2012
 %    '\\Queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\biovolume2010\'...
 %    '\\Queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\biovolume2011\'...
 %    '\\Queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\biovolume2012\'};
-in_dir = 'http://ifcb-data.whoi.edu/';
+in_dir = 'http://ifcb-data.whoi.edu/mvco/';
 
 files_done = dir([out_dir 'IFCB*.mat']);
 %for count = 1:length(out_dir_all),
