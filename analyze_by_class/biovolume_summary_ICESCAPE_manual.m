@@ -36,9 +36,10 @@ sec = str2num(fstr(:,20:21));
 matdate = datenum(year,0,yearday,hour,min,sec);
 clear fstr yearday hour min sec
 
-load([resultpath filelist(1).name]) %read first file to get classes
-class2use_manual_first = class2use_manual;
-numclass = length(class2use_manual);
+%load([resultpath filelist(1).name]) %read first file to get classes
+temp = load('\\floatcoat\LaneyLab\projects\HLY1101\work_IFCB8\code_Aug2012\class2use_HLY1101', 'class2use');
+class2use_manual_first = [temp.class2use]; clear temp
+numclass = length(class2use_manual_first);
 class2use_here = class2use_manual_first;
 classcount = NaN(length(filelist),numclass);  %initialize output
 classbiovol = classcount;
