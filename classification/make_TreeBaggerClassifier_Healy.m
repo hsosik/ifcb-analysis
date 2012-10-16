@@ -98,4 +98,4 @@ text(1:length(classes), -text_offset.*ones(size(classes)), classes, 'interpreter
 set(gca, 'position', [ 0.13 0.35 0.8 0.6])
 legend('true pos rate', 'Sp', 'Pmissed')
 set(gca, 'position', [ 0.13 0.35 0.8 0.6])
-
+Pd2_overall = diag(c2)./sum(c1')';
