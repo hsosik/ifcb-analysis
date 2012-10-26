@@ -32,10 +32,10 @@ VALVE_STATUS = 'valveStatus'
 # adc column name and type pairs
 ADC_SCHEMA = [(TRIGGER, int),
           (PROCESSING_END_TIME, float),
-          (FLUORESENCE_HIGH, float),
           (FLUORESCENCE_LOW, float),
-          (SCATTERING_HIGH, float),
+          (FLUORESENCE_HIGH, float),
           (SCATTERING_LOW, float),
+          (SCATTERING_HIGH, float),
           (COMPARATOR_PULSE, float),
           (TRIGGER_OPEN_TIME, float),
           (FRAME_GRAB_TIME, float),
