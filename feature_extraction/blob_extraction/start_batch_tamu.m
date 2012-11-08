@@ -21,7 +21,7 @@ for daycount = 220:final_day,
         if f(1) == 'D', %case for new data system IFCB7 and later
             day_dir = daystr; day_dir([5,8]) = [];
         else %presume old data system
-            day_dir = [num2str(year) '_' num2str(daycount)];
+            day_dir = [num2str(year) '_' num2str(daycount,'%03.0f')];
         end;
         out_dir = [out_base_dir num2str(year) filesep day_dir filesep];
         if ~exist(out_dir, 'dir'),
