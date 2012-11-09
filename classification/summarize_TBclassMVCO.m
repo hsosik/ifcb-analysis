@@ -1,4 +1,4 @@
-function [classcount, classcount_above_optthresh, classcount_above_adhocthresh, class2useTB, roiid_list] = summarize_TBclassMVCO(classfile, adhocthresh, class2list)
+function [classcount, classcount_above_optthresh, classcount_above_adhocthresh, class2useTB, roiid_list, p_list] = summarize_TBclassMVCO(classfile, adhocthresh, class2list)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -20,7 +20,9 @@ for ii = 1: length(class2useTB),
         ind = (strcmp(class2useTB(ii), TBclass) & maxscore' >= adhocthresh(ii));
         classcount_above_adhocthresh(ii) = sum(ind);
         if ii == class2list, 
-            roiid_list = roinum(find(ind));
+            temp = find(ind);
+            roiid_list = roinum(temp);
+            p_list = maxscore(temp);
         end;
     end;
 end;
