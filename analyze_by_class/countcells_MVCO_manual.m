@@ -1,6 +1,6 @@
 resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
-load ml_analyzed_all %load the milliliters analyzed for all sample files
+load \\raspberry\d_work\IFCB1\code_mar10_mvco\ml_analyzed_all %load the milliliters analyzed for all sample files
 
 mode_list = manual_list(1,2:end-1); mode_list = [mode_list 'ciliate_ditylum'];
 %find ml_analyzed matching each manual file
