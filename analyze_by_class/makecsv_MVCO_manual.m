@@ -18,7 +18,7 @@ numclass = numclass1 + numclass2;
 class2use_here = [class2use_manual_first class2use_sub4];
 ciliate_num = strmatch('ciliate', class2use_here, 'exact');
 other_num = strmatch('other', class2use_here, 'exact');
-for loopcount = 3:3, %1:length(mode_list),
+for loopcount = 1:length(mode_list),
     annotate_mode = char(mode_list(loopcount));
     switch annotate_mode
         case 'all categories'
@@ -85,7 +85,7 @@ for loopcount = 3:3, %1:length(mode_list),
                     ind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum));
                 end;
                 %disp(classnum)
-                disp(ind)
+                %disp(ind)
             else
                 if classnum ~= ciliate_num %skip ciliate since done as subdivide in all cases when ciliates exist
                     ind = find(classlist(:,2) == classnum); %case for "off task" annotations (consider manual only)
@@ -99,7 +99,6 @@ for loopcount = 3:3, %1:length(mode_list),
             roinumtemp = [roinumtemp; ind];
             labeltemp = [labeltemp; repmat(class2use_here(classnum), length(ind),1)];
         end;
-        pause
         persontemp = repmat({'EPeacock'}, length(roinumtemp),1);
         if exist('class2use_sub4', 'var'),
              if ~isequal(class2use_sub4, class2use_first_sub)
