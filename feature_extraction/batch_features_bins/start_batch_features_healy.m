@@ -11,7 +11,7 @@ out_base_dir = '\\floatcoat\IFCBdata\IFCB8_HLY1101\features\'; %USER main blob o
 year = 2011; %USER
 %USER choose start and end day to encompass range to process; already
 %completed or non-existent days will be skipped automatically
-start_day = '2011-07-02';  %USER
+start_day = '2011-06-01';  %USER
 end_day = '2011-08-01'; %USER
 
 out_dir = [out_base_dir num2str(year) filesep];

@@ -2,13 +2,13 @@
 %configure and initiate batch processing for feature extractiom
 %NOTE: This is currently set for rotated camera. 
 
-in_url = 'http://toast.tamu.edu/ifcb7_new_data/'; %USER web services to access data
+in_url = 'http://toast.tamu.edu/ifcb3/'; %USER web services to access data
 out_base_dir = 'g:\work\test\features\'; %USER main blob output location
 year = 2012; %USER
 %USER choose start and end day to encompass range to process; already
 %completed or non-existent days will be skipped automatically
-start_day = '2012-08-10';  %USER
-end_day = '2012-08-11'; %USER
+start_day = '2012-08-08';  %USER
+end_day = '2012-08-30'; %USER
 
 out_dir = [out_base_dir num2str(year) filesep];
 if ~exist(out_dir, 'dir'),
