@@ -61,9 +61,10 @@ if nt > 0,
     
     %write the raw multi-blob features to separate csv file
     fileout = regexprep(file, '.zip', '_multiblob_v1.csv');   
-    ds = dataset([multiblob_features multiblob_titles]);
-    export(ds, 'file', [out_dir 'multiblob' filesep fileout], 'delimiter', ',');
-     
+    if ~isempty(multiblob_features), 
+        ds = dataset([multiblob_features multiblob_titles]);
+        export(ds, 'file', [out_dir 'multiblob' filesep fileout], 'delimiter', ',');
+    end; 
     log(['DONE ' file]);
 else
     log(['no targets SKIPPING ' file]);
