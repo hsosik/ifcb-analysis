@@ -1,9 +1,12 @@
 %start_batch_tamu.m
 %configure and initiate batch processing for blob extractiom
+addpath('/home/hsosik/ifcbcode/webservice_tools/');
+addpath('/home/hsosik/ifcbcode/feature_extraction/');
+addpath('/home/hsosik/ifcbcode/dipum_toolbox_2.0.1/');
 
 in_url = 'http://toast.tamu.edu/ifcb3/'; %USER web services to access data
 %out_base_dir = 'c:\work\test\blobs\'; %USER main blob output location
-out_base_dir = '\scratch5\ifcb\tamu\blobs2010\'; %USER main blob output location
+out_base_dir = '/scratch5/ifcb/tamu/blobs2010/'; %USER main blob output location
 year = 2010; %USER
 
 final_day = 365;
