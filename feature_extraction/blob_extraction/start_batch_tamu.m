@@ -1,10 +1,10 @@
 %start_batch_tamu.m
 %configure and initiate batch processing for blob extractiom
 
-in_url = 'http://toast.tamu.edu/ifcb7_new_data/'; %USER web services to access data
-%in_url = 'http://ifcb-data.whoi.edu/saltpond/'; %USER web services to access data
-out_base_dir = 'c:\work\test\blobs\'; %USER main blob output location
-year = 2012; %USER
+in_url = 'http://toast.tamu.edu/ifcb3/'; %USER web services to access data
+%out_base_dir = 'c:\work\test\blobs\'; %USER main blob output location
+out_base_dir = '\scratch5\ifcb\tamu\blobs2010\'; %USER main blob output location
+year = 2010; %USER
 
 final_day = 365;
 %check for leap year
@@ -12,7 +12,7 @@ temp = datenum(year,0,366); temp = datevec(temp);
 if temp(1) == year, final_day = 366; end;
 
 %loop over all possible days in year
-for daycount = 220:final_day,
+for daycount = 1:2, %1:final_day,
     daystr = datestr([year,0,daycount,0,0,0],29);
     bins = list_day(daystr,in_url);
     if ~isempty(bins),
