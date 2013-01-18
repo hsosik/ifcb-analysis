@@ -6,7 +6,7 @@ mdateTBall = [];
 filelistTBall = [];
 
 for yr = 2006:2012,
-    temp = load(['summary_allTB' num2str(yr)]);
+    temp = load(['summary_allTBpt7' num2str(yr)]);
     classcountTBall = [ classcountTBall; temp.classcountTB];
     classcountTB_above_adhocthreshall = [ classcountTB_above_adhocthreshall; temp.classcountTB_above_adhocthresh];
     classcountTB_above_optthreshall = [ classcountTB_above_optthreshall; temp.classcountTB_above_optthresh];
