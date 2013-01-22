@@ -45,7 +45,7 @@ switch pick_mode
     case 'raw_roi' %pick classes from scratch
 %        class2use = {'class1'; 'class2'; 'other'}; %USER type or load list
         %load class2use_MVCOmanual3 %load class2use
-        classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use); %USER class for default
+        classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use, 'exact'); %USER class for default
         classstr = [];
         class2use_pick1 = MCconfig.class2use; %to set button labels
         class2use_manual = MCconfig.class2use;
@@ -55,24 +55,25 @@ switch pick_mode
         [~,class2view1] = intersect(class2use, MCconfig.class2view1); %1:length(class2use);
         class2view2 = [];
     case 'correct_or_subdivide'  %make subcategories starting with an automated class
-        classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use); %USER class for default
+        classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use, 'exact'); %USER class for default
         class2use = MCconfig.class2use;
         class2use_auto = class2use; 
         class2use_pick1 = class2use;
         class2use_manual = class2use;
         class2use_auto = class2use;
         classstr = 'ciliate'; %USER class to start from
-        class2use_sub = [];  %use this if no subdividing 
+        %class2use_sub = [];  %use this if no subdividing 
         %new subclasses, first one for rois NOT in the class
         %class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'}; %USER type or load list
-        %class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
-        %    'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
-        %    'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
+        class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
+            'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
+            'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
         classnum_default_sub = strmatch('ciliate_mix', class2use_sub); %USER class for default
         class2use_pick2 = class2use_sub; %to set button labels
         [~,class2view1] = intersect(class2use, MCconfig.class2view1); %1:length(class2use);
         %class2view1 = MCconfig.class2view1;
-        class2view2 = 1:length(class2use_sub);
+        %class2view2 = 1:length(class2use_sub);
+        class2view2 = []; %use this to skip viewing subdivide categories
     otherwise
         disp('Invalid pick_mode. Check setting in get_MCconfig')
         return
@@ -118,7 +119,7 @@ for filecount = filenum2start:length(filelist),
     else
         classfile_temp = classfiles{filecount};
     end;
-    [ classlist, sub_col, list_titles, newclasslist_flag ] = get_classlistTB( [resultpath outfile],classfile_temp, pick_mode, class2use_manual, class2use_sub, classstr, classnum_default, classnum_default_sub, length(x_all) );
+[ classlist, sub_col, list_titles, newclasslist_flag ] = get_classlistTB( [resultpath outfile],classfile_temp, pick_mode, class2use_manual, class2use_sub, classstr, classnum_default, classnum_default_sub, length(x_all) );
     %special case to segregate dirt spots in Healy1101 data
     if isequal(outfile(1:10), 'IFCB8_2011') && newclasslist_flag,
         classlist((adcdata(:,10) == 1118 & adcdata(:,11) == 290),2) = strmatch('bad', class2use_manual);
