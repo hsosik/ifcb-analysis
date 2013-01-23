@@ -14,7 +14,7 @@ temp = NaN(size(filelist));
 temp(ia) = ml_analyzed(ib);
 ml_analyzed = temp;
 %clean up from ml_analyzed_all
-clear filelist_all looktime matdate minproctime runtim
+clear filelist_all looktime matdate minproctime runtime
 filelist_all = filelist;
 
 %calculate date
@@ -41,7 +41,8 @@ for loopcount = 1:length(mode_list),
     switch annotate_mode
         case 'all categories'
             %use them all
-            class_cat = 1:numclass;
+            %class_cat = 1:numclass;
+            [~, class_cat] = setdiff(class2use_here, {'diatom_flagellate' 'other_interaction'});
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)));
@@ -57,7 +58,7 @@ for loopcount = 1:length(mode_list),
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)) & ~cell2mat(manual_list(2:end,strmatch('diatoms', mode_list)+1)));
         case 'diatoms'
             %all except mix, mix_elongated, and detritus
-            [~, class_cat] = setdiff(class2use_here, {'mix' 'detritus'});
+            [~, class_cat] = setdiff(class2use_here, {'mix' 'detritus' 'diatom_flagellate' 'other_interaction'});
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
@@ -77,6 +78,12 @@ for loopcount = 1:length(mode_list),
             [~, class_cat] = intersect(class2use_here, ['Ditylum' 'ciliate' class2use_first_sub]);
             manual_only = 0;
             mode_ind = find(~cell2mat(manual_list(2:end,2)) & cell2mat(manual_list(2:end,3)) & cell2mat(manual_list(2:end,4)) & ~cell2mat(manual_list(2:end,5)) & cell2mat(manual_list(2:end,6)));   
+        case 'parasites'
+            [~, class_cat] = intersect(class2use_here, ['Chaetoceros_flagellate' 'Chaetoceros_pennate' 'Cerataulina_flagellate' 'G_delicatula_parasite' ...
+                'G_delicatula_external_parasite' 'Chaetoceros_other' 'diatom_flagellate' 'other_interaction']);
+            manual_only = 0;
+            list_col = strmatch(annotate_mode, manual_list(1,:));
+            mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
     end;
     filelist = cell2struct(manual_list(mode_ind+1,1),{'name'},2);
     for filecount = 1:length(filelist),
