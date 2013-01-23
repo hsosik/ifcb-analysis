@@ -9,7 +9,10 @@ ml_analyzed_mat_bin = classcount_bin;
 for count = 1:length(matdate_bin),
     idx = find(matdate_day == matdate_bin(count));
     if ~isempty(idx),
-        classcount_bin(count,:) = nansum(classcount(idx,:),1);
+        temp = classcount(idx,:);
+        temp(isnan(ml_analyzed_mat(idx,:))) = NaN;
+        %classcount_bin(count,:) = nansum(classcount(idx,:),1);
+        classcount_bin(count,:) = nansum(temp,1);
         ml_analyzed_mat_bin(count,:) = nansum(ml_analyzed_mat(idx,:),1);
     end;
 end;
