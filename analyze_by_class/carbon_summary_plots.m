@@ -1,4 +1,4 @@
-load c:\work\mvco\carbon\IFCB_carbon_manual_May2012.mat
+load c:\work\mvco\carbon\IFCB_carbon_manual_May2012.mat %from summary_size_classes.m
 load c:\work\mvco\carbon\carbon_summary_fcb.mat
 
 %FIX later! Omit one really extreme value during Phaeocystis bloom in 2009 

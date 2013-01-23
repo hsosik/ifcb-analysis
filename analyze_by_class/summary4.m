@@ -1,4 +1,4 @@
-load '\\raspberry\d_work\ifcb1\ifcb_data_mvco_jun06\manual_fromClass\summary\count_biovol_manual_29Mar2012_day'
+load '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_biovol_manual_25Sep2012_day'
 
 [ ind_diatoms, class_label ] = get_diatom_ind( class2use, class2use );
 

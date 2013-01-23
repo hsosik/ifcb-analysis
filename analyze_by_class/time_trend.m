@@ -2,6 +2,7 @@ function [] = time_trend(mdate_mat, y_mat, yearlist, labelstr)
 %function [] = time_trend(mdate_mat, y_mat, yearlist)
 
 next_year = yearlist(end)+1;
+%[ y_mat, mdate_mat, yd_wk ] = ydmat2weeklymat_1daysubsample( y_mat, yearlist );
 [ y_mat, mdate_mat, yd_wk ] = ydmat2weeklymat( y_mat, yearlist );
 [ ymean, ystd ] = smoothed_climatology( y_mat , 3);
 %yanom = y_mat-repmat(ymeansm',1,length(yearlist));

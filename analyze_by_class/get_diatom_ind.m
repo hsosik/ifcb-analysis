@@ -5,7 +5,7 @@ function [ ind_out, class_label ] = get_diatom_ind( class2use, class_label )
 
 class2get = {'Asterionellopsis' 'Cerataulina' 'Chaetoceros' 'Corethron' 'Coscinodiscus' 'Cylindrotheca' 'DactFragCerataul' 'Dactyliosolen'... 
     'Ditylum' 'Ephemera' 'Eucampia' 'Guinardia' 'Guinardia_flaccida' 'Guinardia_striata' 'Hemiaulus' 'Lauderia' 'Leptocylindrus' 'Licmophora'...
-    'Odontella' 'Paralia' 'Pleurosigma' 'Pseudonitzschia' 'Rhizosolenia' 'Skeletonema' 'Stephanopyxis' 'Thalassionema' 'Thalassiosira' 'pennate'};
+    'Odontella' 'Paralia' 'Pleurosigma' 'Pseudonitzschia' 'Rhizosolenia' 'Skeletonema' 'Stephanopyxis' 'Thalassionema' 'Thalassiosira' 'pennate' 'mix_elongated'};
 
 class_label(strmatch('Leptocylindrus', class_label, 'exact')) = {'\itLeptocylindrus \rmspp.'};
 class_label(strmatch('Guinardia', class_label, 'exact')) = {'\itGuinardia delicatula'};
@@ -36,6 +36,7 @@ class_label(strmatch('Cerataulina', class_label, 'exact')) = {'\itCerataulina pe
 class_label(strmatch('Odontella', class_label, 'exact')) = {'\itOdontella \rmspp.'};
 class_label(strmatch('Coscinodiscus', class_label, 'exact')) = {'\itCoscinodiscus \rmspp.'};
 class_label(strmatch('Paralia', class_label, 'exact')) = {'\itParalia sulcata'};
+class_label(strmatch('mix_elongated', class_label, 'exact')) = {'misc. small diatoms'};
 
 [~,ind_out] = intersect(class2use, class2get);
 ind_out = sort(ind_out);
