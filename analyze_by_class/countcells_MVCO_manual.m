@@ -97,7 +97,7 @@ for loopcount = 1:length(mode_list),
             disp('class2use_manual does not match previous files!!!')
        %     keyboard
         end;
-        temp = zeros(1,numclass); %init as zeros for case of subdivide checked but none found, classcount will only be zero if in class_cat, else NaN
+        temp = zeros(1,numclass); %init as zeros for case of subdivide checked but none found, ml_analyzed will be positive only if in class_cat, else NaN
         for classnum = 1:numclass1,
             if manual_only,
                 temp(classnum) = size(find(classlist(:,2) == classnum),1);
@@ -114,7 +114,8 @@ for loopcount = 1:length(mode_list),
                 temp(classnum+numclass1) = size(find(classlist(:,4) == classnum),1);
             end;
         end;
-        classcount(mode_ind(filecount),class_cat) = temp(class_cat);
+        %classcount(mode_ind(filecount),class_cat) = temp(class_cat);
+        classcount(mode_ind(filecount),:) = temp;
         clear class2use_manual class2use_auto class2use_sub* classlist
     end;
 end;
