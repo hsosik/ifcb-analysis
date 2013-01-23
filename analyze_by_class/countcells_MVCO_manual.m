@@ -38,7 +38,7 @@ numclass = numclass1 + numclass2;
 class2use_here = [class2use_manual_first class2use_sub4];
 classcount = NaN(length(filelist),numclass);  %initialize output
 ml_analyzed_mat = classcount;
-for loopcount = 7:7, %:length(mode_list),
+for loopcount = 1:length(mode_list),
     annotate_mode = char(mode_list(loopcount));
     switch annotate_mode
         case 'all categories'
