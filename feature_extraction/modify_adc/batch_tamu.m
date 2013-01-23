@@ -1,6 +1,9 @@
 yr = 2007;
 %adcmodbase = 'C:\work\IFCB3LisaCampbell\data\adcmod\';
-adcmodebase = '/scratch5/ifcb/tamu/adcmod/';
+adcmodbase = '/scratch5/ifcb/tamu/adcmod/';
+if ~exist(adcmodbase, 'dir'),
+    mkdir(adcmodbase)
+end;
 in_dir = 'http://toast.tamu.edu/ifcb3/'; %USER web services to access data
 for day = 254:366,
     filelist = list_day(datestr(datenum(yr,0,day),29), in_dir);
