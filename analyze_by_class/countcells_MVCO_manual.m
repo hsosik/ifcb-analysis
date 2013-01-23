@@ -28,6 +28,8 @@ matdate = datenum(year,0,yearday,hour,min,sec);
 clear fstr year yearday hour min sec
 
 load([resultpath char(manual_list(2,1))]) %read first file to get classes
+load class2use_MVCOmanual3 %get the master list to start
+class2use_manual = class2use;
 class2use_manual_first = class2use_manual;
 class2use_first_sub = class2use_sub4; %this is specific for one sub case = ciliates
 numclass1 = length(class2use_manual);
