@@ -17,7 +17,6 @@ for count = 1:length(ind);
         data = fread(fid, x(imgcount).*y(imgcount), 'ubit8');
         imagedat{imgcount} = reshape(data, x(imgcount), y(imgcount));
     end;
-    
     if ~(diff(ypos) + diff(xpos)),  %if positions are the same (mistake in pre-mid 2008 files)
         [dxpos_est, dypos_est] = find_overlap(imagedat{1}, imagedat{2});  %get the overlap by comparing the images
         xpos(2) = xpos(1)+ dxpos_est;  % recover the positions of the second image

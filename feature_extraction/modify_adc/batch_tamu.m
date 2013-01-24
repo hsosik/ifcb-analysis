@@ -8,7 +8,7 @@ if ~exist(adcmodbase, 'dir'),
 end;
 in_dir = 'http://toast.tamu.edu/ifcb3/'; %USER web services to access data
 matlabpool
-for day = 254:366,
+for day = 345:366,
     filelist = list_day(datestr(datenum(yr,0,day),29), in_dir);
     disp(['processing ' num2str(length(filelist)) ' files'])
     if ~isempty(filelist),
@@ -16,7 +16,7 @@ for day = 254:366,
             [~,filename] = fileparts(filelist{ii});
             disp(filename)
             adcmodpath = [adcmodbase filename(1:14), filesep];
-            adcmodfilename = [adcmodpath filename 'adc.mod'];
+            adcmodfilename = [adcmodpath filename '.adc.mod'];
             if ~exist(adcmodfilename, 'file'),
                 [filestr1,status] = urlwrite([filelist{ii} '.adc'], [adcmodbase filename '.adc']);
                 adcdata = importdata(filestr1);
@@ -29,13 +29,14 @@ for day = 254:366,
                         if ~exist(adcmodpath, 'dir'),
                             mkdir(adcmodpath)
                         end;
+                        disp(['writing ' adcmodfilename])
                         status = write_adcmod (adcdata, stitch_info, adcmodfilename);
                         delete(filestr2)
                     else
                         disp('no mod needed')
                     end;
-                    delete(filestr1)
                 end;
+                delete(filestr1)
             else
                 disp('already done')
             end;
