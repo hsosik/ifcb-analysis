@@ -22,9 +22,7 @@ for count = 1:length(ind);
         xpos(2) = xpos(1)+ dxpos_est;  % recover the positions of the second image
         ypos(2) = ypos(1)+ dypos_est;
     end;
-    img_merge = NaN;
-    xpos_merge = NaN;
-    ypos_merge = NaN;
+    
     if ~isnan(xpos(2)) && ~isempty(imagedat), %skip this for cases where above loop returns no overlap
         %                    [img_merge, xpos_merge, ypos_merge] = stitchrois(imagedat,xpos,ypos);
         %                     if ~isnan(img_merge(1))
@@ -32,7 +30,7 @@ for count = 1:length(ind);
         %                    end;
     end;
     
-    if 0 && ~isnan(img_merge(1)),
+    if 0,
         figure(1), clf
         subplot(2,1,1)
         imagesc(ypos(1), xpos(1), imagedat{1})
@@ -43,7 +41,6 @@ for count = 1:length(ind);
         %imagesc(ypos_merge, xpos_merge, img_merge)
         %title(['overlap: ' num2str(size(intersect(xr(1,1):xr(1,2), xr(2,1):xr(2,2)),2)) '; ' num2str(size(intersect(yr(1,1):yr(1,2), yr(2,1):yr(2,2)),2))])
         %colormap('gray'); axis([0 1300 0 1300]), axis square
-        pause
     end;
 end;
 fclose(fid);
