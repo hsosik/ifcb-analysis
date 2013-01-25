@@ -31,6 +31,8 @@ matdate = datenum(year,0,yearday,hour,min,sec);
 clear fstr year yearday hour min sec
 
 load([resultpath char(manual_list(2,1))]) %read first file to get classes
+load class2use_MVCOmanual3 %get the master list to start
+class2use_manual = class2use;
 class2use_manual_first = class2use_manual;
 class2use_first_sub = class2use_sub4; %this is specific for one sub case = ciliates
 %class_ciliate = {'ciliate' 'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'};
@@ -55,7 +57,8 @@ for loopcount = 1:length(mode_list),
     switch annotate_mode
         case 'all categories'
             %use them all
-            class_cat = 1:numclass;
+            %class_cat = 1:numclass;
+            [~, class_cat] = setdiff(class2use_here, {'diatom_flagellate' 'other_interaction'});
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)));
@@ -91,6 +94,12 @@ for loopcount = 1:length(mode_list),
             [~, class_cat] = intersect(class2use_here, ['Ditylum' 'ciliate' class2use_first_sub]);
             manual_only = 0;
             mode_ind = find(~cell2mat(manual_list(2:end,2)) & cell2mat(manual_list(2:end,3)) & cell2mat(manual_list(2:end,4)) & ~cell2mat(manual_list(2:end,5)) & cell2mat(manual_list(2:end,6)));
+        case 'parasites'
+            [~, class_cat] = intersect(class2use_here, {'Chaetoceros_flagellate' 'Chaetoceros_pennate' 'Cerataulina_flagellate' 'G_delicatula_parasite' ...
+                'G_delicatula_external_parasite' 'Chaetoceros_other' 'diatom_flagellate' 'other_interaction' 'Chaetoceros_didymus_flagellate'});
+            manual_only = 0;
+            list_col = strmatch(annotate_mode, manual_list(1,:));
+            mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
     end;
    % class_cat = intersect(class_cat, ind_ciliate);
    % [~,temp1,temp2] = intersect(class2use_first_sub, class2use_here(class_cat));
