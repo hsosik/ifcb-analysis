@@ -35,7 +35,7 @@ function [  ] = manual_classify_4_0( MCconfig, filelist, classfiles, stitchfiles
 %intended to replace both manual_classify_3_2 and manual_classify_3_2_batch, 
 %no plan to change functions already called by those scripts
 
-global figure_handle button_handles1 button_handles2 instructions_handle
+global figure_handle listbox_handle1 listbox_handle2 instructions_handle
 close all
 resultpath = MCconfig.resultpath;
 filenum2start = MCconfig.filenum2start;
@@ -84,7 +84,7 @@ camy = 1035;  %camera image size, changed from 1034 heidi 6/8/09
 border = 3; %to separate images
 
 %make the collage window
-[figure_handle, button_handles1, button_handles2, instructions_handle] = makescreen(class2use_pick1, class2use_pick2);
+[figure_handle, listbox_handle1, listbox_handle2, instructions_handle] = makescreen(class2use_pick1, class2use_pick2);
 if MCconfig.dataformat == 0,
     adcxind = 12; 
     adcyind = 13;
