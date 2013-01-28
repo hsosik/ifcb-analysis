@@ -49,7 +49,7 @@ while ~pagefull && next_ind <= length(imgind)
             plotnow = 1;
         end;
         if plotnow
-            colormap(gray); shading flat; hold on; axis([1 camx 1 camy]); set(gca, 'ydir', 'reverse')
+            colormap(gray); shading flat; hold on; axis([1 camx 1 camy]); set(gca, 'ydir', 'reverse', 'yticklabel', [])
             h = imagesc(imagedat{next_ind}', 'xdata', start_pos(1):check_pos(1), 'ydata', start_pos(2):check_pos(2)); hold on
             text(start_pos(1),start_pos(2), num2str(imgind(next_ind)), 'verticalalignment','top');
             if classlist(imgind(next_ind), mark_col) ~= classnum & ~isnan(classlist(imgind(next_ind), mark_col)),  %if class changed on this round, mark with new class number

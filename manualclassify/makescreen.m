@@ -31,7 +31,7 @@ if ~isempty(class2pick1), %edited 1/12/10 to fix typo pick2 --> pick1
 %end;
 %set(button_handles1, 'value', 0, 'foregroundcolor', 'r', 'backgroundcolor', 'w')
 str = cellstr([num2str((1:length(class2pick1))', '%02d') repmat(' ',length(class2pick1),1) char(class2pick1)]);
-listbox_handle1 = uicontrol('style', 'listbox', 'string', str,'position', [10 10 150 height*.92], 'ForegroundColor', 'r', 'callback', 'select_category');
+listbox_handle1 = uicontrol('style', 'listbox', 'string', str,'position', [width*.005 height*.006 width/9 height*.95], 'ForegroundColor', 'r', 'callback', 'select_category');
 instructions_handle = uicontrol('style', 'text');
 tpos = get(instructions_handle, 'position');
 %tpos(3) = tpos(3)*10; tpos(2) = tpos(2)*2; tpos(1) = tpos(1)*10;
@@ -46,7 +46,7 @@ if ~isempty(class2pick2),
     %end;
     %set(button_handles2, 'value', 0, 'foregroundcolor', 'b', 'backgroundcolor', 'w'),
     str = cellstr([num2str((1:length(class2pick2))', '%02d') repmat(' ',length(class2pick2),1) char(class2pick2)]);
-    listbox_handle2 = uicontrol('style', 'listbox', 'string', str,'position', [width*.9 10 150 height*.92], 'ForegroundColor', 'b', 'callback', 'select_category');
+    listbox_handle2 = uicontrol('style', 'listbox', 'string', str,'position', [width*.9 height*.006 width/10 height*.95], 'ForegroundColor', 'b', 'callback', 'select_category');
 end;
 
 
