@@ -6,8 +6,8 @@ function [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( 
     switch annotate_mode
         case 'all categories'
             %use them all
-            %class_cat = 1:numclass;
-            [~, class_cat] = setdiff(class2use_here, {'diatom_flagellate' 'other_interaction'});
+            class_cat = 1:numclass;
+            %[~, class_cat] = setdiff(class2use_here, {'diatom_flagellate' 'other_interaction'});
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)));
@@ -23,7 +23,8 @@ function [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( 
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)) & ~cell2mat(manual_list(2:end,strmatch('diatoms', mode_list)+1)));
         case 'diatoms'
             %all except mix, mix_elongated, and detritus
-            [~, class_cat] = setdiff(class2use_here, {'mix' 'detritus' 'diatom_flagellate' 'other_interaction'});
+            %[~, class_cat] = setdiff(class2use_here, {'mix' 'detritus' 'diatom_flagellate' 'other_interaction'});
+            [~, class_cat] = setdiff(class2use_here, {'mix' 'detritus'});
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
@@ -46,7 +47,8 @@ function [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( 
             mode_ind = find(~cell2mat(manual_list(2:end,2)) & cell2mat(manual_list(2:end,3)) & cell2mat(manual_list(2:end,4)) & ~cell2mat(manual_list(2:end,5)) & cell2mat(manual_list(2:end,6)));   
         case 'parasites'
             [~, class_cat] = intersect(class2use_here, {'Chaetoceros_flagellate' 'Chaetoceros_pennate' 'Cerataulina_flagellate' 'G_delicatula_parasite' ...
-                'G_delicatula_external_parasite' 'Chaetoceros_other' 'diatom_flagellate' 'other_interaction' 'Chaetoceros_didymus_flagellate' 'Leptocylindrus_mediterraneus'});
+                'G_delicatula_external_parasite' 'Chaetoceros_other' 'diatom_flagellate' 'other_interaction' 'Chaetoceros_didymus_flagellate' 'Leptocylindrus_mediterraneus'...
+                'pennates_on_diatoms'});
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
