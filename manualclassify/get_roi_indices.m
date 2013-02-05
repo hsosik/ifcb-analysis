@@ -20,7 +20,14 @@ function [ roi_ind ] = get_roi_indices( classlist, classnum, pick_mode, sub_col,
 
 switch pick_mode
     case 'raw_roi'
-        roi_ind = classlist(classlist(:,2) == classnum,1);
+        if ~isempty(sub_col),
+            if view_set == 1,
+                roi_ind = classlist(classlist(:,2) == classnum,1);
+            else
+                roi_ind = find(classlist(:,sub_col) == classnum);
+            end;
+        end;
+            
     case 'correct_or_subdivide'
         if ~isempty(sub_col),
             if view_set == 1, %first part from class2use

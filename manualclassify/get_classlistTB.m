@@ -73,6 +73,12 @@ else
             classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
             classlist(:,1) = 1:total_roi;
             classlist(:,manual_col) = classnum_default; %strmatch(classstr, class2use, 'exact');
+            if ~isempty(classnum_default_sub),               
+               classnum = strmatch(classstr, class2use, 'exact'); %default class number from original list
+               sub_col = 4; %first one
+               classlist(:,sub_col) = NaN;
+               list_titles(sub_col) = {classstr};            
+            end;    
         case 'correct_or_subdivide'  %make subcategories starting with an automated class
             if exist(classfilename),
                 load(classfilename) %load SVM resultsc
