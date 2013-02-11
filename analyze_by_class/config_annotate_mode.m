@@ -6,6 +6,7 @@ function [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( 
     switch annotate_mode
         case 'all categories'
             %use them all
+            numclass = length(class2use_here);
             class_cat = 1:numclass;
             %[~, class_cat] = setdiff(class2use_here, {'diatom_flagellate' 'other_interaction'});
             manual_only = 0;
