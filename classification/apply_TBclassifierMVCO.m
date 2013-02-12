@@ -34,6 +34,7 @@ end;
 outfile = regexprep(feafile, 'features', 'class');
 outfile = regexprep(outfile, 'fea', 'class');
 outfile = regexprep(outfile, '.csv', '');
+outfile = regexprep(outfile, 'v2', 'v1'); %TEMPORARY work around for v2 features, still v1 class files
 save(outfile, 'class2useTB', 'TBclass', 'roinum', 'TBscores', 'TBclass_above_threshold', 'classifierName')
 
 end
