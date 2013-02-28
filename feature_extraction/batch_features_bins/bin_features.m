@@ -44,12 +44,13 @@ for i = 1:nt,
     target = image_HOG(target);
     target = blob_rotated_geomprop(target);
     temp.features(i) = merge_structs(target.blob_props, target.image_props);
+    %log(['PROCESSED ' char(targets.pid(i)) ' (' num2str(i) ' of ' num2str(nt) ')']);
 end
 
 if nt > 0,
     temp.pid = targets.pid;
     [ feature_mat, featitles, multiblob_features, multiblob_titles ] = make_feature_matrices(temp);
-    
+
     %write the compiled feature csv file
     fileout = regexprep(file, '.zip', '_fea_v2.csv');
     log(['SAVING ' fileout]);
@@ -61,7 +62,8 @@ if nt > 0,
     fileout = regexprep(file, '.zip', '_multiblob_v2.csv');   
     if ~isempty(multiblob_features), 
         ds = dataset([multiblob_features multiblob_titles]);
-        export(ds, 'file', [out_dir 'multiblob' filesep fileout], 'delimiter', ',');
+        mkdir([out_dir filesep 'multiblob']);
+        export(ds, 'file', [out_dir filesep 'multiblob' filesep fileout], 'delimiter', ',');
     end; 
     log(['DONE ' file]);
 else
