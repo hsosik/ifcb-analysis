@@ -59,7 +59,8 @@ function [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( 
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
        case 'guinardia'
-            [~, class_cat] = intersect(class2use_here, {'Guinardia' 'G_delicatula_parasite' 'G_delicatula_external_parasite' 'other_interaction' 'pennates_on_diatoms' 'diatom_flagellate'});
+            [~, class_cat] = intersect(class2use_here, {'Guinardia' 'G_delicatula_parasite' 'G_delicatula_external_parasite' 'other_interaction' 'pennates_on_diatoms' 'diatom_flagellate' ...
+                'G_delicatula_detritus'});
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
