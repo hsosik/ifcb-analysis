@@ -1,5 +1,5 @@
-%load '\\raspberry\d_work\ifcb1\ifcb_data_mvco_jun06\manual_fromClass\summary\count_biovol_manual_29Mar2012_day'
-load '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\summary\count_biovol_05Sep2012_day'
+load '\\raspberry\d_work\ifcb1\ifcb_data_mvco_jun06\manual_fromClass\summary\count_biovol_manual_27Feb2013_day.mat'
+%load '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\summary\count_biovol_05Sep2012_day'
 ii = find(floor(matdate_bin) == datenum('2-9-2010')); %skip this day with one partial sample
 classbiovol_bin(ii,:) = []; classcount_bin(ii,:) = []; ml_analyzed_mat_bin(ii,:) = []; matdate_bin(ii) = [];
 
@@ -15,7 +15,8 @@ class_ciliate = {'ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'};
 [~,ind_diatoms] = intersect(class2use, class_diatom);
 [~,ind_dino] = intersect(class2use, class_dino);
 [~,ind_mix] = intersect(class2use, class_mix);
-[~,ind_ciliate] = intersect(class2use, class_ciliate); ind_ciliate = sort(ind_ciliate);
+%[~,ind_ciliate] = intersect(class2use, class_ciliate); ind_ciliate = sort(ind_ciliate);
+[ ind_ciliate, class_label ] = get_ciliate_ind( class2use, class2use )
 
 class_label = class2use;
 class_label(strmatch('Leptocylindrus', class_label, 'exact')) = {'\itLeptocylindrus \rmspp.'};
@@ -79,7 +80,7 @@ for count = 1:length(year_ifcb),
     Dallanom_sm(:,count,:) = squeeze(Dallday(:,count,:)) - Dallmean_sm;
 end;
 
-Dsumanom = Dsumday-repmat(smooth(nanmean(Dsumday,2)),1,length(year_ifcb));
+Dsumanom = Dsumday-repmat(smooth(nanmean(Dsumday,2),10),1,length(year_ifcb));
 
 x = classbiovol_bin(:,ind_ciliate)./ml_analyzed_mat_bin(:,ind_ciliate);
 %x = classcount_bin(:,ind_ciliate)./ml_analyzed_mat_bin(:,ind_ciliate);
@@ -92,7 +93,7 @@ for count = 1:length(year_ifcb),
 end;
 Callmean = squeeze(nanmean(Callday,2));
 for count = 1:length(ind_ciliate),
-    Callmean_sm(:,count) = smooth(Callmean(:,count),10);
+    Callmean_sm(:,count) = smooth(Callmean(:,count),15);
 end;
 for count = 1:length(year_ifcb),
     Callanom_sm(:,count,:) = squeeze(Callday(:,count,:)) - Callmean_sm;
@@ -118,13 +119,14 @@ load c:\work\mvco\otherData\other09
 load c:\work\mvco\otherData\other10
 load c:\work\mvco\otherData\other11
 load c:\work\mvco\otherData\other12
+load c:\work\mvco\otherData\other13
 
 yd_ocn2003 = [yd_ocn2003; yd_seacat2003];
 Temp2003 = [Temp2003; temp_seacat2003];
 yd_ocn2004 = [yd_ocn2004; yd_seacat2004];
 Temp2004 = [Temp2004; temp_seacat2004];
 
-yearall = (2003:2012);
+yearall = (2003:2013);
 Tday = NaN(length(yd),length(yearall));
 for count = 1:length(yearall),    
     eval(['yd_ocn = yd_ocn' num2str(yearall(count)) ';'])
@@ -396,14 +398,14 @@ ylim([0 1.2e6])
 subplot(2,1,2)
 mdate_syn = datenum(repmat(yearall,length(yd_fcb),1),0,repmat(yd_fcb',length(yearall),1)');
 hold on, plot(mdate_syn(:), synperml(:), 'linewidth', 2)
-xlim(datenum(['1-0-2006'; '1-1-2012'])), ylim([0 3e5])
+xlim(datenum(['1-0-2006'; '1-1-2014'])), ylim([0 3e5])
 datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on', 'linewidth', 2, 'box', 'on')
 ylabel('\itSynechococcus\rm (mL^{-1})', 'fontsize', 14)
 end;
 
 if 0, figure
 ph = plotyy(mdate_syn(:), synperml(:), matdate_bin(ii), classbiovol_bin(ii,c)./ml_analyzed_mat_bin(ii,c));
-set(ph, 'xlim', datenum(['1-0-2006'; '1-1-2012']))
+set(ph, 'xlim', datenum(['1-0-2006'; '1-1-2014']))
 datetick('x', 'keeplimits')
 set(ph(2), 'xtick', get(ph(1), 'xtick'), 'xticklabel', [])
 set(ph, 'linewidth', 2, 'fontsize', 14)
@@ -432,12 +434,12 @@ ylim([0 2e5])
 subplot(2,1,2)
 mdate_syn = datenum(repmat(yearall,length(yd_fcb),1),0,repmat(yd_fcb',length(yearall),1)');
 hold on, plot(mdate_syn(:), synperml(:), 'linewidth', 2)
-xlim(datenum(['1-0-2006'; '1-1-2012'])), ylim([0 3e5])
+xlim(datenum(['1-0-2006'; '1-1-2014'])), ylim([0 3e5])
 datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on', 'linewidth', 2, 'box', 'on')
 ylabel('\itSynechococcus\rm (mL^{-1})', 'fontsize', 14)
 end;
 
-if 0, figure
+if 1, figure
 ii = [2 5];
 for c = 1:length(ii),
     subplot(2,1,c)
@@ -458,26 +460,26 @@ figure, maxfig(gcf,1)
 subplot(4,1,1)
 plot(mdate_fcb(:), Tday(:))
 ylim([-2 22])
-xlim(datenum(['1-1-2003'; '1-1-2013'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
+xlim(datenum(['1-1-2003'; '1-1-2014'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
 ylabel('Temperature (\circC)')
 subplot(4,1,2)
 semilogy(mdate_fcb(:), synperml(:))
 ylim([5e1 5e5])
-xlim(datenum(['1-1-2003'; '1-1-2013'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
+xlim(datenum(['1-1-2003'; '1-1-2014'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
 ylabel('\itSynechococcus\rm (mL^{-1})')
 subplot(4,1,3)
 classnum = 9;
 y = squeeze(Dallday(:,:,classnum));
 ii = find(~isnan(y));
 plot(mdate_ifcb(ii), y(ii))
-xlim(datenum(['1-1-2003'; '1-1-2013'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
+xlim(datenum(['1-1-2003'; '1-1-2014'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
 ylabel(['\it' class2use{ind_diatoms(classnum)} '\rm (biovolume)'], 'fontsize', 14)
 subplot(4,1,4)
 classnum = 4;
 y = squeeze(Dallday(:,:,classnum));
 ii = find(~isnan(y));
 plot(mdate_ifcb(ii), y(ii))
-xlim(datenum(['1-1-2003'; '1-1-2013'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
+xlim(datenum(['1-1-2003'; '1-1-2014'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
 ylabel(['\it' class2use{ind_diatoms(classnum)} '\rm  (biovolume)'], 'fontsize', 14)
 
 
@@ -490,7 +492,7 @@ ineg = find(Tanom_fcb(:)<0);
 bar(mdate_fcb(ineg), Tanom_fcb(ineg), 'b', 'edgecolor', 'b')
 ylim([-4 4])
 line(xlim, [0 0])
-xlim(datenum(['1-1-2003'; '1-1-2013'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
+xlim(datenum(['1-1-2003'; '1-1-2014'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
 ylabel('Temperature anomaly (\circC)')
 subplot(4,1,2)
 ipos = find(Synanom(:)>0);
@@ -500,7 +502,7 @@ ineg = find(Synanom(:)<0);
 bar(mdate_fcb(ineg), Synanom(ineg), 'b', 'edgecolor', 'b')
 ylim([-1.5 1.5])
 line(xlim, [0 0])
-xlim(datenum(['1-1-2003'; '1-1-2013'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
+xlim(datenum(['1-1-2003'; '1-1-2014'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
 ylabel('\itSynechococcus\rm anomaly (log10 mL^{-1})')
 subplot(4,1,3)
 classnum = 9;
@@ -510,7 +512,7 @@ bar(mdate_ifcb(ipos), y(ipos), 'r', 'edgecolor', 'r')
 hold on 
 ineg = find(y(:)<0);
 bar(mdate_ifcb(ineg), y(ineg), 'b', 'edgecolor', 'b')
-xlim(datenum(['1-1-2003'; '1-1-2013'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
+xlim(datenum(['1-1-2003'; '1-1-2014'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
 ylabel(['\it' class2use{ind_diatoms(classnum)} '\rm anomaly (biovolume)'], 'fontsize', 14)
 subplot(4,1,4)
 classnum = 4;
@@ -520,7 +522,7 @@ bar(mdate_ifcb(ipos), y(ipos), 'r', 'edgecolor', 'r')
 hold on 
 ineg = find(y(:)<0);
 bar(mdate_ifcb(ineg), y(ineg), 'b', 'edgecolor', 'b')
-xlim(datenum(['1-1-2003'; '1-1-2013'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
+xlim(datenum(['1-1-2003'; '1-1-2014'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
 ylabel(['\it' class2use{ind_diatoms(classnum)} '\rm anomaly (biovolume)'], 'fontsize', 14)
 
 
@@ -528,10 +530,10 @@ figure, maxfig(gcf,1)
 subplot(2,1,1)
 plot(mdate_fcb(:), Tday(:))
 ylim([-2 22])
-xlim(datenum(['1-1-2003'; '1-1-2013'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
+xlim(datenum(['1-1-2003'; '1-1-2014'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
 ylabel('Temperature (\circC)')
 subplot(2,1,2)
 semilogy(mdate_fcb(:), synperml(:))
 ylim([5e1 5e5])
-xlim(datenum(['1-1-2003'; '1-1-2013'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
+xlim(datenum(['1-1-2003'; '1-1-2014'])), datetick('x', 'keeplimits'), set(gca, 'xgrid', 'on')
 ylabel('\itSynechococcus\rm (mL^{-1})')
