@@ -2,6 +2,7 @@ resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load \\RASPBERRY\d_work\IFCB1\code_mar10_mvco\ml_analyzed_all %load the milliliters analyzed for all sample files
 biovolpath_base = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\';
+feapath_base = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\featuresXXXX_v2\';
 micron_factor = 1/3.4; %microns per pixel
 
 %%%%%%%%%FIX - this set of lines to skip some missing biovol due to missing blobs
@@ -61,10 +62,23 @@ for loopcount = 1:length(mode_list),
         disp(filename)
         ml_analyzed_mat(mode_ind(filecount),class_cat) = ml_analyzed(mode_ind(filecount));
         load([resultpath filename])
-        biovolpath = [biovolpath_base 'biovolume' filename(7:10) '\'];
-        load([biovolpath filename]) %targets
-        tind = char(targets.pid); %find the ROI indices excluding second in stitched pair
-        tind = str2num(tind(:,end-4:end));
+        yr = str2num(filename(7:10));
+        if yr < 2013,
+            biovolpath = [biovolpath_base 'biovolume' filename(7:10) '\'];
+            load([biovolpath filename]) %targets
+            tind = char(targets.pid); %find the ROI indices excluding second in stitched pair
+            tind = str2num(tind(:,end-4:end));
+        else %2013 and later, v2 features with biovolume
+            clear targets
+            feapath = regexprep(feapath_base, 'XXXX', filename(7:10));
+            [~,file] = fileparts(filename);
+            feastruct = importdata([feapath file '_fea_v2.csv'], ','); 
+            ind = strmatch('Biovolume', feastruct.colheaders);
+            targets.Biovolume = feastruct.data(:,ind);
+            ind = strmatch('roi_number', feastruct.colheaders);
+            tind = feastruct.data(:,ind);
+        end;
+        
         classlist = classlist(tind,:); 
         if ~isequal(class2use_manual, class2use_manual_first)
             disp('class2use_manual does not match previous files!!!')
