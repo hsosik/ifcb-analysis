@@ -75,9 +75,9 @@ switch pick_mode
         classnum_default_sub = strmatch('ciliate_mix', class2use_sub); %USER class for default
         class2use_pick2 = class2use_sub; %to set button labels
         [~,class2view1] = intersect(class2use, MCconfig.class2view1); %1:length(class2use);
-        %class2view1 = MCconfig.class2view1;
         %class2view2 = 1:length(class2use_sub);
-        class2view2 = []; %use this to skip viewing subdivide categories
+        [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2); 
+        %class2view2 = []; %use this to skip viewing subdivide categories
     otherwise
         disp('Invalid pick_mode. Check setting in get_MCconfig')
         return

@@ -6,7 +6,7 @@ classfiles = [];
 stitchfiles = [];
 %%MVCO batch system
 if true,
-    filelist = get_filelist_manual([MCconfig.resultpath 'manual_list'],3,[2007:2012], 'all'); %manual_list, column to use, year to find
+    filelist = get_filelist_manual([MCconfig.resultpath 'manual_list'],3,[2006:2012], 'all'); %manual_list, column to use, year to find
 end;
 
 %%other MVCO cases
