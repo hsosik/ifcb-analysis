@@ -12,7 +12,7 @@ MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one from case list
 MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
 MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
 
-temp = load('class2use_MVCOmanual3', 'class2use');
+temp = load('class2use_MVCOmanual3', 'class2use'); 
 %MCconfig.class2use = [temp.class2use 'unclassified'];
 MCconfig.class2use = temp.class2use;
 MCconfig.default_class = 'other';

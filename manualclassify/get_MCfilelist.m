@@ -20,6 +20,7 @@ if f(1) == 'I',
 elseif f(1) == 'D',
     MCconfig.dataformat = 1;
 end;
+
 if strcmp(MCconfig.pick_mode, 'correct_or_subdivide')
     if isempty(classfiles)
         disp('No class files specified. Check path setting in get_MCconfig if you want to load classifier results.')
