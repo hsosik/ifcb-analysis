@@ -47,6 +47,8 @@ if ~isempty(class2pick2),
     %set(button_handles2, 'value', 0, 'foregroundcolor', 'b', 'backgroundcolor', 'w'),
     str = cellstr([num2str((1:length(class2pick2))', '%02d') repmat(' ',length(class2pick2),1) char(class2pick2)]);
     listbox_handle2 = uicontrol('style', 'listbox', 'string', str,'position', [width*.9 height*.006 width/10 height*.95], 'ForegroundColor', 'b', 'callback', 'select_category');
+else
+    listbox_handle2 = [];
 end;
 
 

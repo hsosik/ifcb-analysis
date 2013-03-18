@@ -55,9 +55,15 @@ switch pick_mode
             'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
         classnum_default_sub = strmatch('ciliate_mix', class2use_sub); %USER class for default
         class2use_auto = [];
-        class2use_pick2 = class2use_sub;
         [~,class2view1] = intersect(class2use, MCconfig.class2view1); %1:length(class2use);
-        class2view2 = 1:length(class2use_sub);
+        if strmatch('all', MCconfig.class2view2),
+            class2view2 = 1:length(class2use_sub);
+        elseif isempty(MCconfig.class2view2), 
+            class2use_sub = []; 
+        else
+            [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2); 
+        end;
+        class2use_pick2 = class2use_sub;
     case 'correct_or_subdivide'  %make subcategories starting with an automated class
         classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use, 'exact'); %USER class for default
         class2use = MCconfig.class2use;
@@ -73,11 +79,16 @@ switch pick_mode
             'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
             'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
         classnum_default_sub = strmatch('ciliate_mix', class2use_sub); %USER class for default
-        class2use_pick2 = class2use_sub; %to set button labels
         [~,class2view1] = intersect(class2use, MCconfig.class2view1); %1:length(class2use);
         %class2view2 = 1:length(class2use_sub);
-        [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2); 
-        %class2view2 = []; %use this to skip viewing subdivide categories
+        if strmatch('all', MCconfig.class2view2),
+            class2view2 = 1:length(class2use_sub);
+        elseif isempty(MCconfig.class2view2), 
+            class2use_sub = []; 
+        else
+            [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2); 
+        end;
+        class2use_pick2 = class2use_sub; %to set button labels
     otherwise
         disp('Invalid pick_mode. Check setting in get_MCconfig')
         return
