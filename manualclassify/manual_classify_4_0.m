@@ -67,6 +67,7 @@ switch pick_mode
             else
                 [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2);
             end;
+            [~,class2view1] = setdiff(class2use(sort(class2view1)), classstr);
         end;
         class2use_pick2 = class2use_sub;
     case 'correct_or_subdivide'  %make subcategories starting with an automated class
@@ -77,23 +78,6 @@ switch pick_mode
         class2use_manual = class2use;
         class2use_auto = class2use;
         [~,class2view1] = intersect(class2use, MCconfig.class2view1); %1:length(class2use);
-        if isempty(MCconfig.class2view2),
-            class2use_sub = [];
-            classstr = [];
-            classnum_default_sub = [];
-            class2view2 = [];
-        else
-            class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
-                'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
-                'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
-            classnum_default_sub = strmatch('ciliate_mix', class2use_sub); %USER class for default
-            classstr = 'ciliate'; %[]
-            if strmatch('all', MCconfig.class2view2),
-                class2view2 = 1:length(class2use_sub);
-            else
-                [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2);
-            end;
-        end;
         class2use_pick2 = class2use_sub; %to set button labels
         if isempty(MCconfig.class2view2),
             class2use_sub = [];
@@ -111,6 +95,7 @@ switch pick_mode
             else
                 [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2);
             end;
+            [~,class2view1] = setdiff(class2use(sort(class2view1)), classstr);
         end;
     otherwise
         disp('Invalid pick_mode. Check setting in get_MCconfig')
