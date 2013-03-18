@@ -19,8 +19,8 @@ MCconfig.default_class = 'other';
 MCconfig.class2view1 = MCconfig.class2use; %case to view all
 %MCconfig.class2view1 = setdiff(MCconfig.class2use, {'bad' 'mix'}); %example to skip a few
 %MCconfig.class2view1 = intersect(MCconfig.class2use, {'pennate' 'mix'}); %example to select a few
-MCconfig.class2view2 = { }; %example to skip view2 
-%MCconfig.class2view2 = { 'all' }; %example to view all 
+%MCconfig.class2view2 = { }; %example to skip view2 
+MCconfig.class2view2 = { 'all' }; %example to view all 
 
 if ~exist(MCconfig.resultpath, 'dir'),
     dos(['mkdir ' resultpath]);
