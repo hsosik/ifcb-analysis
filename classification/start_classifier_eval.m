@@ -35,24 +35,41 @@ end;
 numclass = length(output.class2use);
 cfmat1 = output.confmat;
 
-total = sum(cfmat1')';
-Pd = diag(cfmat1)./total;
-figure, bar([total diag(cfmat1) sum(cfmat1)'-diag(cfmat1)])
+total_known = sum(cfmat1,2); %should be same as output.total_known = tp+fn
+total_pred = sum(cfmat1)'; %should be same as output.total_pred
+tp = diag(cfmat1); %true pos
+fp = total_pred-tp; %false pos
+fn = total_known-tp; %false neg
+tn = sum(total_known)-fp-fn-tp; %true neg
+
+Pd = tp./total_known; %prob detection or recall
+Pr = tp./total_pred; %precision
+Sp = tn./(tn+fp); %specificity
+Ac = (tp+tn)./(tp+tn+fp+fn); %accuracy
+
+figure, bar([total_known tp fp])
 legend('total in set', 'true pos', 'false pos')
 set(gca, 'xtick', 1:numclass, 'xticklabel', [])
 text_offset = .1;
 text(1:numclass, -text_offset.*ones(size(output.class2use)), output.class2use, 'interpreter', 'none', 'horizontalalignment', 'right', 'rotation', 45) 
 set(gca, 'position', [ 0.13 0.35 0.8 0.6])
-figure, bar([Pd])
+figure, bar([Pd Pr])
 set(gca, 'xtick', 1:numclass, 'xticklabel', [])
 text(1:numclass, -text_offset.*ones(size(output.class2use)), output.class2use, 'interpreter', 'none', 'horizontalalignment', 'right', 'rotation', 45) 
 set(gca, 'position', [ 0.13 0.35 0.8 0.6])
-legend('Pd')
+legend('Pd', 'Pr')
+figure, bar([Sp Ac])
+set(gca, 'xtick', 1:numclass, 'xticklabel', [])
+text(1:numclass, -text_offset.*ones(size(output.class2use)), output.class2use, 'interpreter', 'none', 'horizontalalignment', 'right', 'rotation', 45) 
+set(gca, 'position', [ 0.13 0.35 0.8 0.6])
+legend('Sp', 'Ac')
+
 %%
 
 return
 %skip unclassified
-ii = strmatch('unclassified', t2.class2useTB);
+ii = strmatch('unclassified', output.class2use);
 cfmat2 = output.confmat;
 cfmat2(ii,:) = [];
 cfmat2(:,ii) = [];
+clear ii
