@@ -5,12 +5,6 @@ resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 outputpath = '\\raspberry\d_work\IFCB1\ifcb_data_MVCO_jun06\manual_fromWeb\'; %USER where to write out pngs
 urlbase = 'http://ifcb-data.whoi.edu/mvco/'; %USER where is your dashboard\web server
 
-%USER CHOOSE A LINE AND EDIT FOR YOUR CASE
-category = class2use_manual; %use this syntax to export ALL categories
-%category = {'Euglena', 'Ditylum'}; %use this syntax to export ONLY the listed categories
-%category = setdiff(class2use_manual, {'bad' 'ciliate' 'detritus'});  %use this syntax to export all EXCEPT the listed categories
-%%
-
 if strmatch(urlbase, 'http://ifcb-data.whoi.edu/mvco/'),
     resultfilelist = get_filelist_manual([resultpath 'manual_list'],3,[2006:2011], 'all'); %manual_list, column to use, year to find, Copied here by Emily P. from manual_classify_batch_3_1
     %resultfilelist = get_filelist_manual([resultpath 'manual_list'],7,[2006:2011], 'only');
@@ -24,13 +18,19 @@ if strmatch(urlbase, 'http://ifcb-data.whoi.edu/mvco/'),
     resultfilelist = cellstr(resultfilelist(:,1:end-4));
 else
     resultfilelist = dir([resultpath '*.mat']);
-    resultfilelist = char(t(2:10).name);
+    resultfilelist = char(resultfilelist.name);
     resultfilelist = cellstr(resultfilelist(:,1:end-4));
 end;
 
 for filecount = 1:length(resultfilelist),
     resultfile = char(resultfilelist(filecount));    
     load([resultpath resultfile])
+
+    %USER CHOOSE A LINE AND EDIT FOR YOUR CASE
+    category = class2use_manual; %use this syntax to export ALL categories
+    %category = {'Euglena', 'Ditylum'}; %use this syntax to export ONLY the listed categories
+    %category = setdiff(class2use_manual, {'bad' 'ciliate' 'detritus'});  %use this syntax to export all EXCEPT the listed categories
+    %%
 
     disp(resultfile)
     %make subdirs for tiffs
