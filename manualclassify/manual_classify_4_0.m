@@ -78,7 +78,6 @@ switch pick_mode
         class2use_manual = class2use;
         class2use_auto = class2use;
         [~,class2view1] = intersect(class2use, MCconfig.class2view1); %1:length(class2use);
-        class2use_pick2 = class2use_sub; %to set button labels
         if isempty(MCconfig.class2view2),
             class2use_sub = [];
             classstr = [];
@@ -97,6 +96,7 @@ switch pick_mode
             end;
             [~,class2view1] = setdiff(class2use(sort(class2view1)), classstr);
         end;
+        class2use_pick2 = class2use_sub; %to set button labels
     otherwise
         disp('Invalid pick_mode. Check setting in get_MCconfig')
         return
