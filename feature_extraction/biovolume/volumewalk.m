@@ -10,7 +10,7 @@ function [volume] = volumewalk(image)
 
 g = horzcat(m,n); % combines vectors for easier viewing
 
-[temp,idx] = unique(n); % indexes (idx) the (last) unique elements in the vector n (x direction); changed 'u' to '~' 6/14/10
+[temp,idx] = unique(n, 'legacy'); % indexes (idx) the (last) unique elements in the vector n (x direction); changed 'u' to '~' 6/14/10
 
 idx2 = vertcat([0],idx); 
 % creates a shifted index so that we can later get the number of repeated integers for each to feed into the mat2cell function 
@@ -23,7 +23,6 @@ len = idx - idx2;
 % % idx1 = idx(1:end-1); % gets rid of the last cell so that idx and idx2 can be subtracted
 % % 
 % % len = idx2 - idx1; % subtracts idx2 from idx so that each element of len represents how many repeated digits were there from the last repeated digit; CHECK THAT THIS SIGN IS CORRECT! 6/14/10
-
 data = mat2cell(g,len,[1,1]); % creates a cell array in which each x value has its own cell (separated vertically)
 data = data(:,1); % isolates column 1, which is the y-data
 
