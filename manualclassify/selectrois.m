@@ -40,12 +40,12 @@ while button(end) < 3 %& ~isempty(startbyte),  %
                 end;
                 selected_roi = selected_roi(~isnan(selected_roi)); %make sure click was on a ROI, moved before button_flag loop 1/15/10
                 if button_flag == 1, %first set always goes with manual column
-                    catnum = strmatch(category(4:end),class2pick1, 'exact');
+                    catnum = strmatch(category(5:end),class2pick1, 'exact');
                     mark_col_now = 2;
                     text(x1,y1, num2str(catnum),'color', 'r', 'fontweight', 'bold')
                     classlist(selected_roi,4:end) = NaN; %any previous subdivide IDs overridden by this new main manual ID, active subdiv will go to default in manual_classify, 1/15/10
                 else %case for second set for subdividing
-                    catnum = strmatch(category(4:end),class2pick2, 'exact');
+                    catnum = strmatch(category(5:end),class2pick2, 'exact');
                     mark_col_now = mark_col;
                     text(x1,y1, num2str(catnum),'color', 'b', 'fontweight', 'bold')
                     classlist(selected_roi,2) = NaN; %any previous main manual IDs overridden by this new subdivide category, will revert to default main category in manual_classify, 1/15/10
