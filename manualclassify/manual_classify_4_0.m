@@ -94,7 +94,8 @@ switch pick_mode
             else
                 [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2);
             end;
-            [~,class2view1] = setdiff(class2use(sort(class2view1)), classstr);
+            class2view1 = setdiff(class2view1, strmatch(classstr, class2use))
+            %[~,class2view1] = setdiff(class2use(sort(class2view1)), classstr);
         end;
         class2use_pick2 = class2use_sub; %to set button labels
     otherwise
