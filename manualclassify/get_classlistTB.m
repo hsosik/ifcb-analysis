@@ -66,7 +66,7 @@ if exist([manualfilename], 'file')  %~isempty(tempdir)
     %save(manualfilename, 'list_titles', 'class2use*', 'classlist', '-append'); %make sure initial file has proper list_titles    
 else 
     clear class2use_in
-    list_titles = {'roi number' 'manual' 'SVM-auto'};
+    list_titles = {'roi number' 'manual' 'auto'};
     newclasslist_flag = 1; %set to true
     switch pick_mode
         case 'raw_roi' %pick classes from scratch
