@@ -99,12 +99,16 @@ else
                 classnum = strmatch(classstr, class2use, 'exact'); %default class number from original list
                 sub_col = 4; %first one
                 classlist(:,sub_col) = NaN;
-                list_titles(sub_col) = {classstr};            
+                list_titles(sub_col) = {classstr};        
                 classlist(classlist(:,auto_col) == classnum, sub_col) = classnum_default_sub; %set to default new class
                 [overlap, ind_sub, ind] = intersect(class2use_sub, class2useTB);
                 for count1 = 1:length(overlap),
-                    classlist(classlist(:,auto_col) == ind(count1), sub_col) = ind_sub(count1); %set to new class number in subcol
-                    classlist(classlist(:,auto_col) == ind(count1), auto_col) = classnum; %set to parent class number in autocol
+                    iii = strmatch(class2useTB(ind(count1)), TBclass_above_threshold);
+                    if ~isempty(iii),
+                        classlist(roinum(iii),sub_col) = ind_sub(count1);
+                    end;
+                    %classlist(classlist(:,auto_col) == ind(count1), sub_col) = ind_sub(count1); %set to new class number in subcol
+                    %classlist(classlist(:,auto_col) == ind(count1), auto_col) = classnum; %set to parent class number in autocol
                 end;
              end;                        
     end;
