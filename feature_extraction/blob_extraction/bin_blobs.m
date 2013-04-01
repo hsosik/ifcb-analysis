@@ -46,7 +46,9 @@ for i = 1:nt,
     % now output the blob image as a 1-bit png
     png_path = [png_dir filesep bin_lid sprintf('_%05d.png',targets.targetNumber(i))];
     imwrite(target.blob_image,png_path,'bitdepth',1);
-    log(['PROCESSED ' char(targets.pid(i)) ' (' num2str(i) ' of ' num2str(nt) ')']);
+    if rem(i,25) == 0,
+        log(['PROCESSED ' char(targets.pid(i)) ' (' num2str(i) ' of ' num2str(nt) ')']);
+    end
     png_paths = [png_paths; {png_path}];
 end
 
@@ -58,7 +60,7 @@ else
     log(['NOT SAVING zip file: missing data in ' bin_pid])
 end
 
-log('DELETING temporary files...')
+log(['DELETING temporary files in ' png_dir ' ...'])
 
 rmdir(png_dir,'s');
 
