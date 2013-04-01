@@ -10,7 +10,11 @@ function [volume] = volumewalk(image)
 
 g = horzcat(m,n); % combines vectors for easier viewing
 
-[temp,idx] = unique(n, 'legacy'); % indexes (idx) the (last) unique elements in the vector n (x direction); changed 'u' to '~' 6/14/10
+try,
+    [temp,idx] = unique(n, 'legacy'); % indexes (idx) the (last) unique elements in the vector n (x direction); changed 'u' to '~' 6/14/10
+catch,
+    [temp,idx] = unique(n);
+end
 
 idx2 = vertcat([0],idx); 
 % creates a shifted index so that we can later get the number of repeated integers for each to feed into the mat2cell function 
