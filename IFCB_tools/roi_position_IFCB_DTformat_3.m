@@ -33,7 +33,7 @@ while 1
     numbering = input('label each roi number? [ENTER(default=n) or y]','s');
     file_chosen = 0;
     if strmatch(new_file,'y','exact'); %if data has been read already (reprocess=1), don't re-read
-          [file path] = uigetfile('C:\work\IFCB11\D2012\D20120615\D20120615*.roi'); %ifcb11
+          [file path] = uigetfile('C:\work\IFCB11\D2012\D20120615\D*.roi'); %ifcb11
           %[file path] = uigetfile('\\128.128.108.82\data\D20120615*.roi'); %ifcb10 -- all data is in data subdirectory
 %         [file path] = uigetfile('\\128.128.108.82\data\beads\D20120615*'); %ifcb10 -- all data is in data subdirectory
 
