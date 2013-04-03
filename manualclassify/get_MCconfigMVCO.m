@@ -24,9 +24,11 @@ MCconfig.classstr = 'ciliate';
 big_only = 0; %case for picking Laboea and tintinnids only
 
 MCconfig.class2view1 = MCconfig.class2use; %case to view all
-%'Chaetoceros_didymus_flagellate' }); %example to select a few
-%MCconfig.class2view1 = intersect(MCconfig.class2use, {'Ditylum'});
-MCconfig.class2view2 = {'all'};
+%MCconfig.class2view1 = { }; %example to skip view1 
+%MCconfig.class2view1 = setdiff(MCconfig.class2use, {'bad' 'mix'}); %example to skip a few
+%MCconfig.class2view1 = intersect(MCconfig.class2use, {'Ditylum'}); %example to select a few
+MCconfig.class2view2 = MCconfig.class2use_sub; %case to view all ciliates
+%MCconfig.class2view2 = { }; %example to skip view2
 
 if ~exist(MCconfig.resultpath, 'dir'),
     dos(['mkdir ' resultpath]);
