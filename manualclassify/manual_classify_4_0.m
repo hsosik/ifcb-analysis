@@ -57,11 +57,14 @@ switch pick_mode
             classnum_default_sub = [];
             class2view2 = [];
         else
-            class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
-                'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
-                'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
-            classnum_default_sub = strmatch('ciliate_mix', class2use_sub); %USER class for default
-            classstr = 'ciliate'; %[]
+%             class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
+%                 'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
+%                 'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
+%             classnum_default_sub = strmatch('ciliate_mix', class2use_sub); %USER class for default
+%             classstr = 'ciliate'; %[]
+            class2use_sub = MCconfig.class2use_sub;
+            classnum_default_sub = strmatch(MCconfig.sub_default_class, class2use_sub);
+            classstr = MCconfig.classstr;
             if strmatch('all', MCconfig.class2view2),
                 class2view2 = 1:length(class2use_sub);
             else
@@ -84,17 +87,20 @@ switch pick_mode
             classnum_default_sub = [];
             class2view2 = [];
         else
-            class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
-                'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
-                'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
-            classnum_default_sub = strmatch('ciliate_mix', class2use_sub); %USER class for default
-            classstr = 'ciliate'; %[]
+            %class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
+            %    'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
+            %    'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
+            %classnum_default_sub = strmatch('ciliate_mix', class2use_sub); %USER class for default
+            %classstr = 'ciliate'; %[]
+            class2use_sub = MCconfig.class2use_sub;
+            classnum_default_sub = strmatch(MCconfig.sub_default_class, class2use_sub);
+            classstr = MCconfig.classstr;
             if strmatch('all', MCconfig.class2view2),
                 class2view2 = 1:length(class2use_sub);
             else
                 [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2);
             end;
-            class2view1 = setdiff(class2view1, strmatch(classstr, class2use))
+            class2view1 = setdiff(class2view1, strmatch(classstr, class2use));
             %[~,class2view1] = setdiff(class2use(sort(class2view1)), classstr);
         end;
         class2use_pick2 = class2use_sub; %to set button labels

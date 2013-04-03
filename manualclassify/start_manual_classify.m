@@ -3,8 +3,8 @@
 %[MCconfig, filelist, classfiles, stitchfiles] = get_MCfilelistMVCO(MCconfig);
 
 %Other sets
-MCconfig = get_MCconfig;
-[MCconfig, filelist, classfiles] = get_MCfilelist(MCconfig);
+MCconfig = get_MCconfigMVCO;
+[MCconfig, filelist, classfiles] = get_MCfilelistMVCO(MCconfig);
 stitchfiles = [];
 
 if isempty(filelist),

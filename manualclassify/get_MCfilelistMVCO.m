@@ -5,15 +5,14 @@ function [MCconfig, filelist, classfiles, stitchfiles ] = get_MCfilelistMVCO( MC
 classfiles = [];
 stitchfiles = [];
 %%MVCO batch system
-if true,
+if false,
     filelist = get_filelist_manual([MCconfig.resultpath 'manual_list'],3,[2006:2012], 'all'); %manual_list, column to use, year to find
 end;
 
 %%other MVCO cases
-if false,
-    %basepath = '\\demi\vol2\';
-    %filelist = dir([basepath '\IFCB5_2011_063\IFCB5_2011_063_2120*.adc']);    
-    filelist = {'IFCB1_2012_151_152004' 'IFCB1_2012_151_154317'}; 
+if true,
+    basepath = '\\demi\vol1\';
+    filelist = dir([basepath 'IFCB5_2013_064\*.adc']);    
 end;
 
 if isempty(filelist),

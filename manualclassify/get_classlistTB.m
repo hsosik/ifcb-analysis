@@ -81,7 +81,7 @@ else
             end;    
         case 'correct_or_subdivide'  %make subcategories starting with an automated class
             if exist(classfilename),
-                load(classfilename) %load SVM resultsc
+                load(classfilename) %load classifier results
                 if ~exist('classlist', 'var'), 
                     classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
                     classlist(:,1) = 1:total_roi;
@@ -95,13 +95,19 @@ else
                 classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
                 classlist(:,1) = 1:total_roi;
             end;
-            if ~isempty(classnum_default_sub),               
+            if ~isempty(classnum_default_sub),
+                %fudge for remap of MVCO ciliate labels
+                class2useTBnew = class2useTB;
+                class2useTBnew{strmatch('ciliate_mix', class2useTB)} = 'Ciliate_mix';
+                class2useTBnew{strmatch('tintinnid', class2useTB)} = 'Tintinnid';
+                class2useTBnew{strmatch('Laboea', class2useTB)} = 'Laboea_strobila';
+                class2useTBnew{strmatch('Myrionecta', class2useTB)} = 'Mesodinium_sp';
                 classnum = strmatch(classstr, class2use, 'exact'); %default class number from original list
                 sub_col = 4; %first one
                 classlist(:,sub_col) = NaN;
                 list_titles(sub_col) = {classstr};        
                 classlist(classlist(:,auto_col) == classnum, sub_col) = classnum_default_sub; %set to default new class
-                [overlap, ind_sub, ind] = intersect(class2use_sub, class2useTB);
+                [overlap, ind_sub, ind] = intersect(class2use_sub, class2useTBnew);
                 for count1 = 1:length(overlap),
                     iii = strmatch(class2useTB(ind(count1)), TBclass_above_threshold);
                     if ~isempty(iii),
