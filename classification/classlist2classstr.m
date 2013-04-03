@@ -10,7 +10,7 @@ function [ classlist_str, classlist_num ] = classlist2classstr( classlist_in, cl
 
 classlist_num = classlist_in(:,3);
 ii = find(~isnan(classlist_in(:,2)));
-classlist_num(ii) = classlist_in(:,2);
+classlist_num(ii) = classlist_in(ii,2);
 classlist_str = class2use(classlist_num)';
 end
 
