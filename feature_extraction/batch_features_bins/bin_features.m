@@ -1,4 +1,4 @@
-function [ ] = bin_features( in_dir, file, out_dir )
+function [ ] = bin_features( in_dir, file, out_dir, opt1 )
 %function [ ] = bin_features( in_dir, file, out_dir )
 %BIN_FEATURES Summary of this function goes here
 %modified from bin_blobs
@@ -11,12 +11,20 @@ function log(msg) % not to be confused with logarithm function
     logmsg(['bin_features ' msg],debug);
 end
 
+% FIXME for more options, iterate over varags
+if ~exist('opt1', 'var') || isempty(opt1),
+  chatty = false;
+elseif opt1 == 'chatty',
+  chatty = true;
+end
+
 % load the zip file
-log(['LOAD ' file]);
+log(['LOAD targets ' file]);
 %http://ifcb-data.whoi.edu/mvco/IFCB1_2009_174_055621_blob.zip
 targets = get_bin_file([in_dir file]);
 nt = length(targets.pid);
 if nt > 0,
+    log(['LOAD blobs ' file]);
     targets_blob = get_blob_bin_file([in_dir regexprep(file, '.zip', '_blob.zip')]);
 end;
 
@@ -44,7 +52,9 @@ for i = 1:nt,
     target = image_HOG(target);
     target = blob_rotated_geomprop(target);
     temp.features(i) = merge_structs(target.blob_props, target.image_props);
-    %log(['PROCESSED ' char(targets.pid(i)) ' (' num2str(i) ' of ' num2str(nt) ')']);
+    if chatty && rem(i,100) == 0,
+      log(['PROCESSED ' char(targets.pid(i)) ' (' num2str(i) ' of ' num2str(nt) ')']);
+    end;
 end
 
 if nt > 0,
