@@ -65,11 +65,7 @@ switch pick_mode
             class2use_sub = MCconfig.class2use_sub;
             classnum_default_sub = strmatch(MCconfig.sub_default_class, class2use_sub);
             classstr = MCconfig.classstr;
-            if strmatch('all', MCconfig.class2view2),
-                class2view2 = 1:length(class2use_sub);
-            else
-                [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2);
-            end;
+            [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2);
             [~,class2view1] = setdiff(class2use(sort(class2view1)), classstr);
         end;
         class2use_pick2 = class2use_sub;
@@ -95,11 +91,7 @@ switch pick_mode
             class2use_sub = MCconfig.class2use_sub;
             classnum_default_sub = strmatch(MCconfig.sub_default_class, class2use_sub);
             classstr = MCconfig.classstr;
-            if strmatch('all', MCconfig.class2view2),
-                class2view2 = 1:length(class2use_sub);
-            else
-                [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2);
-            end;
+            [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2);
             class2view1 = setdiff(class2view1, strmatch(classstr, class2use));
             %[~,class2view1] = setdiff(class2use(sort(class2view1)), classstr);
         end;
