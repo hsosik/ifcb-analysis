@@ -1,8 +1,9 @@
 load class2use_MVCOciliate
 
-remappath1 = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
-remappath2 = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Copy_Manual_fromClass_Apr2013\';
-%remappath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\Manual_fromClass_bad\';
+%remappath1 = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
+%remappath2 = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Copy_Manual_fromClass_Apr2013\';
+remappath1 = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\Manual_fromClass_bad\';
+remappath2 = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Copy_Manual_fromClass_Apr2013\Manual_fromClass_bad\';
 remapfunc = 'ciliate_class_map';
 
 %disp(['WARNING: you are about to remap classes in ' remappath ' to correspond to the following master list'])
