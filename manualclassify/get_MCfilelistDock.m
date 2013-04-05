@@ -4,12 +4,14 @@ function [MCconfig, filelist, classfiles, stitchfiles ] = get_MCfilelistDock( MC
 
 classfiles = [];
 stitchfiles = [];
-basepath = '\\queenrose\e_work\IFCB_dock\data\';
+%basepath = '\\queenrose\e_work\IFCB_dock\data\';
+basepath = '\\queenrose\e_work\Emily_Peacock\data\';
 %%other MVCO cases
 if true,
-    filepath = '\\queenrose\e_work\IFCB_dock\data\D2013\D20130205\';
+    %filepath = '\\queenrose\e_work\IFCB_dock\data\D2013\D20130205\';
+    filepath = '\\queenrose\e_work\Emily_Peacock\data\D2013\D20130405\';
     filelist = dir([filepath '*.adc']);    
- %   filelist = {'IFCB1_2012_151_152004' 'IFCB1_2012_151_154317'}; 
+    %filelist = {'IFCB1_2012_151_152004' 'IFCB1_2012_151_154317'}; 
 end;
 classpath = [];
 
