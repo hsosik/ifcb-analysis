@@ -5,7 +5,8 @@ function [ feadata, feahdrs ] = get_fea_file( fullfilename )
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, April 2012
 
 if isequal(fullfilename(1:4), 'http'), 
-    [filestr,status] = urlwrite(fullfilename, 'temp.csv');
+    [~,f] = fileparts(fullfilename);
+    [filestr,status] = urlwrite(fullfilename, [f '.csv']);
     if status,
         fullfilename = filestr;
     else
