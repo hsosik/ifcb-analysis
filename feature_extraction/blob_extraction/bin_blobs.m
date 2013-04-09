@@ -1,4 +1,4 @@
-function [ ] = bin_blobs( bin_pid, out_dir )
+function [ ] = bin_blobs( bin_pid, bin_zip_path, out_dir )
 %BIN_BLOBS Summary of this function goes here
 
 debug = false;
@@ -18,7 +18,7 @@ end
 % load the zip file
 log(['LOAD ' bin_pid]);
 try
-    targets = get_bin(bin_pid);
+    targets = get_bin_file(bin_zip_path);
     nt = length(targets.targetNumber);
 catch ME
     idSegLast = regexp(ME.identifier, '(?<=:)\w+$', 'match');
