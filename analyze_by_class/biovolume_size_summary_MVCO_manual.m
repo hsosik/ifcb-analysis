@@ -68,10 +68,22 @@ for loopcount = 1:length(mode_list),
         end;
         %ml_analyzed_mat(mode_ind(filecount),class_cat) = ml_analyzed(mode_ind(filecount));
         load([resultpath filename])
-        biovolpath = [biovolpath_base 'biovolume' filename(7:10) '\'];
-        load([biovolpath filename]) %targets
-        tind = char(targets.pid); %find the ROI indices excluding second in stitched pair
-        tind = str2num(tind(:,end-4:end));
+        if yr < 2013,
+            biovolpath = [biovolpath_base 'biovolume' filename(7:10) '\'];
+            load([biovolpath filename]) %targets
+            tind = char(targets.pid); %find the ROI indices excluding second in stitched pair
+            tind = str2num(tind(:,end-4:end));
+         else %2013 and later, v2 features with biovolume
+            clear targets
+            feapath = regexprep(feapath_base, 'XXXX', filename(7:10));
+            [~,file] = fileparts(filename);
+            feastruct = importdata([feapath file '_fea_v2.csv'], ','); 
+            ind = strmatch('Biovolume', feastruct.colheaders);
+            targets.Biovolume = feastruct.data(:,ind);
+            ind = strmatch('roi_number', feastruct.colheaders);
+            tind = feastruct.data(:,ind);
+        end;
+        
         classlist = classlist(tind,:);
         if ~isequal(class2use_manual, class2use_manual_first)
             disp('class2use_manual does not match previous files!!!')
