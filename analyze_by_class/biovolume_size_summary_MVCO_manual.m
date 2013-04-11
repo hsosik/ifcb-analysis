@@ -68,6 +68,7 @@ for loopcount = 1:length(mode_list),
         end;
         %ml_analyzed_mat(mode_ind(filecount),class_cat) = ml_analyzed(mode_ind(filecount));
         load([resultpath filename])
+        yr = str2num(filename(7:10));
         if yr < 2013,
             biovolpath = [biovolpath_base 'biovolume' filename(7:10) '\'];
             load([biovolpath filename]) %targets
