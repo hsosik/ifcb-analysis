@@ -2,6 +2,7 @@ resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load \\raspberry\d_work\IFCB1\code_mar10_mvco\ml_analyzed_all %load the milliliters analyzed for all sample files
 biovolpath_base = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\';
+feapath_base = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\featuresXXXX_v2\';
 micron_factor = 1/3.4; %microns per pixel
 
 mode_list = manual_list(1,2:end-1); mode_list = [mode_list 'ciliate_ditylum'];
@@ -60,7 +61,7 @@ for loopcount = 1:length(mode_list),
    % class_cat2(temp2) = temp1;
     filelist = cell2struct(manual_list(mode_ind+1,1),{'name'},2);
     
-    for filecount = 1:length(filelist),
+    for filecount = 780:length(filelist),
         filename = filelist(filecount).name;
         disp([annotate_mode ': ' filename])
         for classnum = 1:length(class_cat),
@@ -81,8 +82,12 @@ for loopcount = 1:length(mode_list),
             feastruct = importdata([feapath file '_fea_v2.csv'], ','); 
             ind = strmatch('Biovolume', feastruct.colheaders);
             targets.Biovolume = feastruct.data(:,ind);
+            ind = strmatch('EquivDiameter', feastruct.colheaders);
+            targets.EquivDiameter = feastruct.data(:,ind);
             ind = strmatch('roi_number', feastruct.colheaders);
             tind = feastruct.data(:,ind);
+            [~,f] = fileparts(filename);
+            targets.pid = strcat(f,'_', num2str(tind, '%05.0f'));
         end;
         
         classlist = classlist(tind,:);
