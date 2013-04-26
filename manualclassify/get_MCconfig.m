@@ -22,7 +22,7 @@ MCconfig.class2view1 = MCconfig.class2use; %case to view all
 MCconfig.class2view2 = { }; %example to skip view2 
 
 if ~exist(MCconfig.resultpath, 'dir'),
-    dos(['mkdir ' resultpath]);
+    dos(['mkdir ' MCconfig.resultpath]);
 end;
 
 end

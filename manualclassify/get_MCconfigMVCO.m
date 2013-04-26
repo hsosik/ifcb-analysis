@@ -31,7 +31,7 @@ MCconfig.class2view2 = MCconfig.class2use_sub; %case to view all ciliates
 %MCconfig.class2view2 = { }; %example to skip view2
 
 if ~exist(MCconfig.resultpath, 'dir'),
-    dos(['mkdir ' resultpath]);
+    dos(['mkdir ' MCconfig.resultpath]);
 end;
 
 end
