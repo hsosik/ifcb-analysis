@@ -2,7 +2,8 @@ resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load \\raspberry\d_work\IFCB1\code_mar10_mvco\ml_analyzed_all %load the milliliters analyzed for all sample files
 biovolpath_base = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\';
-feapath_base = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\featuresXXXX_v2\';
+feapath_base1 = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\featuresXXXX_v1\';
+feapath_base2 = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\featuresXXXX_v2\';
 micron_factor = 1/3.4; %microns per pixel
 
 mode_list = manual_list(1,2:end-1); mode_list = [mode_list 'ciliate_ditylum'];
@@ -76,9 +77,14 @@ for loopcount = 1:length(mode_list),
             load([biovolpath filename]) %targets
             tind = char(targets.pid); %find the ROI indices excluding second in stitched pair
             tind = str2num(tind(:,end-4:end));
+            feapath = regexprep(feapath_base1, 'XXXX', filename(7:10));
+            [~,file] = fileparts(filename);
+            feastruct = importdata([feapath file '_fea_v1.csv'], ','); 
+            ind = strmatch('Perimeter', feastruct.colheaders);
+            targets.Perimeter = feastruct.data(:,ind);
          else %2013 and later, v2 features with biovolume
             clear targets
-            feapath = regexprep(feapath_base, 'XXXX', filename(7:10));
+            feapath = regexprep(feapath_base2, 'XXXX', filename(7:10));
             [~,file] = fileparts(filename);
             feastruct = importdata([feapath file '_fea_v2.csv'], ','); 
             ind = strmatch('Biovolume', feastruct.colheaders);
@@ -86,7 +92,7 @@ for loopcount = 1:length(mode_list),
             ind = strmatch('EquivDiameter', feastruct.colheaders);
             targets.EquivDiameter = feastruct.data(:,ind);
             ind = strmatch('Perimeter', feastruct.colheaders);
-            targets.perim = feastruct.data(:,ind);
+            targets.Perimeter = feastruct.data(:,ind);
             ind = strmatch('roi_number', feastruct.colheaders);
             tind = feastruct.data(:,ind);
             [~,f] = fileparts(filename);
@@ -128,6 +134,7 @@ for loopcount = 1:length(mode_list),
                 if ~isempty(cind),
                     biovol.(char(class2use_here(classnum+numclass1)))(mode_ind(filecount)) = {targets.Biovolume(cind)*micron_factor.^3};
                     eqdiam.(char(class2use_here(classnum+numclass1)))(mode_ind(filecount)) = {targets.EquivDiameter(cind)*micron_factor};
+                    perim.(char(class2use_here(classnum+numclass1)))(mode_ind(filecount)) = {targets.Perimeter(cind)*micron_factor};
                     roiID.(char(class2use_here(classnum+numclass1)))(mode_ind(filecount)) = {char(targets.pid(cind))};
                 end;
             end;
@@ -143,7 +150,7 @@ if ~exist([resultpath 'summary\'], 'dir')
     mkdir([resultpath 'summary\'])
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
-save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed_struct', 'biovol', 'filelist', 'eqdiam', 'roiID')
+save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed_struct', 'biovol', 'filelist', 'eqdiam', 'perim', 'roiID')
 
 return
 
