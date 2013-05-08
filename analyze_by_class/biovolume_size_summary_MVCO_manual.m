@@ -48,6 +48,7 @@ class2use_here = [class2use_manual_first class2use_sub4];
 for classnum = 1:length(class2use_here),
     ml_analyzed_struct.(class2use_here{classnum}) = NaN(1,length(ml_analyzed));
     [biovol.(class2use_here{classnum}){1:length(ml_analyzed)}] = deal([]);
+    [perim.(class2use_here{classnum}){1:length(ml_analyzed)}] = deal([]);
     %[biovol.(class_ciliate{classnum})(1:length(ml_analyzed))] = deal([]);
     %biovol.(char(class_ciliate(classnum))) = num2cell(NaN(1,length(ml_analyzed)));
 end;
@@ -61,7 +62,7 @@ for loopcount = 1:length(mode_list),
    % class_cat2(temp2) = temp1;
     filelist = cell2struct(manual_list(mode_ind+1,1),{'name'},2);
     
-    for filecount = 780:length(filelist),
+    for filecount = 1:length(filelist),
         filename = filelist(filecount).name;
         disp([annotate_mode ': ' filename])
         for classnum = 1:length(class_cat),
@@ -84,6 +85,8 @@ for loopcount = 1:length(mode_list),
             targets.Biovolume = feastruct.data(:,ind);
             ind = strmatch('EquivDiameter', feastruct.colheaders);
             targets.EquivDiameter = feastruct.data(:,ind);
+            ind = strmatch('Perimeter', feastruct.colheaders);
+            targets.perim = feastruct.data(:,ind);
             ind = strmatch('roi_number', feastruct.colheaders);
             tind = feastruct.data(:,ind);
             [~,f] = fileparts(filename);
@@ -112,6 +115,7 @@ for loopcount = 1:length(mode_list),
                 biovol.(char(class2use_here(classnum)))(mode_ind(filecount)) = {targets.Biovolume(cind)*micron_factor.^3};
                 eqdiam.(char(class2use_here(classnum)))(mode_ind(filecount)) = {targets.EquivDiameter(cind)*micron_factor};
                 roiID.(char(class2use_here(classnum)))(mode_ind(filecount)) = {char(targets.pid(cind))};
+                perim.(char(class2use_here(classnum)))(mode_ind(filecount)) = {targets.Perimeter(cind)*micron_factor};
             end;
         end;
         if exist('class2use_sub4', 'var'),
