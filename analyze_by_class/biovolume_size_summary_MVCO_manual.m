@@ -96,7 +96,8 @@ for loopcount = 1:length(mode_list),
             ind = strmatch('roi_number', feastruct.colheaders);
             tind = feastruct.data(:,ind);
             [~,f] = fileparts(filename);
-            targets.pid = strcat(f,'_', num2str(tind, '%05.0f'));
+            targets.pid = cellstr(strcat(f,'_', num2str(tind, '%05.0f')));
+            keyboard
         end;
         
         classlist = classlist(tind,:);
