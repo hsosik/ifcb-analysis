@@ -1,16 +1,16 @@
-function [  ] = start_feav1_to_feav2( [] )
+function [  ] = start_feav1_to_feav2
 
-%feapath = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\features2006_v1\';
-%biovolpath = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\biovolume2006\';
+feapath = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\features2006_v1\';
+biovolpath = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\biovolume2006\';
 
-feapath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\features2006_v1\';
-biovolpath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\biovolume\biovolume2006\';
+%feapath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\features2006_v1\';
+%biovolpath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\biovolume\biovolume2006\';
 
 feapathv2 = regexprep(feapath, 'v1', 'v2');
 if ~exist(feapathv2, 'dir'),
     mkdir(feapathv2);
 end;
-feafiles = dir([feapath 'ifcb1_2006_157*.csv']);
+feafiles = dir([feapath '*.csv']);
 
 for ii = 1:length(feafiles),
     
@@ -31,5 +31,4 @@ for ii = 1:length(feafiles),
     ds = dataset([feature_mat featitles]);
     export(ds, 'file', [feapathv2 file_out], 'delimiter', ',');
     
-end;
 end;
