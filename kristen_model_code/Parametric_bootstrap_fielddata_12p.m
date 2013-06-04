@@ -15,7 +15,7 @@ ms=MultiStart('Display','off','TolX',1e-5,'UseParallel','always','StartPointsToR
 opts=optimset('Display','off','TolX',1e-8,'Algorithm','interior-point','UseParallel','always','MaxIter', 3000,'MaxFunEvals',10000);
 
 % pathname='/Users/kristenhunter-cevera/Documents/MATLAB/Synechococcus/MVCO_Field_Data/2008_Field_data/input/';
-pathname='mnt/queenrose/mvco/MVCO_Jan2008/model/input/'
+pathname='/mnt/queenrose/mvco/MVCO_Jan2008/model/input/'
 
 filelist = dir([pathname 'day*data.mat']);
 hr1=7; hr2=25;
@@ -90,7 +90,7 @@ for Q=1:length(filelist) %some test days: [26 52 78 103 129 155 180 206 232]
         
         %Fit both models:
         %7 params:
-        tpoints7 = CustomStartPointSet([0.2*rand(10,1) 6*rand(10,1) max(Einterp)*rand(10,1) 0.1*rand(10,1) 30*rand(10,1)+20 10*rand(10,1)+2 1e4*rand(105,1)]);
+        tpoints7 = CustomStartPointSet([0.2*rand(10,1) 6*rand(10,1) max(Einterp)*rand(10,1) 0.1*rand(10,1) 30*rand(10,1)+20 10*rand(10,1)+2 1e4*rand(10,1)]);
         problem = createOptimProblem('fmincon','x0',x0_7,'objective',@(theta) loglike_DMN_7params_phours_plateau(Einterp,simdist7,theta,volbins,hr1,hr2),'Aineq',A7,'bineq',B7,'options',opts);
         [xmin7,fmin7,exitflag7,~,soln7] = run(ms,problem,tpoints7);
         
