@@ -13,7 +13,7 @@ filelist = {filelist.name}';
 filelist = regexprep(filelist,'_blobs_v2.zip','');
 
 %in_dir = ['\\demi\blobs\2012\' daystr '\'];
-out_dir = '\\Queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\biovolume2011\'; %G-drive share
+out_dir = '\\Queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\biovolume2012\'; %G-drive share
 %out_dir = '/mnt/queenrose/ifcb_data_mvco_jun06/biovolume/biovolume2012/'; %G-drive share
 
 %out_dir_all = {'\\Queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\biovolume2006\'...

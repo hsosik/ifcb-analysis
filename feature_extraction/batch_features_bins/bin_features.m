@@ -65,15 +65,13 @@ if nt > 0,
     fileout = regexprep(file, '.zip', '_fea_v2.csv');
     log(['SAVING ' fileout]);
    
-    ds = dataset([feature_mat featitles]);
-    export(ds, 'file', [out_dir fileout], 'delimiter', ',');
+   csvwrite_with_headers( [out_dir fileout], feature_mat, featitles );
     
     %write the raw multi-blob features to separate csv file
     fileout = regexprep(file, '.zip', '_multiblob_v2.csv');   
-    if ~isempty(multiblob_features), 
-        ds = dataset([multiblob_features multiblob_titles]);
+    if ~isempty(multiblob_features),
         mkdir([out_dir filesep 'multiblob']);
-        export(ds, 'file', [out_dir filesep 'multiblob' filesep fileout], 'delimiter', ',');
+        csvwrite_with_headers( [out_dir filesep 'multiblob' filesep fileout], multiblob_features, multiblob_titles );
     end; 
     log(['DONE ' file]);
 else

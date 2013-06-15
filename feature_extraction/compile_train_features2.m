@@ -60,8 +60,7 @@ for classcount = 1:length(classes),
     feamat{classcount} = [cell2mat(temp); Wedges; Rings; HOG];
     t_temp = out.targets;
     if maxn < n_class(classcount),
-        ind = randperm(n_class(classcount));
-        ind = ind(1:maxn);
+        ind = randi(n_class(classcount),maxn,1);
         feamat{classcount} = feamat{classcount}(:,ind);
         t_temp = t_temp(ind);
     end;

@@ -38,7 +38,7 @@
 %                (previous code was a bit approximate)
 
 function f = lowpassfilter(sze, cutoff, n)
-
+    
     if cutoff < 0 | cutoff > 0.5
 	error('cutoff frequency must be between 0 and 0.5');
     end

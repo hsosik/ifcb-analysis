@@ -9,7 +9,7 @@ function [ ] = batch_features(in_dir, filelist, out_dir )
 % Report completion status
 % batch_volume modified by Heidi Sosik from day_blobs.m (by Joe Futrelle)
 
-debug = true;
+debug = false;
 
 function log(msg) % not to be confused with logarithm function
     logmsg(['day_blobs ' msg],debug);
@@ -17,8 +17,8 @@ end
 
 if not(debug),
     try
-        %matlabpool;
-        matlabpool local 4;
+        matlabpool;
+        %matlabpool local 4;
         log('POOL - started');
     catch e %#ok<NASGU>
         log('WARNING - workers cannot start, or already active');

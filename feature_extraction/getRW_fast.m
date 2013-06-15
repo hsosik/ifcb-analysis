@@ -1,4 +1,4 @@
-%Getfeatures.m fshould call this function and append fw to features1
+%Getfeatures.m should call this function and append fw to features1
 %Kaccie Li, summer 2005
 %Joe Futrelle made optimizations 9/2011
 
