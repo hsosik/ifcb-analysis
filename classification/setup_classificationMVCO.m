@@ -17,7 +17,7 @@ classifierName = 'MVCO_trees_25Jun2012';
 
 %header = textread([feapath feafiles{1}], '%s',236, 'delimiter', ',');
 temp = importdata([feapath feafiles{1}], ','); header = temp.colheaders; clear temp
-[~,feaorder] = setdiff(header, {'FilledArea' 'summedFilledArea' 'Area' 'ConvexArea' 'MajorAxisLength' 'MinorAxisLength' 'Perimeter', 'roi_number', 'Biovolume'});
+[~,feaorder] = setdiff(header, {'FilledArea' 'summedFilledArea' 'Area' 'ConvexArea' 'MajorAxisLength' 'MinorAxisLength' 'Perimeter', 'roi_number', 'Biovolume', 'summedBiovolume'});
 featitles_file = header(feaorder);
 num2dostr = num2str(length(feafiles));
 for filecount = 1:length(feafiles),

@@ -1,7 +1,7 @@
 classpath_generic = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\classxxxx_v1\';
 
 classfiles = [];
-for yr = 2011, %:2012,
+for yr = 2013, %:2012,
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'I*.mat']);
     pathall = repmat(classpath, length(temp),1);
@@ -14,7 +14,7 @@ ind = length(classpath_generic)+1;
 filelist = cellstr(temp(:,ind:ind+20));
 mdate = IFCB_file2date(filelist);
 
-load('ml_analyzed_all', 'ml_analyzed', 'filelist_all');
+load('\\raspberry\d_work\IFCB1\code_mar10_mvco\ml_analyzed_all', 'ml_analyzed', 'filelist_all');
 [~,ia, ib] = intersect(filelist, filelist_all);
 if length(ia) ~= length(filelist),
     disp('missing some ml_analyzed values; need to make updated ml_analyzed all.mat?')
