@@ -79,7 +79,7 @@ lgdiatom_flag = zeros(size(class2use_here)); lgdiatom_flag(diatom_ind) = 1;
             cind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum));
             temp(classnum) = length(cind);
             tempvol(classnum) = nansum(targets.Biovolume(cind)*micron_factor.^3); %cubic microns
-            %tempcarbon(classnum) =  nansum(biovol2carbon(targets.Biovolume(cind)*micron_factor.^3,lgdiatom_flag(classnum))); %picograms
+            tempcarbon(classnum) =  nansum(biovol2carbon(targets.Biovolume(cind)*micron_factor.^3,lgdiatom_flag(classnum))); %picograms
             %%%%%%%%%%TEMPORARY results without using the large diatom C:vol
             tempcarbon(classnum) =  nansum(biovol2carbon(targets.Biovolume(cind)*micron_factor.^3,0)); %picograms
         end;
@@ -96,5 +96,6 @@ if ~exist([resultpath 'summary\'], 'dir')
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
 units = {'biovol is in cubic microns, carbon is in picograms'};
-save([resultpath 'summary\count_biovol_manual_junk_' datestr], 'matdate', 'ml_analyzed', 'classcount', 'classbiovol', 'filelist', 'class2use', 'metadata', 'classcarbon', 'units')
+%save([resultpath 'summary\count_biovol_manual_' datestr], 'matdate', 'ml_analyzed', 'classcount', 'classbiovol', 'filelist', 'class2use', 'metadata', 'classcarbon', 'units')
+save([resultpath 'summary\count_biovol_manual_nolgdiatom_' datestr], 'matdate', 'ml_analyzed', 'classcount', 'classbiovol', 'filelist', 'class2use', 'metadata', 'classcarbon', 'units')
 
