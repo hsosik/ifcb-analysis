@@ -97,7 +97,6 @@ for loopcount = 1:length(mode_list),
             tind = feastruct.data(:,ind);
             [~,f] = fileparts(filename);
             targets.pid = cellstr(strcat(f,'_', num2str(tind, '%05.0f')));
-            keyboard
         end;
         
         classlist = classlist(tind,:);
