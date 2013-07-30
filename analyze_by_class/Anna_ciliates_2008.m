@@ -198,29 +198,38 @@ ylabel('Proportion')
 axis([-10 375 0 1])
 
 %Fortnight matrix for LSA:
- Ciliate_mix=Ciliate_fortnight_mat.Ciliate_mix(:)';
-Didinium_sp=Ciliate_fortnight_mat.Didinium_sp(:)';
-Euplotes_sp=Ciliate_fortnight_mat.Euplotes_sp(:)';
-Laboea_strobila=Ciliate_fortnight_mat.Laboea_strobila(:)';
-Leegaardiella_ovalis=Ciliate_fortnight_mat.Leegaardiella_ovalis(:)';
-Mesodinium_sp=Ciliate_fortnight_mat.Mesodinium_sp(:)';
-Pleuronema_sp=Ciliate_fortnight_mat.Pleuronema_sp(:)';
-Strobilidium_morphotype1=Ciliate_fortnight_mat.Strobilidium_morphotype1(:)';
-Strobilidium_morphotype2=Ciliate_fortnight_mat.Strobilidium_morphotype2(:)';
-Strombidium_capitatum=Ciliate_fortnight_mat.Strombidium_capitatum(:)';
-Strombidium_caudatum=Ciliate_fortnight_mat.Strombidium_caudatum(:)';
-Strombidium_conicum=Ciliate_fortnight_mat.Strombidium_conicum(:)';
-Strombidium_inclinatum=Ciliate_fortnight_mat.Strombidium_inclinatum(:)';
-Strombidium_morphotype1=Ciliate_fortnight_mat.Strombidium_morphotype1(:)';
-Strombidium_morphotype2=Ciliate_fortnight_mat.Strombidium_morphotype2(:)';
-Strombidium_oculatum=Ciliate_fortnight_mat.Strombidium_oculatum(:)';
-Strombidium_wulffi=Ciliate_fortnight_mat.Strombidium_wulffi(:)';
-Tiarina_fusus=Ciliate_fortnight_mat.Tiarina_fusus(:)';
-Tintinnid=Ciliate_fortnight_mat.Tintinnid(:)';
-Tontonia_appendiculariformis=Ciliate_fortnight_mat.Tontonia_appendiculariformis(:)';
-Tontonia_gracillima=Ciliate_fortnight_mat.Tontonia_gracillima(:)';
-Ciliate_fortnight=[Ciliate_mix;Didinium_sp;Euplotes_sp;Laboea_strobila;Leegaardiella_ovalis;Mesodinium_sp;Pleuronema_sp;Strobilidium_morphotype1;Strobilidium_morphotype2;Strombidium_capitatum;Strombidium_caudatum;Strombidium_conicum;Strombidium_inclinatum;Strombidium_morphotype1;Strombidium_morphotype2;Strombidium_oculatum;Strombidium_wulffi;Tiarina_fusus;Tintinnid;Tontonia_appendiculariformis;Tontonia_gracillima];
 
+classes = fields(Ciliate_fortnight_mat); %goes through all elements of structure and makes two new structures (day and week binned matrices)
+l = length(Ciliate_fortnight_mat.(classes{1})(:));
+Ciliate_fortnight = NaN(length(classes),l);
+for classcount=1:length(classes),
+  %eval([classes{classcount} '= Ciliate_fortnight_mat.(classes{classcount})(:);'])
+  Ciliate_fortnight(classcount,:) = Ciliate_fortnight_mat.(classes{classcount})(:)';
+end;
+
+% Ciliate_mix=Ciliate_fortnight_mat.Ciliate_mix(:)';
+% Didinium_sp=Ciliate_fortnight_mat.Didinium_sp(:)';
+% Euplotes_sp=Ciliate_fortnight_mat.Euplotes_sp(:)';
+% Laboea_strobila=Ciliate_fortnight_mat.Laboea_strobila(:)';
+% Leegaardiella_ovalis=Ciliate_fortnight_mat.Leegaardiella_ovalis(:)';
+% Mesodinium_sp=Ciliate_fortnight_mat.Mesodinium_sp(:)';
+% Pleuronema_sp=Ciliate_fortnight_mat.Pleuronema_sp(:)';
+% Strobilidium_morphotype1=Ciliate_fortnight_mat.Strobilidium_morphotype1(:)';
+% Strobilidium_morphotype2=Ciliate_fortnight_mat.Strobilidium_morphotype2(:)';
+% Strombidium_capitatum=Ciliate_fortnight_mat.Strombidium_capitatum(:)';
+% Strombidium_caudatum=Ciliate_fortnight_mat.Strombidium_caudatum(:)';
+% Strombidium_conicum=Ciliate_fortnight_mat.Strombidium_conicum(:)';
+% Strombidium_inclinatum=Ciliate_fortnight_mat.Strombidium_inclinatum(:)';
+% Strombidium_morphotype1=Ciliate_fortnight_mat.Strombidium_morphotype1(:)';
+% Strombidium_morphotype2=Ciliate_fortnight_mat.Strombidium_morphotype2(:)';
+% Strombidium_oculatum=Ciliate_fortnight_mat.Strombidium_oculatum(:)';
+% Strombidium_wulffi=Ciliate_fortnight_mat.Strombidium_wulffi(:)';
+% Tiarina_fusus=Ciliate_fortnight_mat.Tiarina_fusus(:)';
+% Tintinnid=Ciliate_fortnight_mat.Tintinnid(:)';
+% Tontonia_appendiculariformis=Ciliate_fortnight_mat.Tontonia_appendiculariformis(:)';
+% Tontonia_gracillima=Ciliate_fortnight_mat.Tontonia_gracillima(:)';
+% Ciliate_fortnight=[Ciliate_mix;Didinium_sp;Euplotes_sp;Laboea_strobila;Leegaardiella_ovalis;Mesodinium_sp;Pleuronema_sp;Strobilidium_morphotype1;Strobilidium_morphotype2;Strombidium_capitatum;Strombidium_caudatum;Strombidium_conicum;Strombidium_inclinatum;Strombidium_morphotype1;Strombidium_morphotype2;Strombidium_oculatum;Strombidium_wulffi;Tiarina_fusus;Tintinnid;Tontonia_appendiculariformis;Tontonia_gracillima];
+% 
 
 %how to make environmental data for LSA (by fortnight/2 week period):
 %average of all values within 2 week period.
