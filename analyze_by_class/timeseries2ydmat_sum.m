@@ -1,7 +1,7 @@
 function [ mdate_mat, y_mat, yearlist, yd ] = timeseries2ydmat_sum( mdate, y )
 %function [ mdate_mat, y_mat, yearlist, yd ] = timeseries2ydmat( mdate, y )
 %accept an input time series (vector of dates in mdate; vector of y-values
-%in y) and output a matrix of mean values for each yearday by year 
+%in y) and output a matrix of summed values for each yearday by year 
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2012
 
 yd = (1:366)';
