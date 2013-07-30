@@ -2,8 +2,8 @@ resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load \\raspberry\d_work\IFCB1\code_mar10_mvco\ml_analyzed_all %load the milliliters analyzed for all sample files
 biovolpath_base = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\';
-feapath_base1 = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\featuresXXXX_v1\';
-feapath_base2 = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\featuresXXXX_v2\';
+%feapath_base1 = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\featuresXXXX_v1\';
+feapath_base = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\featuresXXXX_v2\';
 micron_factor = 1/3.4; %microns per pixel
 
 mode_list = manual_list(1,2:end-1); mode_list = [mode_list 'ciliate_ditylum'];
@@ -72,19 +72,19 @@ for loopcount = 1:length(mode_list),
         %ml_analyzed_mat(mode_ind(filecount),class_cat) = ml_analyzed(mode_ind(filecount));
         load([resultpath filename])
         yr = str2num(filename(7:10));
-        if yr < 2013,
-            biovolpath = [biovolpath_base 'biovolume' filename(7:10) '\'];
-            load([biovolpath filename]) %targets
-            tind = char(targets.pid); %find the ROI indices excluding second in stitched pair
-            tind = str2num(tind(:,end-4:end));
-            feapath = regexprep(feapath_base1, 'XXXX', filename(7:10));
-            [~,file] = fileparts(filename);
-            feastruct = importdata([feapath file '_fea_v1.csv'], ','); 
-            ind = strmatch('Perimeter', feastruct.colheaders);
-            targets.Perimeter = feastruct.data(:,ind);
-         else %2013 and later, v2 features with biovolume
+%         if yr < 2013,
+%             biovolpath = [biovolpath_base 'biovolume' filename(7:10) '\'];
+%             load([biovolpath filename]) %targets
+%             tind = char(targets.pid); %find the ROI indices excluding second in stitched pair
+%             tind = str2num(tind(:,end-4:end));
+%             feapath = regexprep(feapath_base1, 'XXXX', filename(7:10));
+%             [~,file] = fileparts(filename);
+%             feastruct = importdata([feapath file '_fea_v1.csv'], ','); 
+%             ind = strmatch('Perimeter', feastruct.colheaders);
+%             targets.Perimeter = feastruct.data(:,ind);
+%          else %2013 and later, v2 features with biovolume
             clear targets
-            feapath = regexprep(feapath_base2, 'XXXX', filename(7:10));
+            feapath = regexprep(feapath_base, 'XXXX', filename(7:10));
             [~,file] = fileparts(filename);
             feastruct = importdata([feapath file '_fea_v2.csv'], ','); 
             ind = strmatch('Biovolume', feastruct.colheaders);
@@ -97,7 +97,7 @@ for loopcount = 1:length(mode_list),
             tind = feastruct.data(:,ind);
             [~,f] = fileparts(filename);
             targets.pid = cellstr(strcat(f,'_', num2str(tind, '%05.0f')));
-        end;
+%        end;
         
         classlist = classlist(tind,:);
         if ~isequal(class2use_manual, class2use_manual_first)
