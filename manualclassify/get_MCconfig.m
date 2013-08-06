@@ -10,16 +10,29 @@ if ~isfield(MCconfig,'batchmode')
     MCconfig.filenum2start=1;  %USER select file number to begin within the chosen set (in batch mode this is likely 1)
 end
 
+
 MCconfig.filepath = 'D2013/D20130620/'; %this is the folder and or file you want to look at (not used in batchmode)
 %MCconfig.filepath = 'D2013/D20130426/D20130426T163234_IFCB011.adc';
 %MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
 MCconfig.pick_mode = 'raw_roi';
 
-%MCconfig.resultpath ='I:';
-%MCconfig.resultpath = 'C:\work\IFCB11\Manual\'; %USER set
-%MCconfig.resultpath = 'C:\work\IFCB010\ManualClassify\'; %USER set
-MCconfig.resultpath ='/Users/profileur/whoi_data/output_manual_classify/';
-MCconfig.basepath = '/Users/profileur/whoi_data/';
+
+%group specific options
+MCconfig.group='Sherbrooke' %MVCO, Sherbrooke
+switch MCconfig.group
+    case 'Sherbrooke'
+        
+        MCconfig.resultpath ='/Users/profileur/whoi_data/output_manual_classify/';
+        MCconfig.basepath = '/Users/profileur/whoi_data/';
+        MCconfig.class2use = importfile_species_list('/Users/profileur/whoi_data/manualclassify/Montjoie_species_20130404T173307.txt');%loading data from .txt file
+ 
+    case 'MVCO'
+        MCconfig.resultpath ='I:';
+        MCconfig.resultpath = 'C:\work\IFCB11\Manual\'; %USER set
+        MCconfig.resultpath = 'C:\work\IFCB010\ManualClassify\'; %USER set
+        temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
+        MCconfig.class2use = temp.class2use;
+end
 
 %this allows displaying the images ordered by size.
 %Options are:   'roi_index'     for ordering as they were measured
@@ -27,11 +40,10 @@ MCconfig.basepath = '/Users/profileur/whoi_data/';
 MCconfig.displayed_ordered = 'size'; 
 MCconfig.classpath = '';
 MCconfig.class_filestr = ''; %USER set, string appended on roi name for class files
-temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
-%MCconfig.class2use = temp.class2use;
+
 MCconfig.default_class = 'Other';
-%loading data from .txt file
-MCconfig.class2use = importfile_species_list('/Users/profileur/whoi_data/manualclassify/Montjoie_species_20130404T173307.txt');
+
+
 
 switch MCconfig.batchmode
     case 'yes'
