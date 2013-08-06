@@ -141,6 +141,7 @@ for filecount = filenum2start:length(filelist),
     else
         classfile_temp = classfiles{filecount};
     end;
+    
     [ classlist, sub_col, list_titles, newclasslist_flag ] = get_classlistTB( [resultpath outfile],classfile_temp, pick_mode, class2use_manual, class2use_sub, classstr, classnum_default, classnum_default_sub, length(x_all) );
     %special case to segregate dirt spots in Healy1101 data
     if isequal(outfile(1:10), 'IFCB8_2011') && newclasslist_flag,
@@ -198,9 +199,27 @@ for filecount = filenum2start:length(filelist),
                 figure(1)
             end;
             
+            
+            
+            
             next_ind = 1; %start with the first roi
             next_ind_list = next_ind; %keep track of screen start indices within a class
             if ~isempty(imagedat),
+                
+                %sorts images by size instead of roi_ind 08/06/2013 Yannick
+                
+                switch MCconfig.displayed_ordered
+                    case 'size'
+                        [nrows, ncols]=cellfun(@size, imagedat); %find the size of each image
+                        size_images=[nrows; ncols]';%make a matrix of the sizes
+                        [~,II]=sortrows(size_images,[-2,-1]); %Sorted by deacreasing height then width
+                        %reorders the roi_ind and the imagedat
+                        imagedat=imagedat(II);
+                        roi_ind=roi_ind(II);
+                    case 'roi_index'
+                    otherwise
+                end
+                
                 class_with_rois = [class_with_rois classcount]; %keep track of which classes to jump back (i.e., which have ROIs)
                 while next_ind <= length(x),
                     change_col = 2; if view_num > 1, change_col = sub_col;, end; %1/15/10 to replace mark_col in call to fillscreen
