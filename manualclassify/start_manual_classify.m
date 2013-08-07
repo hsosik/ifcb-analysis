@@ -9,27 +9,24 @@ function start_manual_classify(varargin)
 
 
 if nargin ==2
-    MCconfig.batch_class_index=varargin{1};
-    MCconfig.filenum2start=varargin{2};
     MCconfig=struct('batchmode','yes');
+    MCconfig.batch_class_index=varargin{2};
+    MCconfig.filenum2start=varargin{1};
 elseif nargin ==1  
-    MCconfig=struct('batchmode','yes');
-    MCconfig.batch_class_index=varargin{1};
-    MCconfig.filenum2start=1; %assumes the user wants to start at the first file
+    MCconfig=struct('batchmode','no');
+    MCconfig.filenum2start=varargin{1}; 
 elseif nargin ==0
-    MCconfig=struct([]); %All options are set in get_MCconfig
+    MCconfig=struct('batchmode', 'no'); %All options are set in get_MCconfig
 end
 
-
 %MVCO sets
-%MCconfig = get_MCconfigMVCO;
-%[MCconfig, filelist, classfiles, stitchfiles] = get_MCfilelistMVCO(MCconfig);
+MCconfig = get_MCconfigMVCO (MCconfig);
+[MCconfig, filelist, classfiles, stitchfiles] = get_MCfilelistMVCO(MCconfig);
 
 %Other sets
-MCconfig = get_MCconfig(MCconfig);
-
-[MCconfig, filelist, classfiles] = get_MCfilelist(MCconfig);
-stitchfiles = [];
+%MCconfig = get_MCconfig(MCconfig);
+%[MCconfig, filelist, classfiles] = get_MCfilelist(MCconfig);
+%stitchfiles = [];
 
 if isempty(filelist),
     disp('No files found. Check paths or file specification in get_MCconfig.')
