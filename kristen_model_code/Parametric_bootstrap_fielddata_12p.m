@@ -3,6 +3,7 @@
 %
 load '/trunk/kristen_model_code/mvco_13par_dmn_2008B';
 load '/trunk/kristen_model_code/MVCO_7DMN_run_2008';
+load '/trunk/kristen_model_code/days_to_test2008';
 %
 MR_dmn13=modelresults_dmn13_2008;
 MR_dmn7=modelresults_dmn_7p_2008;
@@ -15,7 +16,7 @@ ms=MultiStart('Display','off','TolX',1e-5,'UseParallel','always','StartPointsToR
 opts=optimset('Display','off','TolX',1e-8,'Algorithm','interior-point','UseParallel','always','MaxIter', 3000,'MaxFunEvals',10000);
 
 % pathname='/Users/kristenhunter-cevera/Documents/MATLAB/Synechococcus/MVCO_Field_Data/2008_Field_data/input/';
-pathname='/mnt/queenrose/mvco/MVCO_Jan2008/model/input/'
+pathname='/mnt/queenrose/mvco/MVCO_Jan2008/model/input/';
 
 filelist = dir([pathname 'day*data.mat']);
 hr1=7; hr2=25;
@@ -26,7 +27,9 @@ lr_titles={'-logL 7p model';'-logL 12p + s model';'likelihood ratio'};
 %%
 pvalues_2008=zeros(length(filelist),2);
 
-for Q=1:length(filelist) %some test days: [26 52 78 103 129 155 180 206 232]
+for z=1:length(days_to_test2008) %1:length(filelist) %some test days: [26 52 78 103 129 155 180 206 232]
+    
+    Q=days_to_test2008(z,1); %if only have a subset of days out of year tht your want to test
     
     PBS_sims=cell(100,5);
     LR_res=nan(100,3);
@@ -36,6 +39,9 @@ for Q=1:length(filelist) %some test days: [26 52 78 103 129 155 180 206 232]
     
     filename=filelist(Q).name;
     day=str2num(filename(4:9));
+    
+    if day==days_to_test2008(z,2) %a double check that correct day is loaded
+        
     disp(['Two popn test for day: ' num2str(day) ' file#: ' num2str(Q)])
     
     eval(['load ' pathname filename])
@@ -280,6 +286,10 @@ for Q=1:length(filelist) %some test days: [26 52 78 103 129 155 180 206 232]
     pvalues_2008(filenum,:)=[day length(pval)/100];
     disp(['day: ' num2str(day) ' p-value: ' num2str(length(pval)/100)])
     eval(['save /mnt/queenrose/mvco/MVCO_Jan2008/model/twocomp_significance_tests/twocomp_test_day' num2str(day) ' LR_res PBS_sims pval'])
+    
+    else
+        disp('Day mismatch - need to check!')
+    end
 end
 
 save /mnt/queenrose/mvco/MVCO_Jan2008/model/twocomp_significance_tests/twocomp_signtest_2008 pvalues_2008

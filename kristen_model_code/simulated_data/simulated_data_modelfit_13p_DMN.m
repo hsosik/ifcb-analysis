@@ -25,9 +25,9 @@ opts=optimset('Display','off','TolX',1e-8,'Algorithm','interior-point','UseParal
 % tpoints = CustomStartPointSet(start_points);
 x0=[theta6];
     
-modelfits_theta6_dmn_13=cell(100,3); simdata_theta5=cell(100,1);
+modelfits_theta6_dmn_13=cell(100,3); simdata_theta6=cell(100,1);
 %%
-for q=1:25
+for q=51:75
     
     disp(['Q; ' num2str(q)])
     %simulate a Dirichlet sample: no MN smapling yet:

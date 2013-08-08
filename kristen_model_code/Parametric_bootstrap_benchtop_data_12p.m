@@ -29,7 +29,7 @@ for port=2:3
     filelist=dir([pathname 'day*_' num2str(port) '_data.mat']);
     eval(['indgood=indgood' num2str(port) ';'])
     
-    eval(['MR_dmn13=modelresults_dmn_' num2str(port) ';'])
+    eval(['MR_dmn13=modelresults_dmn_p' num2str(port) ';'])
     eval(['MR_dmn7=modelresults_dmn_7p_' num2str(port) ';'])
     
     pvalues=zeros(length(filelist),2);
