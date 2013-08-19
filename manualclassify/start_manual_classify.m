@@ -1,7 +1,7 @@
 
 function start_manual_classify(varargin)
 
-%[]=start_manual_classify(BATCH_CLASS_INDEX,FILENUM2START) 
+%[]=start_manual_classify(FILENUM2START, BATCH_CLASS_INDEX) 
 %where all inputs are optional
 %inputs BATCHMODE can be wether 'yes' or 'no' and refers to wether or not we want to run through the classified images per class
 %BATCH_CLASS_INDEX refers to the index of the species to look at in batch mode
