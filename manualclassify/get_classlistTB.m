@@ -95,7 +95,7 @@ else
                 classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
                 classlist(:,1) = 1:total_roi;
             end;
-            if ~isempty(classnum_default_sub),
+            if ~isempty(classnum_default_sub) & exist('class2useTB', 'var'),
                 %fudge for remap of MVCO ciliate labels
                 class2useTBnew = class2useTB;
                 class2useTBnew{strmatch('ciliate_mix', class2useTB)} = 'Ciliate_mix';
