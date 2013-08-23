@@ -2,18 +2,16 @@ function [MCconfig, filelist, classfiles ] = get_MCfilelist( MCconfig )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 % index=2;
-
 switch MCconfig.batchmode
     case 'no'
-%         basepath = 'J:';
         basepath = MCconfig.basepath;
         classpath = MCconfig.classpath;
-        % filelist = dir([basepath '\D2012\D20121121\*.adc'])
-        filelist = dir([basepath MCconfig.filepath '/*.adc'])
+        %filelist = dir([basepath '\D2012\D20121121\*.adc'])
+        filelist = dir([basepath MCconfig.filepath '*.adc'])
     case 'yes'
         classpath = MCconfig.classpath;
-        % filelist = dir([basepath '\D2012\D20121121\*.adc'])
-        filelist = dir([MCconfig.resultpath MCconfig.filepath])
+       % filelist = dir([basepath '\D2012\D20121121\*.adc'])
+        filelist = dir([MCconfig.basepath MCconfig.filepath])
         basepath = MCconfig.basepath;
 end
 
@@ -27,7 +25,7 @@ if isempty(filelist),
     return
 end;
 
-[filelist, classfiles] = resolve_files(filelist, basepath, classpath, MCconfig.class_filestr);
+[filelist, classfiles] = resolve_files_OKEX(filelist, basepath, classpath, MCconfig.class_filestr);
 
 [~,f]= fileparts(filelist{1}); 
 if f(1) == 'I',
