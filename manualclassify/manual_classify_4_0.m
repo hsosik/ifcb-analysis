@@ -1,5 +1,5 @@
-function [  ] = manual_classify_4_0( MCconfig, filelist, classfiles, stitchfiles)
-%UNTITLED Summary of this function goes here
+function [  ] = manual_classify_4_0( MCconfig )
+%function [  ] = manual_classify_4_0( MCconfig )
 %manual_classify_2_0.m
 %Main script for manual IFCB roi classification
 %User selects paths for data and results and sets "pick_mode" for type of
@@ -34,6 +34,7 @@ function [  ] = manual_classify_4_0( MCconfig, filelist, classfiles, stitchfiles
 %Version 4_0 - Heidi 6/13/11. Refactor to run as function with filelist and config structure as input,
 %intended to replace both manual_classify_3_2 and manual_classify_3_2_batch,
 %no plan to change functions already called by those scripts
+%23 Aug 2013, revise to pass filelists in as part of MCconfig structure
 
 global figure_handle listbox_handle1 listbox_handle2 instructions_handle
 close all
@@ -41,65 +42,37 @@ resultpath = MCconfig.resultpath;
 filenum2start = MCconfig.filenum2start;
 pick_mode = MCconfig.pick_mode;
 class2use = MCconfig.class2use;
+filelist = MCconfig.filelist;
+classfiles = MCconfig.classfiles;
+stitchfiles = MCconfig.stitchfiles;
+classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use, 'exact'); %USER class for default
+class2use_pick1 = MCconfig.class2use; %to set button labels
+class2use_manual = MCconfig.class2use;
+[~,class2view1] = intersect(class2use, MCconfig.class2view1); %1:length(class2use);
+if isempty(MCconfig.class2view2),
+    class2use_sub = [];
+    classstr = [];
+    classnum_default_sub = [];
+    class2view2 = [];
+else
+    class2use_sub = MCconfig.class2use_sub;
+    classnum_default_sub = strmatch(MCconfig.sub_default_class, class2use_sub);
+    classstr = MCconfig.classstr;
+    [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2);
+    class2view1 = setdiff(class2view1, strmatch(classstr, class2use));
+end;
+class2use_pick2 = class2use_sub; %to set button labels
+
 switch pick_mode
-    case 'raw_roi' %pick classes from scratch
-        %        class2use = {'class1'; 'class2'; 'other'}; %USER type or load list
-        %load class2use_MVCOmanual3 %load class2use
-        classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use, 'exact'); %USER class for default
-        classstr = 'ciliate'; %[]
-        class2use_pick1 = MCconfig.class2use; %to set button labels
-        class2use_manual = MCconfig.class2use;
+    case 'raw_roi' %pick classes from scratch 
         class2use_auto = [];
-        [~,class2view1] = intersect(class2use, MCconfig.class2view1); %1:length(class2use);
-        if isempty(MCconfig.class2view2),
-            class2use_sub = [];
-            classstr = [];
-            classnum_default_sub = [];
-            class2view2 = [];
-        else
-%             class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
-%                 'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
-%                 'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
-%             classnum_default_sub = strmatch('ciliate_mix', class2use_sub); %USER class for default
-%             classstr = 'ciliate'; %[]
-            class2use_sub = MCconfig.class2use_sub;
-            classnum_default_sub = strmatch(MCconfig.sub_default_class, class2use_sub);
-            classstr = MCconfig.classstr;
-            [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2);
-            [~,class2view1] = setdiff(class2use(sort(class2view1)), classstr);
-        end;
-        class2use_pick2 = class2use_sub;
     case 'correct_or_subdivide'  %make subcategories starting with an automated class
-        classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use, 'exact'); %USER class for default
-        class2use = MCconfig.class2use;
-        class2use_auto = class2use;
-        class2use_pick1 = class2use;
-        class2use_manual = class2use;
-        class2use_auto = class2use;
-        [~,class2view1] = intersect(class2use, MCconfig.class2view1); %1:length(class2use);
-        if isempty(MCconfig.class2view2),
-            class2use_sub = [];
-            classstr = [];
-            classnum_default_sub = [];
-            class2view2 = [];
-        else
-            %class2use_sub = {'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
-            %    'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
-            %    'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'}; %USER type or load list
-            %classnum_default_sub = strmatch('ciliate_mix', class2use_sub); %USER class for default
-            %classstr = 'ciliate'; %[]
-            class2use_sub = MCconfig.class2use_sub;
-            classnum_default_sub = strmatch(MCconfig.sub_default_class, class2use_sub);
-            classstr = MCconfig.classstr;
-            [~,class2view2] = intersect(class2use_sub, MCconfig.class2view2);
-            class2view1 = setdiff(class2view1, strmatch(classstr, class2use));
-            %[~,class2view1] = setdiff(class2use(sort(class2view1)), classstr);
-        end;
-        class2use_pick2 = class2use_sub; %to set button labels
+        class2use_auto = class2use;       
     otherwise
         disp('Invalid pick_mode. Check setting in get_MCconfig')
         return
 end;
+
 %IFCB largest possible image settings
 camx = 1381;  %changed from 1380, heidi 8/18/06
 camy = 1035;  %camera image size, changed from 1034 heidi 6/8/09
@@ -141,9 +114,9 @@ for filecount = filenum2start:length(filelist),
     else
         classfile_temp = classfiles{filecount};
     end;
-    
+
     [ classlist, sub_col, list_titles, newclasslist_flag ] = get_classlistTB( [resultpath outfile],classfile_temp, pick_mode, class2use_manual, class2use_sub, classstr, classnum_default, classnum_default_sub, length(x_all) );
-    %special case to segregate dirt spots in Healy1101 data
+%special case to segregate dirt spots in Healy1101 data
     if isequal(outfile(1:10), 'IFCB8_2011') && newclasslist_flag,
         classlist((adcdata(:,10) == 1118 & adcdata(:,11) == 290),2) = strmatch('bad', class2use_manual);
     end;

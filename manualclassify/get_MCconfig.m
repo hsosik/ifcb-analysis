@@ -1,49 +1,84 @@
 function [ MCconfig ] = get_MCconfig(MCconfig)
-%function [ MCconfig ] = get_MCconfig(  )
-%   Detailed explanation goes here
+%function [ MCconfig ] = get_MCconfig( MCconfig  )
+%   configures most of the setup for manual_classify_4_0.m
+%   MCconfig is a structure passed in and out again, contains the settings for file paths, classes to view, etc.    
+%   Heidi M. Sosik, Woods Hole Oceanographic Institution, 
 
-%if no variables were input when start_manual_classify those variables need
-%to be entered here.
-if ~isfield(MCconfig,'batchmode') 
+%   revised August 2013 to incorporate settings previously done in get_MCfilelist. m
+
+if ~isfield(MCconfig,'batchmode') %initialize some settings if not already passed in with MCconfig (e.g., from start_manual_classify)
     MCconfig=struct('batchmode','no'); %['yes' or 'no'] in batchmode you will be looking at only one class for all files    
-    MCconfig.batch_class_index =162;% in batch mode this is the index of the class to look at.
-    MCconfig.filenum2start=1;  %USER select file number to begin within the chosen set (in batch mode this is likely 1)
+    MCconfig.batch_class_index = 162;% in batch mode this is the index of the class to look at.
+    MCconfig.filenum2start=1;  %USER select file number to begin within the chosen set
 end
 
-
-MCconfig.filepath = 'D2013/D20130620/'; %this is the folder and or file you want to look at (not used in batchmode)
-%MCconfig.filepath = 'D2013/D20130426/D20130426T163234_IFCB011.adc';
-%MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one from case list below
+%MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one 'correct_or_subdivide' (start from classifier or already sorted images) or 'raw_roi'
 MCconfig.pick_mode = 'raw_roi';
 
+MCconfig.displayed_ordered = 'size'; %USER choose one 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
+%MCconfig.displayed_ordered = 'roi_index'; 
+
+MCconfig.classfiles = [];
+MCconfig.stitchfiles = [];
 
 %group specific options
-MCconfig.group='Sherbrooke' %MVCO, Sherbrooke
+MCconfig.group = 'MVCO'; %MVCO, Sherbrooke, OKEX
+
 switch MCconfig.group
     case 'Sherbrooke'
-        
         MCconfig.resultpath ='/Users/profileur/whoi_data/output_manual_classify/';
         MCconfig.basepath = '/Users/profileur/whoi_data/';
+        MCconfig.filepath = 'D2013/D20130426/D20130426T163234_IFCB011.adc'; %this is the folder and or file you want to look at (not used in batchmode)
         MCconfig.class2use = importfile_species_list('/Users/profileur/whoi_data/manualclassify/Montjoie_species_20130404T173307.txt');%loading data from .txt file
- 
+        MCconfig.class_filestr = ''; %USER set, string appended on roi name for class files
+        MCconfig.default_class = 'Other';
+        MCconfig.class2view2 = { }; %example to skip view2
+        switch MCconfig.batchmode
+            case 'no'
+                MCconfig.filelist = dir([MCconfig.basepath MCconfig.filepath '*.adc']);
+            case 'yes'
+                MCconfig.filelist = dir([MCconfig.resultpath MCconfig.filepath]);
+        end
+        [MCconfig.filelist, MCconfig.classfiles] = resolve_files(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
     case 'MVCO'
-        MCconfig.resultpath ='I:';
-        MCconfig.resultpath = 'C:\work\IFCB11\Manual\'; %USER set
-        MCconfig.resultpath = 'C:\work\IFCB010\ManualClassify\'; %USER set
+        MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
         temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
         MCconfig.class2use = temp.class2use;
+        MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
+        MCconfig.default_class = 'other';
+        temp = load('class2use_MVCOciliate', 'class2use_sub4'); 
+        MCconfig.class2use_sub = temp.class2use_sub4;
+        MCconfig.sub_default_class = 'Ciliate_mix';
+        MCconfig.classstr = 'ciliate';
+        MCconfig.class2view2 = MCconfig.class2use_sub; %example to view all
+        %MCconfig.class2view2 = {}; %example to skip view2
+        %MVCO batch system
+        MCconfig.filelist = get_filelist_manual([MCconfig.resultpath 'manual_list'],3,[2006:2012], 'all'); %manual_list, column to use, year to find
+        %%other MVCO cases
+        %MCconfig.filelist = dir('\\demi\vol1\IFCB5_2013_064\*.adc');    
+        [MCconfig.filelist, MCconfig.classfiles, MCconfig.stitchfiles] = resolve_MVCOfiles(MCconfig.filelist, MCconfig.class_filestr);
+    case 'OKEX'
+        MCconfig.resultpath = '/home/ifcb/ifcb_010_data/manual/'; %USER set
+        MCconfig.basepath = '/home/ifcb/ifcb_010_data/'; %USER set
+        MCconfig.filepaht = '/';
+        temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
+        MCconfig.class2use = temp.class2use;
+        MCconfig.classpath = '/home/ifcb/ifcb_010_data/class/'; 
+        MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
+        MCconfig.default_class = 'other';
+        temp = load('class2use_MVCOciliate', 'class2use_sub4'); 
+        MCconfig.class2use_sub = temp.class2use_sub4;
+        MCconfig.sub_default_class = 'Ciliate_mix';
+        MCconfig.classstr = 'ciliate';
+        MCconfig.class2view2 = MCconfig.class2use_sub; %example to view all
+        switch MCconfig.batchmode
+            case 'no'
+                MCconfig.filelist = dir([MCconfig.basepath MCconfig.filepath '*.adc']);
+            case 'yes'
+                MCconfig.filelist = dir([MCconfig.resultpath MCconfig.filepath]);
+        end
+        [MCconfig.filelist, MCconfig.classfiles] = resolve_files_OKEX(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
 end
-
-%this allows displaying the images ordered by size.
-%Options are:   'roi_index'     for ordering as they were measured
-%               'size'          for ordering by decreasing size of images
-MCconfig.displayed_ordered = 'size'; 
-MCconfig.classpath = '';
-MCconfig.class_filestr = ''; %USER set, string appended on roi name for class files
-
-MCconfig.default_class = 'Other';
-
-
 
 switch MCconfig.batchmode
     case 'yes'
@@ -55,15 +90,33 @@ switch MCconfig.batchmode
         MCconfig.filepath='D*.mat';
     case 'no'
         MCconfig.class2view1 = MCconfig.class2use; %case to view all
+        %MCconfig.class2view1 = setdiff(MCconfig.class2use, {'bad' 'mix'}); %example to skip a few
+        %MCconfig.class2view1 = intersect(MCconfig.class2use, {'pennate' 'mix'}); %example to select a few
 end
-
-%MCconfig.class2view1 = setdiff(MCconfig.class2use, {'bad' 'mix'}); %example to skip a few
-%MCconfig.class2view1 = intersect(MCconfig.class2use, {'pennate' 'mix'}); %example to select a few
-MCconfig.class2view2 = { }; %example to skip view2
-%MCconfig.class2view2 = { 'all' }; %example to view all
 
 if ~exist(MCconfig.resultpath, 'dir'),
     dos(['mkdir ' resultpath]);
+end;
+
+[~,f]= fileparts(MCconfig.filelist{1}); 
+if f(1) == 'I',
+    MCconfig.dataformat = 0;
+elseif f(1) == 'D',
+    MCconfig.dataformat = 1;
+end;
+
+if strcmp(MCconfig.pick_mode, 'correct_or_subdivide')
+    if isempty(MCconfig.classfiles)
+        disp('No class files specified. Check path setting in get_MCconfig if you want to load classifier results.')
+        disp('Hit enter to continue without classifier results.')
+        pause
+    else
+        if ~exist(MCconfig.classfiles{1}, 'file'),
+            disp('First class file not found. Check path setting in get_MCconfig if you want to load classifier results.')
+            disp('Hit enter to continue without classifier results.')
+            pause
+        end;
+    end;
 end;
 
 end

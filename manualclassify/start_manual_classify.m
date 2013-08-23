@@ -2,11 +2,10 @@
 function start_manual_classify(varargin)
 
 %[]=start_manual_classify(FILENUM2START, BATCH_CLASS_INDEX) 
-%where all inputs are optional
-%inputs BATCHMODE can be wether 'yes' or 'no' and refers to wether or not we want to run through the classified images per class
-%BATCH_CLASS_INDEX refers to the index of the species to look at in batch mode
+%where inputs are optional
+%inputs:
 %FILENUM2START is the starting index of the file to process while the 
-
+%BATCH_CLASS_INDEX refers to the index of the species to look at in batch mode
 
 if nargin ==2
     MCconfig=struct('batchmode','yes');
@@ -17,24 +16,17 @@ elseif nargin ==1
     MCconfig.filenum2start=varargin{1}; 
 elseif nargin ==0
     MCconfig=struct('batchmode', 'no'); %All options are set in get_MCconfig
+    MCconfig.filenum2start = 1; %USER can change here is not passing in as argument
 end
 
-%MVCO sets
-MCconfig = get_MCconfigMVCO (MCconfig);
-[MCconfig, filelist, classfiles, stitchfiles] = get_MCfilelistMVCO(MCconfig);
+MCconfig = get_MCconfig(MCconfig); %COMMON FOR ALL USERS, add cases for new situations
 
-%Other sets
-%MCconfig = get_MCconfig(MCconfig);
-%[MCconfig, filelist, classfiles] = get_MCfilelist(MCconfig);
-%stitchfiles = [];
-
-if isempty(filelist),
-    disp('No files found. Check paths or file specification in get_MCconfig.')
-    
+if isempty(MCconfig.filelist),
+    disp('No files found. Check paths or file specification in get_MCconfig.')    
     return
 end;
 
-manual_classify_4_0( MCconfig, filelist, classfiles, stitchfiles );
+manual_classify_4_0( MCconfig);
 
 
 
