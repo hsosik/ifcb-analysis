@@ -43,8 +43,12 @@ class2use_manual_first = [temp.class2use]; clear temp
 numclass = length(class2use_manual_first);
 class2use_here = class2use_manual_first;
 classcount = NaN(length(filelist),numclass);  %initialize output
+classcount_lt10 = classcount;
+classcount_lt20 = classcount;
 classbiovol = classcount;
 classcarbon = classcount;
+classcarbon_lt10 = classcount; bv10 = 4/3*pi.*([10]/2).^3;
+classcarbon_lt20 = classcount; bv20 = 4/3*pi.*([20]/2).^3;
 diatom_str = {'Asterionellopsis' 'Cerataulina' 'Chaetoceros' 'Corethron' 'Coscinodiscus' 'Cylindrotheca' 'DactFragCerataul' 'Dactyliosolen' 'Ditylum'...
     'Ephemera' 'Eucampia' 'Guinardia' 'Guinardia_flaccida' 'Guinardia_striata' 'Lauderia' 'Licmophora' 'Odontella' 'Paralia' 'pennate' 'Pleurosigma'...
     'Pseudonitzschia' 'Rhizosolenia' 'Skeletonema' 'Stephanopyxis' 'Thalassionema' 'Thalassiosira' 'Fragilariopsis' 'Navicula' 'Fragilariopsis_Grazed'...
@@ -73,19 +77,37 @@ lgdiatom_flag = zeros(size(class2use_here)); lgdiatom_flag(diatom_ind) = 1;
             end;
         end;
         temp = zeros(1,numclass); %init as zeros for case of subdivide checked but none found, classcount will only be zero if in class_cat, else NaN
+        temp_lt10 = temp;
+        temp_lt20 = temp;
         tempvol = temp;
+        tempcarbon = temp;
+        tempcarbon_lt10 = temp;
+        tempcarbon_lt20 = temp;
         %tempcarbon = temp;
         for classnum = 1:numclass,
             cind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum));
             temp(classnum) = length(cind);
-            tempvol(classnum) = nansum(targets.Biovolume(cind)*micron_factor.^3); %cubic microns
-            tempcarbon(classnum) =  nansum(biovol2carbon(targets.Biovolume(cind)*micron_factor.^3,lgdiatom_flag(classnum))); %picograms
+            bv = targets.Biovolume(cind)*micron_factor.^3;
+            tempvol(classnum) = nansum(bv); %cubic microns
+            %tempcarbon(classnum) =  nansum(biovol2carbon(bv,lgdiatom_flag(classnum))); %picograms
             %%%%%%%%%%TEMPORARY results without using the large diatom C:vol
-            tempcarbon(classnum) =  nansum(biovol2carbon(targets.Biovolume(cind)*micron_factor.^3,0)); %picograms
+            tempcarbon(classnum) =  nansum(biovol2carbon(bv,0)); %picograms
+            sind = find(bv <= bv10);
+            temp_lt10(classnum) = length(sind);
+            %tempcarbon_lt10(classnum) = nansum(biovol2carbon(bv(sind),lgdiatom_flag(classnum))); %picograms
+            tempcarbon_lt10(classnum) = nansum(biovol2carbon(bv(sind),0)); %picograms
+            sind = find(bv <= bv20);
+            temp_lt20(classnum) = length(sind);
+            %tempcarbon_lt20(classnum) = nansum(biovol2carbon(bv(sind),lgdiatom_flag(classnum))); %picograms
+            tempcarbon_lt20(classnum) = nansum(biovol2carbon(bv(sind),0)); %picograms
         end;
         classcount(filecount,:) = temp;
+        classcount_lt10(filecount,:) = temp_lt10;
+        classcount_lt20(filecount,:) = temp_lt20;
         classbiovol(filecount,:) = tempvol;
         classcarbon(filecount,:) = tempcarbon;
+        classcarbon_lt10(filecount,:) = tempcarbon_lt10;
+        classcarbon_lt20(filecount,:) = tempcarbon_lt20;
         clear class2use_manual class2use_auto class2use_sub* classlist
     end;
 
@@ -96,6 +118,6 @@ if ~exist([resultpath 'summary\'], 'dir')
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
 units = {'biovol is in cubic microns, carbon is in picograms'};
-%save([resultpath 'summary\count_biovol_manual_' datestr], 'matdate', 'ml_analyzed', 'classcount', 'classbiovol', 'filelist', 'class2use', 'metadata', 'classcarbon', 'units')
-save([resultpath 'summary\count_biovol_manual_nolgdiatom_' datestr], 'matdate', 'ml_analyzed', 'classcount', 'classbiovol', 'filelist', 'class2use', 'metadata', 'classcarbon', 'units')
+%save([resultpath 'summary\count_biovol_manual_' datestr], 'matdate', 'ml_analyzed', 'classcount*', 'classbiovol', 'filelist', 'class2use', 'metadata', 'classcarbon*', 'units')
+save([resultpath 'summary\count_biovol_manual_nolgdiatom_' datestr], 'matdate', 'ml_analyzed', 'classcount*', 'classbiovol', 'filelist', 'class2use', 'metadata', 'classcarbon*', 'units')
 
