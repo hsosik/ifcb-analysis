@@ -209,7 +209,7 @@ for filecount = filenum2start:length(filelist),
                             %classlist(~isnan(classlist(:,sub_col)) & ~isnan(classlist(:,2)) & classlist(:,2) ~= strmatch(classstr, class2use_manual), sub_col) = NaN;
                             %1/15/10, recast above so the subdivide ID overrides instead (i.e., just skip above line)
                             classlist(classlist(:,sub_col) >= 2,2) = strmatch(classstr, class2use_manual);  %reassign manual column (#2) with relevant sub_col entries
-                            classlist(classlist(:,2) == strmatch(classstr, class2use_manual) & isnan(classlist(:,sub_col)), sub_col) = classnum_default;  % = 2; changed 1/15/10 ??correct??
+                            classlist(classlist(:,2) == strmatch(classstr, class2use_manual) & isnan(classlist(:,sub_col)), sub_col) = classnum_default_sub;  % = 2; changed 1/15/10 ??correct??
                             eval(['class2use_sub' num2str(sub_col) '= class2use_sub;'])
                             mark_col = sub_col; %reset col for ID in classlist %comment out 9/29/09 Heidi
                         end;
