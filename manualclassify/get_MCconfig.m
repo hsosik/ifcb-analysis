@@ -12,8 +12,8 @@ if ~isfield(MCconfig,'batchmode') %initialize some settings if not already passe
     MCconfig.filenum2start=1;  %USER select file number to begin within the chosen set
 end
 
-%MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one 'correct_or_subdivide' (start from classifier or already sorted images) or 'raw_roi'
-MCconfig.pick_mode = 'raw_roi';
+MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one 'correct_or_subdivide' (start from classifier or already sorted images) or 'raw_roi'
+%MCconfig.pick_mode = 'raw_roi';
 
 MCconfig.displayed_ordered = 'size'; %USER choose one 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
 %MCconfig.displayed_ordered = 'roi_index'; 
@@ -45,17 +45,23 @@ switch MCconfig.group
         temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
         MCconfig.class2use = temp.class2use;
         MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
-        MCconfig.default_class = 'other';
+        MCconfig.default_class = 'unclassified';
         temp = load('class2use_MVCOciliate', 'class2use_sub4'); 
         MCconfig.class2use_sub = temp.class2use_sub4;
         MCconfig.sub_default_class = 'Ciliate_mix';
         MCconfig.classstr = 'ciliate';
         MCconfig.class2view2 = MCconfig.class2use_sub; %example to view all
         %MCconfig.class2view2 = {}; %example to skip view2
-        %MVCO batch system
-        MCconfig.filelist = get_filelist_manual([MCconfig.resultpath 'manual_list'],3,[2006:2012], 'all'); %manual_list, column to use, year to find
-        %%other MVCO cases
-        %MCconfig.filelist = dir('\\demi\vol1\IFCB5_2013_064\*.adc');    
+        MVCOfilelisttype = 'dirlist'; %manual_list, loadfile, dirlist
+        switch MVCOfilelisttype
+            case 'manual_list' %MVCO batch system
+                MCconfig.filelist = get_filelist_manual([MCconfig.resultpath 'manual_list'],2,[2006:2013], 'all'); %manual_list, column to use, year to find
+            case 'loadfile'
+                load current_filelist
+                MCconfig.filelist = current_filelist; 
+            case 'dirlist' %other MVCO cases
+                MCconfig.filelist = dir('\\demi\vol1\IFCB5_2013_224\IFCB5_2013_224_00*.adc');    
+        end
         [MCconfig.filelist, MCconfig.classfiles, MCconfig.stitchfiles] = resolve_MVCOfiles(MCconfig.filelist, MCconfig.class_filestr);
     case 'OKEX'
         MCconfig.resultpath = '/home/ifcb/ifcb_010_data/manual/'; %USER set
