@@ -56,7 +56,7 @@ if exist([manualfilename], 'file')  %~isempty(tempdir)
         end;
         classnum = strmatch(classstr, class2use_manual); %default class number from original list
         classlist((classlist(:,manual_col) == classnum & isnan(classlist(:,sub_col))),sub_col) = classnum_default_sub; %classnum_default; %find any new additions to manual start category
-        classlist(classlist(:,auto_col) == classnum & isnan(classlist(:,manual_col)) & isnan(classlist(:,sub_col)),sub_col) = classnum_default; %set default from auto
+        classlist(classlist(:,auto_col) == classnum & isnan(classlist(:,manual_col)) & isnan(classlist(:,sub_col)),sub_col) = classnum_default_sub; %set default from auto
         [overlap, ind_sub, ind] = intersect(class2use_sub, class2use);
         for count1 = 1:length(overlap), %set any overlap categories from previous in sub_col, if not already marked in sub_col
             %classlist(classlist(:,auto_col) == ind(count1) & isnan(classlist(:,sub_col)), sub_col) = ind_sub(count1); %set to new class number in subcol
