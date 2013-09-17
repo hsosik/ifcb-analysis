@@ -1,8 +1,7 @@
-resultpath = '\\floatcoat\LaneyLab\projects\HLY1101\work_IFCB8\Manual\';
-metapath = '\\floatcoat\IFCBdata\IFCB8_HLY1101\metadata\';
+resultpath = '\\128.128.111.141\LaneyLab\projects\HLY1101\work_IFCB8\Manual\';
+metapath = '\\128.128.111.141\IFCBdata\IFCB8_HLY1101\metadata\';
 load([metapath 'ml_analyzed']) %load the milliliters analyzed for all sample files
-biovolpath_base = '\\floatcoat\IFCBdata\IFCB8_HLY1101\biovolume\';
-%micron_factor = 1/3.4; %microns per pixel  FIX!!!!!!!
+biovolpath_base = '\\128.128.111.141\IFCBdata\IFCB8_HLY1101\biovolume\';
 %micron_factor = 1/4.23; %USER, instrument specific entry for pixels per micron %IFCB8 4.23 from beads in IFCB8_2011_203_135906, see est_micron_factor.m
 micron_factor = 1/3.92; %USER, instrument specific entry for pixels per micron %IFCB8 4.23 from beads in IFCB8_2011_203_135906, see est_micron_factor.m, updated with new features 
 
@@ -49,14 +48,18 @@ classbiovol = classcount;
 classcarbon = classcount;
 classcarbon_lt10 = classcount; bv10 = 4/3*pi.*([10]/2).^3;
 classcarbon_lt20 = classcount; bv20 = 4/3*pi.*([20]/2).^3;
-diatom_str = {'Asterionellopsis' 'Cerataulina' 'Chaetoceros' 'Corethron' 'Coscinodiscus' 'Cylindrotheca' 'DactFragCerataul' 'Dactyliosolen' 'Ditylum'...
-    'Ephemera' 'Eucampia' 'Guinardia' 'Guinardia_flaccida' 'Guinardia_striata' 'Lauderia' 'Licmophora' 'Odontella' 'Paralia' 'pennate' 'Pleurosigma'...
-    'Pseudonitzschia' 'Rhizosolenia' 'Skeletonema' 'Stephanopyxis' 'Thalassionema' 'Thalassiosira' 'Fragilariopsis' 'Navicula' 'Fragilariopsis_Grazed'...
-    'Bacterosira' 'Detonula' 'Melosira' 'Nitzschia frigida'};
-[~,diatom_ind,~] = intersect(class2use_here, diatom_str);
-lgdiatom_flag = zeros(size(class2use_here)); lgdiatom_flag(diatom_ind) = 1;
+% diatom_str = {'Asterionellopsis' 'Cerataulina' 'Chaetoceros' 'Corethron' 'Coscinodiscus' 'Cylindrotheca' 'DactFragCerataul' 'Dactyliosolen' 'Ditylum'...
+%     'Ephemera' 'Eucampia' 'Guinardia' 'Guinardia_flaccida' 'Guinardia_striata' 'Lauderia' 'Licmophora' 'Odontella' 'Paralia' 'pennate' 'Pleurosigma'...
+%     'Pseudonitzschia' 'Rhizosolenia' 'Skeletonema' 'Stephanopyxis' 'Thalassionema' 'Thalassiosira' 'Fragilariopsis' 'Navicula' 'Fragilariopsis_Grazed'...
+%     'Bacterosira' 'Detonula' 'Melosira' 'Nitzschia frigida' 'mix_elongated' };
+% [~,diatom_ind,~] = intersect(class2use_here, diatom_str);
+%lgdiatom_flag = zeros(size(class2use_here)); lgdiatom_flag(diatom_ind) = 1;
+lg_diatom_str = {'DactFragCerataul' 'Dactyliosolen' 'Ditylum' 'Ephemera' 'Guinardia_flaccida' 'Guinardia_striata' 'Licmophora' 'pennate'...
+    'Pleurosigma' 'Rhizosolenia' 'Thalassiosira' 'Fragilariopsis' 'Navicula'};
+[~,lg_diatom_ind,~] = intersect(class2use_here, lg_diatom_str);
+lgdiatom_flag = zeros(size(class2use_here)); lgdiatom_flag(lg_diatom_ind) = 1;
 %ml_analyzed_mat = classcount;
-    for filecount = 1:length(filelist),
+for filecount = 1:length(filelist),
         filename = filelist(filecount).name;
         disp(filename)
         %ml_analyzed_mat(mode_ind(filecount),class_cat) = ml_analyzed(mode_ind(filecount));
@@ -89,17 +92,17 @@ lgdiatom_flag = zeros(size(class2use_here)); lgdiatom_flag(diatom_ind) = 1;
             temp(classnum) = length(cind);
             bv = targets.Biovolume(cind)*micron_factor.^3;
             tempvol(classnum) = nansum(bv); %cubic microns
-            %tempcarbon(classnum) =  nansum(biovol2carbon(bv,lgdiatom_flag(classnum))); %picograms
+            tempcarbon(classnum) =  nansum(biovol2carbon(bv,lgdiatom_flag(classnum))); %picograms
             %%%%%%%%%%TEMPORARY results without using the large diatom C:vol
-            tempcarbon(classnum) =  nansum(biovol2carbon(bv,0)); %picograms
+            %tempcarbon(classnum) =  nansum(biovol2carbon(bv,0)); %picograms
             sind = find(bv <= bv10);
             temp_lt10(classnum) = length(sind);
-            %tempcarbon_lt10(classnum) = nansum(biovol2carbon(bv(sind),lgdiatom_flag(classnum))); %picograms
-            tempcarbon_lt10(classnum) = nansum(biovol2carbon(bv(sind),0)); %picograms
+            tempcarbon_lt10(classnum) = nansum(biovol2carbon(bv(sind),lgdiatom_flag(classnum))); %picograms
+            %tempcarbon_lt10(classnum) = nansum(biovol2carbon(bv(sind),0)); %picograms
             sind = find(bv <= bv20);
             temp_lt20(classnum) = length(sind);
-            %tempcarbon_lt20(classnum) = nansum(biovol2carbon(bv(sind),lgdiatom_flag(classnum))); %picograms
-            tempcarbon_lt20(classnum) = nansum(biovol2carbon(bv(sind),0)); %picograms
+            tempcarbon_lt20(classnum) = nansum(biovol2carbon(bv(sind),lgdiatom_flag(classnum))); %picograms
+            %tempcarbon_lt20(classnum) = nansum(biovol2carbon(bv(sind),0)); %picograms
         end;
         classcount(filecount,:) = temp;
         classcount_lt10(filecount,:) = temp_lt10;
@@ -118,6 +121,6 @@ if ~exist([resultpath 'summary\'], 'dir')
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
 units = {'biovol is in cubic microns, carbon is in picograms'};
-%save([resultpath 'summary\count_biovol_manual_' datestr], 'matdate', 'ml_analyzed', 'classcount*', 'classbiovol', 'filelist', 'class2use', 'metadata', 'classcarbon*', 'units')
-save([resultpath 'summary\count_biovol_manual_nolgdiatom_' datestr], 'matdate', 'ml_analyzed', 'classcount*', 'classbiovol', 'filelist', 'class2use', 'metadata', 'classcarbon*', 'units')
+save([resultpath 'summary\count_biovol_manual_' datestr], 'matdate', 'ml_analyzed', 'classcount*', 'classbiovol', 'filelist', 'class2use', 'metadata', 'classcarbon*', 'units', 'lg_diatom_str')
+%save([resultpath 'summary\count_biovol_manual_nolgdiatom_' datestr], 'matdate', 'ml_analyzed', 'classcount*', 'classbiovol', 'filelist', 'class2use', 'metadata', 'classcarbon*', 'units')
 
