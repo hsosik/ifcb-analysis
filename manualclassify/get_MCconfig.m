@@ -22,17 +22,18 @@ MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
 
 %group specific options
-MCconfig.group = 'MVCO'; %MVCO, Sherbrooke, OKEX
+MCconfig.group = 'Sherbrooke'; %MVCO, Sherbrooke, OKEX
 
 switch MCconfig.group
     case 'Sherbrooke'
         MCconfig.resultpath ='/Users/profileur/whoi_data/output_manual_classify/';
         MCconfig.basepath = '/Users/profileur/whoi_data/';
-        MCconfig.filepath = 'D2013/D20130426/D20130426T163234_IFCB011.adc'; %this is the folder and or file you want to look at (not used in batchmode)
+        MCconfig.filepath = 'D2013/D20130426/'; %this is the folder and or file you want to look at (not used in batchmode)
         MCconfig.class2use = importfile_species_list('/Users/profileur/whoi_data/manualclassify/Montjoie_species_20130404T173307.txt');%loading data from .txt file
         MCconfig.class_filestr = ''; %USER set, string appended on roi name for class files
         MCconfig.default_class = 'Other';
         MCconfig.class2view2 = { }; %example to skip view2
+        MCconfig.classpath='';
         switch MCconfig.batchmode
             case 'no'
                 MCconfig.filelist = dir([MCconfig.basepath MCconfig.filepath '*.adc']);
