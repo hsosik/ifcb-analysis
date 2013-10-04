@@ -16,7 +16,7 @@ elseif nargin ==1
     MCconfig.filenum2start=varargin{1}; 
 elseif nargin ==0
     MCconfig=struct('batchmode', 'no'); %All options are set in get_MCconfig
-    MCconfig.filenum2start = 1; %USER can change here is not passing in as argument
+    MCconfig.filenum2start = 1; %default if not passed in as argument
 end
 
 MCconfig = get_MCconfig(MCconfig); %COMMON FOR ALL USERS, add cases for new situations

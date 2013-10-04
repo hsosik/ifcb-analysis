@@ -6,12 +6,6 @@ function [ MCconfig ] = get_MCconfig(MCconfig)
 
 %   revised August 2013 to incorporate settings previously done in get_MCfilelist. m
 
-if ~isfield(MCconfig,'batchmode') %initialize some settings if not already passed in with MCconfig (e.g., from start_manual_classify)
-    MCconfig=struct('batchmode','no'); %['yes' or 'no'] in batchmode you will be looking at only one class for all files    
-    MCconfig.batch_class_index = 162;% in batch mode this is the index of the class to look at.
-    MCconfig.filenum2start=1;  %USER select file number to begin within the chosen set
-end
-
 MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one 'correct_or_subdivide' (start from classifier or already sorted images) or 'raw_roi'
 %MCconfig.pick_mode = 'raw_roi';
 
@@ -22,7 +16,17 @@ MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
 
 %group specific options
-MCconfig.group = 'Sherbrooke'; %MVCO, Sherbrooke, OKEX
+MCconfig.group = 'MVCO'; %MVCO, Sherbrooke, OKEX
+
+%default
+switch MCconfig.batchmode
+    case 'yes'
+        if ischar(MCconfig.batch_class_index) %case when the name is given
+            MCconfig.class2view1 = MCconfig.batch_class_index; %if you want to see one file by index
+        else %case where the number is given
+            MCconfig.class2view1 = MCconfig.class2use(MCconfig.batch_class_index); %if you want to see one file by index        
+        end
+end
 
 switch MCconfig.group
     case 'Sherbrooke'
@@ -33,7 +37,7 @@ switch MCconfig.group
         MCconfig.class_filestr = ''; %USER set, string appended on roi name for class files
         MCconfig.default_class = 'Other';
         MCconfig.class2view2 = { }; %example to skip view2
-        MCconfig.classpath='';
+        MCconfig.classpath = '';
         switch MCconfig.batchmode
             case 'no'
                 MCconfig.filelist = dir([MCconfig.basepath MCconfig.filepath '*.adc']);
@@ -61,9 +65,13 @@ switch MCconfig.group
                 load current_filelist
                 MCconfig.filelist = current_filelist; 
             case 'dirlist' %other MVCO cases
-                MCconfig.filelist = dir('\\demi\vol1\IFCB5_2013_224\IFCB5_2013_224_00*.adc');    
+                MCconfig.filelist = dir('\\demi\vol1\IFCB5_2012_006\IFCB5_2012_006_0*.adc');    
         end
         [MCconfig.filelist, MCconfig.classfiles, MCconfig.stitchfiles] = resolve_MVCOfiles(MCconfig.filelist, MCconfig.class_filestr);
+        %pick one
+        %MCconfig.class2view1 = MCconfig.class2use; %case to view all
+       MCconfig.class2view1 = setdiff(MCconfig.class2use,{'Asterionellopsis' 'Chaetoceros' 'bad' 'detritus' 'mix'}); %example to skip a few
+        %MCconfig.class2view1 = intersect(MCconfig.class2use, {'pennate' 'mix'}); %example to select a few
     case 'OKEX'
         MCconfig.resultpath = '/home/ifcb/ifcb_010_data/manual/'; %USER set
         MCconfig.basepath = '/home/ifcb/ifcb_010_data/'; %USER set
@@ -87,19 +95,10 @@ switch MCconfig.group
         [MCconfig.filelist, MCconfig.classfiles] = resolve_files_OKEX(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
 end
 
-switch MCconfig.batchmode
-    case 'yes'
-        if ischar(MCconfig.batch_class_index) %case when the name is given
-            MCconfig.class2view1 = MCconfig.batch_class_index; %if you want to see one file by index
-        else %case where the number is given
-            MCconfig.class2view1 = MCconfig.class2use(MCconfig.batch_class_index); %if you want to see one file by index        
-        end
-        MCconfig.filepath='D*.mat';
-    case 'no'
+%defaults case if class2view1 not specified yet
+if ~isfield(MCconfig,'class2view1')
         MCconfig.class2view1 = MCconfig.class2use; %case to view all
-        %MCconfig.class2view1 = setdiff(MCconfig.class2use, {'bad' 'mix'}); %example to skip a few
-        %MCconfig.class2view1 = intersect(MCconfig.class2use, {'pennate' 'mix'}); %example to select a few
-end
+end;
 
 if ~exist(MCconfig.resultpath, 'dir'),
     dos(['mkdir ' resultpath]);
