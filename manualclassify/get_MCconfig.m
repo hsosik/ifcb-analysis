@@ -12,11 +12,13 @@ MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one 'correct_or_subdiv
 MCconfig.displayed_ordered = 'size'; %USER choose one 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
 %MCconfig.displayed_ordered = 'roi_index'; 
 
+MCconfig.alphabetize='yes' ; %yes= alphabetize the list in the identification window, no = do not alphabetize the list.
+
 MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
 
 %group specific options
-MCconfig.group = 'MVCO'; %MVCO, Sherbrooke, OKEX
+MCconfig.group = 'Sherbrooke'; %MVCO, Sherbrooke, OKEX
 
 %default
 switch MCconfig.batchmode

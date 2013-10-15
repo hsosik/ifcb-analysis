@@ -79,7 +79,7 @@ camy = 1035;  %camera image size, changed from 1034 heidi 6/8/09
 border = 3; %to separate images
 
 %make the collage window
-[figure_handle, listbox_handle1, listbox_handle2, instructions_handle] = makescreen(class2use_pick1, class2use_pick2);
+[figure_handle, listbox_handle1, listbox_handle2, instructions_handle] = makescreen(class2use_pick1, class2use_pick2,MCconfig);
 if MCconfig.dataformat == 0,
     adcxind = 12;
     adcyind = 13;
