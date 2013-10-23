@@ -79,7 +79,7 @@ camy = 1035;  %camera image size, changed from 1034 heidi 6/8/09
 border = 3; %to separate images
 
 %make the collage window
-[figure_handle, listbox_handle1, listbox_handle2, instructions_handle] = makescreen(class2use_pick1, class2use_pick2);
+[figure_handle, listbox_handle1, listbox_handle2, instructions_handle] = makescreen(class2use_pick1, class2use_pick2,MCconfig);
 if MCconfig.dataformat == 0,
     adcxind = 12;
     adcyind = 13;
@@ -149,8 +149,8 @@ for filecount = filenum2start:length(filelist),
             roi_ind = get_roi_indices(classlist, classnum, pick_mode, sub_col, view_num);
             startbyte_temp = startbyte_all(classlist(roi_ind,1)); x = x_all(classlist(roi_ind,1)); y = y_all(classlist(roi_ind,1));
             startbyte = startbyte_all(roi_ind); x = x_all(roi_ind); y = y_all(roi_ind); %heidi 11/5/09
-            chl = log10(adcdata(:,4)); green = log10(adcdata(:,5);
-            stained_ind = find(green <= chl-0.0015)/0.25);
+            chl = log10(adcdata(:,4)); green = log10(adcdata(:,5));
+            stained_ind = find(green <= (chl-0.0015)/0.25);
             roi_ind = roi_ind(stained_ind);
             if (startbyte_temp - startbyte), disp('CHECK for error!'), keyboard, end;
             %read roi images
@@ -211,8 +211,8 @@ for filecount = filenum2start:length(filelist),
                             %next line presumes that a manual column ID should NOT be overridden by a subsequent sub_col ID (e.g., put in main ciliate categoryfirst, then move to subdivided catetory
                             %classlist(~isnan(classlist(:,sub_col)) & ~isnan(classlist(:,2)) & classlist(:,2) ~= strmatch(classstr, class2use_manual), sub_col) = NaN;
                             %1/15/10, recast above so the subdivide ID overrides instead (i.e., just skip above line)
-                            classlist(classlist(:,sub_col) >= 2,2) = strmatch(classstr, class2use_manual);  %reassign manual column (#2) with relevant sub_col entries
-                            classlist(classlist(:,2) == strmatch(classstr, class2use_manual) & isnan(classlist(:,sub_col)), sub_col) = classnum_default;  % = 2; changed 1/15/10 ??correct??
+                            classlist(classlist(:,sub_col) >= 1,2) = strmatch(classstr, class2use_manual);  %reassign manual column (#2) with relevant sub_col entries
+                            classlist(classlist(:,2) == strmatch(classstr, class2use_manual) & isnan(classlist(:,sub_col)), sub_col) = classnum_default_sub;  % = 2; changed 1/15/10 ??correct??
                             eval(['class2use_sub' num2str(sub_col) '= class2use_sub;'])
                             mark_col = sub_col; %reset col for ID in classlist %comment out 9/29/09 Heidi
                         end;
