@@ -88,11 +88,15 @@ switch MCconfig.group
         MCconfig.sub_default_class = 'Ciliate_mix';
         MCconfig.classstr = 'ciliate';
         MCconfig.class2view2 = MCconfig.class2use_sub; %example to view all
-        switch MCconfig.batchmode
-            case 'no'
-                MCconfig.filelist = dir([MCconfig.basepath MCconfig.filepath '*.adc']);
-            case 'yes'
-                MCconfig.filelist = dir([MCconfig.resultpath MCconfig.filepath]);
+        filelisttype = 'loadfile'; %manual_list, loadfile, dirlist
+        switch filelisttype
+            case 'manual_list' % batch system
+                MCconfig.filelist = get_filelist_manual_EB([MCconfig.resultpath 'manual_listEB'],2,[2013], 'all'); %manual_list, column to use, year to find
+            case 'loadfile'
+                load my_filelist
+                MCconfig.filelist = my_filelist; 
+            case 'dirlist' %other MVCO cases
+                MCconfig.filelist = dir('\\demi\vol1\IFCB5_2012_006\IFCB5_2012_006_0*.adc');    
         end
         [MCconfig.filelist, MCconfig.classfiles] = resolve_files_OKEX(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
 end
