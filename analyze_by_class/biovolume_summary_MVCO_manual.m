@@ -5,14 +5,6 @@ biovolpath_base = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\';
 feapath_base = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\featuresXXXX_v2\';
 micron_factor = 1/3.4; %microns per pixel
 
-%%%%%%%%%FIX - this set of lines to skip some missing biovol due to missing blobs
-%filelist = char(manual_list(2:end,1)); filelist = cellstr(filelist(:,1:end-4));
-%t = dir(['\\queenrose\ifcb_data_mvco_jun06\biovolume\IFCB*.mat']);
-%t = char(t.name); t = cellstr(t(:,1:end-4)); 
-%files_biovol = t; clear t
-%[~,ia] = setdiff(filelist, files_biovol); %4985 4977
-%manual_list(ia+1,:) = [];  %omit the ones missing biovol
-
 mode_list = manual_list(1,2:end-1); mode_list = [mode_list 'ciliate_ditylum'];
 %find ml_analyzed matching each manual file
 filelist = char(manual_list(2:end,1)); filelist = cellstr(filelist(:,1:end-4));
@@ -39,7 +31,7 @@ sec = str2num(fstr(:,20:21));
 matdate = datenum(year,0,yearday,hour,min,sec);
 clear fstr yearday hour min sec
 
-load([resultpath char(manual_list(2,1))]) %read first file to get classes
+load([resultpath char(manual_list(2,1))], 'class2use_sub4') %read first file to get classes
 load class2use_MVCOmanual3 %get the master list to start
 class2use_manual = class2use;
 class2use_manual_first = class2use_manual;
@@ -56,14 +48,13 @@ for loopcount = 1:length(mode_list),
     annotate_mode = char(mode_list(loopcount));
     [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( annotate_mode, class2use_here, class2use_first_sub, manual_list, mode_list );
     filelist = cell2struct(manual_list(mode_ind+1,1),{'name'},2);
-    
     for filecount = 1:length(filelist),
         filename = filelist(filecount).name;
         disp(filename)
         ml_analyzed_mat(mode_ind(filecount),class_cat) = ml_analyzed(mode_ind(filecount));
         load([resultpath filename])
         yr = str2num(filename(7:10));
-        if yr < 2013,
+            if yr < 2013,
             biovolpath = [biovolpath_base 'biovolume' filename(7:10) '\'];
             load([biovolpath filename]) %targets
             tind = char(targets.pid); %find the ROI indices excluding second in stitched pair
@@ -122,9 +113,11 @@ if ~exist([resultpath 'summary\'], 'dir')
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
 save([resultpath 'summary\count_biovol_manual_' datestr], 'matdate', 'ml_analyzed_mat', 'classcount', 'classbiovol', 'filelist', 'class2use')
+save([resultpath 'summary\count_biovol_manual_current'], 'matdate', 'ml_analyzed_mat', 'classcount', 'classbiovol', 'filelist', 'class2use')
 
 %create and save daily binned results
 [matdate_bin, classcount_bin, ml_analyzed_mat_bin] = make_day_bins(matdate,classcount, ml_analyzed_mat);
 [matdate_bin, classbiovol_bin, ml_analyzed_mat_bin] = make_day_bins(matdate,classbiovol, ml_analyzed_mat);
 save([resultpath 'summary\count_biovol_manual_' datestr '_day'], 'matdate_bin', 'classcount_bin', 'classbiovol_bin', 'ml_analyzed_mat_bin', 'class2use')
+save([resultpath 'summary\count_biovol_manual_current_day'], 'matdate_bin', 'classcount_bin', 'classbiovol_bin', 'ml_analyzed_mat_bin', 'class2use')
 
