@@ -27,7 +27,7 @@ sec = str2num(fstr(:,20:21));
 matdate = datenum(year,0,yearday,hour,min,sec);
 clear fstr year yearday hour min sec
 
-load([resultpath char(manual_list(2,1))]) %read first file to get classes
+load([resultpath char(manual_list(2,1))], 'class2use_sub4') %read first file to get classes
 load class2use_MVCOmanual3 %get the master list to start
 class2use_manual = class2use;
 class2use_manual_first = class2use_manual;
@@ -42,7 +42,7 @@ for loopcount = 1:length(mode_list),
     annotate_mode = char(mode_list(loopcount));
     [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( annotate_mode, class2use_here, class2use_first_sub, manual_list, mode_list );
     filelist = cell2struct(manual_list(mode_ind+1,1),{'name'},2);
-    for filecount = 1:length(filelist),
+    for filecount = 1:length(filelist(z)),
         filename = filelist(filecount).name;
         disp(filename)
         ml_analyzed_mat(mode_ind(filecount),class_cat) = ml_analyzed(mode_ind(filecount));
@@ -81,8 +81,11 @@ if ~exist([resultpath 'summary\'], 'dir')
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
 save([resultpath 'summary\count_manual_' datestr], 'matdate', 'ml_analyzed_mat', 'classcount', 'filelist', 'class2use')
+save([resultpath 'summary\count_manual_current'], 'matdate', 'ml_analyzed_mat', 'classcount', 'filelist', 'class2use')
+
 
 %create and save daily binned results
 [matdate_bin, classcount_bin, ml_analyzed_mat_bin] = make_day_bins(matdate,classcount, ml_analyzed_mat);
 save([resultpath 'summary\count_manual_' datestr '_day'], 'matdate_bin', 'classcount_bin', 'ml_analyzed_mat_bin', 'class2use')
+save([resultpath 'summary\count_manual_current_day'], 'matdate_bin', 'classcount_bin', 'ml_analyzed_mat_bin', 'class2use')
 
