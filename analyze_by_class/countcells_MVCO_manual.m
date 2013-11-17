@@ -42,7 +42,7 @@ for loopcount = 1:length(mode_list),
     annotate_mode = char(mode_list(loopcount));
     [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( annotate_mode, class2use_here, class2use_first_sub, manual_list, mode_list );
     filelist = cell2struct(manual_list(mode_ind+1,1),{'name'},2);
-    for filecount = 1:length(filelist(z)),
+    for filecount = 1:length(filelist),
         filename = filelist(filecount).name;
         disp(filename)
         ml_analyzed_mat(mode_ind(filecount),class_cat) = ml_analyzed(mode_ind(filecount));

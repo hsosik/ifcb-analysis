@@ -256,7 +256,107 @@ waveh_windwave_fnyr=ydmat2fortnightmat(waveh_windwave,yearlist);
 waveh_windwave_fn=waveh_windwave_fnyr(:);
 waveh_swell_fnyr=ydmat2fortnightmat(waveh_swell,yearlist);
 waveh_swell_fn=waveh_swell_fnyr(:);
-env_mat=[Temp_fn';Saln_fn';Wspd_fn';Wdir_fn';DailySolar_fn';vE_fn';vN_fn';wavep_swell_fn';wavep_windwave_fn';waveh_swell_fn';waveh_windwave_fn'];
+synperml_fnyr=ydmat2fortnightmat(synperml,yearlist);
+synperml_fn=synperml_fnyr(:);
+env_mat=[Temp_fn';Saln_fn';Wspd_fn';Wdir_fn';DailySolar_fn';vE_fn';vN_fn';wavep_swell_fn';wavep_windwave_fn';waveh_swell_fn';waveh_windwave_fn';synperml_fn'];
 %makes an 11x208 matrix
 %labels: Temp, Saln Wspd, Wdir, DailySolar, vE, vN, wavep_swell, wavep_windwave,
-%waveh_swell, waveh_windwave
+%waveh_swell, waveh_windwave, Synperml
+
+%make mats of environmental data:
+ [ matdate_mat, vE_mat, yearlist, yd ] = timeseries2ydmat( mdate, vE );
+%make graphs of environmental data: 
+figure
+for year = 1:length(yearlist)
+plot(yd, vE_mat(:,year))
+hold on
+end
+
+%8.12.13 Climatology graph for cool (or warm) season ciliates - first run
+%Anna_data_analysis to get abundance structures
+cool={'Euplotes_sp' 'Leegaardiella_ovalis' 'Pleuronema_sp' 'Strombidium_morphotype1' 'Strombidium_oculatum' 'Tintinnid' 'Tontonia_gracillima'}
+plot(yd_wk,Ciliate_week_mean.Euplotes_sp,'.-',yd_wk,Ciliate_week_mean.Leegaardiella_ovalis,'.-',yd_wk,Ciliate_week_mean.Pleuronema_sp,'.-',yd_wk,Ciliate_week_mean.Strombidium_morphotype1,'.-',yd_wk,Ciliate_week_mean.Strombidium_oculatum,'.-',yd_wk,Ciliate_week_mean.Tintinnid, '.-',yd_wk,Ciliate_week_mean.Tontonia_gracillima, '.-')
+ legend(cool)
+datetick('x', 3, 'keeplimits');
+set(gca,'xgrid','on');
+ ylabel('Average Abundance (cell mL^{-1} \mum{-1})', 'fontsize', 12);
+ylabel('Average Abundance (cell mL^{-1})', 'fontsize', 12);
+
+warm={'Mesodinium_sp' 'Strombidium_inclinatum' 'S_wulffi' 'Tiarina_fusus'}
+ plot(yd_wk,Ciliate_week_mean.Mesodinium_sp,'.-',yd_wk,Ciliate_week_mean.Strombidium_inclinatum,'.-',yd_wk,Ciliate_week_mean.Strombidium_wulffi,'.-',yd_wk,Ciliate_week_mean.Tiarina_fusus,'.-')
+legend(warm)
+datetick('x', 3, 'keeplimits');
+set(gca,'xgrid','on');
+ ylabel('Average Abundance (cell mL^{-1} \mum{-1})', 'fontsize', 12);
+ylabel('Average Abundance (cell mL^{-1})', 'fontsize', 12);
+
+%stepwise climatologies for final presentation
+%warm group:
+ figure
+plot(yd_wk,Ciliate_week_mean.Strombidium_wulffi,'.-')
+ axis([0,375,0,2])
+datetick('x', 3, 'keeplimits');
+set(gca,'xgrid','on');
+ ylabel('Average Abundance (cell mL^{-1} \mum{-1})', 'fontsize', 12);
+ylabel('Average Abundance (cell mL^{-1})', 'fontsize', 12);
+legend('Strombidium wulffi')
+
+figure
+plot(yd_wk,Ciliate_week_mean.Strombidium_wulffi,'.-',yd_wk,Ciliate_week_mean.Strombidium_inclinatum,'.-')
+axis([0,375,0,2])
+datetick('x', 3, 'keeplimits');
+set(gca,'xgrid','on');
+ ylabel('Average Abundance (cell mL^{-1} \mum{-1})', 'fontsize', 12);
+ylabel('Average Abundance (cell mL^{-1})', 'fontsize', 12);
+legend('Strombidium wulffi' 'Strombidium inclinatum')
+
+figure
+plot(yd_wk,Ciliate_week_mean.Strombidium_wulffi,'.-',yd_wk,Ciliate_week_mean.Strombidium_inclinatum,'.-',yd_wk,Ciliate_week_mean.Tiarina_fusus,'.-')
+axis([0,375,0,2])
+datetick('x', 3, 'keeplimits');
+set(gca,'xgrid','on');
+ ylabel('Average Abundance (cell mL^{-1} \mum{-1})', 'fontsize', 12);
+ylabel('Average Abundance (cell mL^{-1})', 'fontsize', 12);
+legend('Strombidium wulffi', 'Strombidium inclinatum', 'Tiarina fusus')
+
+figure
+plot(yd_wk,Ciliate_week_mean.Strombidium_wulffi,'.-',yd_wk,Ciliate_week_mean.Strombidium_inclinatum,'.-',yd_wk,Ciliate_week_mean.Tiarina_fusus,'.-',yd_wk,Ciliate_week_mean.Mesodinium_sp,'.-')
+axis([0,375,0,2])
+datetick('x', 3, 'keeplimits');
+set(gca,'xgrid','on');
+ ylabel('Average Abundance (cell mL^{-1} \mum{-1})', 'fontsize', 12);
+ylabel('Average Abundance (cell mL^{-1})', 'fontsize', 12);
+legend('Strombidium wulffi', 'Strombidium inclinatum', 'Tiarina fusus', 'Mesodinium')
+
+%cool group:
+figure
+plot(yd_wk,Ciliate_week_mean.Leegaardiella_ovalis,'.-',yd_wk,Ciliate_week_mean.Strombidium_morphotype1,'.-',yd_wk,Ciliate_week_mean.Strombidium_oculatum,'.-',yd_wk,Ciliate_week_mean.Tintinnid,'.-')
+legend('Leegaardiella ovalis', 'Strombidium morphotype 1', 'Strombidium oculatum', 'Tintinnid')
+datetick('x', 3, 'keeplimits');
+set(gca,'xgrid','on');
+ ylabel('Average Abundance (cell mL^{-1} \mum{-1})', 'fontsize', 12);
+ylabel('Average Abundance (cell mL^{-1})', 'fontsize', 12);
+axis([0,375,0,1.4])
+figure
+plot(yd_wk,Ciliate_week_mean.Leegaardiella_ovalis,'.-',yd_wk,Ciliate_week_mean.Strombidium_morphotype1,'.-',yd_wk,Ciliate_week_mean.Strombidium_oculatum,'.-',yd_wk,Ciliate_week_mean.Tintinnid,'.-',yd_wk,Ciliate_week_mean.Euplotes_sp,'.-')
+datetick('x', 3, 'keeplimits');
+set(gca,'xgrid','on');
+ ylabel('Average Abundance (cell mL^{-1} \mum{-1})', 'fontsize', 12);
+ylabel('Average Abundance (cell mL^{-1})', 'fontsize', 12);
+axis([0,375,0,1.4])
+legend('Leegaardiella ovalis', 'Strombidium morphotype 1', 'Strombidium oculatum', 'Tintinnid', 'Euplotes_sp')
+figure
+plot(yd_wk,Ciliate_week_mean.Leegaardiella_ovalis,'.-',yd_wk,Ciliate_week_mean.Strombidium_morphotype1,'.-',yd_wk,Ciliate_week_mean.Strombidium_oculatum,'.-',yd_wk,Ciliate_week_mean.Tintinnid,'.-',yd_wk,Ciliate_week_mean.Euplotes_sp,'.-',yd_wk,Ciliate_week_mean.Pleuronema_sp,'.-',yd_wk,Ciliate_week_mean.Tontonia_gracillima,'.-')
+datetick('x', 3, 'keeplimits');
+set(gca,'xgrid','on');
+ ylabel('Average Abundance (cell mL^{-1} \mum{-1})', 'fontsize', 12);
+ylabel('Average Abundance (cell mL^{-1})', 'fontsize', 12);
+axis([0,375,0,1.4])
+legend('Leegaardiella ovalis', 'Strombidium morphotype 1', 'Strombidium oculatum', 'Tintinnid', 'Euplotes', 'Pleuronema', 'Tontonia gracillima')
+figure
+plot(yd_wk,Ciliate_week_mean.Tiarina_fusus,'.-',yd_wk,Ciliate_week_mean.Mesodinium_sp,'.-',yd_wk,Ciliate_week_mean.Strombidium_wulffi,'.-',yd_wk,Ciliate_week_mean.Strombidium_inclinatum,'.-')
+datetick('x', 3, 'keeplimits');
+set(gca,'xgrid','on');
+ ylabel('Average Abundance (cell mL^{-1} \mum{-1})', 'fontsize', 12);
+ylabel('Average Abundance (cell mL^{-1})', 'fontsize', 12);
+axis([0,375,0,1.4])
