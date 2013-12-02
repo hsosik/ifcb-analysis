@@ -36,7 +36,7 @@ for count = 1:length(ind),
 end;
 
 outfile = regexprep(file, 'features', 'class_v1');
-outfile = regexprep(file, 'fea_v2', 'class_v1');
+outfile = regexprep(outfile, 'fea_v2', 'class_v1');
 outfile = regexprep(outfile, '.csv', '');
 %outfile = regexprep(outfile, 'v2', 'v1'); %TEMPORARY work around for v2 features, still v1 class files
 class2useTB = config.class2useTB; classifierName = config.classifierName;
