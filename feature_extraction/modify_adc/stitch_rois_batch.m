@@ -1,8 +1,8 @@
-basedir = 'z:\';  %%USER set, roi files, adc files
-feapath = 'D:\work\IFCB1\ifcb_data_mvco_jun06\features2009\'; %USER set, feature files
-stitchpath = 'D:\work\IFCB1\ifcb_data_mvco_jun06\stitch2009\'; %USER set, stitch files
+basedir = '\\demi\vol3\';  %%USER set, roi files, adc files
+feapath = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\features2008_v2\'; %USER set, feature files
+stitchpath = '\\queenrose\ifcb1\ifcb_data_mvco_jun06\stitch2008\temp2\'; %USER set, stitch files
 
-daylist = dir([basedir 'IFCB1_2009_3*']);
+daylist = dir([basedir 'IFCB1_2008_001*']);
 
 stitch_info_titles = {'first roi#' 'xpos1', 'ypos1', 'xpos2', 'ypos2'};
 for daycount = 1:length(daylist),
@@ -12,7 +12,7 @@ for daycount = 1:length(daylist),
    % temp = char(filelist.name); temp = str2num(temp(:,16:17));
    % temp = find(temp > 3); 
     %for filecount = 1:temp(1)-1,  %just do hours 00 - 04
-    for filecount = 1:length(filelist),
+    for filecount = 2:length(filelist),
         streamfile = filelist(filecount).name(1:end-4);
         disp(streamfile);
         if ~exist([stitchpath streamfile '_roistitch.mat'], 'file') && exist([streampath streamfile '.adc']),
@@ -26,6 +26,7 @@ for daycount = 1:length(daylist),
         end;
         
         stitch_info = [];
+        keyboard
         for count = 1:length(ind);
             n = ind(count);
             startbyte = startbyte_all(n:n+1); x = x_all(n:n+1); y = y_all(n:n+1); xpos = xpos_all(n:n+1); ypos = ypos_all(n:n+1);
@@ -38,7 +39,7 @@ for daycount = 1:length(daylist),
             end;
             
             %FIX THIS LATER IF THERE ARE MORE THAN TWO IMAGES TO BE MERGED
-            if ~(diff(ypos) + diff(xpos)),  %if positions are the same (mistake in pre-mid 2008 files) 
+            if (diff(ypos)==0 & diff(xpos)==0),  %if positions are the same (mistake in pre-mid 2008 files) 
                 [dxpos_est, dypos_est] = find_overlap(imagedat{1}, imagedat{2});  %get the overlap by comparing the images
                 xpos(2) = xpos(1)+ dxpos_est;  % recover the positions of the second image
                 ypos(2) = ypos(1)+ dypos_est;
@@ -49,11 +50,11 @@ for daycount = 1:length(daylist),
             if ~isnan(xpos(2)) && ~isempty(imagedat), %skip this for cases where above loop returns no overlap
                 [img_merge, xpos_merge, ypos_merge] = stitchrois(imagedat,xpos,ypos);
                  if ~isnan(img_merge(1))
-                    load([feapath streamfile '_features.mat'])
-                    [features1, perimeter1, pixidx1, FrDescp1, Centroid1,featitles] = getfeatures(uint8(img_merge));
-                    features(:,n) = features1;
-                    features(:,n+1) = NaN;
-                    save([feapath streamfile '_features.mat'], 'features', '-append')
+                    %load([feapath streamfile '_features.mat'])
+                    %[features1, perimeter1, pixidx1, FrDescp1, Centroid1,featitles] = getfeatures(uint8(img_merge));
+                    %features(:,n) = features1;
+                    %features(:,n+1) = NaN;
+                    %save([feapath streamfile '_features.mat'], 'features', '-append')
                     stitch_info = [stitch_info; n xpos(1) ypos(1) xpos(2) ypos(2)];
                  end;
             end;     
