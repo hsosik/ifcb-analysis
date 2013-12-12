@@ -6,8 +6,10 @@ function [ offsetx_est, offsety_est ] = find_overlap( imgA, imgB )
 %imgB1 = imgB - mode(imgA(:)) ;
 imgA1 = imgA - mode([imgA(:); imgB(:)]) ;
 imgB1 = imgB - mode([imgA(:); imgB(:)]) ;
-R = xcorr2fft(imgB1,imgA1) ;
-Rnorm = xcorr2fft(abs(imgB1),abs(imgA1)) ;
+%R = xcorr2fft(imgB1,imgA1) ; %this method no longer works reliably with matlab R2011 and later, some kind of rounding error in fftn?
+%Rnorm = xcorr2fft(abs(imgB1),abs(imgA1)) ;
+R = xcorr2(imgB1,imgA1) ;
+Rnorm = xcorr2(abs(imgB1),abs(imgA1)) ;
 Rcheck = R - Rnorm ; 
 
 z = find(Rcheck(:) == 0) ; % Find offsets with perfect correlation
