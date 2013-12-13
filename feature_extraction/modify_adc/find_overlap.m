@@ -2,16 +2,27 @@ function [ offsetx_est, offsety_est, npix ] = find_overlap( imgA, imgB )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-%imgA1 = imgA - mode(imgA(:)) ;
-%imgB1 = imgB - mode(imgA(:)) ;
-imgA1 = imgA - mode([imgA(:); imgB(:)]) ;
-imgB1 = imgB - mode([imgA(:); imgB(:)]) ;
+%%imgA1 = imgA - mode(imgA(:)) ;
+%%imgB1 = imgB - mode(imgA(:)) ;
+%imgA1 = imgA - mode([imgA(:); imgB(:)]) ;
+%imgB1 = imgB - mode([imgA(:); imgB(:)]) ;
+%imgA1 = imgA - median([imgA(:); imgB(:)]) ;
+%imgB1 = imgB - median([imgA(:); imgB(:)]) ;
+imgA1 = imgA - median([imgB(:)]) ;
+imgB1 = imgB - median([imgB(:)]) ;
+%images have to be offset by some constant so that each has some pos and some neg pixels
+if ~(min(imgA1) < 0 & max(imgA1) > 0),
+    keyboard  
+end;
+if ~(min(imgB1) < 0 & max(imgB1) > 0),
+    keyboard
+end;
+
 %R = xcorr2fft(imgB1,imgA1) ; %this method no longer works reliably with matlab R2011 and later, some kind of rounding error in fftn?
 %Rnorm = xcorr2fft(abs(imgB1),abs(imgA1)) ;
 R = xcorr2(imgB1,imgA1) ;
 Rnorm = xcorr2(abs(imgB1),abs(imgA1)) ;
 Rcheck = R - Rnorm ;
-
 z = find(Rcheck(:) == 0) ; % Find offsets with perfect correlation
 offsetx_est = NaN;
 offsety_est = NaN;
@@ -60,13 +71,13 @@ if ~isempty(z),
         offsetx_est = NaN;
         offsety_est = NaN;
         npix = NaN;
-    else
-        if npix > 2 & npix <=50,
-            disp(npix),
-            clf, imagesc(0,0,imgA), colormap('gray')
-            hold on, imagesc(offsety_est, offsetx_est, imgB), colormap('gray'), axis auto
-            pause
-        end;
+   % else
+   %     if npix > 2 & npix <=50,
+   %         disp(npix),
+   %         clf, imagesc(0,0,imgA), colormap('gray')
+   %         hold on, imagesc(offsety_est, offsetx_est, imgB), colormap('gray'), axis auto
+   %         pause
+   %     end;
     end;
 end;
 
