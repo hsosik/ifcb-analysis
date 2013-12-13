@@ -11,10 +11,10 @@ function [ offsetx_est, offsety_est, npix ] = find_overlap( imgA, imgB )
 imgA1 = imgA - median([imgB(:)]) ;
 imgB1 = imgB - median([imgB(:)]) ;
 %images have to be offset by some constant so that each has some pos and some neg pixels
-if ~(min(imgA1) < 0 & max(imgA1) > 0),
+if ~(min(imgA1(:)) < 0 & max(imgA1(:)) > 0),
     keyboard  
 end;
-if ~(min(imgB1) < 0 & max(imgB1) > 0),
+if ~(min(imgB1(:)) < 0 & max(imgB1(:)) > 0),
     keyboard
 end;
 
