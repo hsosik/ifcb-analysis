@@ -164,7 +164,7 @@ if ~exist([resultpath 'summary\'], 'dir')
     mkdir([resultpath 'summary\'])
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
-save([resultpath 'summary\count_biovol_size_adc_manual_' datestr], 'matdate', 'ml_analyzed_struct', 'biovol', 'filelist', 'eqdiam', 'perim', 'roiID')
+save([resultpath 'summary\count_biovol_size_adc_manual_' datestr], 'matdate', 'ml_analyzed_struct', 'biovol', 'filelist', 'eqdiam', 'perim', 'roiID', 'chlL', 'chlH', 'sscL', 'sscH')
 
 return
 
