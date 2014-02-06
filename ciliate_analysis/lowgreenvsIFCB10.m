@@ -3,6 +3,32 @@ load '\\queenrose\IFCB014_OkeanosExplorerAug2013\data\Manual_fromClass\Alt\summa
 
 load '\\queenrose\IFCB010_OkeanosExplorerAug2013\data\Manual_fromClass\summary\count_manual_19Jan2014.mat'
 
+min_diff= 1/24;
+match_ind=NaN(size(matdate_lowgreen));
+
+for ii=1:length(matdate_lowgreen);
+    [min_ii, i2]=min(abs(matdate_lowgreen(ii)-matdate(ii)));
+ 
+    if min_ii <= min_diff
+        match_ind(ii)=i2;
+    end
+end;
+
+iii=find(isnan(i2));
+
+[matdate_lowgreen(iii)-matdate(i2(iii))]*24  %as a check, should appear as less than 1
+    
+
+
+
+
+
+
+
+
+
+
+
 IFCB10_filename={filelist.name}';
 IFCB14_filename={filelist_lowgreen.name}';
 
