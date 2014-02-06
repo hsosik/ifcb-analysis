@@ -1,10 +1,10 @@
 %resultpath = '\\mellon\saltpond\manualclassify\';
-resultpath = '\\queenrose\IFCB014_OkeanosExplorerAug2013\data\Manual_fromClass\Alt\';
-%resultpath = 'C:\Users\Emily Fay\Documents\Ciliate_Code\IFCB_14\Van\results\alt\';
-%resultpath = 'C:\Users\Emily Fay\Documents\Ciliate_Code\IFCB_14\Van\results\normal\';
+%resultpath = '\\queenrose\IFCB014_OkeanosExplorerAug2013\data\Manual_fromClass\Normal\';
+%resultpath = 'C:\Users\Emily Fay\Documents\Ciliate_Code\IFCB_14\Scut_testing\Normal\results\';
+resultpath = 'C:\Users\Emily Fay\Documents\Ciliate_Code\IFCB_14\Van\results\alt\';
 %urlbase = 'http://ifcb-data.whoi.edu/saltpond/';
 urlbase = 'http://ifcb-data.whoi.edu/OkeanosExplorerAug2013_IFCB014/';
-%basepath = 'C:\Users\Emily Fay\Documents\Ciliate_Code\IFCB_14\Van\';
+basepath = 'C:\Users\Emily Fay\Documents\Ciliate_Code\IFCB_14\Van\';
 filelist = dir([resultpath 'D*.mat']);
 
 %calculate date
@@ -24,8 +24,8 @@ ml_analyzed = NaN(length(filelist),1);
 for filecount = 1:length(filelist),
     filename = filelist(filecount).name;
     disp(filename)
-    %hdrname = ([basepath regexprep(filename, 'mat', 'hdr')]);%for when there is no dashboard url
-    hdrname = [urlbase regexprep(filename, 'mat', 'hdr')]; 
+    hdrname = ([basepath regexprep(filename, 'mat', 'hdr')]);%for when there is no dashboard url
+    %hdrname = [urlbase regexprep(filename, 'mat', 'hdr')]; 
    ml_analyzed(filecount) = IFCB_volume_analyzed(hdrname);
     load([resultpath filename])
 %     if ~isequal(class2use_manual, class2use_manual_first)
@@ -60,24 +60,24 @@ save([resultpath 'summary\count_manual_' datestr], 'matdate', 'ml_analyzed', 'cl
 
 load '\\queenrose\IFCB010_OkeanosExplorerAug2013\data\Manual_fromClass\summary\count_manual_19Jan2014.mat'
 figure %example
-classnum = 90; %90 for tintinnid
+classnum = 72; %90 for tintinnid
 plot(matdate, classcount(:,classnum)./ml_analyzed, '.-')
 datetick('x')
 ylabel([class2use{classnum} ' (mL^{-1})'])
 hold on
 
-load '\\queenrose\IFCB014_OkeanosExplorerAug2013\data\Manual_fromClass\Alt\summary\count_manual_23Jan2014.mat'
-classnum = 90; %90 for tintinnid
+load '\\queenrose\IFCB014_OkeanosExplorerAug2013\data\Manual_fromClass\Alt\summary\count_manual_05Feb2014.mat'
+classnum = 72; %90 for tintinnid
 plot(matdate, classcount(:,classnum)./ml_analyzed, 'r.-')
 
-%legend('IFCB10','IFCB14 stained');
-
-load '\\queenrose\IFCB014_OkeanosExplorerAug2013\data\Manual_fromClass\Normal\summary\count_manual_23Jan2014.mat'
-classnum = 90; %90 for tintinnid
-plot(matdate, classcount(:,classnum)./ml_analyzed, 'k.-')
-
-legend('IFCB10','IFCB14 stained ', 'IFCB14 normal');
-
+legend('IFCB10','IFCB14 stained');
+% 
+% load '\\queenrose\IFCB014_OkeanosExplorerAug2013\data\Manual_fromClass\Normal\summary\count_manual_23Jan2014.mat'
+% classnum = 90; %90 for tintinnid
+% plot(matdate, classcount(:,classnum)./ml_analyzed, 'k.-')
+% 
+% legend('IFCB10','IFCB14 stained ', 'IFCB14 normal');
+% 
 
 % 
 % % figure %example
