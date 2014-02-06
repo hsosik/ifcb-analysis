@@ -9,7 +9,7 @@ filelist = dir([resultpath 'D*.mat']);
 basepath = '\\queenrose\IFCB014_OkeanosExplorerAug2013\data\';
 
 %calculate date
-matdate = IFCB_file2date({filelist.name});
+matdate_lowgreen = IFCB_file2date({filelist.name});
 
 load([resultpath filelist(1).name]) %read first file to get classes
 numclass1 = length(class2use_manual);
@@ -19,26 +19,35 @@ class2use_manual_first = class2use_manual;
 class2use_first_sub = class2use_sub4;
 class2use_here = [class2use_manual_first class2use_sub4];
 classcount = NaN(length(filelist),numclass);  %initialize output
-ml_analyzed = NaN(length(filelist),1);
+ml_analyzed_lowgreen = NaN(length(filelist),1);
 
 
 
-%for filecount = 15,
-for filecount = 1:length(filelist),
+for filecount = 2:16,
+%for filecount = 1:length(filelist),
     filename = filelist(filecount).name;
     disp(filename)
     hdrname = [basepath regexprep(filename, 'mat', 'hdr')]; 
     adcname = [basepath regexprep(filename, 'mat', 'adc')];
-   ml_analyzed(filecount) = IFCB_volume_analyzed(hdrname);
+   ml_analyzed_lowgreen(filecount) = IFCB_volume_analyzed(hdrname);
     load([resultpath filename])
     adcdata = load(adcname);
     
+    
+    %refline(0.28 ,-1.8)
     %refline(0.4 ,-1.5)
     %refline(0.028,0.0023);
+    %refline(0.20 ,-2.05)
     chl = log10(adcdata(:,5)); green = log10(adcdata(:,4));
-    %low_green_ind = find(green > (chl-0.0015)/0.25);
-    %low_green_ind = find(green < ((chl-0.0023)/0.028));
-    low_green_ind = find(green < ((chl+1.5)/0.4));
+    %low_green_ind = find(green > (chl-0.0015)/0.25);%bad
+    %low_green_ind = find(green < ((chl-0.0023)/0.028));%bad
+    %low_green_ind = find(green < ((chl+1.8)/0.28)); %for lowlow green
+    %low_green_ind = find(green >= ((chl+1.8)/0.28)); %for highhigh green
+    %low_green_ind = find(green >= ((chl+1.5)/0.4)); %for high green
+    %low_green_ind = find(green < ((chl+1.5)/0.4)); %for low green
+    low_green_ind = find(green < ((chl+2.05)/0.20)); %for lowlowlow green
+    %low_green_ind = find(green >= ((chl+2.05)/0.20)); %for highhighhigh green
+    
     classlist=classlist(low_green_ind,1:4);
     
        
@@ -54,14 +63,17 @@ for filecount = 1:length(filelist),
         classcount((filecount),:) = temp;
         
     end;
+    
+    classcount_lowgreen=classcount;
+    filelist_lowgreen=filelist;
 
-clear class2use_manual class2use_auto class2use_sub* classlist
+clear class2use_manual class2use_auto class2use_sub* classlist classcount filelist
 class2use = class2use_here;
 if ~exist([resultpath 'summary\'], 'dir')
     mkdir([resultpath 'summary\'])
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
-save([resultpath 'summary\count_manual_low_green' datestr], 'matdate', 'ml_analyzed', 'classcount', 'filelist', 'class2use')
+save([resultpath 'summary\count_manual_lowlow2_green' datestr], 'matdate_lowgreen', 'ml_analyzed_lowgreen', 'classcount_lowgreen', 'filelist_lowgreen', 'class2use')
 
 
 % load '\\queenrose\IFCB010_OkeanosExplorerAug2013\data\Manual_fromClass\summary\count_manual_15Jan2014.mat'
