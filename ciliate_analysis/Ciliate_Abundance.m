@@ -1,5 +1,6 @@
 
-load 'C:\Users\Emily Fay\Documents\Ciliate_Code\count_manual_03Dec2013_day.mat'
+%load '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_manual_31Jan2014_day.mat'
+load '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_biovol_size_manual_24Jan2014.mat'
 %load 'C:\Users\Emily Fay\Documents\Ciliate_Code\count_manual_10Jun2013_day.mat'
 %load 'C:\Users\Emily Fay\Documents\Ciliate_Code\count_biovol_size_manual_01May2013.mat'
 [ ind_ciliate, class_label ] = get_ciliate_ind( class2use, class2use );
@@ -144,13 +145,13 @@ set(h(8),'DisplayName','2013','Color',[0 0 0]);
 datetick('x', 3, 'keeplimits');
 set(gca,'xgrid','on');
 
-[mdate_mat, Strombidium_captitatum_mat, yearlist, yd ] = timeseries2ydmat( matdate_bin, Strombidium_capitatum_classcount);
-[Strombidium_captitatum_week, Strombidium_captitatum_weekstd, mdate_wkmat, yd_wk] =ydmat2weeklymat(Strombidium_captitatum_mat, yearlist);
+[mdate_mat, Strombidium_capitatum_mat, yearlist, yd ] = timeseries2ydmat( matdate_bin, Strombidium_capitatum_classcount);
+[Strombidium_capitatum_week, Strombidium_capitatum_weekstd, mdate_wkmat, yd_wk] =ydmat2weeklymat(Strombidium_capitatum_mat, yearlist);
 
 figure
-h= plot(yd_wk, Strombidium_captitatum_week, '.-');
+h= plot(yd_wk, Strombidium_capitatum_week, '.-');
 legend(num2str((2006:2013)'), 'location', 'south');
-title('Strombidium captitatum', 'fontsize', 10, 'fontname', 'arial');
+title('Strombidium capitatum', 'fontsize', 10, 'fontname', 'arial');
 ylabel('Abundance (cell mL^{-1} \mum{-1})', 'fontsize', 12);
 set(h(8),'DisplayName','2013','Color',[0 0 0]);
 datetick('x', 3, 'keeplimits');
@@ -292,7 +293,15 @@ set(gca,'xgrid','on');
 
 
 
-[smoothclimatology_Ciliate_mix_weekly, std_Ciliate_mix_week] = smoothed_climatology(Ciliate_mix_week, 1);
+% [smoothclimatology_Ciliate_mix_weekly, std_Ciliate_mix_week] = smoothed_climatology(Ciliate_mix_week, 1);
+% figure
+% plot(yd_wk, smoothclimatology_Ciliate_mix_weekly, '-b', 'LineWidth',2)
+% datetick('x', 3, 'keeplimits');
+% set(gca,'xgrid','on', 'FontSize',12);
+% ylabel('Abundance (cell mL^{-1})', 'fontsize', 12);
+% title('Ciliate Mix', 'fontsize', 12, 'fontname', 'arial');
+% ylim([0 4])
+
 
 
 % figure
