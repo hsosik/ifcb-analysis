@@ -103,11 +103,31 @@ hold on
 loglog((IFCB_14_small_mat(:,1)),(IFCB_14_small_mat(:,2)), '*')
 hold on
 %refline(0.25,0.0015);
-refline(0.028,0.0023);
-xlim([0.0015 1])
-ylim([0.0015 1])
-ylabel('chl', 'fontsize', 12);
-xlabel('Green')
+%refline(0.028,0.0023); %good one
+refline(0.005, 0.0027)% low one
+%refline(0.028, 0.0021)
+ xlim([0.0016 1])
+ ylim([0.0025 0.11])
+ylabel('Chlorophyll fluorescence', 'fontsize', 14, 'fontname', 'arial');
+xlabel('FDA fluorescence','fontsize', 14, 'fontname', 'arial');
+set(gca, 'FontSize',14);
+
+figure
+plot(log10(adcdata(:,4)),log10(adcdata(:,5)), '*');
+refline(0.28 ,-1.8) %for really high green: chl ratio
+refline(0.20 ,-2.05) %even higher
+% xlim([0.002 1])
+% ylim([0.0025 0.11])
+ylabel('chl', 'fontsize', 12, 'fontname', 'arial');
+xlabel('Green','fontsize', 12, 'fontname', 'arial');
+
+figure
+plot(log10(adcdata(:,4)),log10(adcdata(:,5)), '*');
+refline(0.4 ,-1.5) %for low green: chl ratio
+xlim([0.002 1])
+ylim([0.0025 0.11])
+ylabel('chl', 'fontsize', 12, 'fontname', 'arial');
+xlabel('Green','fontsize', 12, 'fontname', 'arial');
 
 
 
