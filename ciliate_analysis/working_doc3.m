@@ -1,4 +1,53 @@
 
+
+load '\\queenrose\IFCB010_OkeanosExplorerAug2013\data\Manual_fromClass\summary\count_manual_19Jan2014.mat'
+ciliate_classcount_IFCB10=classcount(9:73,72:92);
+ciliate_classcount_IFCB10_total=sum(ciliate_classcount_IFCB10,2);
+ciliate_bin_perml_IFCB10=sum(ciliate_classcount_IFCB10_total)/sum(ml_analyzed(9:73));
+[IFCB10_ci] = poisson_count_ci(sum(ciliate_classcount_IFCB10_total), 0.95);
+IFCB10_ci_ml=IFCB10_ci/sum(ml_analyzed(9:73));
+
+load '\\queenrose\IFCB014_OkeanosExplorerAug2013\data\Manual_fromClass\Alt\summary\count_manual_highhigh2_green05Feb2014.mat'
+ciliate_classcount_high_green=classcount(2:16,72:92);
+ciliate_classcount_high_green_total=sum(ciliate_classcount_high_green,2);
+ciliate_bin_perml_high_green=sum(ciliate_classcount_high_green_total)/sum(ml_analyzed(2:16));
+[high_green_ci] = poisson_count_ci(sum(ciliate_classcount_high_green_total), 0.95);
+high_green_ci_ml=high_green_ci/sum(ml_analyzed(2:16));
+
+load '\\queenrose\IFCB014_OkeanosExplorerAug2013\data\Manual_fromClass\Alt\summary\count_manual_lowlow2_green05Feb2014.mat'
+ciliate_classcount_low_green=classcount(2:16,72:92);
+ciliate_classcount_low_green_total=sum(ciliate_classcount_low_green,2);
+ciliate_bin_perml_low_green=sum(ciliate_classcount_low_green_total)/sum(ml_analyzed(2:16));
+[low_green_ci] = poisson_count_ci(sum(ciliate_classcount_low_green_total), 0.95);
+low_green_ci_ml=low_green_ci/sum(ml_analyzed(2:16));
+
+lower=[IFCB10_ci_ml(1) low_green_ci_ml(1) high_green_ci_ml(1)];
+upper=[IFCB10_ci_ml(2) low_green_ci_ml(2) high_green_ci_ml(2)];
+ 
+
+xaxis=[1 2];
+red = [0.448 0.5195]';
+green = [0 1.2507]';
+points=[0.448 0.5195 1.7702];
+xaxis_2=[1 2 2];
+
+
+% Create a stacked bar chart using the bar function
+figure;
+bar1= bar(xaxis, [red green], 0.5, 'stack');
+hold on
+plot(xaxis_2, points, '.k', 'markersize', 0.1);
+errorbar(xaxis_2, points, lower, upper, 'r', 'Marker', 'none', 'LineStyle', 'none', 'Linewidth', 1 , 'color' ,[0 0 0]);
+set(bar1(1),'FaceColor',[0 0 1]);
+set(bar1(2),'FaceColor',[0 1 0]);
+ylabel('Ciliates (mL^{-1})', 'fontsize', 12, 'fontname', 'arial');
+set(gca,'xticklabel',{'IFCB 10','IFCB 14'}, 'fontsize', 12, 'fontname', 'arial');
+axis square
+
+
+
+
+Lysotracker_analysis
 %refline(0.020, 0.0033)
 chl = adcdata(:,5); green = adcdata(:,4);
 low_green_ind = find(green < ((chl-0.0033)/0.020));%low green
