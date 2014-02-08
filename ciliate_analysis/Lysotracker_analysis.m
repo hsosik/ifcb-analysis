@@ -112,22 +112,62 @@ ylabel('Chlorophyll fluorescence', 'fontsize', 14, 'fontname', 'arial');
 xlabel('FDA fluorescence','fontsize', 14, 'fontname', 'arial');
 set(gca, 'FontSize',14);
 
-figure
-plot(log10(adcdata(:,4)),log10(adcdata(:,5)), '*');
-refline(0.28 ,-1.8) %for really high green: chl ratio
-refline(0.20 ,-2.05) %even higher
+
+% figure
+% plot((adcdata(:,4)),(adcdata(:,5)), '*');
+% xlim([0 0.2]);
+% ylim([0 0.03]);
+% refline(0.03, .0033)
+
+% figure
+% plot(log10(adcdata(:,4)),log10(adcdata(:,5)), '*');
+% refline(0.28 ,-1.8) %for really high green: chl ratio
+% refline(0.20 ,-2.05) %even higher
+% % xlim([0.002 1])
+% % ylim([0.0025 0.11])
+% ylabel('chl', 'fontsize', 12, 'fontname', 'arial');
+% xlabel('Green','fontsize', 12, 'fontname', 'arial');
+% 
+% figure
+% plot(log10(adcdata(:,4)),log10(adcdata(:,5)), '*');
+% refline(0.4 ,-1.5) %for low green: chl ratio
 % xlim([0.002 1])
 % ylim([0.0025 0.11])
-ylabel('chl', 'fontsize', 12, 'fontname', 'arial');
-xlabel('Green','fontsize', 12, 'fontname', 'arial');
+% ylabel('chl', 'fontsize', 12, 'fontname', 'arial');
+% xlabel('Green','fontsize', 12, 'fontname', 'arial');
 
-figure
-plot(log10(adcdata(:,4)),log10(adcdata(:,5)), '*');
-refline(0.4 ,-1.5) %for low green: chl ratio
-xlim([0.002 1])
+figure1 = figure;
+
+% Create axes
+axes1 = axes('Parent',figure1,'YScale','log','YMinorTick','on',...
+    'XScale','log',...
+    'XMinorTick','on',...
+    'PlotBoxAspectRatio',[1 1 1],...
+    'FontSize',14);
+box(axes1,'on');
+hold(axes1,'all');
+hold on
+
+m = 0.020; b = 0.0033;  x = 0.0001:0.01:2;
+plot((adcdata(:,4)),(adcdata(:,5)), '*', 'markersize', 1);
+hold on
+plot(x, m*x+b, '-r');
+xlim([0.0016 0.3])
 ylim([0.0025 0.11])
-ylabel('chl', 'fontsize', 12, 'fontname', 'arial');
-xlabel('Green','fontsize', 12, 'fontname', 'arial');
+axis square
+ylabel('Chlorophyll fluorescence', 'fontsize', 14, 'fontname', 'arial');
+xlabel('FDA fluorescence','fontsize', 14, 'fontname', 'arial');
+set(gca, 'FontSize',14);
+
+
+ figure
+plot((adcdata(:,4)),(adcdata(:,5)), '*', 'markersize', 1);
+hold on
+m = 0.03; b = 0.0033;  x = 0.0001:0.01:0.2;
+plot(x, m*x+b, '-r');
+xlim([0 0.2]);
+ylim([0 0.03]);
+
 
 
 
