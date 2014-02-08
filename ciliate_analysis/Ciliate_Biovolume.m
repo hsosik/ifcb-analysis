@@ -101,11 +101,12 @@ Tontonia_gracillima_classcount=ciliate_classcount(:,21);
 
 [smoothclimatology_ciliate_all_weekly, std_ciliate_all_week] = smoothed_climatology(ciliate_all_week, 1);
 figure
-plot(yd_wk, smoothclimatology_ciliate_all_weekly, '-b', 'LineWidth',2)
+plot(yd_wk, smoothclimatology_ciliate_all_weekly, '-b', 'LineWidth',2.5)
 datetick('x', 3);
 set(gca,'xgrid','on', 'FontSize',14);
-ylabel('biovolume ( \mum^3 mL^-1)', 'fontsize', 14, 'fontname', 'arial')
-title('Total Ciliates', 'fontsize', 12, 'fontname', 'arial');
+ylabel('Total ciliate biovolume ( \mum^3 mL^-1)', 'fontsize', 14, 'fontname', 'arial')
+%title('Total Ciliates', 'fontsize', 12, 'fontname', 'arial');
+axis square
 
 
 figure
@@ -520,13 +521,20 @@ legend(num2str((2006:2013)'), 'location', 'south');
 close all
 
 figure
-plot(yd_wk, smoothclimatology_Leegaardiella_ovalis_weekly, '-b', 'LineWidth',2)
+plot(yd_wk, smoothclimatology_Leegaardiella_ovalis_weekly, '-b', 'LineWidth',2.5)
 hold on
-plot(yd_wk, smoothclimatology_Strombidium_inclinatum_weekly, '-r', 'LineWidth',2)
-plot(yd_wk, smoothclimatology_Strombidium_morphotype1_weekly, '-g', 'LineWidth',2)
-plot(yd_wk, smoothclimatology_Strombidium_morphotype2_weekly, '-k', 'LineWidth',2)
-legend('Leegaardiella ovalis', 'Strombidium inclinatum', 'Strombidium morphotype1' ,'Strombidium morphotype2')
+%plot(yd_wk, smoothclimatology_Strombidium_inclinatum_weekly, '-r', 'LineWidth',2.5)
+plot(yd_wk, smoothclimatology_Strombidium_morphotype1_weekly, '-g', 'LineWidth',2.5)
+plot(yd_wk, smoothclimatology_Strombidium_morphotype2_weekly, '-k', 'LineWidth',2.5)
+%h_legend=legend('\it{Leegaardiella ovalis} \rm', '\it{Strombidium inclinatum} \rm', '\it{Strombidium} \rm morphotype1' ,'\it{Strombidium} \rm morphotype2')
+h_legend=legend('\it{Leegaardiella ovalis} \rm', '\it{Strombidium} \rm morphotype1' ,'\it{Strombidium} \rm morphotype2')
+set(h_legend,'FontSize',10);
 datetick('x', 3 );
 set(gca,'xgrid','on', 'FontSize',14);
-ylabel('biovolume ( \mum^3 mL^-1)', 'fontsize', 14, 'fontname', 'arial')
+ylabel('Abundance (cell mL^{-1})', 'fontsize', 14);
+axis square
+ylim([0 0.37])
+%ylabel('biovolume ( \mum^3 mL^-1)', 'fontsize', 14, 'fontname', 'arial')
+
+
 
