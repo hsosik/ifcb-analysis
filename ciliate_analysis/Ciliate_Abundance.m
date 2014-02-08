@@ -1,6 +1,6 @@
 
 %load '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_manual_31Jan2014_day.mat'
-load '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_biovol_size_manual_24Jan2014.mat'
+%load '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_biovol_size_manual_24Jan2014.mat'
 %load 'C:\Users\Emily Fay\Documents\Ciliate_Code\count_manual_10Jun2013_day.mat'
 %load 'C:\Users\Emily Fay\Documents\Ciliate_Code\count_biovol_size_manual_01May2013.mat'
 [ ind_ciliate, class_label ] = get_ciliate_ind( class2use, class2use );
