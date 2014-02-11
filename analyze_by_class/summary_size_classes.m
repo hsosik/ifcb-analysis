@@ -1,5 +1,5 @@
 %load 'c:\work\IFCB\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_biovol_size_manual_24Jan2014.mat'
-load '\\raspberry\d_work\ifcb1\ifcb_data_mvco_jun06\manual_fromClass\summary\count_biovol_size_manual_24Jan2014.mat'
+load '\\raspberry\d_work\ifcb1\ifcb_data_mvco_jun06\manual_fromClass\summary\count_biovol_size_manual_10Feb2014.mat'
 ii = find(floor(matdate) == datenum('2-9-2010')); %skip this day with one partial sample
 matdate(ii) = []; filelist(ii) = [];
 fnames = fields(biovol);
@@ -136,5 +136,5 @@ Notes1 = 'Output from summary_size_classes.m';
 Notes2 = 'Carbon values in micrograms per mL';
 Cmdate_day = unqday;
 %save c:\work\mvco\carbon\IFCB_carbon_manual_Jan2014 Cmdate_mat C0_10phyto_mat C10_20phyto_mat C20_infphyto_mat C_diatom C_day_mat classes Cyearlist yd ind_diatom ind_phyto Notes1 Notes2 Cmdate_day
-save \\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\IFCB_carbon_manual_Jan2014 Cmdate_mat C0_10phyto_mat C10_20phyto_mat C20_infphyto_mat C_diatom C_day_mat classes Cyearlist yd ind_diatom ind_phyto Notes1 Notes2 Cmdate_day
+save \\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\IFCB_carbon_manual_Feb2014 Cmdate_mat C0_10phyto_mat C10_20phyto_mat C20_infphyto_mat C_diatom C_day_mat classes Cyearlist yd ind_diatom ind_phyto Notes1 Notes2 Cmdate_day
 
