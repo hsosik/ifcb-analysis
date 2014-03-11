@@ -1,6 +1,6 @@
-function [  ] = export_png_from_ROIlist( ROIfile_withpath, ROInumbers )
-%function [  ] = export_png_from_ROIlist( ROIfile_withpath, ROInumbers )
-%save png files to disk from ROI file, if no ROInumbers passed in, then all are exported
+function [targets, pid  ] = get_images_fromROI( ROIfile_withpath, ROInumbers )
+%function [targets, pid  ] = get_images_fromROI( ROIfile_withpath, ROInumbers )
+%read images from ROI file and store in targets structure, if no ROInumbers passed in, then all are exported
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2014
 
 [basedir,filename,ext] = fileparts(ROIfile_withpath);
@@ -27,11 +27,8 @@ for count = 1:length(ROInumbers),
     num = ROInumbers(count);
     fseek(fid, startbyte(num), -1);
     img = fread(fid, x(num).*y(num), 'ubit8');
-    img = reshape(img, x(num), y(num));
-    pngname = [filename '_' num2str(num,'%05.0f') '.png'];
-    if length(img) > 0,
-        imwrite(uint8(img'), [outputpath filesep pngname], 'png');
-    end;
+    targets.image{count} = reshape(img, x(num), y(num))';
+    pid{count} = [filename '_' num2str(num,'%05.0f')];
 end;
 fclose(fid);
 
