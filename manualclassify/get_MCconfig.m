@@ -68,7 +68,10 @@ switch MCconfig.group
                 load current_filelist.mat
                 MCconfig.filelist = filelist; 
             case 'dirlist' %other MVCO cases
-                MCconfig.filelist = dir('\\demi\vol1\IFCB5_2012_006\IFCB5_2012_006_025*.adc');   
+                temp = dir('\\demi\vol1\IFCB5_2012_006\IFCB5_2012_006_025*.adc'); temp = char(temp.name);
+                MCconfig.filelist = cellstr(temp(:,1:end-4)); clear temp
+            case 'thislist'
+                MCconfig.filelist = {'IFCB1_2008_056_164116'}; 
         end
         [MCconfig.filelist, MCconfig.classfiles, MCconfig.stitchfiles] = resolve_MVCOfiles(MCconfig.filelist, MCconfig.class_filestr);
         %pick one
@@ -79,7 +82,7 @@ switch MCconfig.group
     case 'OKEX'
         MCconfig.resultpath = '/home/ifcb/ifcb_010_data/manual/'; %USER set
         MCconfig.basepath = '/home/ifcb/ifcb_010_data/'; %USER set
-        MCconfig.filepaht = '/';
+        MCconfig.filepath = '/';
         temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
         MCconfig.class2use = temp.class2use;
         MCconfig.classpath = '/home/ifcb/ifcb_010_data/class/'; 
@@ -98,7 +101,8 @@ switch MCconfig.group
                 load filelist_extranans_bigonly
                 MCconfig.filelist = filelist; 
             case 'dirlist' %other MVCO cases
-                MCconfig.filelist = dir('\\demi\vol1\IFCB5_2012_006\IFCB5_2012_006_0*.adc');    
+                temp = dir('\\demi\vol1\IFCB5_2012_006\IFCB5_2012_006_025*.adc'); temp = char(temp.name);
+                MCconfig.filelist = cellstr(temp(:,1:end-4)); clear temp
         end
         [MCconfig.filelist, MCconfig.classfiles] = resolve_files_OKEX(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
     case 'GEOCAPE'
@@ -122,7 +126,8 @@ switch MCconfig.group
                 load current_filelist.mat
                 MCconfig.filelist = filelist; 
             case 'dirlist' %other MVCO cases
-                MCconfig.filelist = dir('\\queenrose\IFCB101_GEOCAPE_GOMEX20132\data\*.adc');   
+                temp = dir('\\queenrose\IFCB101_GEOCAPE_GOMEX20132\data\*.adc'); temp = char(temp.name);
+                MCconfig.filelist = cellstr(temp(:,1:end-4)); clear temp
         end
         [MCconfig.filelist, MCconfig.classfiles, MCconfig.stitchfiles] = resolve_MVCOfiles(MCconfig.filelist, MCconfig.class_filestr);
         %pick one
