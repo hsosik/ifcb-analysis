@@ -1,13 +1,13 @@
 %start_batch_tamu.m
 %configure and initiate batch processing for blob extractiom
 
-in_dir= 'C:\work\IFCB\test\data\'; %USER 
-out_dir = 'C:\work\IFCB\test\data\blobs\'; %USER main blob output location
+in_dir= '\\cheese\J_IFCB\testwell_Feb2014\ifcb1\'; %USER 
+out_dir = '\\queenrose\g_work_ifcb1\dock_compare2014\IFCB1\blobs\'; %USER main blob output location
 
 bins = dir([in_dir '*.adc']);
 bins = regexprep({bins.name}', '.adc', '');
 
-for bincount = 1:length(bins),
+for bincount = 2:length(bins),
     disp(bins{bincount})
     png_path = [in_dir bins{bincount}  filesep];
     blob_png_path = [out_dir bins{bincount}  filesep];
@@ -27,5 +27,7 @@ for bincount = 1:length(bins),
         % now output the blob image as a 1-bit png
         imwrite(target.blob_image,[blob_png_path imglist{i} '.png'],'bitdepth',1);
     end;
+    zip(blob_png_path(1:end-1), blob_png_path)
+    rmdir(blob_png_path, 's')
 end
 
