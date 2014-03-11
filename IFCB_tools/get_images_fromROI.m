@@ -4,10 +4,6 @@ function [targets, pid  ] = get_images_fromROI( ROIfile_withpath, ROInumbers )
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2014
 
 [basedir,filename,ext] = fileparts(ROIfile_withpath);
-outputpath = [basedir filesep filename filesep];
-if ~exist(outputpath, 'dir'),
-    mkdir(outputpath);
-end;
     
 ROIfile = [filename '.roi'];
 
