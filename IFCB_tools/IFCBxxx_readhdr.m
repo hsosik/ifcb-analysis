@@ -37,5 +37,11 @@ else
     hdr.runtime = str2num(linestr(eqpos(1)+1:spos(1)-1));
     hdr.inhibittime = str2num(linestr(eqpos(2)+1:spos(2)-1));
 end;
+ii=strmatch('runType:',t);
+if ~isempty(ii),
+    linestr = char(t(ii)); 
+    hdr.runtype=regexprep(linestr,'runType: ','');
 end
+end
+
 
