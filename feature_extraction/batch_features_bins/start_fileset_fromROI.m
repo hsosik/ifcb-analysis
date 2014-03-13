@@ -1,6 +1,6 @@
 in_dir = '\\cheese\J_IFCB\testwell_Feb2014\ifcb1\'; %USER 
 in_dir_blob = '\\queenrose\g_work_ifcb1\dock_compare2014\IFCB1\blobs\'; %USER main blob output location
-out_dir = '\\queenrose\g_work_ifcb1\dock_compare2014\IFCB1\blobs\';
+out_dir = '\\queenrose\g_work_ifcb1\dock_compare2014\IFCB1\features\';
 
 bins = dir([in_dir '*.adc']);
 bins = regexprep({bins.name}', '.adc', '');
@@ -64,27 +64,3 @@ for bincount = 1:length(bins),
 end
 
 
-return
-
-
-if nt > 0,
-    temp.pid = targets.pid;
-    [ feature_mat, featitles, multiblob_features, multiblob_titles ] = make_feature_matrices(temp);
-    
-    %write the compiled feature csv file
-    fileout = regexprep(file, '.zip', '_fea_v2.csv');
-    log(['SAVING ' fileout]);
-   
-    ds = dataset([feature_mat featitles]);
-    export(ds, 'file', [out_dir fileout], 'delimiter', ',');
-    
-    %write the raw multi-blob features to separate csv file
-    fileout = regexprep(file, '.zip', '_multiblob_v2.csv');   
-    if ~isempty(multiblob_features), 
-        ds = dataset([multiblob_features multiblob_titles]);
-        export(ds, 'file', [out_dir 'multiblob' filesep fileout], 'delimiter', ',');
-    end; 
-    log(['DONE ' file]);
-else
-    log(['no targets SKIPPING ' file]);
-end;
