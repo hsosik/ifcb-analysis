@@ -1,10 +1,10 @@
-function [  ] = export_png_from_ROIlist( ROIfile_withpath, ROInumbers )
+function [  ] = export_png_from_ROIlist( ROIfile_withpath, ROInumbers, outputpath)
 %function [  ] = export_png_from_ROIlist( ROIfile_withpath, ROInumbers )
 %save png files to disk from ROI file, if no ROInumbers passed in, then all are exported
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2014
 
 [basedir,filename,ext] = fileparts(ROIfile_withpath);
-outputpath = [basedir filesep filename filesep];
+%outputpath = [basedir filesep filename filesep];
 if ~exist(outputpath, 'dir'),
     mkdir(outputpath);
 end;
