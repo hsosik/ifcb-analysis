@@ -18,6 +18,7 @@ log(['LOAD ' file]);
 %find the indices that match input features to features used for classifier
 [~,feaorder] = ismember(config.featitles, feahdrs);
 
+if ~isempty(feadata),
 roinum = feadata(:,1);
 features = feadata(:,feaorder);
 [ TBclass, TBscores] = predict(config.TBclassifier, features);
@@ -42,6 +43,9 @@ outfile = regexprep(outfile, '.csv', '');
 class2useTB = config.class2useTB; classifierName = config.classifierName;
 save([out_dir outfile], 'class2useTB', 'TBclass', 'roinum', 'TBscores', 'TBclass_above_threshold', 'classifierName')
 log(['DONE ' outfile]);
+else
+log(['NO FEATURE DATA ' file]);    
+end;
 
 end
 
