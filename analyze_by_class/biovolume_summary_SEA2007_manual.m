@@ -86,12 +86,14 @@ classcarbon = classcount;
         end;
         %classcount(mode_ind(filecount),class_cat) = temp(class_cat);
         %classbiovol(mode_ind(filecount),class_cat) = tempvol(class_cat);
+        classcount(filecount,:) = temp;
         classbiovol(filecount,:) = tempvol;
 %        classcarbon(filecount,:) = tempcarbon;
         clear class2use_manual class2use_auto class2use_sub* classlist
     end;
 %end;
 
+biovolume_units = 'cubic microns';
 %filelist = filelist_all;
 filelist = regexprep({filelist.name}', '.mat', '');
 class2use = class2use_here;
@@ -99,8 +101,8 @@ if ~exist([resultpath 'summary\'], 'dir')
     mkdir([resultpath 'summary\'])
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
-save([resultpath 'summary\count_biovol_manual_' datestr], 'matdate', 'ml_analyzed', 'classcount', 'classbiovol', 'filelist', 'class2use')
-save([resultpath 'summary\count_biovol_manual_current'], 'matdate', 'ml_analyzed', 'classcount', 'classbiovol', 'filelist', 'class2use')
+save([resultpath 'summary\count_biovol_manual_' datestr], 'matdate', 'ml_analyzed', 'classcount', 'classbiovol', 'filelist', 'class2use', 'biovolume_units')
+save([resultpath 'summary\count_biovol_manual_current'], 'matdate', 'ml_analyzed', 'classcount', 'classbiovol', 'filelist', 'class2use', 'biovolume_units')
 
 %create and save daily binned results
 %[matdate_bin, classcount_bin, ml_analyzed_mat_bin] = make_day_bins(matdate,classcount, ml_analyzed_mat);
