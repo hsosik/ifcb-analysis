@@ -1,13 +1,20 @@
 %start_batch_tamu.m
 %configure and initiate batch processing for blob extractiom
 
-in_dir= '\\cheese\J_IFCB\testwell_Feb2014\ifcb1\'; %USER 
-out_dir = '\\queenrose\g_work_ifcb1\dock_compare2014\IFCB1\blobs\'; %USER main blob output location
+%in_dir= '\\cheese\J_IFCB\testwell_Feb2014\ifcb101\'; %USER 
+%in_dir= '\\QUEENROSE\IFCB14_Dock\ditylum\data\';
+in_dir= '\\QUEENROSE\IFCB14_Dock\ditylum\data\Test_17July_Minus4D01\';
+
+%out_dir = '\\queenrose\g_work_ifcb1\dock_compare2014\IFCB101\blobs\'; %USER main blob output location
+out_dir = '\\QUEENROSE\IFCB14_Dock\ditylum\data\blobs\';
 
 bins = dir([in_dir '*.adc']);
 bins = regexprep({bins.name}', '.adc', '');
+bins_done = dir([out_dir '*.zip']);
+bins_done = regexprep({bins_done.name}', '.zip', '');
+bins = setdiff(bins, bins_done);
 
-for bincount = 2:length(bins),
+for bincount = 1:length(bins),
     disp(bins{bincount})
     png_path = [in_dir bins{bincount}  filesep];
     blob_png_path = [out_dir bins{bincount}  filesep];
