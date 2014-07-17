@@ -167,7 +167,7 @@ switch MCconfig.group
         MCconfig.basepath = '\\QUEENROSE\IFCB14_Dock\ditylum\data\'; %USER set
         %temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
         %MCconfig.class2use = temp.class2use;
-        MCconfig.class2use = {'Ditylum', 'sperm_free', 'detritus', 'other'};
+        MCconfig.class2use = {'Ditylum', 'Ditylum_with_sperm', 'sperm_free', 'possible_eggs', 'detritus', 'other'};
         MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
         MCconfig.classpath = ''; 
         MCconfig.default_class = 'Ditylum';
@@ -179,7 +179,7 @@ switch MCconfig.group
                 load cael_filelist2.mat
                 MCconfig.filelist = filelist; 
             case 'dirlist' %other MVCO cases
-                temp = dir('\\QUEENROSE\IFCB14_Dock\ditylum\data\D20140701T1535*'); temp = char(temp.name);
+                temp = dir('\\QUEENROSE\IFCB14_Dock\ditylum\data\D20140715*.roi'); temp = char(temp.name);
                 %MCconfig.filelist = cellstr(temp(3:end,1:end-13)); clear temp
                 MCconfig.filelist = cellstr(temp(:,1:end-4)); clear temp
         end
