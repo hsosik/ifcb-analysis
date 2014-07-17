@@ -6,8 +6,8 @@ function [ MCconfig ] = get_MCconfig(MCconfig)
 
 %   revised August 2013 to incorporate settings previously done in get_MCfilelist. m
 
-MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one 'correct_or_subdivide' (start from classifier or already sorted images) or 'raw_roi'
-%MCconfig.pick_mode = 'raw_roi';
+%MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one 'correct_or_subdivide' (start from classifier or already sorted images) or 'raw_roi'
+MCconfig.pick_mode = 'raw_roi';
 
 MCconfig.displayed_ordered = 'size'; %USER choose one 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
 %MCconfig.displayed_ordered = 'roi_index'; 
@@ -18,7 +18,7 @@ MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
 
 %group specific options
-MCconfig.group = 'MVCO'; %MVCO, Sherbrooke, OKEX
+MCconfig.group = 'Ditylum_culture'; %MVCO, Sherbrooke, OKEX
 
 %default
 switch MCconfig.batchmode
@@ -162,7 +162,31 @@ switch MCconfig.group
         [MCconfig.filelist, MCconfig.classfiles, MCconfig.stitchfiles] = resolve_MVCOfiles(MCconfig.filelist, MCconfig.class_filestr);
         %pick one
         MCconfig.class2view1 = MCconfig.class2use; %case to view all
-      
+      case 'Ditylum_culture'
+        MCconfig.resultpath = '\\QUEENROSE\IFCB14_Dock\ditylum\Manual\'; %USER set
+        MCconfig.basepath = '\\QUEENROSE\IFCB14_Dock\ditylum\data\'; %USER set
+        %temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
+        %MCconfig.class2use = temp.class2use;
+        MCconfig.class2use = {'Ditylum', 'sperm_free', 'detritus', 'other'};
+        MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
+        MCconfig.classpath = ''; 
+        MCconfig.default_class = 'Ditylum';
+        MCconfig.class2view2 = {}; %example to skip view2
+        %MCconfig.class2view2 = {'Laboea' 'Tintinid' };
+        filelisttype ='dirlist'; %manual_list, loadfile, dirlist
+        switch filelisttype
+            case 'loadfile'
+                load cael_filelist2.mat
+                MCconfig.filelist = filelist; 
+            case 'dirlist' %other MVCO cases
+                temp = dir('\\QUEENROSE\IFCB14_Dock\ditylum\data\D20140701T1535*'); temp = char(temp.name);
+                %MCconfig.filelist = cellstr(temp(3:end,1:end-13)); clear temp
+                MCconfig.filelist = cellstr(temp(:,1:end-4)); clear temp
+        end
+        [MCconfig.filelist, MCconfig.classfiles] = resolve_files_SEA2007(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
+        %pick one
+        MCconfig.class2view1 = MCconfig.class2use; %case to view all
+        %MCconfig.class2view1 = intersect(MCconfig.class2use, {'detritus'}); %example to select a few
 end
 
 %defaults case if class2view1 not specified yet
@@ -171,7 +195,7 @@ if ~isfield(MCconfig,'class2view1')
 end;
 
 if ~exist(MCconfig.resultpath, 'dir'),
-    dos(['mkdir ' resultpath]);
+    dos(['mkdir ' MCconfig.resultpath]);
 end;
 
 [~,f]= fileparts(MCconfig.filelist{1}); 
