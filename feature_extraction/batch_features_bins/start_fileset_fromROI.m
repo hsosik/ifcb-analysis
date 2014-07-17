@@ -1,9 +1,17 @@
-in_dir = '\\cheese\J_IFCB\testwell_Feb2014\ifcb1\'; %USER 
-in_dir_blob = '\\queenrose\g_work_ifcb1\dock_compare2014\IFCB1\blobs\'; %USER main blob output location
-out_dir = '\\queenrose\g_work_ifcb1\dock_compare2014\IFCB1\features\';
+%in_dir = '\\cheese\J_IFCB\testwell_Feb2014\ifcb101\'; %USER
+%in_dir = 'I:\IFCB14_Dock\ditylum\data\;
+in_dir = '\\QUEENROSE\IFCB14_Dock\ditylum\data\Test_17July_Minus4D01\';%in_dir_blob = '\\queenrose\g_work_ifcb1\dock_compare2014\IFCB101\blobs\';%USER main blob output location
+%in_dir_blob = 'I:\IFCB14_Dock\ditylum\data\blobs\';
+in_dir_blob = '\\QUEENROSE\IFCB14_Dock\ditylum\data\blobs\';
+%out_dir = '\\queenrose\g_work_ifcb1\dock_compare2014\IFCB101\features\';
+%out_dir = 'I:\IFCB14_Dock\ditylum\data\features\';
+out_dir = '\\QUEENROSE\IFCB14_Dock\ditylum\data\features\';
 
 bins = dir([in_dir '*.adc']);
 bins = regexprep({bins.name}', '.adc', '');
+bins_done = dir([out_dir '*.csv']);
+bins_done = regexprep({bins_done.name}', '_fea_v2.csv', '');
+bins = setdiff(bins, bins_done);
 
 config = configure();
 target.config = config;
@@ -54,10 +62,11 @@ for bincount = 1:length(bins),
     
     %write the raw multi-blob features to separate csv file
     %fileout = regexprep(file, '.zip', '_multiblob_v2.csv');
-    fileout = [bins{bincount} '_multiblob_v2.csv']
+    fileout = [bins{bincount} '_multiblob_v2.csv'];
     if ~isempty(multiblob_features), 
         ds = dataset([multiblob_features multiblob_titles]);
         export(ds, 'file', [out_dir 'multiblob' filesep fileout], 'delimiter', ',');
+       
     end; 
     
     
