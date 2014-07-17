@@ -57,13 +57,13 @@ switch MCconfig.group
         MCconfig.class2use_sub = temp.class2use_sub4;
         MCconfig.sub_default_class = 'Ciliate_mix';
         MCconfig.classstr = 'ciliate';
-        %MCconfig.class2view2 = MCconfig.class2use_sub; %example to view all
-        %MCconfig.class2view2 = {}; %example to skip view2
-        MCconfig.class2view2 = {'Laboea' 'Tintinid' };
-        MVCOfilelisttype ='manual_list'; %manual_list, loadfile, dirlist
+        MCconfig.class2view2 = MCconfig.class2use_sub; %example to view all
+       % MCconfig.class2view2 = {}; %example to skip view2
+        %MCconfig.class2view2 = {'Laboea' 'Tintinid' };
+        MVCOfilelisttype ='loadfile'; %manual_list, loadfile, dirlist
         switch MVCOfilelisttype
             case 'manual_list' %MVCO batch system
-                MCconfig.filelist = get_filelist_manual([MCconfig.resultpath 'manual_list'],5,[2012], 'all'); %manual_list, column to use, year to find
+                MCconfig.filelist = get_filelist_manual([MCconfig.resultpath 'manual_list'],5,[2014], 'all'); %manual_list, column to use, year to find
             case 'loadfile'
                 load current_filelist.mat
                 MCconfig.filelist = filelist; 
@@ -77,8 +77,8 @@ switch MCconfig.group
         %pick one
         MCconfig.class2view1 = MCconfig.class2use; %case to view all
         %MCconfig.class2view1 = setdiff(MCconfig.class2use,{'Asterionellopsis' 'Chaetoceros' 'bad' 'detritus' 'mix'}); %example to skip a few
-        MCconfig.class2view1 = intersect(MCconfig.class2use, {'other'}); %example to select a few
-        %MCconfig.class2view1 = intersect(MCconfig.class2use, {'G_delicatula_parasite'}); %example to select a few
+        %MCconfig.class2view1 = intersect(MCconfig.class2use, {'other'}); %example to select a few
+        %MCconfig.class2view1 = intersect(MCconfig.class2use, {'leptocylindrus' 'other' 'mix_elongated'}); %example to select a few
     case 'OKEX'
         MCconfig.resultpath = '/home/ifcb/ifcb_010_data/manual/'; %USER set
         MCconfig.basepath = '/home/ifcb/ifcb_010_data/'; %USER set
@@ -105,6 +105,36 @@ switch MCconfig.group
                 MCconfig.filelist = cellstr(temp(:,1:end-4)); clear temp
         end
         [MCconfig.filelist, MCconfig.classfiles] = resolve_files_OKEX(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
+    case 'SEA2007'
+        MCconfig.resultpath = '\\Queenrose\ifcb2_c211a_sea2007\Manual_fromClass\'; %USER set
+        MCconfig.basepath = '\\Queenrose\ifcb2_c211a_sea2007\data\'; %USER set
+        temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
+        MCconfig.class2use = temp.class2use;
+        MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
+        MCconfig.classpath = '\\Queenrose\ifcb2_c211a_sea2007\data\class2007_v1\'; 
+        MCconfig.default_class = 'unclassified';
+        temp = load('class2use_MVCOciliate', 'class2use_sub4'); 
+        MCconfig.class2use_sub = temp.class2use_sub4;
+        MCconfig.sub_default_class = 'Ciliate_mix';
+        MCconfig.classstr = 'ciliate';
+        MCconfig.class2view2 = MCconfig.class2use_sub; %example to view all
+        MCconfig.class2view2 = {}; %example to skip view2
+        %MCconfig.class2view2 = {'Laboea' 'Tintinid' };
+        MVCOfilelisttype ='loadfile'; %manual_list, loadfile, dirlist
+        switch MVCOfilelisttype
+            case 'manual_list' %MVCO batch system
+                MCconfig.filelist = get_filelist_manual([MCconfig.resultpath 'manual_list'],5,[2012], 'all'); %manual_list, column to use, year to find
+            case 'loadfile'
+                load cael_filelist2.mat
+                MCconfig.filelist = filelist; 
+            case 'dirlist' %other MVCO cases
+                temp = dir('\\Queenrose\ifcb2_c211a_sea2007\data\class2007_v1\*'); temp = char(temp.name);
+                MCconfig.filelist = cellstr(temp(3:end,1:end-13)); clear temp
+        end
+        [MCconfig.filelist, MCconfig.classfiles] = resolve_files_SEA2007(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
+        %pick one
+        MCconfig.class2view1 = MCconfig.class2use; %case to view all
+        MCconfig.class2view1 = intersect(MCconfig.class2use, {'detritus'}); %example to select a few
     case 'GEOCAPE'
         MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
         temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
@@ -126,16 +156,13 @@ switch MCconfig.group
                 load current_filelist.mat
                 MCconfig.filelist = filelist; 
             case 'dirlist' %other MVCO cases
-                temp = dir('\\queenrose\IFCB101_GEOCAPE_GOMEX20132\data\*.adc'); temp = char(temp.name);
+                temp = dir('\\queenrose\IFCB101_GEOCAPE_GOMEX20132\data\IFCB2_2007_176_071823*.adc'); temp = char(temp.name);
                 MCconfig.filelist = cellstr(temp(:,1:end-4)); clear temp
         end
         [MCconfig.filelist, MCconfig.classfiles, MCconfig.stitchfiles] = resolve_MVCOfiles(MCconfig.filelist, MCconfig.class_filestr);
         %pick one
         MCconfig.class2view1 = MCconfig.class2use; %case to view all
-        %MCconfig.class2view1 = setdiff(MCconfig.class2use,{'Asterionellopsis' 'Chaetoceros' 'bad' 'detritus' 'mix'}); %example to skip a few
-        %MCconfig.class2view1 = intersect(MCconfig.class2use, {'other'}); %example to select a few
-        %MCconfig.class2view1 = intersect(MCconfig.class2use,
-        %{'G_delicatula_parasite'}); %example to select a few
+      
 end
 
 %defaults case if class2view1 not specified yet
