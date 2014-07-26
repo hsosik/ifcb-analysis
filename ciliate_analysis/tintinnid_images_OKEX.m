@@ -1,0 +1,11 @@
+export_png_from_ROIlist( '/Volumes/IFCB014_OkeanosExplorerAug2013/data/continuous//D20130828T003219_IFCB014.roi', [541] )
+export_png_from_ROIlist( '/Volumes/IFCB014_OkeanosExplorerAug2013/data/continuous//D20130828T005844_IFCB014.roi', [986] )
+export_png_from_ROIlist( '/Volumes/IFCB014_OkeanosExplorerAug2013/data/continuous//D20130828T091830_IFCB014.roi', [956 146] )
+export_png_from_ROIlist( '/Volumes/IFCB014_OkeanosExplorerAug2013/data/continuous//D20130828T100908_IFCB014.roi', [154] )
+export_png_from_ROIlist( '/Volumes/IFCB014_OkeanosExplorerAug2013/data/continuous//D20130825T024901_IFCB014.roi', [884] )
+export_png_from_ROIlist( '/Volumes/IFCB014_OkeanosExplorerAug2013/data/continuous//D20130825T125049_IFCB014.roi', [3459] )
+
+export_png_from_ROIlist('/Volumes/IFCB14_Dock/data//D20140201T045850_IFCB014.roi', [780] )
+export_png_from_ROIlist('/Volumes/IFCB14_Dock/data//D20140201T063834_IFCB014.roi', [208] )
+export_png_from_ROIlist('/Volumes/IFCB14_Dock/data//D20140201T102140_IFCB014.roi', [55] )
+export_png_from_ROIlist('/Volumes/IFCB14_Dock/data//D20140201T152052_IFCB014.roi', [279] )
