@@ -5,8 +5,9 @@ resultpath = 'C:\Documents\Ciliate_Code\IFCB_14\results\';
 micron_factor = 1/3.4; %microns per pixel
 
 %[file path] = uigetfile('C:\Users\Emily Fay\Documents\IFCB14_OkeanosExplorerAug2013\data\D20130902T*.roi')
-[file path] = uigetfile('\\queenrose\IFCB014_OkeanosExplorerAug2013\data\D20130825T*.roi')
+%[file path] = uigetfile('\\queenrose\IFCB014_OkeanosExplorerAug2013\data\D20130825T*.roi')
 %[file path] = uigetfile('C:\Users\Emily Fay\Documents\Ciliate_Code\IFCB_14\Meso1-7-14\Result_Files\D2014*.roi')
+[file path] = uigetfile('/Users/markmiller/Documents/Experiments/Experiments/D201403*.roi');
  file = file(1:findstr(file, '.')-1);
         disp(file)
         fname = [path file '.adc'];
@@ -112,6 +113,8 @@ ylabel('Chlorophyll fluorescence', 'fontsize', 14, 'fontname', 'arial');
 xlabel('FDA fluorescence','fontsize', 14, 'fontname', 'arial');
 set(gca, 'FontSize',14);
 
+figure
+plot(log(pmtB), '*')
 
 % figure
 % plot((adcdata(:,4)),(adcdata(:,5)), '*');
