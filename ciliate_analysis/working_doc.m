@@ -37,15 +37,16 @@ plot(matdate, classcount(:,classnum)./ml_analyzed, 'r.-')
 datetick('x')
 legend('Normal','Alt');
 
+%%
 
-
-load 'C:\Users\Emily Fay\Documents\Ciliate_Code\IFCB_14\Van\results\alt\summary\count_manual_05Feb2014.mat'
+load '/Users/markmiller/Documents/Experiments/IFCB_14/Dock_Experiments/Dinos_stained_unstained/2-1-14/Alt/summary/count_manual_05Feb2014.mat'
 gyro_alt_classcount=classcount(16:end, 36);
 gyro_alt_classcount_ml= (sum(gyro_alt_classcount))/(sum(ml_analyzed(16:end)));
 [alt_ci] = poisson_count_ci(sum(gyro_alt_classcount), 0.95);
 alt_ci_ml= alt_ci/(sum(ml_analyzed(16:end)));
 
-load 'C:\Users\Emily Fay\Documents\Ciliate_Code\IFCB_14\Van\results\normal\summary\count_manual_05Feb2014.mat'
+
+load '/Users/markmiller/Documents/Experiments/IFCB_14/Dock_Experiments/Dinos_stained_unstained/2-1-14/Normal/summary/count_manual_05Feb2014.mat'
 gyro_normal_classcount=classcount(16:end, 36);
 gyro_normal_classcount_ml= (sum(gyro_normal_classcount))/(sum(ml_analyzed(16:end)));
 [normal_ci] = poisson_count_ci(sum(gyro_normal_classcount), 0.95);
@@ -55,21 +56,22 @@ normal_ci_ml= normal_ci/(sum(ml_analyzed(16:end)));
 points=[0.0308 0.5019];
 ci=[normal_ci_ml(2) alt_ci_ml(2)];
 
-% lower=[(gyro_normal_classcount_ml-normal_ci_ml(1)) gyro_alt_classcount_ml-alt_ci_ml(1)];
-% upper=[(gyro_normal_classcount_ml+normal_ci_ml(2)) gyro_alt_classcount_ml+alt_ci_ml(2)];
+lower=[(gyro_normal_classcount_ml-normal_ci_ml(1)) gyro_alt_classcount_ml-alt_ci_ml(1)];
+upper=[normal_ci_ml(2)-gyro_normal_classcount_ml alt_ci_ml(2)-gyro_alt_classcount_ml];
 
-lower=[normal_ci_ml(1) alt_ci_ml(1)];
-upper=[normal_ci_ml(2) alt_ci_ml(2)];
+% lower=[normal_ci_ml(1) alt_ci_ml(1)];
+% upper=[normal_ci_ml(2) alt_ci_ml(2)];
 
 xaxis=[1 2];
 figure;
 bar1= bar(xaxis, [gyro_normal_classcount_ml gyro_alt_classcount_ml]);
-set(gca,'xticklabel',{'unstained','stained'}, 'fontsize', 12, 'fontname', 'arial');
-ylabel('\it{Gyrodinium} \rm sp ( mL^{-1})', 'fontsize', 12, 'fontname', 'arial');
+set(gca,'xticklabel',{'unstained','stained'}, 'fontsize', 24, 'fontname', 'arial');
+ylabel('\it{Gyrodinium} \rm sp ( mL^{-1})', 'fontsize', 24, 'fontname', 'arial');
 hold on
 plot(xaxis, points, '.b');
-errorbar(xaxis, points, lower, upper, 'r', 'Marker', 'none', 'LineStyle', 'none', 'Linewidth', 2 );
+errorbar(xaxis, points, lower, upper, 'r', 'Marker', 'none', 'LineStyle', 'none', 'Linewidth', 4);
 axis square
+%%
 
 
 
