@@ -104,7 +104,7 @@ datetick('x')
 %ylabel([class2use{classnum} ' (mL^{-1})'])
 hold on
 
-load '\\queenrose\IFCB010_OkeanosExplorerAug2013\data\Manual_fromClass\summary\count_manual_19Jan2014.mat'
+load '/Volumes/IFCB010_OkeanosExplorerAug2013/data/Manual_fromClass/summary/count_manual_19Jan2014.mat'
 
 ciliate_classcount=classcount(:,72:92);
 ciliate_sum=sum(ciliate_classcount,2);
