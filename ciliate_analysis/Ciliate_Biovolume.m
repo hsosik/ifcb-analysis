@@ -1,4 +1,4 @@
-load 'C:\Users\Emily Fay\Documents\Ciliate_Code\count_biovol_manual_22Nov2013_day.mat'
+load '/Volumes/d_work/IFCB1/ifcb_data_mvco_jun06/Manual_fromClass/summary/count_biovol_manual_06Feb2014_day.mat'
 
 [ ind_ciliate, class_label ] = get_ciliate_ind( class2use, class2use );
 ciliate_classcount=(classbiovol_bin(:,ind_ciliate)./ml_analyzed_mat_bin(:,ind_ciliate));
@@ -523,18 +523,23 @@ close all
 figure
 plot(yd_wk, smoothclimatology_Leegaardiella_ovalis_weekly, '-b', 'LineWidth',2.5)
 hold on
-%plot(yd_wk, smoothclimatology_Strombidium_inclinatum_weekly, '-r', 'LineWidth',2.5)
+plot(yd_wk, Leegaardiella_ovalis_week, 'b.');
+hold on
+plot(yd_wk, smoothclimatology_Strombidium_inclinatum_weekly, '-r', 'LineWidth',2.5)
+plot(yd_wk, Strombidium_inclinatum_week, 'r.');
 plot(yd_wk, smoothclimatology_Strombidium_morphotype1_weekly, '-g', 'LineWidth',2.5)
+plot(yd_wk, Strombidium_morphotype1_week, 'g.');
 plot(yd_wk, smoothclimatology_Strombidium_morphotype2_weekly, '-k', 'LineWidth',2.5)
+plot(yd_wk, Strombidium_morphotype2_week, 'k.');
 %h_legend=legend('\it{Leegaardiella ovalis} \rm', '\it{Strombidium inclinatum} \rm', '\it{Strombidium} \rm morphotype1' ,'\it{Strombidium} \rm morphotype2')
 h_legend=legend('\it{Leegaardiella ovalis} \rm', '\it{Strombidium} \rm morphotype1' ,'\it{Strombidium} \rm morphotype2')
 set(h_legend,'FontSize',10);
 datetick('x', 3 );
 set(gca,'xgrid','on', 'FontSize',14);
-ylabel('Abundance (cell mL^{-1})', 'fontsize', 14);
+%ylabel('Abundance (cell mL^{-1})', 'fontsize', 14);
 axis square
 ylim([0 0.37])
-%ylabel('biovolume ( \mum^3 mL^-1)', 'fontsize', 14, 'fontname', 'arial')
+ylabel('biovolume ( \mum^3 mL^-1)', 'fontsize', 14, 'fontname', 'arial')
 
 
 
