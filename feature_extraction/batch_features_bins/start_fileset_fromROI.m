@@ -1,11 +1,6 @@
-%in_dir = '\\cheese\J_IFCB\testwell_Feb2014\ifcb101\'; %USER
-%in_dir = 'I:\IFCB14_Dock\ditylum\data\;
-in_dir = '\\QUEENROSE\IFCB14_Dock\ditylum\data\Test_17July_Minus4D01\';%in_dir_blob = '\\queenrose\g_work_ifcb1\dock_compare2014\IFCB101\blobs\';%USER main blob output location
-%in_dir_blob = 'I:\IFCB14_Dock\ditylum\data\blobs\';
-in_dir_blob = '\\QUEENROSE\IFCB14_Dock\ditylum\data\blobs\';
-%out_dir = '\\queenrose\g_work_ifcb1\dock_compare2014\IFCB101\features\';
-%out_dir = 'I:\IFCB14_Dock\ditylum\data\features\';
-out_dir = '\\QUEENROSE\IFCB14_Dock\ditylum\data\features\';
+in_dir = 'C:\IFCB\D20140811_IFCB103\'; %USER
+in_dir_blob = 'C:\IFCB\blobs\'; %USER
+out_dir = 'C:\IFCB\features\'; %USER
 
 bins = dir([in_dir '*.adc']);
 bins = regexprep({bins.name}', '.adc', '');
@@ -20,9 +15,12 @@ empty_target = target;
 
 for bincount = 1:length(bins),
     disp(bins(bincount))
-    png_path = [out_dir bins{bincount}  filesep];
+    %png_path = [out_dir bins{bincount}  filesep];
+    png_path = [out_dir filesep];
+    png_path2 = [out_dir filesep 'multiblob' filesep ];
     if ~exist('png_path', 'dir'),
         mkdir(png_path)
+        mkdir(png_path2)
     end;
 %    imglist = dir([in_dir bins{bincount} filesep '*.png']);
 %    imglist = {imglist.name}';
@@ -65,8 +63,7 @@ for bincount = 1:length(bins),
     fileout = [bins{bincount} '_multiblob_v2.csv'];
     if ~isempty(multiblob_features), 
         ds = dataset([multiblob_features multiblob_titles]);
-        export(ds, 'file', [out_dir 'multiblob' filesep fileout], 'delimiter', ',');
-       
+        export(ds, 'file', [out_dir 'multiblob' filesep fileout], 'delimiter', ',');       
     end; 
     
     
