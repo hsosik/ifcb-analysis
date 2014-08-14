@@ -187,6 +187,32 @@ switch MCconfig.group
         %pick one
         MCconfig.class2view1 = MCconfig.class2use; %case to view all
         %MCconfig.class2view1 = intersect(MCconfig.class2use, {'detritus'}); %example to select a few
+        
+        case 'TAMUG'
+            MCconfig.resultpath = 'c:\ifcb\manual\'; %USER set
+            MCconfig.basepath = 'c:\ifcb\data\'; %USER set
+            %temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
+            %MCconfig.class2use = temp.class2use;
+            MCconfig.class2use = {'dinoflagellates', 'diatoms', 'misc_nano', 'detritus', 'other'};
+            MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
+            MCconfig.classpath = ''; 
+            MCconfig.default_class = 'other';
+            MCconfig.class2view2 = {}; %example to skip view2
+            %MCconfig.class2view2 = {'Laboea' 'Tintinid' };
+            filelisttype ='dirlist'; %manual_list, loadfile, dirlist
+            switch filelisttype
+                case 'loadfile'
+                    load cael_filelist2.mat
+                    MCconfig.filelist = filelist; 
+                case 'dirlist' %other MVCO cases
+                    temp = dir('c:\data\D20140811_IFCB103\D2014*'); temp = char(temp.name);
+                    %MCconfig.filelist = cellstr(temp(3:end,1:end-13)); clear temp
+                    MCconfig.filelist = cellstr(temp(:,1:end-4)); clear temp
+            end
+            [MCconfig.filelist, MCconfig.classfiles] = resolve_files(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
+            %pick one
+            MCconfig.class2view1 = MCconfig.class2use; %case to view all
+            %MCconfig.class2view1 = intersect(MCconfig.class2use, {'detritus'}); %example to select a few
 end
 
 %defaults case if class2view1 not specified yet
