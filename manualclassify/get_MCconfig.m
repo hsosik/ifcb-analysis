@@ -12,23 +12,13 @@ MCconfig.pick_mode = 'raw_roi';
 MCconfig.displayed_ordered = 'size'; %USER choose one 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
 %MCconfig.displayed_ordered = 'roi_index'; 
 
-MCconfig.alphabetize='no' ; %yes= alphabetize the list in the identification window, no = do not alphabetize the list.
+MCconfig.alphabetize='yes' ; %yes= alphabetize the list in the identification window, no = do not alphabetize the list.
 
 MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
 
 %group specific options
-MCconfig.group = 'Ditylum_culture'; %MVCO, Sherbrooke, OKEX
-
-%default
-switch MCconfig.batchmode
-    case 'yes'
-        if ischar(MCconfig.batch_class_index) %case when the name is given
-            MCconfig.class2view1 = MCconfig.batch_class_index; %if you want to see one file by index
-        else %case where the number is given
-            MCconfig.class2view1 = MCconfig.class2use(MCconfig.batch_class_index); %if you want to see one file by index        
-        end
-end
+MCconfig.group = 'TAMUG'; %MVCO, Sherbrooke, OKEX
 
 switch MCconfig.group
     case 'Sherbrooke'
@@ -193,7 +183,7 @@ switch MCconfig.group
             MCconfig.basepath = 'c:\ifcb\data\'; %USER set
             %temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
             %MCconfig.class2use = temp.class2use;
-            MCconfig.class2use = {'dinoflagellates', 'diatoms', 'misc_nano', 'detritus', 'other'};
+            MCconfig.class2use = {'dinoflagellates', 'diatoms', 'misc_nano', 'detritus', 'other', 'ciliates'};
             MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
             MCconfig.classpath = ''; 
             MCconfig.default_class = 'other';
@@ -205,7 +195,7 @@ switch MCconfig.group
                     load cael_filelist2.mat
                     MCconfig.filelist = filelist; 
                 case 'dirlist' %other MVCO cases
-                    temp = dir('c:\data\D20140811_IFCB103\D2014*'); temp = char(temp.name);
+                    temp = dir('c:\ifcb\data\D2014\D20140811\D2014*.roi'); temp = char(temp.name);
                     %MCconfig.filelist = cellstr(temp(3:end,1:end-13)); clear temp
                     MCconfig.filelist = cellstr(temp(:,1:end-4)); clear temp
             end
@@ -214,6 +204,17 @@ switch MCconfig.group
             MCconfig.class2view1 = MCconfig.class2use; %case to view all
             %MCconfig.class2view1 = intersect(MCconfig.class2use, {'detritus'}); %example to select a few
 end
+
+%default
+switch MCconfig.batchmode
+    case 'yes'
+        if ischar(MCconfig.batch_class_index) %case when the name is given
+            MCconfig.class2view1 = MCconfig.batch_class_index; %if you want to see one file by index
+        else %case where the number is given
+            MCconfig.class2view1 = MCconfig.class2use(MCconfig.batch_class_index); %if you want to see one file by index        
+        end
+end
+
 
 %defaults case if class2view1 not specified yet
 if ~isfield(MCconfig,'class2view1')
