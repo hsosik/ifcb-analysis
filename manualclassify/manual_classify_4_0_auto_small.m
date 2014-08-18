@@ -29,7 +29,7 @@ function [  ] = manual_classify_4_0( MCconfig )
 %1/12/10 modified fillscreen to skip zero-sized rois
 %1/13/10 modified in if change_flag loop so that subdivide ID overrides a previous main manual column ID
 %Version 3_2 - Heidi 11/10/11. Modified to address bug with missing class2use_sub? for cases
-%with multiple subdivides; added back -append option on save (previously removed in 1/6/10 version)
+%with multiple subdivides; added back -append option on save (previously rxemoved in 1/6/10 version)
 %includes modifications to get_classlist.m
 %Version 4_0 - Heidi 6/13/11. Refactor to run as function with filelist and config structure as input,
 %intended to replace both manual_classify_3_2 and manual_classify_3_2_batch,
@@ -120,7 +120,7 @@ for filecount = filenum2start:length(filelist),
     
     %SPECIAL case auto_small
     if newclasslist_flag, 
-        small_ind = find(x_all < xbig & y_all < ybig);
+        small_ind = find(x_all < xbig & x_all ~= 0 & y_all < ybig & y_all ~= 0);
         sind = strmatch('sperm_free', class2use_manual);
         classlist(small_ind,2) = sind;
         clear small_ind sind 
