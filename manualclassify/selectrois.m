@@ -26,7 +26,7 @@ change_flag = 0;
 go_back_flag = 0;
 button = 1;  %reset to stop for ginput on next screen
 while button(end) < 3 %& ~isempty(startbyte),  %
-    [x1,y1,button] = ginput;  % choose image locations using left button of mouse
+    [x1,y1,button] = ginput_crosshair;  % choose image locations using left button of mouse
     if ~isempty(x1),
         if length(x1) >= 1 && button(end) <= 3,
             if ~isempty(category),
