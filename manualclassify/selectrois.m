@@ -1,4 +1,4 @@
-function [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2pick1, class2pick2, mark_col)
+function [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2pick1, class2pick2, mark_col, maxlist1)
 %function [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2pick1, class2pick2, mark_col)
 %For Imaging FlowCytobot roi viewing; Use with manual_classify scripts;
 %Sets up a graph window for manual identification from a roi collage (use
@@ -40,6 +40,11 @@ while button(end) < 3 %& ~isempty(startbyte),  %
                 end;
                 selected_roi = selected_roi(~isnan(selected_roi)); %make sure click was on a ROI, moved before button_flag loop 1/15/10
                 if button_flag == 1, %first set always goes with manual column
+                    catnum = strmatch(category(5:end),class2pick1, 'exact');
+                    mark_col_now = 2;
+                    text(x1,y1, num2str(catnum),'color', 'r', 'fontweight', 'bold')
+                    classlist(selected_roi,4:end) = NaN; %any previous subdivide IDs overridden by this new main manual ID, active subdiv will go to default in manual_classify, 1/15/10
+                elseif button_flag == 3,
                     catnum = strmatch(category(5:end),class2pick1, 'exact');
                     mark_col_now = 2;
                     text(x1,y1, num2str(catnum),'color', 'r', 'fontweight', 'bold')

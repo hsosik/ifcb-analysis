@@ -18,7 +18,9 @@ MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
 
 %group specific options
-MCconfig.group = 'TAMUG'; %MVCO, Sherbrooke, OKEX
+MCconfig.group = 'MVCO'; %MVCO, Sherbrooke, OKEX
+%default length of category list box before split to second box
+MCconfig.maxlist1 = 50; %USER make a copy and edit in your switch case if you want a different value
 
 switch MCconfig.group
     case 'Sherbrooke'
@@ -39,7 +41,7 @@ switch MCconfig.group
         [MCconfig.filelist, MCconfig.classfiles] = resolve_files(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
     case 'MVCO'
         MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
-        temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
+        temp = load('class2use_MVCOmanual4', 'class2use'); %USER load yours here
         MCconfig.class2use = temp.class2use;
         MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
         MCconfig.default_class = 'unclassified';
@@ -47,10 +49,10 @@ switch MCconfig.group
         MCconfig.class2use_sub = temp.class2use_sub4;
         MCconfig.sub_default_class = 'Ciliate_mix';
         MCconfig.classstr = 'ciliate';
-        MCconfig.class2view2 = MCconfig.class2use_sub; %example to view all
-       % MCconfig.class2view2 = {}; %example to skip view2
+       % MCconfig.class2view2 = MCconfig.class2use_sub; %example to view all
+        MCconfig.class2view2 = {}; %example to skip view2
         %MCconfig.class2view2 = {'Laboea' 'Tintinid' };
-        MVCOfilelisttype ='loadfile'; %manual_list, loadfile, dirlist
+        MVCOfilelisttype ='thislist'; %manual_list, loadfile, dirlist
         switch MVCOfilelisttype
             case 'manual_list' %MVCO batch system
                 MCconfig.filelist = get_filelist_manual([MCconfig.resultpath 'manual_list'],5,[2014], 'all'); %manual_list, column to use, year to find

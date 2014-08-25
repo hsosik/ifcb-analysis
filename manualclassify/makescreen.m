@@ -1,4 +1,4 @@
-function [ figure_handle, listbox_handle1, listbox_handle2, instructions_handle] = makescreen( class2pick1, class2pick2, MCconfig )
+function [ figure_handle, listbox_handle1, listbox_handle2, instructions_handle, listbox_handle3] = makescreen( class2pick1, class2pick2, MCconfig )
 %function [ figure_handle, button_handles, instructions_handle] = makescreen( class2pick )
 %For Imaging FlowCytobot roi viewing; Use with manual_classify scripts;
 %Sets up a graph window for manual identification from a roi collage (use
@@ -25,11 +25,9 @@ rbht = height*.017;%.0190;
 
 button_handles1 = NaN;
 instructions_handle = NaN;
+
 if ~isempty(class2pick1), %edited 1/12/10 to fix typo pick2 --> pick1
-    %for count = 1:length(class2pick1),
-    %    button_handles1(count) = uicontrol('style', 'radiobutton', 'string', [num2str(length(class2pick1)-count+1, '%02d') '-' char(class2pick1(end-count+1))], 'position',[x0 y0+(count-5)*ysp rbwd rbht], 'callback', 'select_category');
-    %end;
-    %set(button_handles1, 'value', 0, 'foregroundcolor', 'r', 'backgroundcolor', 'w')
+    
     switch MCconfig.alphabetize
         case 'yes'
             [~, ix] = sort(lower(class2pick1));%sorting class2pick1
@@ -41,13 +39,20 @@ if ~isempty(class2pick1), %edited 1/12/10 to fix typo pick2 --> pick1
             warning('You should choose ''yes'' or ''no'' for the variable MCconfig.alphabetize_list. The list will not be alphabetized for now')
             str = cellstr([num2str((1:length(class2pick1))', '%03d') repmat(' ',length(class2pick1),1) char(class2pick1)]);
     end
-    listbox_handle1 = uicontrol('style', 'listbox', 'string', str,'position', [width*.005 height*.006 width/9 height*.90], 'ForegroundColor', 'r', 'callback', 'select_category');
+    if isempty(class2pick2) %can't have split list1 if in subdivide mode
+        if length(str) > MCconfig.maxlist1,
+            str1 = str(1:50);
+            str2 = str(51:end);
+            listbox_handle3 = uicontrol('style', 'listbox', 'string', str2,'position', [width*.9 height*.006 width/10     height*.90], 'ForegroundColor', 'b', 'callback', 'select_category');
+        end;
+    end;
+    listbox_handle1 = uicontrol('style', 'listbox', 'string', str1,'position', [width*.005 height*.006 width/9 height*.90], 'ForegroundColor', 'r', 'callback', 'select_category');
     instructions_handle = uicontrol('style', 'text');
     tpos = get(instructions_handle, 'position');
     %tpos(3) = tpos(3)*10; tpos(2) = tpos(2)*2; tpos(1) = tpos(1)*10;
     tpos(3) = tpos(3)*10; tpos(2) = tpos(2)*3; tpos(1) = tpos(1)*10; tpos(4) = tpos(4)*1.5;
     set(instructions_handle, 'position', tpos)
-    set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'])
+    set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'])    
 end;
 button_handles2 = NaN;
 if ~isempty(class2pick2),
@@ -64,4 +69,6 @@ end;
 
 set(figure_handle,'position',[width*0 height*0.04 width*1 height*.96])
 set(gcf,'color', [1 1 1]);
+
+end
 

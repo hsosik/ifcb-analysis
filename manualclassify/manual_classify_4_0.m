@@ -35,8 +35,10 @@ function [  ] = manual_classify_4_0( MCconfig )
 %intended to replace both manual_classify_3_2 and manual_classify_3_2_batch,
 %no plan to change functions already called by those scripts
 %23 Aug 2013, revise to pass filelists in as part of MCconfig structure
+% Aug 2014, revise to address bug #3037, where zero-sized ROIs were previously annotated with default class in 'raw_roi' mode
 
-global figure_handle listbox_handle1 listbox_handle2 instructions_handle
+
+global figure_handle listbox_handle1 listbox_handle2 instructions_handle listbox_handle3
 close all
 resultpath = MCconfig.resultpath;
 filenum2start = MCconfig.filenum2start;
@@ -79,7 +81,7 @@ camy = 1035;  %camera image size, changed from 1034 heidi 6/8/09
 border = 3; %to separate images
 
 %make the collage window
-[figure_handle, listbox_handle1, listbox_handle2, instructions_handle] = makescreen(class2use_pick1, class2use_pick2,MCconfig);
+[figure_handle, listbox_handle1, listbox_handle2, instructions_handle, listbox_handle3] = makescreen(class2use_pick1, class2use_pick2,MCconfig);
 if MCconfig.dataformat == 0,
     adcxind = 12;
     adcyind = 13;
@@ -116,6 +118,10 @@ for filecount = filenum2start:length(filelist),
     end;
 
     [ classlist, sub_col, list_titles, newclasslist_flag ] = get_classlistTB( [resultpath outfile],classfile_temp, pick_mode, class2use_manual, class2use_sub, classstr, classnum_default, classnum_default_sub, length(x_all) );
+    if newclasslist_flag,  %only first time creating classlist
+        zero_ind = find(x_all == 0);
+        classlist(zero_ind,2) = NaN; %mark zero-sized ROIs as NaNs in manual column (needed for raw_roi case where these are put in default class by get_classlistTB
+    end;
 %special case to segregate dirt spots in Healy1101 data
     if isequal(outfile(1:10), 'IFCB8_2011') && newclasslist_flag,
         classlist((adcdata(:,10) == 1118 & adcdata(:,11) == 290),2) = strmatch('bad', class2use_manual);
@@ -199,7 +205,7 @@ for filecount = filenum2start:length(filelist),
                     [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [class2use_now(classnum) filelist{filecount}], classlist, change_col, classnum);
                     next_ind = next_ind + next_ind_increment - 1;
                     figure(figure_handle)
-                    [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2use_pick1, class2use_pick2, mark_col);
+                    [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2use_pick1, class2use_pick2, mark_col, MCconfig.maxlist1);
                     %keyboard
                     if change_flag,
                         if ~isempty(sub_col),  %strncmp(pick_mode, 'subdiv',6)
