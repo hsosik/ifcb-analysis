@@ -43,8 +43,8 @@ if ~isempty(class2pick1), %edited 1/12/10 to fix typo pick2 --> pick1
     listbox_handle3 = NaN;
     if isempty(class2pick2) %can't have split list1 if in subdivide mode with class2view2 not empty
         if length(str) > MCconfig.maxlist1,
-            str1 = str(1:50);
-            str2 = str(51:end);
+            str1 = str(1:MCconfig.maxlist1);
+            str2 = str(MCconfig.maxlist1+1:end);
             listbox_handle3 = uicontrol('style', 'listbox', 'string', str2,'position', [width*.9 height*.006 width/10     height*.90], 'ForegroundColor', 'r', 'callback', 'select_category');
         end;
     end;

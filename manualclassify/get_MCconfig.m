@@ -12,7 +12,7 @@ MCconfig.pick_mode = 'raw_roi';
 MCconfig.displayed_ordered = 'size'; %USER choose one 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
 %MCconfig.displayed_ordered = 'roi_index'; 
 
-MCconfig.alphabetize='yes' ; %yes= alphabetize the list in the identification window, no = do not alphabetize the list.
+MCconfig.alphabetize='no' ; %yes= alphabetize the list in the identification window, no = do not alphabetize the list.
 
 MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
@@ -40,6 +40,7 @@ switch MCconfig.group
         end
         [MCconfig.filelist, MCconfig.classfiles] = resolve_files(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
     case 'MVCO'
+        MCconfig.maxlist1 = 75;
         MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
         temp = load('class2use_MVCOmanual4', 'class2use'); %USER load yours here
         MCconfig.class2use = temp.class2use;
