@@ -43,7 +43,7 @@ if ~isempty(class2pick1), %edited 1/12/10 to fix typo pick2 --> pick1
         if length(str) > MCconfig.maxlist1,
             str1 = str(1:50);
             str2 = str(51:end);
-            listbox_handle3 = uicontrol('style', 'listbox', 'string', str2,'position', [width*.9 height*.006 width/10     height*.90], 'ForegroundColor', 'b', 'callback', 'select_category');
+            listbox_handle3 = uicontrol('style', 'listbox', 'string', str2,'position', [width*.9 height*.006 width/10     height*.90], 'ForegroundColor', 'r', 'callback', 'select_category');
         end;
     end;
     listbox_handle1 = uicontrol('style', 'listbox', 'string', str1,'position', [width*.005 height*.006 width/9 height*.90], 'ForegroundColor', 'r', 'callback', 'select_category');

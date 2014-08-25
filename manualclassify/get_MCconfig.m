@@ -20,7 +20,7 @@ MCconfig.stitchfiles = [];
 %group specific options
 MCconfig.group = 'MVCO'; %MVCO, Sherbrooke, OKEX
 %default length of category list box before split to second box
-MCconfig.maxlist1 = 50; %USER make a copy and edit in your switch case if you want a different value
+MCconfig.maxlist1 = 60; %USER make a copy and edit in your switch case if you want a different value
 
 switch MCconfig.group
     case 'Sherbrooke'
