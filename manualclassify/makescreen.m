@@ -40,6 +40,7 @@ if ~isempty(class2pick1), %edited 1/12/10 to fix typo pick2 --> pick1
             str = cellstr([num2str((1:length(class2pick1))', '%03d') repmat(' ',length(class2pick1),1) char(class2pick1)]);
     end
     str1 = str; 
+    listbox_handle3 = NaN;
     if isempty(class2pick2) %can't have split list1 if in subdivide mode with class2view2 not empty
         if length(str) > MCconfig.maxlist1,
             str1 = str(1:50);
