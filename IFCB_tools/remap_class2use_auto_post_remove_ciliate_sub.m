@@ -12,12 +12,12 @@ flag = input('Are you sure you want to do this? Type ''yes'' to proceed. ', 's')
 if strcmp('yes', flag),
     disp('Remapping: ')
     filelist = dir([config.remappath 'IFCB*.mat']);
-    config.type2map = 'manual'; %'manual', 'auto', etc. from list_titles
+    config.type2map = 'auto'; %'manual', 'auto', etc. from list_titles
     for filecount = 1:length(filelist),
         fname = filelist(filecount).name;
         disp(fname)
         file_struct = load([config.remappath fname]);
-        file_struct_remapped = remapfile_remove_ciliate_subdivide(config, file_struct); 
+        file_struct_remapped = remapfile_post_remove_ciliate_sub(config, file_struct); 
         save([config.remappath fname], '-struct', 'file_struct_remapped')
     end;
 end;

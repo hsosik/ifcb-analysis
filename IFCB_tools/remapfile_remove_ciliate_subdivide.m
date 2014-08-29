@@ -32,7 +32,7 @@ end;
 file_struct.classlist(ind,col2remap) = b; 
 eval(['file_struct.class2use_' config.type2map ' = config.class2use;'])
 file_struct_remapped = file_struct; 
-keyboard
+
 %clean up the files to remove subdivide info
 if isfield(file_struct_remapped, 'class2use_sub4'),
     file_struct_remapped = rmfield(file_struct_remapped, 'class2use_sub4');
