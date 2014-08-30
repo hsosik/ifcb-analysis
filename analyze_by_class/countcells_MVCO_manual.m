@@ -1,6 +1,7 @@
-resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
+resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass_backup_20Aug2014\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load \\raspberry\d_work\IFCB1\code_mar10_mvco\ml_analyzed_all %load the milliliters analyzed for all sample files
+resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass_backup_20Aug2014\';
 
 mode_list = manual_list(1,2:end-1); mode_list = [mode_list 'ciliate_ditylum'];
 %find ml_analyzed matching each manual file
@@ -27,6 +28,7 @@ sec = str2num(fstr(:,20:21));
 matdate = datenum(year,0,yearday,hour,min,sec);
 clear fstr year yearday hour min sec
 
+load class2use_MVCOciliate
 load([resultpath char(manual_list(2,1))], 'class2use_sub4') %read first file to get classes
 load class2use_MVCOmanual3 %get the master list to start
 class2use_manual = class2use;
@@ -59,11 +61,12 @@ for loopcount = 1:length(mode_list),
                 temp(classnum) = size(find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum)),1);
             end;
         end;
-        if exist('class2use_sub4', 'var'),
-             if ~isequal(class2use_sub4, class2use_first_sub)
-                disp('class2use_sub4 does not match previous files!!!')
-                keyboard
-            end;
+%        if exist('class2use_sub4', 'var'),
+        if size(classlist,2) > 3
+%            if ~isequal(class2use_sub4, class2use_first_sub)
+%                disp('class2use_sub4 does not match previous files!!!')
+%                keyboard
+%            end;
             for classnum = 1:numclass2,
                 temp(classnum+numclass1) = size(find(classlist(:,4) == classnum),1);
             end;
