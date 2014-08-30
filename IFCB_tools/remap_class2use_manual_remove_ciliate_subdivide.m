@@ -18,7 +18,8 @@ if strcmp('yes', flag),
         disp(fname)
         file_struct = load([config.remappath fname]);
         file_struct_remapped = remapfile_remove_ciliate_subdivide(config, file_struct); 
-        save([config.remappath fname], '-struct', 'file_struct_remapped')
+        keyboard
+        %save([config.remappath fname], '-struct', 'file_struct_remapped')
     end;
 end;
 

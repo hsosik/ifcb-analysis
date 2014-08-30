@@ -3,10 +3,7 @@ function [ file_struct_remapped ] = remapfile(config, file_struct);
 %   Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2013
 
 col2remap = strmatch(config.type2map, file_struct.list_titles); %2 = manual, 3 = auto
-%correct legacy label assuming SVM
-if strmatch('SVM-auto', file_struct.list_titles(3)),
-    file_struct.list_titles{3} = 'auto';
-end;
+
 eval(['class2use = file_struct.class2use_' config.type2map ';']);
 if length(class2use) < 30,
     class2use = load('class2use_MVCOmanual3');

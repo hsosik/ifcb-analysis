@@ -28,9 +28,27 @@ if ~isempty(test),
     disp(['Error: remap does not specify fate of ' unique((list_in(test)))]')
     return
 end;
-%[list_in' config.class2use(b)' file_struct.class2use_manual(file_struct.classlist(ind,2))'], keyboard %use this to diagnose remap
+[list_in' config.class2use(b)' file_struct.class2use_manual(file_struct.classlist(ind,2))'], keyboard %use this to diagnose remap
 file_struct.classlist(ind,col2remap) = b; 
 eval(['file_struct.class2use_' config.type2map ' = config.class2use;'])
+
+col2remap = 3; %now do auto
+ind = find(~isnan(classlist(:,col2remap)));
+list_in = class2use(classlist(ind,col2remap));
+eval(['list_out = ' config.remapfunc '( list_in);'])
+[~,b] = ismember(list_out,config.class2use);
+%check to make sure all categories have been remapped
+test = find(b ==0);
+if ~isempty(test),
+    disp(['Error: remap does not specify fate of ' unique((list_in(test)))]')
+    return
+end;
+[list_in' config.class2use(b)' file_struct.class2use_auto(file_struct.classlist(ind,2))'], keyboard %use this to diagnose remap
+file_struct.classlist(ind,col2remap) = b; 
+eval(['file_struct.class2use_auto = config.class2use;'])
+
+
+
 file_struct_remapped = file_struct; 
 
 %clean up the files to remove subdivide info
