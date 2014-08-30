@@ -16,10 +16,10 @@ if strcmp('yes', flag),
     for filecount = 1:length(filelist),
         fname = filelist(filecount).name;
         disp(fname)
-        file_struct = load([config.remappath fname]);
+        %file_struct = load([config.remappath fname]);
+        file_struct = load(['\\raspberry\d_work\IFCB1\ifcb_data_MVCO_jun06\Manual_fromClass_backup_20Aug2014\' fname]);
         file_struct_remapped = remapfile_remove_ciliate_subdivide(config, file_struct); 
-        keyboard
-        %save([config.remappath fname], '-struct', 'file_struct_remapped')
+        save([config.remappath fname], '-struct', 'file_struct_remapped')
     end;
 end;
 

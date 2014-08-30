@@ -13,6 +13,7 @@ load class2use_MVCOciliate
 class2use = [class2use class2use_sub4];
 
 classlist = file_struct.classlist;
+keyboard
 if size(file_struct.classlist,2) > 3,
     ind2move = find(~isnan(file_struct.classlist(:,4)));
     classlist(ind2move,2) = classlist(ind2move,4) + orig_length;
@@ -28,7 +29,7 @@ if ~isempty(test),
     disp(['Error: remap does not specify fate of ' unique((list_in(test)))]')
     return
 end;
-[list_in' config.class2use(b)' file_struct.class2use_manual(file_struct.classlist(ind,2))'], keyboard %use this to diagnose remap
+%[list_in' config.class2use(b)' file_struct.class2use_manual(file_struct.classlist(ind,2))'], keyboard %use this to diagnose remap
 file_struct.classlist(ind,col2remap) = b; 
 eval(['file_struct.class2use_' config.type2map ' = config.class2use;'])
 
@@ -43,7 +44,7 @@ if ~isempty(test),
     disp(['Error: remap does not specify fate of ' unique((list_in(test)))]')
     return
 end;
-[list_in' config.class2use(b)' file_struct.class2use_auto(file_struct.classlist(ind,2))'], keyboard %use this to diagnose remap
+%[list_in' config.class2use(b)' class2use(file_struct.classlist(ind,3))'], keyboard %use this to diagnose remap
 file_struct.classlist(ind,col2remap) = b; 
 eval(['file_struct.class2use_auto = config.class2use;'])
 
