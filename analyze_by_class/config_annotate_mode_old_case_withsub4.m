@@ -1,4 +1,4 @@
-function [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( annotate_mode, class2use_here, manual_list, mode_list )
+function [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( annotate_mode, class2use_here, class2use_first_sub, manual_list, mode_list )
 %evaluate case details for MVCO IFCB manual_list details
 %called by countcells_MVCO_manual.m, biovolume_summary_MVCO_manual.m, biovolume_size_summary_MVCO_manual.m
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, Jan 2013
@@ -8,13 +8,12 @@ function [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( 
             %use them all
             numclass = length(class2use_here);
             class_cat = 1:numclass;
+            %[~, class_cat] = setdiff(class2use_here, {'diatom_flagellate' 'other_interaction'});
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)));
         case 'ciliates'
-            [~, class_cat] = intersect(class2use_here, {'Ciliate_mix' 'Didinium_sp' 'Euplotes_sp' 'Laboea_strobila' 'Leegaardiella_ovalis' 'Mesodinium_sp' 'Pleuronema_sp' 'Strobilidium_morphotype1'...
-                'Strombidium_capitatum' 'Strombidium_conicum' 'Strombidium_inclinatum' 'Strombidium_morphotype1' 'Strombidium_morphotype2' 'Strombidium_oculatum'...
-                'Strombidium_wulffi' 'Tiarina_fusus' 'Tintinnid' 'Tontonia_appendiculariformis' 'Tontonia_gracillima'});
+            [~, class_cat] = intersect(class2use_here, ['ciliate' class2use_first_sub]);
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
@@ -25,6 +24,7 @@ function [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( 
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)) & ~cell2mat(manual_list(2:end,strmatch('diatoms', mode_list)+1)));
         case 'diatoms'
             %all except mix, mix_elongated, and detritus
+            %[~, class_cat] = setdiff(class2use_here, {'mix' 'detritus' 'diatom_flagellate' 'other_interaction'});
             [~, class_cat] = setdiff(class2use_here, {'mix' 'detritus'});
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
@@ -42,9 +42,7 @@ function [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( 
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
         case 'ciliate_ditylum'
-            [~, class_cat] = intersect(class2use_here, {'Ditylum' 'Ciliate_mix' 'Didinium_sp' 'Euplotes_sp' 'Laboea_strobila' 'Leegaardiella_ovalis' 'Mesodinium_sp' 'Pleuronema_sp' 'Strobilidium_morphotype1'...
-                'Strombidium_capitatum' 'Strombidium_conicum' 'Strombidium_inclinatum' 'Strombidium_morphotype1' 'Strombidium_morphotype2' 'Strombidium_oculatum'...
-                'Strombidium_wulffi' 'Tiarina_fusus' 'Tintinnid' 'Tontonia_appendiculariformis' 'Tontonia_gracillima'});
+            [~, class_cat] = intersect(class2use_here, ['Ditylum' 'ciliate' class2use_first_sub]);
             manual_only = 0;
             list_col = NaN;
             mode_ind = find(~cell2mat(manual_list(2:end,2)) & cell2mat(manual_list(2:end,3)) & cell2mat(manual_list(2:end,4)) & ~cell2mat(manual_list(2:end,5)) & cell2mat(manual_list(2:end,6)));   
@@ -61,7 +59,7 @@ function [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( 
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
        case 'guinardia'
-            [~, class_cat] = intersect(class2use_here, {'Guinardia_delicatula' 'G_delicatula_parasite' 'G_delicatula_external_parasite' 'other_interaction' 'pennates_on_diatoms' 'diatom_flagellate' ...
+            [~, class_cat] = intersect(class2use_here, {'Guinardia' 'G_delicatula_parasite' 'G_delicatula_external_parasite' 'other_interaction' 'pennates_on_diatoms' 'diatom_flagellate' ...
                 'G_delicatula_detritus'});
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
