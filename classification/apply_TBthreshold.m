@@ -1,11 +1,15 @@
 function [ class_out ] = apply_TBthreshold( class2use, scores, thre )
 %function [ class_out ] = apply_TBthreshold( scores, thre )
-%   Detailed explanation goes here
-
-%    classcount_above_adhocthresh = classcount;
+%
+%IFCB random forest classifier interpretation, returns class identification
+%considering a threshold score for a positive identification; cases below
+%threshold score returned as 'unclassified'
+%
+%Heidi M. Sosik, WOods Hole Oceanographic Institution
 
 if length(thre) == 1, thre = thre*ones(1,length(class2use)-1); end;
-
+thre = thre(:)';
+    
 num = size(scores,1); %number of unknowns
 t = repmat(thre,num,1);
 win = (scores > t); %find scores above thre
