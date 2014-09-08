@@ -10,7 +10,9 @@ aid_prefix = fullfile(aidpathstr, cellstr(tempstr(:,1:4)), cellstr(tempstr(:,5:7
 temp = load([classpath classfiles{1}], 'class2useTB', 'classifierName');
 class2use = temp.class2useTB;
 
-switch 'adhoc'
+threshold_mode = 'adhoc';
+
+switch threshold_mode
     case 'opt'  %"optimal" threshold from oob analysis
         temp = load(temp.classifierName, 'maxthre');
         thre = temp.maxthre;
@@ -23,6 +25,7 @@ clear temp
 
 if length(thre) == 1,
     thre = thre*ones(size(class2use));
+    thre = thre(1:end-1); %case with unclassified on end but not explicit in classifier
 end;
 
 outpaths = fullfile(outpath_base, class2use, filesep);
@@ -39,9 +42,13 @@ for filecount = 1:length(classfiles)
     disp(['reading ' num2str(filecount) ' of ' num2dostr])
     t= load([classpath classfiles{filecount}]);
     %max score wins (no unclassified output)
-    [maxscore, class_out] = max(t.TBscores');
-%    [ class_out ] = apply_TBthreshold( t.class2useTB, t.TBscores, adhocthresh )
-%    [ class_out ] = apply_TBthreshold( t.class2useTB, t.TBscores, adhocthresh )
+    switch threshold_mode
+        case 'opt'
+            [maxscore, class_out] = max(t.TBscores');
+        case 'adhoc'    
+            [ class_out ] = apply_TBthreshold( t.class2useTB, t.TBscores, thre );
+            [~, class_out] = ismember(class_out, t.class2useTB);
+    end;
     for ii = 1:length(class2use),
         ind = find(class_out == ii);
         filename = [outpaths{ii} outfiles{filecount}];
