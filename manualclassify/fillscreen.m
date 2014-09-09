@@ -6,7 +6,8 @@ function [next_ind, imagemap] = fillscreen(imagedat,imgind,camx, camy, border, t
 %this screen;
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, 30 May 2009
 %modified 12 January 2010 to skip over zero-size rois
-%modifeid 15 January 2010 so that selected ID displayed on previous pages within a category have proper text color (red for main list, blue for subdivide list)
+%modified 15 January 2010 so that selected ID displayed on previous pages within a category have proper text color (red for main list, blue for subdivide list)
+%modified 9 September 2014 to adjust axes position
 
 %inputs:
 %   imagedat = cell array of roi images in order to plot
@@ -49,7 +50,8 @@ while ~pagefull && next_ind <= length(imgind)
             plotnow = 1;
         end;
         if plotnow
-            colormap(gray); shading flat; hold on; axis([1 camx 1 camy]); set(gca, 'ydir', 'reverse', 'yticklabel', [])
+            colormap(gray); shading flat; hold on; axis([1 camx 1 camy]); set(gca, 'ydir', 'reverse', 'yticklabel', [], 'units', 'inches')
+            tpos = get(gca, 'position'); tpos(1:2) = [1.8 1]; set(gca, 'position', tpos)
             h = imagesc(imagedat{next_ind}', 'xdata', start_pos(1):check_pos(1), 'ydata', start_pos(2):check_pos(2)); hold on
             text(start_pos(1),start_pos(2), num2str(imgind(next_ind)), 'verticalalignment','top');
             if classlist(imgind(next_ind), mark_col) ~= classnum & ~isnan(classlist(imgind(next_ind), mark_col)),  %if class changed on this round, mark with new class number
