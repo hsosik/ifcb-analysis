@@ -30,7 +30,7 @@ function [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( 
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
         case 'big ciliates'
-            [~, class_cat] = intersect(class2use_here, {'tintinnid' 'Laboea'});
+            [~, class_cat] = intersect(class2use_here, {'Tintinnid' 'Laboea_strobila'});
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)) & ~cell2mat(manual_list(2:end,strmatch('ciliates', mode_list)+1)));
