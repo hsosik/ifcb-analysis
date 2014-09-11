@@ -31,22 +31,23 @@ sec = str2num(fstr(:,20:21));
 matdate = datenum(year,0,yearday,hour,min,sec);
 clear fstr yearday hour min sec
 
-load([resultpath char(manual_list(2,1))], 'class2use_sub4') %read first file to get classes
-load class2use_MVCOmanual3 %get the master list to start
+%load([resultpath char(manual_list(2,1))], 'class2use_sub4') %read first file to get classes
+load class2use_MVCOmanual4 %get the master list to start
 class2use_manual = class2use;
 class2use_manual_first = class2use_manual;
-class2use_first_sub = class2use_sub4; %this is specific for one sub case = ciliates
+%class2use_first_sub = class2use_sub4; %this is specific for one sub case = ciliates
 numclass1 = length(class2use_manual);
-numclass2 = length(class2use_sub4);
-numclass = numclass1 + numclass2;
-class2use_here = [class2use_manual_first class2use_sub4];
+%numclass2 = length(class2use_sub4);
+numclass = numclass1; % + numclass2;
+class2use_here = [class2use_manual_first]; % class2use_sub4];
 classcount = NaN(length(filelist),numclass);  %initialize output
 classbiovol = classcount;
 classcarbon = classcount;
 ml_analyzed_mat = classcount;
 for loopcount = 1:length(mode_list),
     annotate_mode = char(mode_list(loopcount));
-    [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( annotate_mode, class2use_here, class2use_first_sub, manual_list, mode_list );
+%    [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( annotate_mode, class2use_here, class2use_first_sub, manual_list, mode_list );
+    [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( annotate_mode, class2use_here, manual_list, mode_list );
     filelist = cell2struct(manual_list(mode_ind+1,1),{'name'},2);
     for filecount = 1:length(filelist),
         filename = filelist(filecount).name;
@@ -54,12 +55,12 @@ for loopcount = 1:length(mode_list),
         ml_analyzed_mat(mode_ind(filecount),class_cat) = ml_analyzed(mode_ind(filecount));
         load([resultpath filename])
         yr = str2num(filename(7:10));
-            if yr < 2013,
-            biovolpath = [biovolpath_base 'biovolume' filename(7:10) '\'];
-            load([biovolpath filename]) %targets
-            tind = char(targets.pid); %find the ROI indices excluding second in stitched pair
-            tind = str2num(tind(:,end-4:end));
-        else %2013 and later, v2 features with biovolume
+       % if yr < 2013,
+       %     biovolpath = [biovolpath_base 'biovolume' filename(7:10) '\'];
+       %     load([biovolpath filename]) %targets
+       %     tind = char(targets.pid); %find the ROI indices excluding second in stitched pair
+       %     tind = str2num(tind(:,end-4:end));
+       % else %2013 and later, v2 features with biovolume
             clear targets
             feapath = regexprep(feapath_base, 'XXXX', filename(7:10));
             [~,file] = fileparts(filename);
@@ -68,7 +69,7 @@ for loopcount = 1:length(mode_list),
             targets.Biovolume = feastruct.data(:,ind);
             ind = strmatch('roi_number', feastruct.colheaders);
             tind = feastruct.data(:,ind);
-        end;
+        %end;
         
         classlist = classlist(tind,:); 
         if ~isequal(class2use_manual, class2use_manual_first)
@@ -87,21 +88,22 @@ for loopcount = 1:length(mode_list),
             tempvol(classnum) = nansum(targets.Biovolume(cind)*micron_factor.^3);
  %           keyboard
         end;
-        if exist('class2use_sub4', 'var'),
-             if ~isequal(class2use_sub4, class2use_first_sub)
-                disp('class2use_sub4 does not match previous files!!!')
-                keyboard
-            end;
-            for classnum = 1:numclass2,
-                cind = find(classlist(:,4) == classnum);
-                temp(classnum+numclass1) = length(cind);
-                tempvol(classnum+numclass1) = nansum(targets.Biovolume(cind)*micron_factor.^3);
-            end;    
-        end;
+        %if exist('class2use_sub4', 'var'),
+        %     if ~isequal(class2use_sub4, class2use_first_sub)
+        %        disp('class2use_sub4 does not match previous files!!!')
+        %        keyboard
+        %    end;
+        %    for classnum = 1:numclass2,
+        %        cind = find(classlist(:,4) == classnum);
+        %        temp(classnum+numclass1) = length(cind);
+        %        tempvol(classnum+numclass1) = nansum(targets.Biovolume(cind)*micron_factor.^3);
+        %    end;    
+        %end;
         %classcount(mode_ind(filecount),class_cat) = temp(class_cat);
         %classbiovol(mode_ind(filecount),class_cat) = tempvol(class_cat);
         classcount(mode_ind(filecount),:) = temp;
         classbiovol(mode_ind(filecount),:) = tempvol;
+  
         clear class2use_manual class2use_auto class2use_sub* classlist
     end;
 end;
