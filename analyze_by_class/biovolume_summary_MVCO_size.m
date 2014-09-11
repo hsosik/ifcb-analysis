@@ -1,4 +1,4 @@
-%resultpath o= '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
+%resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 %load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load ml_analyzed_all %load the milliliters analyzed for all sample files
 biovolpathbase = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\';
