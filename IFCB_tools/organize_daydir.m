@@ -1,5 +1,5 @@
 
-basepath ='/Volumes/IFCB_data/IFCB14_Dock/data/';
+basepath ='/Volumes/IFCB_data/IFCB14_Dock/data_practice/';
 filelist = dir([basepath 'D*.roi']);
 
 c=struct2cell(filelist)';
@@ -17,7 +17,7 @@ for i=1:length(filenames_unique);
     mkdir(fullfile(filename));
 end
 
-% data_source='/Volumes/IFCB_data/IFCB14_Dock/data/';
+% data_source='/Volumes/IFCB_data/IFCB14_Dock/data_practice/';
 % for i=1:length(filenames_unique)
 %     filename=[filenames_unique(i,:)];
 %     source_file=fullfile([data_source filename]);
