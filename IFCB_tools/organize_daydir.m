@@ -1,26 +1,31 @@
 
-basepath ='/Volumes/IFCB_data/IFCB14_Dock/data_practice/';
+basepath ='/Volumes/IFCB_data/IFCB14_Dock/data/';
 filelist = dir([basepath 'D*.roi']);
 
 c=struct2cell(filelist)';
 filenames=c(:,1);
 
-char=char(filenames);
-day_filenames=char(:,1:9);
+filename_char=char(filenames);
+day_filenames=filename_char(:,1:9);
 filenames_unique= unique(day_filenames,'rows');
 
 
-practicepath ='/Volumes/IFCB_data/IFCB14_Dock/dir_practice/';
-cd(practicepath)
-for i=1:length(filenames_unique);
+dir_path ='/Volumes/IFCB_data/IFCB14_Dock/dir_practice/';
+cd(dir_path)
+for i=1:size(filenames_unique,1);
     filename=[filenames_unique(i,:)];
+    if ~exist(fullfile(filename),'dir')
     mkdir(fullfile(filename));
+    end
 end
 
-% data_source='/Volumes/IFCB_data/IFCB14_Dock/data_practice/';
-% for i=1:length(filenames_unique)
-%     filename=[filenames_unique(i,:)];
-%     source_file=fullfile([data_source filename]);
-%     movefile([source_file '*'], fullfile([practicepath filename]))
-% end
+%data_source='/Volumes/IFCB_data/IFCB14_Dock/data/';
+for i=1:size(filenames_unique,1)
+    %for i=2:size(filenames_unique,1);
+    filename=[filenames_unique(i,:)];
+    source_file=fullfile([basepath filename]);
+    if ~isempty(strmatch(filename,filename_char));
+    movefile([source_file '*'], fullfile([dir_path filename]))
+    end
+end
 
