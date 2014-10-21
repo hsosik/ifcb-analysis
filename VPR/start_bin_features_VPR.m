@@ -1,6 +1,6 @@
 function [ ] = start_bin_features_VPR (day_in_path, blob_in_path, fea_out_path, parflag)
 %function [ ] = start_bin_features_VPR (day_in_path, blob_in_path, fea_out_path, parflag)
-%example: start_bin_features_VPR ('\\maddie\work\VPR\vpr3\', '\\maddie\work\VPR\vpr3\blobs\', '\\maddie\work\VPR\vpr3\features\')
+%example: start_bin_features_VPR ('\\SosikNAS1\Lab_data\VPR\vpr3\', '\\SosikNAS1\Lab_data\VPR\vpr3\blobs\', '\\SosikNAS1\Lab_data\VPR\vpr3\features\')
 % produce IFCB style feature files for VPR images (after blob production),
 % assumes tiff files organized in folders by day, then hour
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, September 2014
