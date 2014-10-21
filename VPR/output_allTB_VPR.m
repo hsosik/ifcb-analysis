@@ -1,5 +1,5 @@
-classpath = '\\maddie\work\VPR\vpr3\class\';
-outpath_base = '\\maddie\work\VPR\vpr3\aid_ouput\';
+classpath = '\\SosikNAS1\Lab_data\VPR\vpr3\class\';
+outpath_base = '\\SosikNAS1\Lab_data\VPR\vpr3\\aid_ouput\';
 classfiles = dir([classpath 'd*.mat']);
 classfiles = {classfiles.name}';
 aidpathstr = 'c:\data\NBP12_01\rois\vpr3\';
@@ -10,7 +10,7 @@ aid_prefix = fullfile(aidpathstr, cellstr(tempstr(:,1:4)), cellstr(tempstr(:,5:7
 temp = load([classpath classfiles{1}], 'class2useTB', 'classifierName');
 class2use = temp.class2useTB;
 
-threshold_mode = 'adhoc';
+threshold_mode = 'max';
 
 switch threshold_mode
     case 'opt'  %"optimal" threshold from oob analysis
@@ -20,6 +20,8 @@ switch threshold_mode
     case 'adhoc'
         thre = 0.5;
         outpath_base = [outpath_base filesep num2str(thre*100,'%03.0f') '_threshold' filesep];
+    case 'max'
+        outpath_base = [outpath_base filesep 'max_score' filesep];
 end
 clear temp
 
@@ -44,6 +46,9 @@ for filecount = 1:length(classfiles)
     %max score wins (no unclassified output)
     switch threshold_mode
         case 'opt'
+            [ class_out ] = apply_TBthreshold( t.class2useTB, t.TBscores, thre );
+            [~, class_out] = ismember(class_out, t.class2useTB);
+        case 'max'
             [maxscore, class_out] = max(t.TBscores');
         case 'adhoc'    
             [ class_out ] = apply_TBthreshold( t.class2useTB, t.TBscores, thre );

@@ -1,4 +1,4 @@
-savedir = '\\m\work\VPR\vpr3\classifier\';
+savedir = '\\sosiknas1\Lab_data\VPR\vpr3\classifier\';
 classifierName = [savedir 'RossSea_Trees_06Sep2014'];
 out_dir = ['\\sosiknas1\Lab_data\VPR\vpr3\class\'];
 if ~exist(out_dir, 'dir')
