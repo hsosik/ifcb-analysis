@@ -1,12 +1,12 @@
-savedir = '\\maddie\work\VPR\vpr3\classifier\';
+savedir = '\\m\work\VPR\vpr3\classifier\';
 classifierName = [savedir 'RossSea_Trees_06Sep2014'];
-out_dir = ['\\maddie\work\VPR\vpr3\class\'];
+out_dir = ['\\sosiknas1\Lab_data\VPR\vpr3\class\'];
 if ~exist(out_dir, 'dir')
     mkdir(out_dir)
 end;
 %in_dir = 'http://mellon.whoi.edu/lab/';
 %for V2 web services, set fea_dir = in_dir;
-fea_dir = '\\maddie\work\VPR\vpr3\features\';
+fea_dir = '\\sosiknas1\Lab_data\VPR\vpr3\features\';
 filelist = dir([fea_dir '*.csv']);
 filelist = {filelist.name}';
 %filelist = [];
