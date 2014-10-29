@@ -1,5 +1,5 @@
 function [  ] = export_png_from_ROIlist( ROIfile_withpath, ROInumbers, outputpath)
-%function [  ] = export_png_from_ROIlist( ROIfile_withpath, ROInumbers )
+%function [  ] = export_png_from_ROIlist( ROIfile_withpath, ROInumbers, outputpath )
 %save png files to disk from ROI file, if no ROInumbers passed in, then all are exported
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2014
 
