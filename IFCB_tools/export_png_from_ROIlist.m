@@ -1,5 +1,5 @@
-function [  ] = export_png_from_ROIlist( ROIfile_withpath, ROInumbers, outputpath)
-%function [  ] = export_png_from_ROIlist( ROIfile_withpath, ROInumbers, outputpath )
+function [  ] = export_png_from_ROIlist( ROIfile_withpath, outputpath, ROInumbers )
+%function [  ] = export_png_from_ROIlist( ROIfile_withpath, outputpath, ROInumbers )
 %save png files to disk from ROI file, if no ROInumbers passed in, then all are exported
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2014
 
@@ -22,7 +22,7 @@ end;
 if ~exist('ROInumbers', 'var'),
     [ROInumbers] = find(x>0);
 end;
-fid=fopen([basedir filesep ROIfile]);% '.roi']);
+fid=fopen(ROIfile_withpath);% '.roi']);
 for count = 1:length(ROInumbers),
     num = ROInumbers(count);
     fseek(fid, startbyte(num), -1);
@@ -30,7 +30,7 @@ for count = 1:length(ROInumbers),
     img = reshape(img, x(num), y(num));
     pngname = [filename '_' num2str(num,'%05.0f') '.png'];
     if length(img) > 0,
-        imwrite(uint8(img'), [outputpath filesep pngname], 'png');
+        imwrite(uint8(img'), fullfile(outputpath, pngname));
     end;
 end;
 fclose(fid);
