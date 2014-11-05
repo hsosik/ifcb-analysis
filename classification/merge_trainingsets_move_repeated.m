@@ -39,22 +39,30 @@ classnew = class; clear class
 
 for ii = 1:length(classold),
     disp(classnew{ii})
-    olddirclass = fullfile(olddir,classold{ii});
     newdirclass = fullfile(newdir,classold{ii});
-    listold = dir(fullfile(olddirclass,'*.png'));
     listnew = dir(fullfile(newdirclass,'*.png'));
     listnew = {listnew.name}';
-    listold = {listold.name}';
-    [~,inew, iold] = intersect(listnew, listold);
-    if ~isempty(inew),
-        movedir = fullfile(newdirclass, 'repeats');
-        if ~exist(movedir, 'dir')
-            mkdir(movedir)
+    for oldcase = 2:3,
+        if oldcase == 1,
+            olddirclass = fullfile(olddir,classold{ii});
+        elseif oldcase == 2,
+            olddirclass = fullfile(olddir,classold{ii}, 'somedoubt');
+        else % oldcase == 3,
+            olddirclass = fullfile(olddir,classold{ii},'confounded');
         end;
-        for count = 1:length(inew),
-            movefile(fullfile(newdirclass,listnew{inew(count)}), fullfile(newdirclass, 'repeats\'))
+        listold = dir(fullfile(olddirclass,'*.png'));
+        listold = {listold.name}';
+        [~,inew, iold] = intersect(listnew, listold);
+        if ~isempty(inew),
+            movedir = fullfile(newdirclass, 'repeats');
+            if ~exist(movedir, 'dir')
+                mkdir(movedir)
+            end;
+            for count = 1:length(inew),
+                movefile(fullfile(newdirclass,listnew{inew(count)}), fullfile(newdirclass, 'repeats\'))
+            end;
+        else
+            disp('nothing to move')
         end;
-    else
-        disp('nothing to move')
     end;
 end;
