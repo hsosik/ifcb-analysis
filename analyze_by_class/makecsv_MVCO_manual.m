@@ -32,24 +32,26 @@ for filecount = 1:length(filelist),
         ind = [];
         if analyzed_flag(filecount,classnum),
             ind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum));
+        else %export only the manual instances for classes that are not fully analyzed according to manual_list
+            ind = find(classlist(:,2) == classnum);
         end;
-        %roinumtemp = [roinumtemp; ind];
-        %labeltemp = [labeltemp; repmat(class2use_manual(classnum), length(ind),1);];
+  %      roinumtemp = [roinumtemp; ind];
+  %      labeltemp = [labeltemp; repmat(class2use_manual(classnum), length(ind),1);];
         roinumtemp = ind;
         labeltemp = class2use_manual{classnum};
         fid = fopen([outpath class2use_manual{classnum} '.csv'], 'a');
         for ii = 1:length(roinumtemp),
-            %fprintf(fid, '%s,%05.0f,%s,%s\n', filetemp(ii,:), roinumtemp(ii), labeltemp{ii}, persontemp{ii,:});
-            fprintf(fid, '%s,%s%05.0f\r\n', labeltemp, [urlstr filename '_'], roinumtemp(ii));
+             fprintf(fid, '%s,%s%05.0f\r\n', labeltemp, [urlstr filename '_'], roinumtemp(ii));
         end;
         fclose(fid);
     end;
-    %persontemp = repmat({'EPeacock'}, length(roinumtemp),1);
-    %fid = fopen([outpath filename '.csv'], 'w');
-    %for ii = 1:length(roinumtemp),
-        %fprintf(fid, '%s,%05.0f,%s,%s\n', filetemp(ii,:), roinumtemp(ii), labeltemp{ii}, persontemp{ii,:});
-    %end;
-    %fclose(fid);
+ %   %persontemp = repmat({'EPeacock'}, length(roinumtemp),1);
+ %   fid = fopen([outpath filename '.csv'], 'w');
+ %   for ii = 1:length(roinumtemp),
+ %       fprintf(fid, '%s,%s%05.0f\r\n', labeltemp{ii}, [urlstr filename '_'], roinumtemp(ii));
+ % %      fprintf(fid, '%s,%05.0f,%s,%s\n', filetemp(ii,:), roinumtemp(ii), labeltemp{ii}, persontemp{ii,:});
+ %   end;
+ %   fclose(fid);
     clear class2use_manual class2use_auto class2use_sub* classlist *temp fid 
 end;
 
