@@ -57,7 +57,9 @@ for count=1:length(unq_matdate)
 end
 
 %plot histo with time on x-axis
-figure; pcolor(unq_matdate,[0:8:1023],hypos');
+figure('position',[204 147 1293 905]) 
+subplot(2,1,1);
+pcolor(unq_matdate,[0:8:1023],hypos');
 shading flat
 caxis([0 prctile(hypos(:),95)]) %set colorbar range - without max concentrations get washed out
 datetick('x','mm/dd HH:MM','keepticks')
@@ -65,7 +67,9 @@ xlabel('Time','fontweight','bold');ylabel('ypos','fontweight','bold');title(['YP
 colorbar
 
 %plot histo with time on x-axis
-figure; pcolor(unq_matdate,[0:8:1380],hxpos');
+% figure; 
+subplot(2,1,2)
+pcolor(unq_matdate,[0:8:1380],hxpos');
 shading flat
 caxis([0 prctile(hxpos(:),95)]) %set colorbar range - without max concentrations get washed out
 datetick('x','mm/dd HH:MM','keepticks')

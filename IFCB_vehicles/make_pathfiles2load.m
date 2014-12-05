@@ -12,7 +12,7 @@ exp_list = {''; '';
     '5) horz, DockSample_Nov14 - IFCB10'; ...
     '6) vert, DockSample_Nov14 - IFCB101'; ...
     '7) horz, DockSample2_Dec14 - IFCB10, still ongoing'; ...
-    '8) vert, DockSample2_Dec14 - IFCB101, still ongoing - DACerrors Dec3data'};
+    '8) vert, DockSample2_Dec14 - IFCB101, - DACerrors Dec3data'};
 
 disp(exp_list)
 
@@ -40,7 +40,7 @@ switch answer
     startfile = 'D20141125T205638_IFCB010';
     endfile   = 'D20141126T204103_IFCB010';
     case 7 %IFCB10 Horz Dock Water, cont for longer period of time
-    dirpath = '\\128.128.108.51\data\';
+    dirpath = '\\128.128.108.51\data\Horizontal_SW2\';
     savefilename = 'IFCB10-Horz-DockSample2_Dec14';
     startfile = 'D20141202T211618_IFCB010';
     endfile   = 'D20141204T153036_IFCB010';
@@ -61,7 +61,7 @@ switch answer
     startfile = 'D20141125T205632_IFCB101';
     endfile   = 'D20141126T203749_IFCB101';
     case 8 %IFCB101 Vert Dock Water, cont for longer period of time
-    dirpath = '\\128.128.110.139\data\'; %IFCB101 Vert Dock Sample, repeat for longer continuous time seris (large flow cell, bevel needle)
+    dirpath = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB101\verticle_sw2\'; %IFCB101 Vert Dock Sample, repeat for longer continuous time seris (large flow cell, bevel needle)
     savefilename = 'IFCB101-Vert-DockSample2_Dec14';
     startfile = 'D20141202T203836_IFCB101';
     endfile   = 'D20141204T152412_IFCB101';

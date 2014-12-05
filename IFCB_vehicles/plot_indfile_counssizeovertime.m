@@ -67,6 +67,8 @@ plot(avgarea2,'r')
 xlabel(['time bin (' num2str(bin_steps(2)) 'sec)'],'fontweight','bold'); ylabel('Area=roisizeX*roisizeY (pix)','fontweight','bold');
 title(['Avg Area - ' celltype])
 
+%{
+%not really helpful
 figure
 subplot(2,1,1)
 plot(avglength1,avglength2,'.')
@@ -76,7 +78,7 @@ subplot(2,1,2)
 plot(avgarea1,avgarea2,'.')
 xlabel(savefilename); ylabel(savefilename2);
 title('Avg Area - Vert vs Horz')
-
+%}
 %for IFCB1 through IFCB6, adcdata have the following format:
 %             xsize = adcdata(:,16);  ysize = adcdata(:,17); startbyte = adcdata(:,18);
 %             peakA = adcdata(:,7); peakB = adcdata(:,8); peakc = adcdata(:,9); peakD = adcdata(:,10);
