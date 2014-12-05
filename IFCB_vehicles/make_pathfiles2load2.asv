@@ -1,0 +1,63 @@
+%T Crockford Dec14 make a single mat file to change and reference in multiple m-files
+%adjusted from original coad to load both horz&vert paths for comparison
+%ref in plotIFCB_horz_vs_vert.m
+%plotHISTOpos.m
+%movieIFCBplot_roi_pos_DT
+
+exp_list = {''; '';
+    'Exp 1) LAB horz vs vert Dun - IFCB10&101'; ...
+    'Exp 2) LAB horz vs vert Guin - IFCB10&101'; ...
+    'Exp 3) LAB horz vs vert Dock Sample - IFCB10&101'};
+
+disp(exp_list)
+answer = input('Enter the number of which experiment would you like to plot?');
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+%set path to data, start & end file, name for saved mat file
+%%%%%%%%%%%%%%%%%%%%%%%%
+switch answer
+%SOSIKNAS
+%IFCB10
+    case 1 %IFCB10 horz Dunaliella
+    path = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB10\horizontal_dun\';
+    savefilename = 'IFCB10-Horz-Dun';
+    startfile = 'D20141119T180908_IFCB010';
+    endfile   = 'D20141121T205531_IFCB010';
+    case 3 %IFCB10 Horz Guinardia
+    path = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB10\horizontal_gui\';
+    savefilename = 'IFCB10-Horz-Gui';
+    startfile = 'D20141124T162520_IFCB010';
+    endfile   = 'D20141125T194349_IFCB010';
+    case 5 %IFCB10 Horz Dock Water
+    path = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB10\horizontal_sw\';
+    savefilename = 'IFCB10-Horz-DockSample';
+    startfile = 'D20141125T205638_IFCB010';
+    endfile   = 'D20141126T204103_IFCB010';
+%IFCB101
+    case 2 %IFCB101 Vertical Dunaliella
+    path = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB101\horizontal_dun\';
+    savefilename = 'IFCB101-Vert-Dun';
+    startfile = 'D20141119T180923_IFCB101';
+    endfile   = 'D20141121T204952_IFCB101';
+    case 4 %IFCB101 Vertical Guinardia
+    path = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB101\horizontal_gui\';
+    savefilename = 'IFCB101-Vert-Gui';
+    startfile = 'D20141124T162516_IFCB101';
+    endfile   = 'D20141125T193641_IFCB101';
+    case 6 %IFCB101 Vertical Dock Water
+    path = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB101\horizontal_sw\';
+    savefilename = 'IFCB101-Vert-DockSample';
+    startfile = 'D20141125T205632_IFCB101';
+    endfile   = 'D20141126T203749_IFCB101';
+end
+clear exp_list answer
+
+%data on instrument IP
+% path = '\\128.128.108.51\data\'; %ifcb10 IP on instr
+% path = '\\128.128.108.82\data\beads\'; %ifcb10 beads
+%IFCB 101
+% path = '\\128.128.110.139\data\'; %IFCB101 IP instr
+% path = '\\128.128.110.139\data\beads\'; %IFCB101 beads
+
+
+%save pathfiles2load path startfile endfile savefilename
