@@ -11,7 +11,7 @@ end;
 %   classpath = ['\\queenrose\g_work_IFCB1\ifcb_data_mvco_jun06\classxxxx_24may07_' class_filestr 'revDec11\']; 
 %classpath = ['\\queenrose\g_work_IFCB1\ifcb_data_mvco_jun06\classxxxx_v1\'];  %case for new results with TBclassifier
 classpath = ['\\sosiknas1\IFCB_products\MVCO\class\classxxxx_v1\'];  %case for new results with TBclassifier
-basedir = ['\\sosiknas1\IFCB_data\MVCO\data\xxxx']
+basedir = ['\\sosiknas1\IFCB_data\MVCO\data\xxxx'];
 %basedir_all = {'\\demi\vol1'; '\\demi\vol2'; '\\demi\vol3'};
 stitchpath = '\\queenrose\ifcb_data_mvco_jun06\stitchxxxx\';  %%USER set, roi stitch info files
 
