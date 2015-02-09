@@ -17,7 +17,7 @@ icsTol=0.2;
 tolvec=[0.01 0.01 100 0.005 0.01 0.01 100 0.005 0.01 0.5 0.5 0.5 10];
 
 % for
-year=2003;
+%year=2009;
 
 switch year
     case 2003
@@ -34,8 +34,8 @@ switch year
         yearlabel='Jan';
 end
 
-eval(['pathname=''/Volumes/Lab_data/MVCO/FCB/MVCO_' yearlabel num2str(year) '/model/input_beadmean_Jan2015/'';'])
-eval(['savepath=''/mnt/sosiknas1/Lab_data/MVCO/FCB/MVCO_' yearlabel num2str(year) '/model/'']);
+eval(['pathname=''/mnt/Lab_data/MVCO/FCB/MVCO_' yearlabel num2str(year) '/model/input_beadmean_Jan2015/'';'])
+eval(['savepath=''/mnt/Lab_data/MVCO/FCB/MVCO_' yearlabel num2str(year) '/model/'';']);
 
 filelist = dir([pathname 'day*data.mat']);
 
