@@ -34,8 +34,8 @@ switch year
         yearlabel='Jan';
 end
 
-eval(['pathname=''/mnt/Lab_data/MVCO/FCB/MVCO_' yearlabel num2str(year) '/model/input_beadmean_Jan2015/'';'])
-eval(['savepath=''/mnt/Lab_data/MVCO/FCB/MVCO_' yearlabel num2str(year) '/model/'';']);
+eval(['pathname=''/mnt/lab_data/MVCO/FCB/MVCO_' yearlabel num2str(year) '/model/input_beadmean_Jan2015/'';'])
+eval(['savepath=''/mnt/lab_data/MVCO/FCB/MVCO_' yearlabel num2str(year) '/model/'';']);
 
 filelist = dir([pathname 'day*data.mat']);
 
