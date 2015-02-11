@@ -26,11 +26,13 @@ isgt2 = (Y2>2);
 %find transition points to above or below 2 ml-1
 ii = find(diff(Y2-2==abs(Y2-2))==1); 
 ii2 = find(diff(Y2-2==abs(Y2-2))==-1); 
+ii2 = [ii2; length(Y2)]; %TEMPORARY fudge to include Dec-14 event end
 %isgt5(ii(1:end-1):ii2(2:end));
 %flag any set of times where it stays >2 ml-1 and at least one time is >5 ml-1
 keep = zeros(size(Y2));
-for c = 1:length(ii)-1, 
-    if sum(isgt5(ii(c):ii2(c+1)))>1, 
+%for c = 1:length(ii)-1, 
+for c = 1:length(ii), %TEMPORARY fudge to include Dec-14 event end
+    if sum(isgt5(ii(c):ii2(c+1)))>1,     
         keep(ii(c)+1:ii2(c+1)) = 1; 
     end;
 end;
@@ -40,7 +42,8 @@ U = [Y2 Y2-5==abs(Y2-5) Y2-2==abs(Y2-2) keep];
 
 %find the start and stop indices for events
 start2 = find(diff(keep)==1)+1;
-stop2 = find(diff(keep)==-1);
+stop2 = find(diff(keep)==-1); 
+stop2 = [stop2; length(keep)-1]; %TEMPORARY fudge to include Dec-14 event end
 [start2 stop2];
 
 %merge events that are <= 7 days apart
