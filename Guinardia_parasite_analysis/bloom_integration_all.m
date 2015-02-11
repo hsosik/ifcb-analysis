@@ -32,7 +32,8 @@ ii2 = [ii2; length(Y2)]; %TEMPORARY fudge to include Dec-14 event end
 keep = zeros(size(Y2));
 %for c = 1:length(ii)-1, 
 for c = 1:length(ii), %TEMPORARY fudge to include Dec-14 event end
-    if sum(isgt5(ii(c):ii2(c+1)))>1,     
+    %if sum(isgt5(ii(c):ii2(c+1)))>1,     
+    if sum(isgt5(ii(c):ii2(c+1)))>=1 & sum(isgt2(ii(c):ii2(c+1)))>1, %heidi 2/5/2015: fix at least 1 > 5, at least 2 > 2 
         keep(ii(c)+1:ii2(c+1)) = 1; 
     end;
 end;
