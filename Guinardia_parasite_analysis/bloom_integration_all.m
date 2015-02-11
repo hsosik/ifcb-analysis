@@ -1,26 +1,31 @@
 load ('\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_manual_current_day')
 %load ('\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_manual_16Nov2013_day')
+ind_main = strmatch('Guinardia_delicatula', class2use);
+ind_parasite = strmatch('G_delicatula_parasite', class2use);
+ind_extparas = strmatch('G_delicatula_external_parasite', class2use);
+
 [ ind_Gdel, class_label ] = get_G_delicatula_ind( class2use, class2use );
-ind14 = find(~isnan(ml_analyzed_mat_bin(:,14)) | nansum(ml_analyzed_mat_bin,2) == 0);
+ind2use = find(~isnan(ml_analyzed_mat_bin(:,ind_main)) | nansum(ml_analyzed_mat_bin,2) == 0);
 
 %X2,Y2,Z2 for total G.del concentration
-X2 = matdate_bin(ind14);
-Y2 = sum((classcount_bin(ind14,ind_Gdel)./ml_analyzed_mat_bin(ind14,ind_Gdel)),2);
+X2 = matdate_bin(ind2use);
+Y2 = sum((classcount_bin(ind2use,ind_Gdel)./ml_analyzed_mat_bin(ind2use,ind_Gdel)),2);
 Z2 = cumtrapz(X2,Y2); %running integral
 
-proportion_infected = (((classcount_bin(:,59)./ml_analyzed_mat_bin(:,59)))./...
-   ((classcount_bin(:,59)./ml_analyzed_mat_bin(:,59))+(classcount_bin(:,14)./ml_analyzed_mat_bin(:,14))+(classcount_bin(:,60)./ml_analyzed_mat_bin(:,60))));
+proportion_infected = (((classcount_bin(:,ind_parasite)./ml_analyzed_mat_bin(:,ind_parasite)))./...
+   ((classcount_bin(:,ind_parasite)./ml_analyzed_mat_bin(:,ind_parasite))+(classcount_bin(:,ind_main)./ml_analyzed_mat_bin(:,ind_main))+(classcount_bin(:,ind_extparas)./ml_analyzed_mat_bin(:,ind_extparas))));
 %X1,Y1,Z1 for proportion infected
-X1 = matdate_bin(ind14);
-Y1 = proportion_infected(ind14)*100;
+X1 = matdate_bin(ind2use);
+Y1 = proportion_infected(ind2use)*100;
 ii = find(isnan(Y1)); X1(ii) = []; Y1(ii) = []; clear ii
 Z1 = cumtrapz(X1,Y1); %running integral
 
 %find some blooms
 isgt5 = (Y2>5); %flag any time point >5 ml-1
+isgt2 = (Y2>2);
 %find transition points to above or below 2 ml-1
 ii = find(diff(Y2-2==abs(Y2-2))==1); 
-ii2 = find(diff(Y2-2==abs(Y2-2))==-1);
+ii2 = find(diff(Y2-2==abs(Y2-2))==-1); 
 %isgt5(ii(1:end-1):ii2(2:end));
 %flag any set of times where it stays >2 ml-1 and at least one time is >5 ml-1
 keep = zeros(size(Y2));
@@ -105,6 +110,7 @@ hold on
 for c = 1:length(start2),
     plot(X2(start2(c):stop2(c)),Y2(start2(c):stop2(c)), 'r', 'linewidth', 2)
 end;
+ylabel('G. delicatula per ml')
 
 figure
 plot(X1,Y1, '.-')
@@ -112,6 +118,7 @@ hold on
 for c = 1:length(start1),
     plot(X1(start1(c):stop1(c)),Y1(start1(c):stop1(c)), 'r', 'linewidth', 2)
 end;
+ylabel('Proportion infected') 
 
 %check r excluding jul-09
 [ra2,p2] = corrcoef(bloom_int1([1:2,4:end]),bloom_int2([1:2,4:end])); %
