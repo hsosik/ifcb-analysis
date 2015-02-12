@@ -121,8 +121,8 @@ for filenum=1:length(filelist)
         qq=find(temp(:,1)~=0);
         temp=temp(qq,:);
         
-        largepopn=zeros(length(temp),6);
-        smallpopn=zeros(length(temp),6);
+        largepopn=zeros(size(temp,1),6);
+        smallpopn=zeros(size(temp,1),6);
         for h=1:size(temp,1) 
             if temp(h,10) > temp(h,11)
                 largepopn(h,:) = temp(h,[1:4 9 10]);
@@ -203,8 +203,8 @@ for filenum=1:length(filelist)
             qq=find(temp(:,1)~=0);
             temp=temp(qq,:);
             start_points=start_points(qq,:);
-            largepopn=zeros(length(temp),6);
-            smallpopn=zeros(length(temp),6);
+            largepopn=zeros(size(temp,1),6);
+            smallpopn=zeros(size(temp,1),6);
             for h=1:size(temp,1)
                 if temp(h,10) > temp(h,11)
                     largepopn(h,:) = temp(h,[1:4 9 10]);
