@@ -123,7 +123,7 @@ for filenum=1:length(filelist)
         
         largepopn=zeros(length(temp),6);
         smallpopn=zeros(length(temp),6);
-        for h=1:length(temp)
+        for h=1:size(temp,1) 
             if temp(h,10) > temp(h,11)
                 largepopn(h,:) = temp(h,[1:4 9 10]);
                 smallpopn(h,:) = [temp(h,5:8) 1-temp(h,9) temp(h,11)];
@@ -205,7 +205,7 @@ for filenum=1:length(filelist)
             start_points=start_points(qq,:);
             largepopn=zeros(length(temp),6);
             smallpopn=zeros(length(temp),6);
-            for h=1:length(temp)
+            for h=1:size(temp,1)
                 if temp(h,10) > temp(h,11)
                     largepopn(h,:) = temp(h,[1:4 9 10]);
                     smallpopn(h,:) = [temp(h,5:8) 1-temp(h,9) temp(h,11)];
