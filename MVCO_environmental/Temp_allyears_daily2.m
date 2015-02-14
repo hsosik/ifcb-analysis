@@ -1,14 +1,16 @@
-load c:\work\mvco\otherData\other03_04
-load c:\work\mvco\otherData\other05
-load c:\work\mvco\otherData\other06
-load c:\work\mvco\otherData\other07
-load c:\work\mvco\otherData\other08
-load c:\work\mvco\otherData\other09
-load c:\work\mvco\otherData\other10
-load c:\work\mvco\otherData\other11
-load c:\work\mvco\otherData\other12
-load c:\work\mvco\otherData\other13
-load c:\work\mvco\otherData\other14
+datadir = '\\sosiknas1\Lab_data\MVCO\EnvironmentalData\';
+load([datadir 'other2003_04'])
+load([datadir 'other2005'])
+load([datadir 'other2006'])
+load([datadir 'other2007'])
+load([datadir 'other2008'])
+load([datadir 'other2009'])
+load([datadir 'other2010'])
+load([datadir 'other2011'])
+load([datadir 'other2012'])
+load([datadir 'other2013'])
+load([datadir 'other2014'])
+load([datadir 'other2015'])
 
 %this will lead to averaging of seacat and node temps for overlap days
 yd_ocn2003 = [yd_ocn2003; yd_seacat2003];
@@ -17,7 +19,7 @@ yd_ocn2004 = [yd_ocn2004; yd_seacat2004];
 Temp2004 = [Temp2004; temp_seacat2004];
 
 yd = (1:366)';
-year = (2003:2014);
+year = (2003:2015);
 %year = (2006:2011);
 Tday = NaN(length(yd),length(year));
 for count = 1:length(year),    
@@ -43,4 +45,4 @@ Tday(ii) = NaN;
 mdate(ii) = NaN;
 
 %mdate = mdate2; Tday = Tday2;
-save Tall_day mdate2 Tday2 mdate Tday year yd
+save([datadir 'Tall_day'], 'mdate2', 'Tday2', 'mdate', 'Tday', 'year', 'yd')
