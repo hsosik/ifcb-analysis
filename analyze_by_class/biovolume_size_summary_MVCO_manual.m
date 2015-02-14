@@ -1,10 +1,10 @@
 resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load \\raspberry\d_work\IFCB1\code_mar10_mvco\ml_analyzed_all %load the milliliters analyzed for all sample files
-feapath_base = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\featuresXXXX_v2\';
+feapath_base = '\\sosiknas1\IFCB_products\MVCO\features\featuresXXXX_v2\';
 micron_factor = 1/3.4; %microns per pixel
 
-load class2use_MVCOmanual4 %get the master list to start
+load class2use_MVCOmanual5 %get the master list to start
 [ classes_byfile, classes_bymode ] = get_annotated_classesMVCO( class2use, manual_list);
 
 filelist = classes_byfile.filelist;%find ml_analyzed matching each manual file
@@ -86,6 +86,7 @@ if ~exist([resultpath 'summary\'], 'dir')
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
 save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed_struct', 'biovol', 'filelist', 'eqdiam', 'perim', 'roiID')
+save([resultpath 'summary\count_biovol_size_manual_current'], 'matdate', 'ml_analyzed_struct', 'biovol', 'filelist', 'eqdiam', 'perim', 'roiID')
 
 return
 
@@ -93,4 +94,6 @@ return
 [matdate_bin, classcount_bin, ml_analyzed_mat_bin] = make_day_bins(matdate,classcount, ml_analyzed_mat);
 [matdate_bin, classbiovol_bin, ml_analyzed_mat_bin] = make_day_bins(matdate,classbiovol, ml_analyzed_mat);
 save([resultpath 'summary\count_biovol_manual_' datestr '_day'], 'matdate_bin', 'classcount_bin', 'classbiovol_bin', 'ml_analyzed_mat_bin', 'class2use')
+save([resultpath 'summary\count_biovol_manual_current_day'], 'matdate_bin', 'classcount_bin', 'classbiovol_bin', 'ml_analyzed_mat_bin', 'class2use')
+
 
