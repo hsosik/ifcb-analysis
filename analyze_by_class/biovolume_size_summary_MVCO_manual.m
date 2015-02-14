@@ -42,7 +42,7 @@ for classnum = 1:numclass,
 end;
 for filecount = 1:length(filelist),
     filename = filelist{filecount};
-    disp([annotate_mode ': ' filename])
+    disp(filename)
     
     load([resultpath filename])
     yr = str2num(filename(7:10));
