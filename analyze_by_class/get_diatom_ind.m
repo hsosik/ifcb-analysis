@@ -15,7 +15,7 @@ ind_out3 = get_G_delicatula_ind( class2use, class_label );
 ind_out4 = get_Cerataulina_ind(  class2use, class_label );
 ind_out5 = get_ditylum_ind(  class2use, class_label );
 
-ind_out = union(ind_out1, [ind_out2, ind_out3 ind_out4 ind_out5]);
+ind_out = union(ind_out1, [ind_out2; ind_out3; ind_out4; ind_out5]);
 ind_out = sort(ind_out);
 
 class_label(strmatch('Leptocylindrus', class_label, 'exact')) = {'\itLeptocylindrus \rmspp.'};
