@@ -28,7 +28,7 @@ for daycount = 1:length(unqday),
     disp(datestr(unqday(daycount)))
     %ii = find(day == unqday(daycount));
     for classcount = 1:length(classes),        
-        ii = find(day == unqday(daycount) & ~isnan(ml_analyzed_struct.(classes{classcount})'));
+        ii = find(day == unqday(daycount) & ~isnan(ml_analyzed_struct.(classes{classcount})));
         biovol_day(daycount).(classes{classcount}) = cat(1,biovol.(classes{classcount}){ii});
         eqdiam_day(daycount).(classes{classcount}) = cat(1,eqdiam.(classes{classcount}){ii});
         ml = nansum(ml_analyzed_struct.(classes{classcount})(ii));
