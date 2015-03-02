@@ -4,7 +4,7 @@
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, September 2014
 
 in_dir= '\\sosiknas1\Lab_data\VPR\NBP1201NewTrain201502\rois\'; %USER 
-out_dir = '\\sosiknas1\Lab_data\VPR\NBP1201NewTrain201502\blobs\'; %USER main blob output location
+out_dir = '\\sosiknas1\Lab_data\VPR\NBP1201NewTrain201502\blobs2\'; %USER main blob output location
 
 bins = dir([in_dir]);
 bins = {bins.name}; 
@@ -22,16 +22,16 @@ for bincount = 1:length(bins),
     imglist = {imglist.name};
     %[targets, imglist] = get_images_fromROI([in_dir bins{bincount} '.roi']);
     disp('    writing blobs...')
-    for i = 1:length(imglist),
+    for i = 1:20:length(imglist),
         target = {};
         % configure feature extraction
         target.config = configure();
-        %target.config.plot = 1;
+        target.config.plot = 1;
         % get the image
         %target.image = cell2mat(targets.image(i));
         target.image = imcomplement(imread([img_path imglist{i}])); %read VPR roi and reverse grayscale
         % compute the blob mask (result in target.blob_image)
-        target = blob(target);
+        target = blob_simple(target);
         % now output the blob image as a 1-bit png
         imwrite(target.blob_image,[blob_path regexprep(imglist{i}, 'tif', 'png')],'bitdepth',1);
     end;
