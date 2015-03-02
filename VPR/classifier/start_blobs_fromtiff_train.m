@@ -3,8 +3,8 @@
 %VPR case
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, September 2014
 
-in_dir= '\\maddie\work\VPR\vpr3\classifier\trrois_VPR4Edit\'; %USER 
-out_dir = '\\maddie\work\VPR\vpr3\classifier\blobs\'; %USER main blob output location
+in_dir= '\\sosiknas1\Lab_data\VPR\NBP1201NewTrain201502\rois\'; %USER 
+out_dir = '\\sosiknas1\Lab_data\VPR\NBP1201NewTrain201502\blobs\'; %USER main blob output location
 
 bins = dir([in_dir]);
 bins = {bins.name}; 
@@ -26,6 +26,7 @@ for bincount = 1:length(bins),
         target = {};
         % configure feature extraction
         target.config = configure();
+        %target.config.plot = 1;
         % get the image
         %target.image = cell2mat(targets.image(i));
         target.image = imcomplement(imread([img_path imglist{i}])); %read VPR roi and reverse grayscale

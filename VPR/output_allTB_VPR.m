@@ -1,5 +1,5 @@
 classpath = '\\SosikNAS1\Lab_data\VPR\vpr3\class\';
-outpath_base = '\\SosikNAS1\Lab_data\VPR\vpr3\\aid_ouput\';
+outpath_base = '\\SosikNAS1\Lab_data\VPR\vpr3\aid_output\';
 classfiles = dir([classpath 'd*.mat']);
 classfiles = {classfiles.name}';
 aidpathstr = 'c:\data\NBP12_01\rois\vpr3\';

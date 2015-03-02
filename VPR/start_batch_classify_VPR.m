@@ -1,6 +1,6 @@
-savedir = '\\sosiknas1\Lab_data\VPR\vpr3\classifier\';
-classifierName = [savedir 'RossSea_Trees_06Sep2014'];
-out_dir = ['\\sosiknas1\Lab_data\VPR\vpr3\class\'];
+savedir = '\\sosiknas1\Lab_data\VPR\NBP1201NewTrain201502\classifier\';
+classifierName = [savedir 'RossSea_Trees_02Mar2015'];
+out_dir = ['\\sosiknas1\Lab_data\VPR\vpr3\class_RossSea_Trees_02Mar2015\'];
 if ~exist(out_dir, 'dir')
     mkdir(out_dir)
 end;

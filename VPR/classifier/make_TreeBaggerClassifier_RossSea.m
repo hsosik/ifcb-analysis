@@ -1,8 +1,8 @@
-%%
+
 %run compile_train_features_RossSea.m to generate train and class_vector
 clear all
-outputpath = '\\maddie\work\VPR\vpr3\classifier\';
-load([outputpath 'RossSea_TrainSet_06Sep2014']);
+outputpath = '\\sosiknas1\Lab_data\VPR\NBP1201NewTrain201502\classifier\';
+load([outputpath 'RossSea_TrainSet_02Mar2015']);
 %load fea2use
 fea2use = 1:length(featitles);
 featitles = featitles(fea2use);

@@ -1,13 +1,14 @@
 %get training features from pre-computed class feature files
-feapath_base = '\\maddie\work\VPR\vpr3\classifier\features\';
-outpath = '\\maddie\work\VPR\vpr3\classifier\';
-maxn = 250; %maximum number of images per class to include in training set
+feapath_base = '\\sosiknas1\Lab_data\VPR\NBP1201NewTrain201502\features\';
+outpath = '\\sosiknas1\Lab_data\VPR\NBP1201NewTrain201502\classifier\';
+maxn = 174; %maximum number of images per class to include in training set
 minn = 30; %minimum number for class to be included in classifier
-class2skip = {'other'}; %{'other'}; %
+%class2skip = {'other'}; %{'other'}; 
+class2skip = {'unknown'}; 
 
 manual_files = dir([feapath_base '*fea_v2.csv']);
-fea_files = {manual_files.name}';
-%fea_files = regexprep(manual_files, '.mat', '_fea_v2.csv');
+manual_files = {manual_files.name}';
+fea_files = regexprep(manual_files, '.mat', '_fea_v2.csv');
 class2use = regexprep(fea_files, '_fea_v2.csv', '');
 %this presumes all the files have the same class to use
 %class2use = load([manualpath manual_files{end}], 'class2use_manual');

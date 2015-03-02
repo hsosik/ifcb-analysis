@@ -3,9 +3,9 @@
 %VPR case
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, September 2014
 
-in_dir= '\\maddie\work\VPR\vpr3\classifier\trrois_VPR4Edit\'; %USER 
-in_dir_blob = '\\maddie\work\VPR\vpr3\classifier\blobs\'; %USER main blob output location
-out_dir = '\\maddie\work\VPR\vpr3\classifier\features\';
+in_dir= '\\sosiknas1\Lab_data\VPR\NBP1201NewTrain201502\rois\'; %USER 
+in_dir_blob = '\\sosiknas1\Lab_data\VPR\NBP1201NewTrain201502\blobs\'; %USER main blob output location
+out_dir = '\\sosiknas1\Lab_data\VPR\NBP1201NewTrain201502\features\';
 
 %bins = dir([in_dir '*.adc']);
 %bins = regexprep({bins.name}', '.adc', '');
