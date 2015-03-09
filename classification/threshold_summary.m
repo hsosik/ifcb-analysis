@@ -22,16 +22,15 @@ for ii = 1:length(threlist),
     [n,xbins,nbins]=histmulti5([x, y], [bins; bins]');
     [ix,iy,v] = find(n);
     scatter(bins(ix),bins(iy),[],log10(v), 'filled'), line(xlim, xlim), caxis([0 2]), axis square
-    Rsq(ii) = lin_fit{ii}.Rsquared.ordinary;
-    Coeffs(ii,:) = lin_fit{ii}.Coefficients.Estimate;
-    coefPs(ii,:) = lin_fit{ii}.Coefficients.pValue;
-    RMSE(ii) = lin_fit{ii}.RMSE;
     figure(1+d), subplot(3,4,ii), hold on
     plot(x,y, '.')
     axis square
     line(xlim, xlim)
     lin_fit{ii} = fitlm(x,y);
-    %eval(['fplot(''x*' num2str(Coeffs(ii,2)) '+' num2str(Coeffs(ii,1)) ''' ,''color'', ''r'')']) 
+    Rsq(ii) = lin_fit{ii}.Rsquared.ordinary;
+    Coeffs(ii,:) = lin_fit{ii}.Coefficients.Estimate;
+    coefPs(ii,:) = lin_fit{ii}.Coefficients.pValue;
+    RMSE(ii) = lin_fit{ii}.RMSE;
     eval(['fplot(''x*' num2str(Coeffs(ii,2)) '+' num2str(Coeffs(ii,1)) ''' , xlim, ''color'', ''r'')'])
 end;
 figure(1+d)
