@@ -42,7 +42,7 @@ switch MCconfig.group
     case 'MVCO'
         MCconfig.maxlist1 = 75;
         MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
-        temp = load('class2use_MVCOmanual4', 'class2use'); %USER load yours here
+        temp = load('class2use_MVCOmanual5', 'class2use'); %USER load yours here
         MCconfig.class2use = temp.class2use;
         MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
         MCconfig.default_class = 'unclassified';
