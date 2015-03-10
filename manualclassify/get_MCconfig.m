@@ -7,7 +7,7 @@ function [ MCconfig ] = get_MCconfig(MCconfig)
 %   revised August 2013 to incorporate settings previously done in get_MCfilelist. m
 
 %MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one 'correct_or_subdivide' (start from classifier or already sorted images) or 'raw_roi'
-MCconfig.pick_mode = 'raw_roi';
+MCconfig.pick_mode = 'correct_or_subdivide';
 
 MCconfig.displayed_ordered = 'size'; %USER choose one 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
 %MCconfig.displayed_ordered = 'roi_index'; 
@@ -18,7 +18,7 @@ MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
 
 %group specific options
-MCconfig.group = 'MVCO'; %MVCO, Sherbrooke, OKEX
+MCconfig.group = 'VPR'; %MVCO, Sherbrooke, OKEX
 %default length of category list box before split to second box
 MCconfig.maxlist1 = 60; %USER make a copy and edit in your switch case if you want a different value
 
@@ -64,7 +64,7 @@ switch MCconfig.group
                 temp = dir('\\demi\vol1\IFCB5_2012_006\IFCB5_2012_006_025*.adc'); temp = char(temp.name);
                 MCconfig.filelist = cellstr(temp(:,1:end-4)); clear temp
             case 'thislist'
-                MCconfig.filelist = {'IFCB1_2008_056_164116'}; 
+                MCconfig.filelist = {'IFCB1_2008_057_160453' 'IFCB1_2008_056_164116'}; 
         end
         [MCconfig.filelist, MCconfig.classfiles, MCconfig.stitchfiles] = resolve_MVCOfiles(MCconfig.filelist, MCconfig.class_filestr);
         %pick one
@@ -206,6 +206,28 @@ switch MCconfig.group
             %pick one
             MCconfig.class2view1 = MCconfig.class2use; %case to view all
             %MCconfig.class2view1 = intersect(MCconfig.class2use, {'detritus'}); %example to select a few
+    case 'VPR'
+            MCconfig.resultpath = '\\sosiknas1\Lab_data\VPR\vpr3\manual_fromClass\'; %USER set
+            MCconfig.basepath = '\\sosiknas1\Lab_data\VPR\vpr3\'; %USER set
+            %temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
+            %MCconfig.class2use = temp.class2use;
+            MCconfig.class2use = {'blurry', 'marSnow', 'phaeIndiv', 'phaeMany', 'squashed', 'whiteout', 'unclassified'};
+            MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
+            MCconfig.classpath = '\\sosiknas1\Lab_data\VPR\vpr3\class\'; 
+            MCconfig.default_class = 'unclassified';
+            MCconfig.class2view2 = {}; %example to skip view2
+            filelisttype ='dirlist'; %manual_list, loadfile, dirlist
+            switch filelisttype
+                case 'loadfile'
+                    load mylist.mat
+                    MCconfig.filelist = filelist; 
+                case 'dirlist' %other MVCO cases
+                    temp = dir('\\sosiknas1\Lab_data\VPR\vpr3\class\d*.mat'); temp = char(temp.name);
+                    MCconfig.filelist = cellstr(temp(:,1:end-13)); clear temp
+            end
+            [MCconfig.filelist, MCconfig.classfiles] = resolve_files_VPR(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
+            %pick one
+            MCconfig.class2view1 = MCconfig.class2use; %case to view all
 end
 
 %default
@@ -229,7 +251,9 @@ if ~exist(MCconfig.resultpath, 'dir'),
 end;
 
 [~,f]= fileparts(MCconfig.filelist{1}); 
-if f(1) == 'I',
+if isempty(f) & strmatch(MCconfig.group, 'VPR') %#ok<AND2>
+    MCconfig.dataformat = 2;
+elseif f(1) == 'I',
     MCconfig.dataformat = 0;
 elseif f(1) == 'D',
     MCconfig.dataformat = 1;

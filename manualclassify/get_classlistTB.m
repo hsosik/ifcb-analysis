@@ -83,26 +83,32 @@ else
             if exist(classfilename),
                 load(classfilename) %load classifier results
                 if ~exist('classlist', 'var'), 
-                    class2use_temp = class2use; 
-                    %make a temporary class2use that maps back to old names in MVCO classes
-                    class2use_temp{strmatch('Ciliate_mix', class2use)} = 'ciliate_mix';
-                    class2use_temp{strmatch('Tintinnid', class2use)} = 'tintinnid';
-                    class2use_temp{strmatch('Laboea_strobila', class2use)} = 'Laboea_strobila';
-                    class2use_temp{strmatch('Mesodinium_sp', class2use)} = 'Myrionecta';
-                    class2use_temp{strmatch('Guinardia_delicatula', class2use, 'exact')} = 'Guinardia';
                     classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
                     classlist(:,1) = 1:total_roi;
+                    %make a temporary class2use that maps back to old names in MVCO classes
+                    class2use_temp = class2use; 
+                    if ~isempty([strfind(classfilename,'mvco') strfind(classfilename,'MVCO')])
+                        class2use_temp{strmatch('Ciliate_mix', class2use)} = 'ciliate_mix';
+                        class2use_temp{strmatch('Tintinnid', class2use)} = 'tintinnid';
+                        class2use_temp{strmatch('Laboea_strobila', class2use)} = 'Laboea_strobila';
+                        class2use_temp{strmatch('Mesodinium_sp', class2use)} = 'Myrionecta';
+                        class2use_temp{strmatch('Guinardia_delicatula', class2use, 'exact')} = 'Guinardia';
+                    end;
          %           classlist(:,auto_col)  = PreLabels(:,1);
                      %new case for TBclassification July 2012, Heidi
                      [~,ia] = ismember(TBclass_above_threshold, class2use_temp);
-                     classlist(roinum,auto_col)  = ia;
+                     if ~isempty([strfind(classfilename,'vpr') strfind(classfilename,'VPR')])
+                        classlist(:,auto_col)  = ia; 
+                     else
+                        classlist(roinum,auto_col)  = ia;
+                     end;
                      classlist(classlist(:,auto_col) == 0,auto_col) = classnum_default;
                 end;
             else
                 classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
                 classlist(:,1) = 1:total_roi;
             end;
-            if ~isempty(classnum_default_sub) & exist('class2useTB', 'var'),
+            if ~isempty(classnum_default_sub) && exist('class2useTB', 'var'),
                 %fudge for remap of MVCO ciliate labels
                 class2useTBnew = class2useTB;
               %  class2useTBnew{strmatch('ciliate_mix', class2useTB)} = 'Ciliate_mix';
