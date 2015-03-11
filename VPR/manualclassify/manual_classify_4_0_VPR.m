@@ -88,7 +88,8 @@ for filecount = filenum2start:length(filelist),
     else
         classfile_temp = classfiles{filecount};
     end;
-    roilist = dir([filelist{filecount} '*.tif']);
+    roipath = fileparts(filelist{filecount});
+    roilist = dir([roipath filesep '*.tif']);
     roilist = {roilist.name}';
     [ classlist, sub_col, list_titles, newclasslist_flag ] = get_classlistTB( [resultpath outfile],classfile_temp, pick_mode, class2use_manual, class2use_sub, classstr, classnum_default, classnum_default_sub, length(roilist) );
     if isempty(classlist), %indicates bad class2use match
@@ -111,7 +112,7 @@ for filecount = filenum2start:length(filelist),
         classnum = class2view(classcount);
         roi_ind_all = get_roi_indices(classlist, classnum, pick_mode, sub_col, view_num);
         %read roi images
-        setsize = 10; %1000;
+        setsize = MCconfig.setsize; %1000;
         setnum = ceil(length(roi_ind_all)./setsize);
         for imgset = 1:setnum,
             next_ind = 1; %start with the first roi
@@ -121,7 +122,7 @@ for filecount = filenum2start:length(filelist),
             setrange = (startrange+1):min([imgset*setsize, length(roi_ind_all)]);
             roi_ind = roi_ind_all(setrange);
             for imgcount = 1:length(roi_ind)
-                imagedat{imgcount} = imresize(imread(fullfile(filelist{filecount},roilist{roi_ind(imgcount)})),.4);
+                imagedat{imgcount} = imresize(imread(fullfile(roipath,roilist{roi_ind(imgcount)})),MCconfig.imresize_factor);
             end;
             
             if ~isempty(imagedat),
