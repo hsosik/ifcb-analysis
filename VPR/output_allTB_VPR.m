@@ -6,12 +6,12 @@ aidpathstr = 'c:\data\NBP12_01\rois\vpr3\';
 tempstr = char(classfiles);
 
 %aid_prefix = fullfile(aidpathstr, cellstr(tempstr(:,1:4)), cellstr(tempstr(:,5:7)), filesep, 'roi0.');
-aid_prefix = fullfile(aidpathstr, cellstr(tempstr(:,1:7)), cellstr(tempstr(:,12:15)), cellstr(tempstr(:,16:18)), filesep, 'roi0.');
+aid_prefix = fullfile(aidpathstr, cellstr(tempstr(:,12:15)), cellstr(tempstr(:,16:18)), filesep, 'roi0.');
 
 temp = load([classpath classfiles{1}], 'class2useTB', 'classifierName');
 class2use = temp.class2useTB;
 
-threshold_mode = 'adhoc';
+threshold_mode = 'opt';
 
 switch threshold_mode
     case 'opt'  %"optimal" threshold from oob analysis
