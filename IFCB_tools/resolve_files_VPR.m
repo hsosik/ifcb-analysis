@@ -12,9 +12,8 @@ end;
 files = char(filelist);
 sep = repmat(filesep,length(filelist),1);
 base = repmat(char(basepath), length(filelist),1);
-basepath = [base files(:,1:4) sep files(:,5:7) sep];
+basepath = [base files(:,end-6:end-3) sep files(:,end-2:end) sep];
 filelist = cellstr([basepath files]);
-
 classfiles = {};
 if ~isempty(classpath),   
     classpath = repmat(classpath, length(filelist),1);
