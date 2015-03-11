@@ -207,25 +207,28 @@ switch MCconfig.group
             MCconfig.class2view1 = MCconfig.class2use; %case to view all
             %MCconfig.class2view1 = intersect(MCconfig.class2use, {'detritus'}); %example to select a few
     case 'VPR'
-            MCconfig.resultpath = '\\sosiknas1\Lab_data\VPR\vpr3\manual_fromClass\'; %USER set
-            MCconfig.basepath = '\\sosiknas1\Lab_data\VPR\vpr3\'; %USER set
+            MCconfig.resultpath = '\\SosikNAS1\Lab_data\VPR\NBP1201\vpr3\manual_fromClass\'; %USER set
+            MCconfig.basepath = '\\SosikNAS1\Lab_data\VPR\NBP1201\vpr3\'; %USER set
             %temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
             %MCconfig.class2use = temp.class2use;
             MCconfig.class2use = {'blurry', 'marSnow', 'phaeIndiv', 'phaeMany', 'squashed', 'whiteout', 'unclassified'};
             MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
-            MCconfig.classpath = '\\sosiknas1\Lab_data\VPR\vpr3\class\'; 
+            MCconfig.classpath = '\\SosikNAS1\Lab_data\VPR\NBP1201\vpr3\class_RossSea_Trees_09Mar2015\'; 
             MCconfig.default_class = 'unclassified';
             MCconfig.class2view2 = {}; %example to skip view2
+            MCconfig.setsize = 10; %how many images to read before displaying 
+            MCconfig.imresize_factor = 0.2; %image display scale factors
             filelisttype ='dirlist'; %manual_list, loadfile, dirlist
             switch filelisttype
                 case 'loadfile'
                     load mylist.mat
                     MCconfig.filelist = filelist; 
                 case 'dirlist' %other MVCO cases
-                    temp = dir('\\sosiknas1\Lab_data\VPR\vpr3\class\d*.mat'); temp = char(temp.name);
+                    temp = dir('\\sosiknas1\Lab_data\VPR\NBP1201\vpr3\class\N*.mat'); temp = char(temp.name);
                     MCconfig.filelist = cellstr(temp(:,1:end-13)); clear temp
             end
             [MCconfig.filelist, MCconfig.classfiles] = resolve_files_VPR(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
+           
             %pick one
             MCconfig.class2view1 = MCconfig.class2use; %case to view all
 end
