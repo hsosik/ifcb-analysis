@@ -13,7 +13,7 @@ files = char(filelist);
 sep = repmat(filesep,length(filelist),1);
 base = repmat(char(basepath), length(filelist),1);
 basepath = [base files(:,1:4) sep files(:,5:7) sep];
-filelist = cellstr([basepath ]);
+filelist = cellstr([basepath files]);
 
 classfiles = {};
 if ~isempty(classpath),   
