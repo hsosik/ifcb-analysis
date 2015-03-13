@@ -52,7 +52,8 @@ while 1
 
 %        [file path] = uigetfile('\\72.72.77.26\data\beads\*.roi'); %ifcb5 -- all data is in data subdirectory
 
-       [file path] = uigetfile('\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB10\hanging_in_lab\*.roi'); %ifcb10
+       [file path] = uigetfile('\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\*.roi'); %hanging_in_lab\*.roi'); %ifcb102
+%        [file path] = uigetfile('\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB101\*.roi'); %hanging_in_lab\*.roi'); %ifcb101
 %        [file path] = uigetfile('\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB101\hanging_in_lab\*.roi'); %ifcb101
 
 
@@ -248,9 +249,11 @@ isin = find(isinpoly(x2plot, y2plot, xpoly, ypoly));
             isin = find(isinpoly(x2plot, y2plot, xpoly, ypoly));
         end
     end
-    data_choosing = input('use only last half of data? [ENTER(default=n) or y]  ','s');
+    data_choosing = input('Use specific event range of data? [ENTER(default=n) or y]  ','s');
     if strmatch(data_choosing,'y','exact');
-        isin = isin(length(isin)/2:end);
+        range_start = input('Input start event #: ');
+        range_end = input('Input end event #: ');
+        isin = isin(range_start:range_end);
     end
     %pause
     

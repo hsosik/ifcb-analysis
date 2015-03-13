@@ -15,7 +15,7 @@ make_pathfiles2load
 clear startfile endfile
 
 %hand pick specific file from dir chosen by make_pathfiles2load.m above
-[filename,dirpath, celltype] = uigetfile([dirpath '*.adc']);
+[filename,dirpath] = uigetfile([dirpath '*.adc']);
 a = dir([dirpath filename]);
 filetime = a.datenum;
 clear a
@@ -30,6 +30,15 @@ adcdata2 = load([path2 matchfile]);
 
 sprintf('%s \n %s \n %s \n \n %s','Files chosen to compare:', [dirpath filename], [path2 matchfile], 'Press enter to continue')
 pause
+%only look at triiger with rois i.e.)triggers with roisizeX (length) greater than zero
+%parse down adcdata matrix to get ride of zerosize rois
+% ind1 = find(adcdata(:,16)>0);
+% zerorois1 = length(ind1);
+% adcdata = adcdata(ind1,:);
+% ind2 = find(adcdata2(:,16)>0);
+% zerorois2 = length(ind2);
+% adcdata2 = adcdata2(ind2,:);
+% clear ind*
 
 bin_steps = 0:10:1200;
 [n1,bin1] = histc(adcdata(:,2),bin_steps);
@@ -40,30 +49,54 @@ avglength1 = nan(length(bin_steps),1);
 avglength2 = avglength1;
 avgarea1   = avglength1;
 avgarea2   = avglength1;
+numtrig1 = avgarea2;
+zeroroi1 = avgarea2;
+numrois1 = avgarea2;
+trigcounts = nan(length(bin_steps),6);
+header_trigcounts = {'numtrig1','zerorois1','numrois1','numtrig2','zerorois2','numrois2'};
 for count = 1:length(bin_steps)
 %     avgs1(count,:) = [mean(adcdata(bin==count,16)) mean(adcdata(bin==count,16).*adcdata(bin==count,17)) ];
 %     avgs2(count,:) = [mean(adcdata2(bin2==count,16)) mean(adcdata2(bin2==count,16).*adcdata2(bin2==count,17)) ];
-    avglength1(count) = mean(adcdata(bin1==count,16));
-    avglength2(count) = mean(adcdata2(bin2==count,16));
-    avgarea1(count)   = mean(adcdata(bin1==count,16).*adcdata(bin1==count,17));
-    avgarea2(count)   = mean(adcdata2(bin2==count,16).*adcdata2(bin2==count,17));
+%     numtrig1(count)     = length(find(bin1==count));
+%     zeroroi1(count)     = length(find(adcdata(bin1==count,16)==0));
+%     numrois1(count)     = numtrig1(count) - zeroroi1(count);
+%     numtrig2(count)     = length(find(bin2==count));
+%     zeroroi2(count)     = length(find(adcdata2(bin2==count,16)==0));
+%     numrois2(count)     = numtrig2(count) - zeroroi2(count);
+    trigcounts(count,:) = [length(find(bin1==count)) length(find(adcdata(bin1==count,16)==0)) (length(find(bin1==count))-length(find(adcdata(bin1==count,16)==0)))  length(find(bin2==count)) length(find(adcdata2(bin2==count,16)==0)) (length(find(bin2==count))-length(find(adcdata2(bin2==count,16)==0)))];
+    avglength1(count)   = mean(adcdata(adcdata(bin1==count,16)~=0,16));
+    avglength2(count)   = mean(adcdata2(adcdata2(bin2==count,16)~=0,16));
+    avgarea1(count)     = mean(adcdata(adcdata(bin1==count,16)~=0,16).*adcdata(adcdata(bin1==count,16)~=0,17));
+    avgarea2(count)     = mean(adcdata2(adcdata2(bin2==count,16)~=0,16).*adcdata2(adcdata2(bin2==count,16)~=0,17));
 end
 % roilength = adcdata(:,16);
 % roiarea = adcdata(:,16).*adcdata(:,17); %roiSizeX*roiSizeY
 % pmtClow = adcdata(:,9);
 % pmtChi  = adcdata(:,10);
 figure
-subplot(2,1,1)
+subplot(3,1,1)
+plot(trigcounts(:,3),'b')
+hold on
+plot(trigcounts(:,2),'b.:')
+plot(trigcounts(:,6),'r')
+plot(trigcounts(:,5),'r.:')
+set(gca,'xlim',[0 120])
+xlabel(['time bin (' num2str(bin_steps(2)) 'sec)'],'fontweight','bold'); ylabel('Count of triggers');
+title('Rois Counts & ZeroRoi Counts in a single file over full run time','fontweight','bold');
+legend(['RoiCount ' savefilename], ['ZeroRois ' savefilename], ['RoiCount ' savefilename2], ['ZeroRois ' savefilename]);
+subplot(3,1,2)
 plot(avglength1,'b')%#triggers binned per 10 sec
 hold on
 plot(avglength2,'r')%#triggers binned per 10 sec
+set(gca,'xlim',[0 120])
 xlabel(['time bin (' num2str(bin_steps(2)) 'sec)'],'fontweight','bold'); ylabel('Length=roisizeX (pix)','fontweight','bold');
 title(['Avg Length - ' celltype])
 legend(savefilename, savefilename2)
-subplot(2,1,2)
+subplot(3,1,3)
 plot(avgarea1,'b')
 hold on
 plot(avgarea2,'r')
+set(gca,'xlim',[0 120])
 xlabel(['time bin (' num2str(bin_steps(2)) 'sec)'],'fontweight','bold'); ylabel('Area=roisizeX*roisizeY (pix)','fontweight','bold');
 title(['Avg Area - ' celltype])
 
