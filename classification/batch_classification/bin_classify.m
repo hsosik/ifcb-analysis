@@ -5,7 +5,7 @@ function [ ] = bin_classify( in_dir, file, out_dir, config)
 %Modified to incorporate biovolume computations (taken from bin_volume.m), Jan 2013
 %Heidi M. Sosik, Woods Hole Oceanographic Institution
 
-debug = true;
+debug = false;
 
 function log(msg) % not to be confused with logarithm function
     logmsg(['bin_features ' msg],debug);
@@ -36,7 +36,8 @@ for count = 1:length(ind),
     TBclass_above_threshold(ind(count)) = config.TBclassifier.ClassNames(ii);
 end;
 
-outfile = regexprep(file, 'features', 'class_v1');
+%outfile = regexprep(file, 'features', 'class_v1');
+outfile = regexprep(outfile, 'fea_v3', 'class_v1'); %keep both lines to work for either case
 outfile = regexprep(outfile, 'fea_v2', 'class_v1');
 outfile = regexprep(outfile, '.csv', '');
 %outfile = regexprep(outfile, 'v2', 'v1'); %TEMPORARY work around for v2 features, still v1 class files
