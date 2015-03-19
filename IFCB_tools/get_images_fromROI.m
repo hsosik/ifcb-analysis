@@ -24,7 +24,7 @@ for count = 1:length(ROInumbers),
     fseek(fid, startbyte(num), -1);
     img = fread(fid, x(num).*y(num), 'ubit8=>uint8'); 
     targets.image{count} = reshape(img, x(num), y(num))';
-    pid{count} = [filename '_' num2str(num,'%05.0f')];
+    targets.pid{count} = [filename '_' num2str(num,'%05.0f')];
 end;
 fclose(fid);
 
