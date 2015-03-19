@@ -26,6 +26,9 @@ if not(debug),
 end
 
 config = config_classifier(classifierName);
+if ~exist(out_dir, 'dir')
+    mkdir(out_dir)
+end;
 
 if not(debug),
     parfor filecount = 1:length(filelist)
