@@ -15,7 +15,7 @@ if isequal(fullfilename(1:4), 'http'),
         return
     end;
 end;
-adc_data = load([filestr]);
+adc_data = load([fullfilename]);
 %remove temporary file if read from URL
 if exist('status', 'var'), delete(filestr); end;
 
