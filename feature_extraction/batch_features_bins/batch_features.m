@@ -1,5 +1,5 @@
 
-function [ ] = batch_features(in_dir, filelist, out_dir )
+function [ ] = batch_features(in_dir, filelist, out_dir, in_dir_blob )
 % Accept a list of bin files to process and a directory in which to place the output volume files
 % Start a matlab pool
 % Process the bins in parallel.
@@ -8,8 +8,10 @@ function [ ] = batch_features(in_dir, filelist, out_dir )
 % Shut down the pool
 % Report completion status
 % batch_volume modified by Heidi Sosik from day_blobs.m (by Joe Futrelle)
+% revised input to include optional in_dir_blob = list of directory
+% locations for case for local access (not web services), Heidi M. Sosik, March 2015
 
-debug = false;
+debug = true; %false for parallel processing, true for sequential on one process
 
 function log(msg) % not to be confused with logarithm function
     logmsg(['day_blobs ' msg],debug);
@@ -17,8 +19,8 @@ end
 
 if not(debug),
     try
-        matlabpool;
-        %matlabpool local 4;
+        pool = parpool;
+        %pool = parpool(4);
         log('POOL - started');
     catch e %#ok<NASGU>
         log('WARNING - workers cannot start, or already active');
@@ -29,18 +31,26 @@ end
 
 if not(debug),
     parfor filecount = 1:length(filelist)
-        bin_features(in_dir, [char(filelist(filecount)) '.zip'], out_dir);
+        if exist('in_dir_blob', 'var')
+            bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
+        else
+            bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, []);
+        end;
     end
 else
     for filecount = 1:length(filelist)
-        bin_features(in_dir, [char(filelist(filecount)) '.zip'], out_dir);
+        if exist('in_dir_blob', 'var')
+            bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
+        else
+            bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, []);
+        end;
     end
 end
 
 
 if not(debug),
     try
-        matlabpool close;
+        delete(pool)
         log('POOL - stopped');
     catch e %#ok<NASGU>
         log('WARNING - workers cannot stop, or already stopped');

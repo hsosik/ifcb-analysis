@@ -1,11 +1,14 @@
-function [ ] = bin_features( in_dir, file, out_dir, opt1 )
+function [ ] = bin_features( in_dir, file, out_dir, opt1 , in_dir_blob)
 %function [ ] = bin_features( in_dir, file, out_dir )
 %BIN_FEATURES Summary of this function goes here
 %modified from bin_blobs
 %Modified to incorporate biovolume computations (taken from bin_volume.m), Jan 2013
 %Heidi M. Sosik, Woods Hole Oceanographic Institution
+%
+%March 2015, Heidi - updated to handle case for no web services access (local
+%access for Rois and blobs)
 
-debug = false;
+debug = false;  %USER leave as is, not for parallel processing
 
 function log(msg) % not to be confused with logarithm function
     logmsg(['bin_features ' msg],debug);
@@ -21,13 +24,22 @@ end
 % load the zip file
 log(['LOAD targets ' file]);
 %http://ifcb-data.whoi.edu/mvco/IFCB1_2009_174_055621_blob.zip
-targets = get_bin_file([in_dir file]);
+[~,~,x] = fileparts(file);
+roi_flag = strmatch('.roi',x);
+if roi_flag
+    targets = get_images_fromROI([in_dir file]);
+else %assume zip
+    targets = get_bin_file([in_dir file]);
+end;
 nt = length(targets.pid);
 if nt > 0,
     log(['LOAD blobs ' file]);
-    targets_blob = get_blob_bin_file([in_dir regexprep(file, '.zip', '_blob.zip')]);
+    if roi_flag
+        targets_blob = get_blob_bin_file([in_dir_blob regexprep(file, '.roi', '.zip')]);
+    else
+        targets_blob = get_blob_bin_file([in_dir regexprep(file, '.zip', '_blob.zip')]);
+    end;
 end;
-
 log(['PROCESSING ' num2str(nt) ' target(s) from ' file]);
 
 config = configure();
@@ -63,12 +75,14 @@ if nt > 0,
 
     %write the compiled feature csv file
     fileout = regexprep(file, '.zip', '_fea_v2.csv');
+    fileout = regexprep(fileout, '.roi', '_fea_v2.csv');
     log(['SAVING ' fileout]);
    
-   csvwrite_with_headers( [out_dir fileout], feature_mat, featitles );
+    csvwrite_with_headers( [out_dir fileout], feature_mat, featitles );
     
     %write the raw multi-blob features to separate csv file
     fileout = regexprep(file, '.zip', '_multiblob_v2.csv');   
+    fileout = regexprep(fileout, '.roi', '_multiblob_v2.csv');   
     if ~isempty(multiblob_features),
         mkdir([out_dir filesep 'multiblob']);
         csvwrite_with_headers( [out_dir filesep 'multiblob' filesep fileout], multiblob_features, multiblob_titles );
