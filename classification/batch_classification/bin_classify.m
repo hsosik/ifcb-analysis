@@ -36,7 +36,7 @@ for count = 1:length(ind),
     TBclass_above_threshold(ind(count)) = config.TBclassifier.ClassNames(ii);
 end;
 
-%outfile = regexprep(file, 'features', 'class_v1');
+outfile = regexprep(file, 'features', 'class_v1');
 outfile = regexprep(outfile, 'fea_v3', 'class_v1'); %keep both lines to work for either case
 outfile = regexprep(outfile, 'fea_v2', 'class_v1');
 outfile = regexprep(outfile, '.csv', '');
