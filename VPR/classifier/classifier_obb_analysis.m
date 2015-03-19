@@ -157,7 +157,7 @@ c3b = c3(1:end-1,1:end-1);
 disp('error rate for accepted classifications (optimal score threshold):')
 disp(sum(sum(c3b)-diag(c3b)')/sum(sum(c3b')))
 %Pm3 = (sum(c1')-sum(c3'))./sum(c1'); %miss rate (true pos in unclassified)
-Pm3 = c3(:,7)./total;
+Pm3 = c3(:,end)./total; %c3(:,7)./total;
 figure(8) 
 bar([Pd3 Pr3' Pm3])
 title('optimal score threshold')
