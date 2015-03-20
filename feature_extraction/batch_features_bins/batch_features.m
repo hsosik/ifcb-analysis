@@ -34,7 +34,7 @@ if not(debug),
         if exist('in_dir_blob', 'var')
             bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
         else
-            bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, []);
+            bin_features(in_dir, [char(filelist(filecount)) '.roi'], out_dir, []);
         end;
     end
 else
@@ -42,7 +42,7 @@ else
         if exist('in_dir_blob', 'var')
             bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
         else
-            bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, []);
+            bin_features(in_dir, [char(filelist(filecount)) '.roi'], out_dir, []);
         end;
     end
 end
