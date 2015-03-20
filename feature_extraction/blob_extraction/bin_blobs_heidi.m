@@ -15,14 +15,22 @@ end
 
 % load the zip file
 log(['LOAD ' file]);
-targets = get_bin_file([in_dir  file]);
+
+[~,~,x] = fileparts(file);
+roi_flag = strmatch('.roi',x);
+if roi_flag
+    targets = get_images_fromROI([in_dir file]);
+    png_dir = [out_dir filesep regexprep(file,'.roi','')];
+else %assume zip
+    targets = get_bin_file([in_dir file]);
+    png_dir = [out_dir filesep regexprep(file,'.zip','')];
+end;
 
 nt = length(targets.targetNumber);  
-png_dir = [out_dir filesep regexprep(file,'.zip','')];
+%png_dir = [out_dir filesep regexprep(file,'.zip','')];
 mkdir(png_dir);
 
 log(['PROCESSING ' num2str(nt) ' target(s) from ' file]);
-
 
 png_paths = {};
 % for each target
@@ -35,7 +43,11 @@ for i = 1:nt,
     % compute the blob mask (result in target.blob_image)
     target = blob(target);
     % now output the blob image as a 1-bit png
-    png_path = [png_dir filesep regexprep(file,'.zip',sprintf('_%05d.png',targets.targetNumber(i)))];
+    if roi_flag
+        png_path = [png_dir filesep regexprep(file,'.roi',sprintf('_%05d.png',targets.targetNumber(i)))];
+    else
+        png_path = [png_dir filesep regexprep(file,'.zip',sprintf('_%05d.png',targets.targetNumber(i)))];
+    end;
     imwrite(target.blob_image,png_path,'bitdepth',1);
     png_paths = [png_paths; {png_path}];
 end
