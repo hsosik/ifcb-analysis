@@ -1,5 +1,5 @@
 resultpath = 'C:\IFCB\manual\'; %USER
-roibasepath = 'C:\IFCB\data\D2014\'; %USER
+roibasepath = 'C:\IFCB\data\'; %USER
 filelist = dir([resultpath 'D*.mat']);
 
 %calculate date
@@ -14,19 +14,9 @@ ml_analyzed = NaN(length(filelist),1);
 for filecount = 1:length(filelist),
     filename = filelist(filecount).name;
     disp(filename)
-    hdrname = [roibasepath filesep filename(1:9) filesep regexprep(filename, 'mat', 'hdr')]; 
+    hdrname = [roibasepath filesep filename(1:5) filesep filename(1:9) filesep regexprep(filename, 'mat', 'hdr')]; 
     ml_analyzed(filecount) = IFCB_volume_analyzed(hdrname);
-    
-%     roipath = [roidaypath filename(1:9) '\'];
-%     hdr = IFCBxxx_readhdr([roipath regexprep(filename, 'mat', 'hdr')]); 
-%     adcdata = importdata([roipath regexprep(filename, 'mat', 'adc')]);
-%     runtime = adcdata(end,13)-adcdata(1,13); %triggers 2-last
-%     temp = runtime./(adcdata(end,1)-1);
-%     runtime = runtime+temp; %add average for 1 extra trigger (first)
-%     missed_ratio = hdr.inhibittime./hdr.runtime;
-%     looktime = runtime-runtime*missed_ratio;
-%     ml_analyzed(filecount) = flowrate*looktime/60;
-%     
+     
     load([resultpath filename])
     if ~isequal(class2use_manual, class2use_manual_first)
         [t,ii] = min([length(class2use_manual_first), length(class2use_manual)]);
