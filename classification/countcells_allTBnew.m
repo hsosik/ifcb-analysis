@@ -20,9 +20,9 @@ for yrcount = 1:length(yrrange), %USER not tested yet for multiple years, but sh
     %temp = [dir([classpath 'I*.mat']); dir([classpath 'D*.mat'])];
     temp = dir([classpath 'D*.mat']);
     pathall = repmat(classpath, length(temp),1);
-    temp = [filelist; char(temp.name)];
+    temp = char(temp.name);
     classfiles = [classfiles; cellstr([pathall temp])];
-    filelist = [filelist temp(:,1:24)];
+    filelist = [filelist; temp(:,1:24)];
     clear temp pathall classpath
 end;
 
