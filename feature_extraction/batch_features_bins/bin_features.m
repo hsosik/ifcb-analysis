@@ -35,7 +35,7 @@ nt = length(targets.pid);
 if nt > 0,
     log(['LOAD blobs ' file]);
     if roi_flag
-        targets_blob = get_blob_bin_file([in_dir_blob regexprep(file, '.roi', '.zip')]);
+        targets_blob = get_blob_bin_file([in_dir_blob regexprep(file, '.roi', '_blobs_v2.zip')]);
     else
         targets_blob = get_blob_bin_file([in_dir regexprep(file, '.zip', '_blob.zip')]);
     end;

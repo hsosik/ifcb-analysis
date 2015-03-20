@@ -1,6 +1,6 @@
-out_dir = 'C:\work\TAMUG\features\2015\'; %USER where to output features
-in_dir_base = 'C:\work\TAMUG\data\D2015\'; %USER where to access roi data
-in_dir_blob_base = 'C:\work\TAMUG\blobs\D2015\'; %USER where to access blobs
+out_dir = 'C:\IFCB\features_test\D2015\'; %USER where to output features
+in_dir_base = 'C:\IFCB\data\test\'; %USER where to access roi data
+in_dir_blob_base = 'C:\IFCB\blobs_test\D2015\'; %USER where to access blobs
 
 daydir = dir([in_dir_base 'D*']);
 daydir = daydir([daydir.isdir]); 
