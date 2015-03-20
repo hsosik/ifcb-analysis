@@ -1,8 +1,8 @@
 %start_batch_tamu.m
 %configure and initiate batch processing for blob extractiom
 
-in_dir_base = 'C:\work\TAMUG\data\D2014\'; %USER web services to access data
-out_dir_blob_base = 'C:\work\TAMUG\blobs2\D2014\';
+in_dir_base = 'C:\IFCB\data\test\'; %USER web services to access data
+out_dir_blob_base = 'C:\IFCB\blobs_test\D2015\';
 
 if ~exist(out_dir_blob_base, 'dir'),
     mkdir(out_dir_blob_base)
@@ -22,9 +22,9 @@ for ii = 1:length(daydir),
     bins_done = regexprep({bins_done.name}', '.zip', '');
     [bins_temp,ia] = setdiff(bins_temp, bins_done);
     if ~isempty(bins_temp)
-        daystr = char(bins_temp); daystr = daystr(:,1:9);
+        %daystr = char(bins_temp); daystr = daystr(:,1:9);
         in_dir = [in_dir; repmat(cellstr(in_dir_temp),length(bins_temp),1)];
-        out_dir_blob_temp = cellstr([repmat(out_dir_blob_temp,length(bins_temp),1) daystr repmat(filesep, length(bins_temp),1)]);
+        out_dir_blob_temp = cellstr([repmat(out_dir_blob_temp,length(bins_temp),1) repmat(filesep, length(bins_temp),1)]);
         out_dir_blob = [out_dir_blob; out_dir_blob_temp];
         bins = [bins; bins_temp];
     end;
