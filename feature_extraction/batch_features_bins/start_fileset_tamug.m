@@ -1,6 +1,6 @@
 out_dir = 'C:\work\TAMUG\features\2015\';
 in_dir_base = 'C:\work\TAMUG\data\D2015\'; %USER web services to access data
-in_dir_blob_base = 'C:\work\TAMUG\blobs\';
+in_dir_blob_base = 'C:\work\TAMUG\blobs\D2015\';
 
 daydir = dir([in_dir_base 'D*']);
 daydir = daydir([daydir.isdir]); 
