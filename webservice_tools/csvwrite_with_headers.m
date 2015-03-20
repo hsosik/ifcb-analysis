@@ -14,6 +14,6 @@ fprintf(fid,'%s\r\n',header_string);
 fclose(fid);
 
 % append CSV representation of matrix
-dlmwrite(filename, m,'-append','delimiter',',');
+dlmwrite(filename, m,'-append','delimiter',',', 'precision', 10);
 end
 
