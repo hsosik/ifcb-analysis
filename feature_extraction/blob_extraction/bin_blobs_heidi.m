@@ -7,7 +7,14 @@ function log(msg) % not to be confused with logarithm function
     logmsg(['bin_blobs ' msg],debug);
 end
 
-archive = [out_dir filesep regexprep(file,'.zip','_blobs_v2.zip')];
+[~,~,x] = fileparts(file);
+roi_flag = strmatch('.roi',x);
+if roi_flag
+    archive = [out_dir filesep regexprep(file,'.roi','_blobs_v2.zip')];
+else
+    archive = [out_dir filesep regexprep(file,'.zip','_blobs_v2.zip')];
+end;
+
 if exist(archive,'file'),
     log(['SKIPPING ' file]);
     return
