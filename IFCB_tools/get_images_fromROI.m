@@ -19,6 +19,7 @@ if ~exist('ROInumbers', 'var'),
     [ROInumbers] = find(x>0);
 end;
 fid=fopen([basedir filesep ROIfile]);% '.roi']);
+targets.targetNumber = ROInumbers;
 for count = 1:length(ROInumbers),
     num = ROInumbers(count);
     fseek(fid, startbyte(num), -1);
