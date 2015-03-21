@@ -56,6 +56,7 @@ classstr = [];
 classnum_default_sub = [];
 class2view2 = [];
 class2use_pick2 = class2use_sub; %to set button labels
+setsize = MCconfig.setsize; %1000;
 
 switch pick_mode
     case 'raw_roi' %pick classes from scratch
@@ -89,8 +90,12 @@ for filecount = filenum2start:length(filelist),
         classfile_temp = classfiles{filecount};
     end;
     roipath = fileparts(filelist{filecount});
-    roilist = dir([roipath filesep '*.tif']);
-    roilist = {roilist.name}';
+    %    roilist = dir([roipath filesep '*.tif']);
+    %    roilist = {roilist.name}';
+    eval(['[s,roilist] = dos(''dir ' roipath filesep '*.tif /B'');'])
+    tt = strfind(roilist, char(10)); tt = tt(1)-1;
+    roilist = regexprep(roilist, char(10), '');
+    roilist = cellstr(reshape(roilist,tt,length(roilist)/tt)');
     [ classlist, sub_col, list_titles, newclasslist_flag ] = get_classlistTB( [resultpath outfile],classfile_temp, pick_mode, class2use_manual, class2use_sub, classstr, classnum_default, classnum_default_sub, length(roilist) );
     if isempty(classlist), %indicates bad class2use match
         return
@@ -111,82 +116,92 @@ for filecount = filenum2start:length(filelist),
     while classcount <= length(class2view),
         classnum = class2view(classcount);
         roi_ind_all = get_roi_indices(classlist, classnum, pick_mode, sub_col, view_num);
-        %read roi images
-        setsize = MCconfig.setsize; %1000;
-        setnum = ceil(length(roi_ind_all)./setsize);
-        for imgset = 1:setnum,
-            next_ind = 1; %start with the first roi
-            next_ind_list = next_ind; %keep track of screen start indices within a class
-            imagedat = {};
-            startrange = imgset*setsize-setsize;
-            setrange = (startrange+1):min([imgset*setsize, length(roi_ind_all)]);
-            roi_ind = roi_ind_all(setrange);
-            for imgcount = 1:length(roi_ind)
-                imagedat{imgcount} = imresize(imread(fullfile(roipath,roilist{roi_ind(imgcount)})),MCconfig.imresize_factor);
-            end;
-            
-            if ~isempty(imagedat),
+        if ~isempty(roi_ind_all),
+            class_with_rois = [class_with_rois classcount]; %keep track of which classes to jump back (i.e., which have ROIs)
+            %read roi images
+            setnum = ceil(length(roi_ind_all)./setsize);
+            imgset = 0;
+            while imgset < setnum,
+                imgset = imgset + 1
+                next_ind = 1; %start with the first roi
+                next_ind_list = next_ind; %keep track of screen start indices within a class
+                imagedat = {};
+                startrange = imgset*setsize-setsize;
+                setrange = (startrange+1):min([imgset*setsize, length(roi_ind_all)]);
+                roi_ind = roi_ind_all(setrange)
+                for imgcount = 1:length(roi_ind)
+                    imagedat{imgcount} = imresize(imread(fullfile(roipath,roilist{roi_ind(imgcount)})),MCconfig.imresize_factor);
+                end;
                 
-                %sorts images by size instead of roi_ind 08/06/2013 Yannick
-                
-                switch MCconfig.displayed_ordered
-                    case 'size'
-                        [nrows, ncols]=cellfun(@size, imagedat); %find the size of each image
-                        size_images=[nrows; ncols]';%make a matrix of the sizes
-                        [~,II]=sortrows(size_images,[-2,-1]); %Sorted by deacreasing height then width
-                        %reorders the roi_ind and the imagedat
-                        imagedat=imagedat(II);
-                        roi_ind=roi_ind(II);
-                    case 'roi_index'
-                    otherwise
-                end
-                
-                class_with_rois = [class_with_rois classcount]; %keep track of which classes to jump back (i.e., which have ROIs)
-                while next_ind <= length(roi_ind),
-                    change_col = 2; if view_num > 1, change_col = sub_col;, end; %1/15/10 to replace mark_col in call to fillscreen
-                    [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [class2use_now(classnum) filelist{filecount}], classlist, change_col, classnum);
-                    next_ind = next_ind + next_ind_increment - 1;
-                    figure(figure_handle)
-                    [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2use_pick1, class2use_pick2, mark_col, MCconfig.maxlist1);
-                    %keyboard
-                    if change_flag,
-                        if ~isempty(sub_col),  %strncmp(pick_mode, 'subdiv',6)
-                            %reassign manual column (#2) with relevant sub_col entries
-                            % keyboard
-                            %next line presumes that a manual column ID should NOT be overridden by a subsequent sub_col ID (e.g., put in main ciliate categoryfirst, then move to subdivided catetory
-                            %classlist(~isnan(classlist(:,sub_col)) & ~isnan(classlist(:,2)) & classlist(:,2) ~= strmatch(classstr, class2use_manual), sub_col) = NaN;
-                            %1/15/10, recast above so the subdivide ID overrides instead (i.e., just skip above line)
-                            classlist(classlist(:,sub_col) >= 1,2) = strmatch(classstr, class2use_manual);  %reassign manual column (#2) with relevant sub_col entries
-                            classlist(classlist(:,2) == strmatch(classstr, class2use_manual) & isnan(classlist(:,sub_col)), sub_col) = classnum_default_sub;  % = 2; changed 1/15/10 ??correct??
-                            eval(['class2use_sub' num2str(sub_col) '= class2use_sub;'])
-                            mark_col = sub_col; %reset col for ID in classlist %comment out 9/29/09 Heidi
-                        end;
-                        %save([resultpath streamfile], 'classlist', 'class2use_auto', 'class2use_manual', 'class2use_sub*', 'list_titles', '-append'); %omit append option, 6 Jan 2010
-                        save([resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'class2use_sub*', 'list_titles'); %omit append option, 6 Jan 2010
-                    end;
-                    clear change_flag
-                    if go_back_flag,
-                        if length(next_ind_list) == 1,%case for back one whole class
-                            next_ind = length(roi_ind_all) + 1;
-                            if length(class_with_rois) == 1,  %just go back to start of file
-                                if class_with_rois == 1,
-                                    set(instructions_handle, 'string', ['NOT POSSIBLE TO BACKUP PAST THE START OF A FILE! Restart on previous file if necessary.'], 'foregroundcolor', 'r')
-                                end;
-                                classcount = 0;
-                                class_with_rois = [];
-                            else %back up to next class with rois in it
-                                classcount = class_with_rois(end-1) - 1;
-                                class_with_rois(end-1:end) = [];
+                if ~isempty(imagedat),
+                    
+                    %sorts images by size instead of roi_ind 08/06/2013 Yannick
+                    
+                    switch MCconfig.displayed_ordered
+                        case 'size'
+                            [nrows, ncols]=cellfun(@size, imagedat); %find the size of each image
+                            size_images=[nrows; ncols]';%make a matrix of the sizes
+                            [~,II]=sortrows(size_images,[-2,-1]); %Sorted by deacreasing height then width
+                            %reorders the roi_ind and the imagedat
+                            imagedat=imagedat(II);
+                            roi_ind=roi_ind(II);
+                        case 'roi_index'
+                        otherwise
+                    end
+                    
+                    while next_ind <= length(roi_ind),
+                        change_col = 2; if view_num > 1, change_col = sub_col;, end; %1/15/10 to replace mark_col in call to fillscreen
+                        [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [class2use_now(classnum) filelist{filecount}], classlist, change_col, classnum);
+                        next_ind = next_ind + next_ind_increment - 1;
+                        figure(figure_handle)
+                        [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2use_pick1, class2use_pick2, mark_col, MCconfig.maxlist1);
+                        disp(change_flag)
+                        disp(go_back_flag)
+                        %keyboard
+                        if change_flag,
+                            if ~isempty(sub_col),  %strncmp(pick_mode, 'subdiv',6)
+                                %reassign manual column (#2) with relevant sub_col entries
+                                % keyboard
+                                %next line presumes that a manual column ID should NOT be overridden by a subsequent sub_col ID (e.g., put in main ciliate categoryfirst, then move to subdivided catetory
+                                %classlist(~isnan(classlist(:,sub_col)) & ~isnan(classlist(:,2)) & classlist(:,2) ~= strmatch(classstr, class2use_manual), sub_col) = NaN;
+                                %1/15/10, recast above so the subdivide ID overrides instead (i.e., just skip above line)
+                                classlist(classlist(:,sub_col) >= 1,2) = strmatch(classstr, class2use_manual);  %reassign manual column (#2) with relevant sub_col entries
+                                classlist(classlist(:,2) == strmatch(classstr, class2use_manual) & isnan(classlist(:,sub_col)), sub_col) = classnum_default_sub;  % = 2; changed 1/15/10 ??correct??
+                                eval(['class2use_sub' num2str(sub_col) '= class2use_sub;'])
+                                mark_col = sub_col; %reset col for ID in classlist %comment out 9/29/09 Heidi
                             end;
-                        else %go back one screen in same class
-                            next_ind = next_ind_list(end-1);
-                            next_ind_list(end-1:end) = [];
+                            %save([resultpath streamfile], 'classlist', 'class2use_auto', 'class2use_manual', 'class2use_sub*', 'list_titles', '-append'); %omit append option, 6 Jan 2010
+                            save([resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'class2use_sub*', 'list_titles'); %omit append option, 6 Jan 2010
+                        end;
+                        clear change_flag
+                        if go_back_flag,
+                            if imgset > 1 && next_ind > 1 %case to go back one set in same class
+                                imgset = imgset-2;
+                                next_ind_list = [];
+                            elseif imgset == 1 && length(next_ind_list) == 1,%case for back one whole class
+                                if length(class_with_rois) == 1,  %just go back to start of file
+                                    if length(class_with_rois) == 1,
+                                        set(instructions_handle, 'string', ['NOT POSSIBLE TO BACKUP PAST THE START OF A FILE! Restart on previous file if necessary.'], 'foregroundcolor', 'r')
+                                    end;
+                                    classcount = 0;
+                                    class_with_rois = [];
+                                else %back up to next class with rois in it
+                                    classcount = class_with_rois(end-1) - 1;
+                                    class_with_rois(end-1:end) = [];
+                                    imgset = setnum; %make sure it leaves on next while
+                                end;
+                            else %go back one screen in same class
+                                next_ind = next_ind_list(end-1);
+                                next_ind_list(end-1:end) = [];
+                            end;
                         end;
                     end;
                     next_ind_list = [next_ind_list next_ind]; %keep track of screen starts within a class to go back
                 end;  %
             end; %if ~isempty(imagedat),
+            %imgset = imgset + 1;
         end; %for imgset = 1:setnum
         classcount = classcount + 1;
-    end; %while classcount
+    end; %if ~isempty(roi_ind_all)
+end; %while classcount
 end
