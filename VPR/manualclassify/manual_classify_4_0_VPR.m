@@ -128,7 +128,7 @@ for filecount = filenum2start:length(filelist),
                 imagedat = {};
                 startrange = imgset*setsize-setsize;
                 setrange = (startrange+1):min([imgset*setsize, length(roi_ind_all)]);
-                roi_ind = roi_ind_all(setrange)
+                roi_ind = roi_ind_all(setrange);
                 for imgcount = 1:length(roi_ind)
                     imagedat{imgcount} = imresize(imread(fullfile(roipath,roilist{roi_ind(imgcount)})),MCconfig.imresize_factor);
                 end;
@@ -150,11 +150,13 @@ for filecount = filenum2start:length(filelist),
                     end
                     
                     while next_ind <= length(roi_ind),
+                        disp(next_ind)
                         change_col = 2; if view_num > 1, change_col = sub_col;, end; %1/15/10 to replace mark_col in call to fillscreen
                         [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [class2use_now(classnum) filelist{filecount}], classlist, change_col, classnum);
                         next_ind = next_ind + next_ind_increment - 1;
                         figure(figure_handle)
                         [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2use_pick1, class2use_pick2, mark_col, MCconfig.maxlist1);
+                        set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'], 'foregroundcolor', 'k')
                         disp(change_flag)
                         disp(go_back_flag)
                         %keyboard
@@ -175,33 +177,38 @@ for filecount = filenum2start:length(filelist),
                         end;
                         clear change_flag
                         if go_back_flag,
-                            if imgset > 1 && next_ind > 1 %case to go back one set in same class
-                                imgset = imgset-2;
-                                next_ind_list = [];
-                            elseif imgset == 1 && length(next_ind_list) == 1,%case for back one whole class
-                                if length(class_with_rois) == 1,  %just go back to start of file
-                                    if length(class_with_rois) == 1,
-                                        set(instructions_handle, 'string', ['NOT POSSIBLE TO BACKUP PAST THE START OF A FILE! Restart on previous file if necessary.'], 'foregroundcolor', 'r')
+                            %keyboard
+                            if length(next_ind_list) == 1, %start of a set
+                                if imgset > 1%case to go back one set in same class
+                                    imgset = imgset-2;
+                                    next_ind_list = [];
+                                    next_ind = length(roi_ind)+1; %make sure it leaves on next while
+                                else %imgset == 1,%case for back one whole class
+                                    if length(class_with_rois) <= 1,  %just go back to start of file
+                                        next_ind = 1;
+                                        if class_with_rois == 1,
+                                            set(instructions_handle, 'string', ['NOT POSSIBLE TO BACKUP PAST THE START OF A FILE! Restart on previous file if necessary.'], 'foregroundcolor', 'r')
+                                        end;
+                                        classcount = 0;
+                                        class_with_rois = [];
+                                    else %back up to next class with rois in it
+                                        classcount = class_with_rois(end-1) - 1;
+                                        class_with_rois(end-1:end) = [];
+                                        imgset = setnum; %make sure it leaves on next while
                                     end;
-                                    classcount = 0;
-                                    class_with_rois = [];
-                                else %back up to next class with rois in it
-                                    classcount = class_with_rois(end-1) - 1;
-                                    class_with_rois(end-1:end) = [];
-                                    imgset = setnum; %make sure it leaves on next while
                                 end;
                             else %go back one screen in same class
                                 next_ind = next_ind_list(end-1);
                                 next_ind_list(end-1:end) = [];
                             end;
+                            
+                            next_ind_list = [next_ind_list next_ind]; %keep track of screen starts within a class to go back
                         end;
-                    end;
-                    next_ind_list = [next_ind_list next_ind]; %keep track of screen starts within a class to go back
-                end;  %
-            end; %if ~isempty(imagedat),
-            %imgset = imgset + 1;
-        end; %for imgset = 1:setnum
-        classcount = classcount + 1;
-    end; %if ~isempty(roi_ind_all)
-end; %while classcount
+                    end;  %
+                end; %if ~isempty(imagedat),
+                %imgset = imgset + 1;
+            end; %for imgset = 1:setnum
+            classcount = classcount + 1;
+        end; %if ~isempty(roi_ind_all)
+    end; %while classcount
 end
