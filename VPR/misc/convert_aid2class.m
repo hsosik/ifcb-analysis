@@ -8,20 +8,21 @@ if~exist(class_outdir, 'dir'),
 end;
 list_titles = {'roi number'    'manual'    'auto'};
 classnum_default = strmatch('unknown', class2use);
-for count = 2:2, %length(class2use),
+for count = 1:2, %length(class2use),
     indir = [aid_indir filesep class2use{count} filesep 'aid' filesep];
     disp(indir)
     if exist(indir, 'dir'),
         flist = dir([indir '*.h*']);
         flist = cellstr(char(flist.name));
-        for fnum = 101:length(flist)
+        for fnum = 1:length(flist)
             disp(flist(fnum))
             d = importdata([indir flist{fnum}]);
             [roi_dir] = fileparts(d{1});
             %roi_dir = [roi_dir_base regexprep(roi_dir, 'c:\\data\\NBP12_01\\rois\\', '') filesep];
             ii = findstr(filesep, roi_dir);
             roi_dir = [roi_dir_base roi_dir(ii(end-2)+1:end)];
-            outfile = [class_outdir 'NPB1201' regexprep(roi_dir(ii(end-3)+1:end),'\', '') '.mat'];
+            ii = findstr(filesep, roi_dir);
+            outfile = [class_outdir 'NPB1201' regexprep(roi_dir(ii(end-2)+1:end),'\', '') '.mat'];
             d = char(d);
             ii = findstr(filesep, d(1,:));
             dnum = str2num(d(:,(ii(end)+6):end-5));
@@ -46,7 +47,8 @@ for count = 2:2, %length(class2use),
                 disp('missing ROI data corresponding to aid output')
                 keyboard
             end;
-            c.classlist(ia,3) == count;
+            c.classlist(ia,3) = count;
+            c.class2use_auto = class2use;
             save(outfile, '-struct', 'c')
         end;
     else
