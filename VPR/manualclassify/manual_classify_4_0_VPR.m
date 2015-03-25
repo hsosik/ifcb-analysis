@@ -179,8 +179,8 @@ for filecount = filenum2start:length(filelist),
                         if go_back_flag,
                             %keyboard
                             if length(next_ind_list) == 1, %start of a set
-                                if imgset > 1%case to go back one set in same class
-                                    imgset = imgset-2;
+                                if imgset > 1 %case to go back one set in same class
+                                    imgset = imgset - 2;
                                     next_ind_list = [];
                                     next_ind = length(roi_ind)+1; %make sure it leaves on next while
                                 else %imgset == 1,%case for back one whole class
@@ -201,9 +201,8 @@ for filecount = filenum2start:length(filelist),
                                 next_ind = next_ind_list(end-1);
                                 next_ind_list(end-1:end) = [];
                             end;
-                            
-                            next_ind_list = [next_ind_list next_ind]; %keep track of screen starts within a class to go back
                         end;
+                        next_ind_list = [next_ind_list next_ind]; %keep track of screen starts within a class to go back
                     end;  %
                 end; %if ~isempty(imagedat),
                 %imgset = imgset + 1;
