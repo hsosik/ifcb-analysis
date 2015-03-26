@@ -207,7 +207,7 @@ for filecount = filenum2start:length(filelist),
                 end; %if ~isempty(imagedat),
                 %imgset = imgset + 1;
             end; %for imgset = 1:setnum
-            classcount = classcount + 1;
         end; %if ~isempty(roi_ind_all)
+        classcount = classcount + 1;
     end; %while classcount
 end
