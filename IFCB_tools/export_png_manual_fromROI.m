@@ -1,11 +1,11 @@
 %USER SET PATHS
 %where are your manual classification results? same resultpath as for manual_classify
-resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
-outputpath = '\\raspberry\d_work\IFCB1\ifcb_data_MVCO_jun06\manual_test\'; %USER where to write out pngs
-roibasepath = '\\demi\vol3\';
+resultpath = '\\maddie\work\TAMUG\manual\';
+outputpath = '\\maddie\work\TAMUG\manual_test\png\'; %USER where to write out pngs
+roibasepath = '\\maddie\work\TAMUG\data\Dxxxx\'; %USER where are your ROIs, put xxxx to mark loaction so of year digits
 %urlbase = 'http://ifcb-data.whoi.edu/mvco/'; %USER where is your dashboard\web server
 
-resultfilelist = dir([resultpath 'D*.mat']);
+resultfilelist = dir([resultpath 'D2*.mat']);
 resultfilelist = char(resultfilelist.name);
 resultfilelist = cellstr(resultfilelist(:,1:end-4));
 
@@ -25,14 +25,24 @@ for filecount = 1:length(resultfilelist),
             mkdir([outputpath char(category(count))]);
         end;
     end;
-
-    roipath = [roibasepath];
+    if resultfile(1) == 'D'
+        roipath = [roibasepath resultfile(1:9) filesep];
+        roipath = regexprep(roipath, 'xxxx', resultfile(2:5));
+    else
+        roipath = [roibasepath resultfile(1:14) filesep];
+        roipath = regexprep(roipath, 'xxxx', resultfile(7:10));
+    end;
+    
     %loop over classes and save pngs to subdirs
     for count2 = 1:length(category);
         classnum = strmatch(category(count2), class2use_manual, 'exact');
-        ind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum));
-        %   ind = find(classlist(:,2) == classnum);  %MANUAL ONLY
-        roinum = classlist(ind,1);
-        export_png_from_ROIlist([roipath resultfile], [outputpath filesep category{count2}, roinum]);
+        if isempty(classnum),
+            disp(['Category is missing from class2use: ' category{count2}])
+        else
+            ind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum));
+            %   ind = find(classlist(:,2) == classnum);  %MANUAL ONLY
+            roinum = classlist(ind,1);
+            export_png_from_ROIlist([roipath resultfile], [outputpath filesep category{count2}], roinum);
+        end;
     end;
 end
