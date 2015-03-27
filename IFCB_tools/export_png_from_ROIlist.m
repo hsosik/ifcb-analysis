@@ -9,7 +9,7 @@ if ~exist(outputpath, 'dir'),
     mkdir(outputpath);
 end;
     
-ROIfile = [filename '.roi'];
+%ROIfile = [filename '.roi'];
 
 %get ADC data for startbyte and length of each ROI
 adcfile = [filename '.adc'];
@@ -22,7 +22,7 @@ end;
 if ~exist('ROInumbers', 'var'),
     [ROInumbers] = find(x>0);
 end;
-fid=fopen(ROIfile_withpath);% '.roi']);
+fid=fopen([ROIfile_withpath '.roi']);% '.roi']);
 for count = 1:length(ROInumbers),
     num = ROInumbers(count);
     fseek(fid, startbyte(num), -1);
