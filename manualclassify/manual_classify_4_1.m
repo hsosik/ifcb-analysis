@@ -1,5 +1,5 @@
 function [  ] = manual_classify_4_1( MCconfig )
-%function [  ] = manual_classify_4_0( MCconfig )
+%function [  ] = manual_classify_4_1( MCconfig )
 %manual_classify_2_0.m
 %Main script for manual IFCB roi classification
 %User selects paths for data and results and sets "pick_mode" for type of
@@ -36,8 +36,9 @@ function [  ] = manual_classify_4_1( MCconfig )
 %no plan to change functions already called by those scripts
 %23 Aug 2013, revise to pass filelists in as part of MCconfig structure
 % Aug 2014, revise to address bug #3037, where zero-sized ROIs were previously annotated with default class in 'raw_roi' mode
+% March 2015, begin upgrade transistion from manual_classify_4_0 to manual_classify_4_1, mainly to handle user initiated jumping among classes
 
-global figure_handle listbox_handle1 listbox_handle2 instructions_handle listbox_handle3 new_classcount new_setcount
+global figure_handle listbox_handle1 listbox_handle2 instructions_handle listbox_handle3 new_classcount new_setcount class_change
 close all
 resultpath = MCconfig.resultpath;
 filenum2start = MCconfig.filenum2start;
@@ -67,10 +68,10 @@ class2use_pick2 = class2use_sub; %to set button labels
 setsize = MCconfig.setsize; %1000;
 
 switch pick_mode
-    case 'raw_roi' %pick classes from scratch 
+    case 'raw_roi' %pick classes from scratch
         class2use_auto = [];
     case 'correct_or_subdivide'  %make subcategories starting with an automated class
-        class2use_auto = class2use;       
+        class2use_auto = class2use;
     otherwise
         disp('Invalid pick_mode. Check setting in get_MCconfig')
         return
@@ -83,11 +84,28 @@ border = 3; %to separate images
 
 %make the collage window
 [figure_handle, listbox_handle1, listbox_handle2, instructions_handle, listbox_handle3] = makescreen(class2use_pick1, class2use_pick2,MCconfig);
+%set(listbox_handle1, 'buttondownfcn', {'category_click'})
+%lbcontext_handle = uicontextmenu('parent', list_fig_handle);
+%item1 = uimenu(lbcontext_handle, 'label', 'set display class', 'callback', {'category_click'});
+%set(listbox_handle1, 'uiContextMenu', lbcontext_handle)
+
 set(figure_handle, 'menubar', 'none')
 class_menu_handle = uimenu(figure_handle, 'Label', 'Display Class' );
-for ii = 1:length(class2view1)
-    uimenu(class_menu_handle, 'Label', class2use{class2view1(ii)}, 'callback', {'set_menucount', ii});
+smsize = 20;
+submenu_num = ceil(length(class2view1)/smsize);
+for iii = 1:submenu_num
+    sm_start = smsize*iii-smsize+1; sm_end = min([smsize*iii, length(class2view1)]);
+    uim = uimenu(class_menu_handle, 'Label', [class2use{class2view1(sm_start)} '-' class2use{class2view1(sm_end)}]);
+    for ii = sm_start:sm_end
+        uimenu(uim, 'Label', class2use{class2view1(ii)}, 'callback', {'set_classcount', ii, class2use(class2view1)});
+    end;
 end;
+class_change = 0;
+%next_menu_handle =  uimenu(figure_handle, 'Label', '&Next Class', 'callback', {'change_class_dir', 1});
+next_menu_handle =  uimenu(figure_handle, 'Label', '&Change Class');
+next_menu_handle1 =  uimenu(next_menu_handle, 'Label', '&Next Class', 'callback', {'class_change_amount', 1}, 'Accelerator', 'n');
+next_menu_handle2 =  uimenu(next_menu_handle, 'Label', '&Previous Class', 'callback', {'class_change_amount', -1}, 'Accelerator', 'p');
+loading_handle = text(0, 1.01, 'Loading images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
 
 if MCconfig.dataformat == 0,
     adcxind = 12;
@@ -124,13 +142,13 @@ for filecount = filenum2start:length(filelist),
     else
         classfile_temp = classfiles{filecount};
     end;
-
+    
     [ classlist, sub_col, list_titles, newclasslist_flag ] = get_classlistTB( [resultpath outfile],classfile_temp, pick_mode, class2use_manual, class2use_sub, classstr, classnum_default, classnum_default_sub, length(x_all) );
     if newclasslist_flag,  %only first time creating classlist
         zero_ind = find(x_all == 0);
         classlist(zero_ind,2) = NaN; %mark zero-sized ROIs as NaNs in manual column (needed for raw_roi case where these are put in default class by get_classlistTB
     end;
-%special case to segregate dirt spots in Healy1101 data
+    %special case to segregate dirt spots in Healy1101 data
     if isequal(outfile(1:10), 'IFCB8_2011') && newclasslist_flag,
         classlist((adcdata(:,10) == 1118 & adcdata(:,11) == 290),2) = strmatch('bad', class2use_manual);
     end;
@@ -156,16 +174,18 @@ for filecount = filenum2start:length(filelist),
             class2use_now = class2use_sub;
             %        mark_col = sub_col; %added 9/29/09 Heidi
         end;
-       % class_with_rois = [];
+        % class_with_rois = [];
         classcount = 1;
         while classcount <= length(class2view),
             new_setcount = 1; %initialize
             classnum = class2view(classcount);
             roi_ind_all = get_roi_indices(classlist, classnum, pick_mode, sub_col, view_num);
             
-            if ~isempty(roi_ind_all),
+            if isempty(roi_ind_all),
+                disp(['No images in class: ' class2use_now{classnum}])
+            else %rois exist in current class
                 setnum = ceil(length(roi_ind_all)./setsize);
-                if exist('set_menu_handle', 'var'), 
+                if exist('set_menu_handle', 'var'),
                     delete(set_menu_handle), clear set_menu_handle
                 end;
                 if setnum > 1
@@ -176,6 +196,8 @@ for filecount = filenum2start:length(filelist),
                 end;
                 imgset = 1;
                 while imgset <= setnum,
+                    loading_handle = text(0, 1.01, 'Loading images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
+                    refresh(figure_handle)
                     next_ind = 1; %start with the first roi
                     next_ind_list = next_ind; %keep track of screen start indices within a class
                     imagedat = {};
@@ -205,47 +227,59 @@ for filecount = filenum2start:length(filelist),
                         clear xt yt startbytet
                         figure(1)
                     end;
-           
-            if ~isempty(imagedat),
-                
-                %sorts images by size instead of roi_ind 08/06/2013 Yannick                
-                switch MCconfig.displayed_ordered
-                    case 'size'
-                        [nrows, ncols]=cellfun(@size, imagedat); %find the size of each image
-                        size_images=[nrows; ncols]';%make a matrix of the sizes
-                        [~,II]=sortrows(size_images,[-2,-1]); %Sorted by deacreasing height then width
-                        %reorders the roi_ind and the imagedat
-                        imagedat=imagedat(II);
-                        roi_ind=roi_ind(II);
-                    case 'roi_index'
-                    otherwise
-                end
-                
-               while next_ind <= length(roi_ind),
-                    change_col = 2; if view_num > 1, change_col = sub_col;, end; %1/15/10 to replace mark_col in call to fillscreen
-                    [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [class2use_now(classnum) filelist{filecount}], classlist, change_col, classnum);
-                    next_ind = next_ind + next_ind_increment - 1;
-                    figure(figure_handle)
-                    [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2use_pick1, class2use_pick2, mark_col, MCconfig.maxlist1);
-                    set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'], 'foregroundcolor', 'k') %reset in case activated warning instruction
- %keyboard
-                    if change_flag,
-                        if ~isempty(sub_col),  %strncmp(pick_mode, 'subdiv',6)
-                            %reassign manual column (#2) with relevant sub_col entries
-                            % keyboard
-                            %next line presumes that a manual column ID should NOT be overridden by a subsequent sub_col ID (e.g., put in main ciliate categoryfirst, then move to subdivided catetory
-                            %classlist(~isnan(classlist(:,sub_col)) & ~isnan(classlist(:,2)) & classlist(:,2) ~= strmatch(classstr, class2use_manual), sub_col) = NaN;
-                            %1/15/10, recast above so the subdivide ID overrides instead (i.e., just skip above line)
-                            classlist(classlist(:,sub_col) >= 1,2) = strmatch(classstr, class2use_manual);  %reassign manual column (#2) with relevant sub_col entries
-                            classlist(classlist(:,2) == strmatch(classstr, class2use_manual) & isnan(classlist(:,sub_col)), sub_col) = classnum_default_sub;  % = 2; changed 1/15/10 ??correct??
-                            eval(['class2use_sub' num2str(sub_col) '= class2use_sub;'])
-                            mark_col = sub_col; %reset col for ID in classlist %comment out 9/29/09 Heidi
-                        end;
-                        %save([resultpath streamfile], 'classlist', 'class2use_auto', 'class2use_manual', 'class2use_sub*', 'list_titles', '-append'); %omit append option, 6 Jan 2010
-                        save([resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'class2use_sub*', 'list_titles'); %omit append option, 6 Jan 2010
-                    end;
-                    clear change_flag
-                                                if classcount ~= new_classcount %case for user changed class
+                    delete(loading_handle)
+                    if ~isempty(imagedat),
+                        
+                        %sorts images by size instead of roi_ind 08/06/2013 Yannick
+                        switch MCconfig.displayed_ordered
+                            case 'size'
+                                [nrows, ncols]=cellfun(@size, imagedat); %find the size of each image
+                                size_images=[nrows; ncols]';%make a matrix of the sizes
+                                [~,II]=sortrows(size_images,[-2,-1]); %Sorted by deacreasing height then width
+                                %reorders the roi_ind and the imagedat
+                                imagedat=imagedat(II);
+                                roi_ind=roi_ind(II);
+                            case 'roi_index'
+                            otherwise
+                        end
+                        
+                        while next_ind <= length(roi_ind),
+                            change_col = 2; if view_num > 1, change_col = sub_col;, end; %1/15/10 to replace mark_col in call to fillscreen
+                            rendering_handle = text(0, 1.01, 'Rendering images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
+                            [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [class2use_now(classnum) filelist{filecount}], classlist, change_col, classnum);
+                            next_ind = next_ind + next_ind_increment - 1;
+                            figure(figure_handle)
+                            [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2use_pick1, class2use_pick2, mark_col, MCconfig.maxlist1);
+                            set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'], 'foregroundcolor', 'k') %reset in case activated warning instruction
+                            
+                            if change_flag,
+                                if ~isempty(sub_col),  %strncmp(pick_mode, 'subdiv',6)
+                                    %reassign manual column (#2) with relevant sub_col entries
+                                    % keyboard
+                                    %next line presumes that a manual column ID should NOT be overridden by a subsequent sub_col ID (e.g., put in main ciliate categoryfirst, then move to subdivided catetory
+                                    %classlist(~isnan(classlist(:,sub_col)) & ~isnan(classlist(:,2)) & classlist(:,2) ~= strmatch(classstr, class2use_manual), sub_col) = NaN;
+                                    %1/15/10, recast above so the subdivide ID overrides instead (i.e., just skip above line)
+                                    classlist(classlist(:,sub_col) >= 1,2) = strmatch(classstr, class2use_manual);  %reassign manual column (#2) with relevant sub_col entries
+                                    classlist(classlist(:,2) == strmatch(classstr, class2use_manual) & isnan(classlist(:,sub_col)), sub_col) = classnum_default_sub;  % = 2; changed 1/15/10 ??correct??
+                                    eval(['class2use_sub' num2str(sub_col) '= class2use_sub;'])
+                                    mark_col = sub_col; %reset col for ID in classlist %comment out 9/29/09 Heidi
+                                end;
+                                %save([resultpath streamfile], 'classlist', 'class2use_auto', 'class2use_manual', 'class2use_sub*', 'list_titles', '-append'); %omit append option, 6 Jan 2010
+                                save([resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'class2use_sub*', 'list_titles'); %omit append option, 6 Jan 2010
+                            end;
+                            clear change_flag
+                            if class_change ~= 0, %case for user stepped to next or previous class
+                                new_classcount = classcount + class_change;
+                                if class_change == -1,
+                                    temp_ind = get_roi_indices(classlist, class2view(new_classcount), pick_mode, sub_col, view_num); %check for rois one class back
+                                    while isempty(temp_ind) && new_classcount > 1 %check until find class with rois in it
+                                        new_classcount = new_classcount + class_change; % go back one more
+                                        temp_ind = get_roi_indices(classlist, class2view(new_classcount), pick_mode, sub_col, view_num);
+                                    end
+                                end;
+                                class_change = 0;
+                            end;
+                            if classcount ~= new_classcount %case for user changed class
                                 classcount = new_classcount - 1;
                                 imgset = setnum; %make sure it leaves while loop
                                 next_ind = length(roi_ind)+1; %make sure it leaves on next while
@@ -283,11 +317,11 @@ for filecount = filenum2start:length(filelist),
                         end;  %while next_ind <=length(roi_ind)
                     end; %if ~isempty(imagedat),
                     imgset = imgset + 1;
+                    new_setcount = imgset;
                 end; %for imgset = 1:setnum
             end; %if isempty(roi_ind_all)
             classcount = classcount + 1;
             new_classcount = classcount;
         end; %while classcount
     end
-end               
-                    
+end
