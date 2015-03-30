@@ -118,7 +118,7 @@ elseif MCconfig.dataformat == 1,
 end;
 
 for filecount = filenum2start:length(filelist),
-    new_classcount = 1; %initialize
+    new_classcount = NaN; %initialize
     disp(['File number: ' num2str(filecount)])
     [~,outfile] = fileparts(filelist{filecount}); outfile = [outfile '.mat'];
     if ~strcmp(pick_mode, 'raw_roi') & ~exist([filelist{filecount} '.roi']) & ~exist(classfiles{filecount}),
@@ -177,7 +177,7 @@ for filecount = filenum2start:length(filelist),
         % class_with_rois = [];
         classcount = 1;
         while classcount <= length(class2view),
-            new_setcount = 1; %initialize
+            new_setcount = NaN; %initialize
             classnum = class2view(classcount);
             roi_ind_all = get_roi_indices(classlist, classnum, pick_mode, sub_col, view_num);
             
@@ -201,10 +201,18 @@ for filecount = filenum2start:length(filelist),
                     next_ind = 1; %start with the first roi
                     next_ind_list = next_ind; %keep track of screen start indices within a class
                     imagedat = {};
+                    
+                    %if appropriate sort by size before separating into subsets
+                    switch MCconfig.displayed_ordered
+                        case 'size'
+                            [~,II] = sortrows([y_all(roi_ind_all) x_all(roi_ind_all) ], [-2,-1]);
+                            roi_ind_all = roi_ind_all(II);
+                    end
+                    
                     startrange = imgset*setsize-setsize;
                     setrange = (startrange+1):min([imgset*setsize, length(roi_ind_all)]);
                     roi_ind = roi_ind_all(setrange);
-                    startbyte_temp = startbyte_all(classlist(roi_ind,1)); x = x_all(classlist(roi_ind,1)); y = y_all(classlist(roi_ind,1));
+                    startbyte_temp = startbyte_all(classlist(roi_ind,1)); %x = x_all(classlist(roi_ind,1)); y = y_all(classlist(roi_ind,1));
                     startbyte = startbyte_all(roi_ind); x = x_all(roi_ind); y = y_all(roi_ind); %heidi 11/5/09
                     if (startbyte_temp - startbyte), disp('CHECK for error!'), keyboard, end;
                     %read roi images
@@ -231,17 +239,17 @@ for filecount = filenum2start:length(filelist),
                     if ~isempty(imagedat),
                         
                         %sorts images by size instead of roi_ind 08/06/2013 Yannick
-                        switch MCconfig.displayed_ordered
-                            case 'size'
-                                [nrows, ncols]=cellfun(@size, imagedat); %find the size of each image
-                                size_images=[nrows; ncols]';%make a matrix of the sizes
-                                [~,II]=sortrows(size_images,[-2,-1]); %Sorted by deacreasing height then width
-                                %reorders the roi_ind and the imagedat
-                                imagedat=imagedat(II);
-                                roi_ind=roi_ind(II);
-                            case 'roi_index'
-                            otherwise
-                        end
+%                         switch MCconfig.displayed_ordered
+%                             case 'size'
+%                                 [nrows, ncols]=cellfun(@size, imagedat); %find the size of each image
+%                                 size_images=[nrows; ncols]';%make a matrix of the sizes
+%                                 [~,II]=sortrows(size_images,[-2,-1]); %Sorted by deacreasing height then width
+%                                 %reorders the roi_ind and the imagedat
+%                                 imagedat=imagedat(II);
+%                                 roi_ind=roi_ind(II);
+%                             case 'roi_index'
+%                             otherwise
+%                         end
                         
                         while next_ind <= length(roi_ind),
                             change_col = 2; if view_num > 1, change_col = sub_col;, end; %1/15/10 to replace mark_col in call to fillscreen
@@ -279,11 +287,11 @@ for filecount = filenum2start:length(filelist),
                                 end;
                                 class_change = 0;
                             end;
-                            if classcount ~= new_classcount %case for user changed class
+                            if ~isnan(new_classcount) %classcount ~= new_classcount %case for user changed class
                                 classcount = new_classcount - 1;
                                 imgset = setnum; %make sure it leaves while loop
                                 next_ind = length(roi_ind)+1; %make sure it leaves on next while
-                            elseif imgset ~= new_setcount; %case for user changed set number
+                            elseif ~isnan(new_setcount) %imgset ~= new_setcount; %case for user changed set number
                                 imgset = new_setcount - 1;
                                 next_ind = length(roi_ind)+1; %make sure it leaves on next while
                             elseif go_back_flag,
@@ -317,11 +325,11 @@ for filecount = filenum2start:length(filelist),
                         end;  %while next_ind <=length(roi_ind)
                     end; %if ~isempty(imagedat),
                     imgset = imgset + 1;
-                    new_setcount = imgset;
+                    new_setcount = NaN;
                 end; %for imgset = 1:setnum
             end; %if isempty(roi_ind_all)
             classcount = classcount + 1;
-            new_classcount = classcount;
+            new_classcount = NaN;
         end; %while classcount
     end
 end
