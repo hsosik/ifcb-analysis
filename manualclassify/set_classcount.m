@@ -1,7 +1,7 @@
 function set_classcount( hOBject, eventdata, num, class2use)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
-global new_classcount %new_setcount
+global new_classcount 
 
 menu_string = get(hOBject, 'Label');
 new_classcount = strmatch(menu_string, class2use, 'exact');

@@ -4,7 +4,7 @@ function [  ] = class_change_amount( hOBj, eventdata, amount )
 % manual_classify for IFCB
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2015
 
-global class_change figure_handle
+global class_change
 
 class_change = amount;
 

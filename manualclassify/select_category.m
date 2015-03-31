@@ -23,5 +23,21 @@ str = get(gco, 'string');
 category = char(str(get(gco, 'value')));
 set(instructions_handle, 'string', ['Click on ' category...
     ' images; then ENTER key to save results before changing categories. ENTER key for new page.'], 'foregroundcolor', 'k')
-refresh(figure_handle)
-figure(figure_handle);
+
+import java.awt.event.*;
+robot = java.awt.Robot;
+%pause(.1)  %pause seems to be necessary for the key stroke to be reliably recorded by ginput
+pos = get(0,'PointerLocation');
+moveptr(handle(gca),'init');
+moveptr(handle(gca),'move',600,1100) %middle of title (so no ROIs)
+robot.mousePress(InputEvent.BUTTON2_MASK);    %//left click press
+robot.mouseRelease(InputEvent.BUTTON2_MASK);
+set(0,'PointerLocation',pos)
+clear robot
+robot = java.awt.Robot;
+pause(.1)  %pause seems to be necessary for the key stroke to be reliably recorded by ginput
+robot.keyPress (java.awt.event.KeyEvent.VK_ENTER); %// press "enter" key
+robot.keyRelease (java.awt.event.KeyEvent.VK_ENTER); %// release "enter" key
+robot.keyPress (java.awt.event.KeyEvent.VK_ENTER); %// press "enter" key
+robot.keyRelease (java.awt.event.KeyEvent.VK_ENTER); %// release "enter" key
+

@@ -90,22 +90,22 @@ border = 3; %to separate images
 %set(listbox_handle1, 'uiContextMenu', lbcontext_handle)
 
 set(figure_handle, 'menubar', 'none')
-class_menu_handle = uimenu(figure_handle, 'Label', 'Display Class' );
-smsize = 20;
-submenu_num = ceil(length(class2view1)/smsize);
-for iii = 1:submenu_num
-    sm_start = smsize*iii-smsize+1; sm_end = min([smsize*iii, length(class2view1)]);
-    uim = uimenu(class_menu_handle, 'Label', [class2use{class2view1(sm_start)} '-' class2use{class2view1(sm_end)}]);
-    for ii = sm_start:sm_end
-        uimenu(uim, 'Label', class2use{class2view1(ii)}, 'callback', {'set_classcount', ii, class2use(class2view1)});
-    end;
-end;
-class_change = 0;
+% class_menu_handle = uimenu(figure_handle, 'Label', 'Display Class' );
+% smsize = 20;
+% submenu_num = ceil(length(class2view1)/smsize);
+% for iii = 1:submenu_num
+%     sm_start = smsize*iii-smsize+1; sm_end = min([smsize*iii, length(class2view1)]);
+%     uim = uimenu(class_menu_handle, 'Label', [class2use{class2view1(sm_start)} '-' class2use{class2view1(sm_end)}]);
+%     for ii = sm_start:sm_end
+%         uimenu(uim, 'Label', class2use{class2view1(ii)}, 'callback', {'set_classcount', ii, class2use(class2view1)});
+%     end;
+% end;
+ class_change = 0;
 %next_menu_handle =  uimenu(figure_handle, 'Label', '&Next Class', 'callback', {'change_class_dir', 1});
-next_menu_handle =  uimenu(figure_handle, 'Label', '&Change Class');
-next_menu_handle1 =  uimenu(next_menu_handle, 'Label', '&Next Class', 'callback', {'class_change_amount', 1}, 'Accelerator', 'n');
-next_menu_handle2 =  uimenu(next_menu_handle, 'Label', '&Previous Class', 'callback', {'class_change_amount', -1}, 'Accelerator', 'p');
-loading_handle = text(0, 1.01, 'Loading images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
+change_menu_handle =  uimenu(figure_handle, 'Label', '&Change Class');
+next_menu_handle =  uimenu(change_menu_handle, 'Label', '&Next Class', 'callback', {'class_change_amount', 1}, 'Accelerator', 'n');
+prev_menu_handle =  uimenu(change_menu_handle, 'Label', '&Previous Class', 'callback', {'class_change_amount', -1}, 'Accelerator', 'p');
+jump_menu_handle = uimenu(change_menu_handle, 'Label', '&Jump to Selected Class', 'callback', {'jump_class'}, 'Accelerator', 'j');
 
 if MCconfig.dataformat == 0,
     adcxind = 12;
@@ -179,6 +179,9 @@ for filecount = filenum2start:length(filelist),
         while classcount <= length(class2view),
             new_setcount = NaN; %initialize
             classnum = class2view(classcount);
+            loading_handle = text(0, 1.01, 'Loading images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
+            %refresh(figure_handle)
+            pause(.001)
             roi_ind_all = get_roi_indices(classlist, classnum, pick_mode, sub_col, view_num);
             
             if isempty(roi_ind_all),
@@ -196,8 +199,6 @@ for filecount = filenum2start:length(filelist),
                 end;
                 imgset = 1;
                 while imgset <= setnum,
-                    loading_handle = text(0, 1.01, 'Loading images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
-                    refresh(figure_handle)
                     next_ind = 1; %start with the first roi
                     next_ind_list = next_ind; %keep track of screen start indices within a class
                     imagedat = {};
@@ -254,6 +255,7 @@ for filecount = filenum2start:length(filelist),
                         while next_ind <= length(roi_ind),
                             change_col = 2; if view_num > 1, change_col = sub_col;, end; %1/15/10 to replace mark_col in call to fillscreen
                             rendering_handle = text(0, 1.01, 'Rendering images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
+                             pause(.001)%refresh(figure_handle)
                             [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [class2use_now(classnum) filelist{filecount}], classlist, change_col, classnum);
                             next_ind = next_ind + next_ind_increment - 1;
                             figure(figure_handle)
