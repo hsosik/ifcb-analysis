@@ -1,3 +1,4 @@
+function [  ] = select_category( hOBj, eventdata )
 %select_category.m
 %For Imaging FlowCytobot roi identification; Use with manual_classify scripts;
 %Sets up uicontrol for picking categories;
@@ -8,7 +9,7 @@
 %Revised 31 May 2009 for use with new manual_classify scripts (_2_0.m and
 %after); %figure_handle in place of h2
 
-global category button_flag figure_handle listbox_handle1 listbox_handle2 listbox_handle3   instructions_handle %category button_handles1 button_handles2 category
+global category button_flag figure_handle listbox_handle1 listbox_handle2 listbox_handle3 instructions_handle 
 
 if gco == listbox_handle1,
     button_flag = 1;

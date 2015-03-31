@@ -4,8 +4,9 @@ function [  ] = jump_class( hOBj, eventdata )
 % manual_classify for IFCB
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2015
 
-global category new_classcount
+global category new_classcount jump_flag
 
+jump_flag = 1;
 new_classcount = str2num(category(1:3));
 
 robot_pressCR(1) % two carriage returns
