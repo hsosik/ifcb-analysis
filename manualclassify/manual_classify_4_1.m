@@ -269,7 +269,7 @@ for filecount = filenum2start:length(filelist),
                                     %temp_ind = get_roi_indices(classlist, class2view(new_classcount), pick_mode, sub_col, view_num); %check for rois one class back
                                     temp_ind = get_roi_indices(classlist, class2view(new_classcount), pick_mode, sub_col, 1); %check for rois one class back
                                     while isempty(temp_ind) && new_classcount > 1 %check until find class with rois in it
-                                        new_classcount = new_classcount + class_change; % go back one more
+                                        new_classcount = new_classcount + step_flag; % go back one more
                                         %temp_ind = get_roi_indices(classlist, class2view(new_classcount), pick_mode, sub_col, view_num);
                                         temp_ind = get_roi_indices(classlist, class2view(new_classcount), pick_mode, sub_col, 1);
                                     end
