@@ -8,10 +8,11 @@ global class_change
 
 class_change = amount;
 
-robot = java.awt.Robot;
-pause(.5)  %pause seems to be necessary for the key stroke to be reliably recorded by ginput
-robot.keyPress (java.awt.event.KeyEvent.VK_ENTER); %// press "enter" key
-robot.keyRelease (java.awt.event.KeyEvent.VK_ENTER); %// release "enter" key
+robot_pressCR(1)
+% robot = java.awt.Robot;
+% pause(.5)  %pause seems to be necessary for the key stroke to be reliably recorded by ginput
+% robot.keyPress (java.awt.event.KeyEvent.VK_ENTER); %// press "enter" key
+% robot.keyRelease (java.awt.event.KeyEvent.VK_ENTER); %// release "enter" key
 
 end
 
