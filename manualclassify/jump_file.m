@@ -1,6 +1,6 @@
 function [  ] = jump_file( hOBj, eventdata, jump_type )
 %function [  ] = class_change_amount( hOBj, eventdata, direction )
-% callback function for 'jump to selected class' menu option in
+% callback function for 'jump to selected file' menu option in
 % manual_classify for IFCB
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2015
 
