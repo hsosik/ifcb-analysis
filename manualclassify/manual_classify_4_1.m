@@ -89,7 +89,7 @@ if isfield(MCconfig,'bar_length_micron')
     if MCconfig.bar_length_micron > 0
         MCconfig.bar_height_micron = 2;
         scale_bar_image = make_scale_bar(MCconfig.pixel_per_micron, MCconfig.bar_length_micron, MCconfig.bar_height_micron);
-        scale_bar_image = imresize(scale_bar_image, MCconfig.imresize_factor);
+%        scale_bar_image = imresize(scale_bar_image, MCconfig.imresize_factor);
     else
         scale_bar_image = NaN;
     end
@@ -235,6 +235,7 @@ while filecount <= length(filelist),
                         pause(.001)
                         [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [class2use(classnum) MCconfig.filelist{filecount}], classlist, change_col, classnum);
                         if ~isnan(scale_bar_image)
+                            scale_bar_image = imresize(scale_bar_image, MCconfig.imresize_factor);
                             imagesc(camx-size(scale_bar_image,2)-60,1020,scale_bar_image), text(camx-50,1020,[num2str(MCconfig.bar_length_micron) ' \mum'])
                         end;
                         next_ind = next_ind + next_ind_increment - 1;
