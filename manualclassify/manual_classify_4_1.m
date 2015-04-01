@@ -71,6 +71,7 @@ border = 3; %to separate images
 set(figure_handle, 'menubar', 'none')
 step_flag  = 0;
 file_jump_flag = 0;
+jump_flag = 0;
 change_menu_handle =  uimenu(figure_handle, 'Label', 'Change &Class');
 next_menu_handle =  uimenu(change_menu_handle, 'Label', '&Next Class', 'callback', {'class_step_amount', 1}, 'Accelerator', 'n');
 prev_menu_handle =  uimenu(change_menu_handle, 'Label', '&Previous Class', 'callback', {'class_step_amount', -1}, 'Accelerator', 'p');
@@ -248,7 +249,7 @@ while filecount <= length(filelist),
                             save([MCconfig.resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
                         end;
                         clear change_flag
-                        
+       
                         if file_jump_flag
                             filecount = max([0 new_filecount-1]); %just stay on first file if already there
                             file_jump_flag = 0;
@@ -310,12 +311,13 @@ while filecount <= length(filelist),
                                         else
                                             %temp_ind = get_roi_indices(classlist, class2view(classcount-1), pick_mode, sub_col, view_num); %check for rois one class back
                                             temp_ind = get_roi_indices(classlist, class2view(classcount-1), MCconfig.pick_mode, sub_col, 1); %check for rois one class back
-                                            classcount = classcount - 2; % go back 2 classes to handle increment below
+                                            classcount = classcount - 1; % go back 1 class
                                             while isempty(temp_ind) && classcount > 1 %check until find class with rois in it
                                                 %temp_ind = get_roi_indices(classlist, class2view(classcount), pick_mode, sub_col, view_num);
                                                 temp_ind = get_roi_indices(classlist, class2view(classcount), MCconfig.pick_mode, sub_col, 1);
                                                 classcount = classcount - 1; % go back one more
                                             end;
+                                            classcount = classcount - 1; % go back one more to handle increment below
                                         end;
                                     end;
                                 else %go back one screen in same class
