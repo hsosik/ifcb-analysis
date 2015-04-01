@@ -38,7 +38,7 @@ function [  ] = manual_classify_4_1( MCconfig_input )
 % Aug 2014, revise to address bug #3037, where zero-sized ROIs were previously annotated with default class in 'raw_roi' mode
 % March 2015, begin upgrade transistion from manual_classify_4_0 to manual_classify_4_1, mainly to handle user initiated jumping among classes
 
-global figure_handle listbox_handle1 listbox_handle2 instructions_handle listbox_handle3 new_classcount new_setcount step_flag jump_flag file_jump_flag MCconfig new_filecount filecount
+global figure_handle listbox_handle1 listbox_handle2 instructions_handle listbox_handle3 new_classcount new_setcount step_flag jump_flag file_jump_flag MCconfig new_filecount filecount filelist
 close all
 MCconfig = MCconfig_input; clear MCconfig_input %use this so MCconfig can now be global with callback functions
 class2use = MCconfig.class2use;
