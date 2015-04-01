@@ -250,7 +250,7 @@ while filecount <= length(filelist),
                         clear change_flag
                         
                         if file_jump_flag
-                            filecount = new_filecount-1;
+                            filecount = max([0 new_filecount-1]); %just stay on first file if already there
                             file_jump_flag = 0;
                             imgset = setnum; %make sure it leaves on next while
                             next_ind = length(roi_ind)+1; %make sure it leaves on next while
