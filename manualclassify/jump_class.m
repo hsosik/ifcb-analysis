@@ -9,7 +9,7 @@ global category new_classcount jump_flag
 jump_flag = 1;
 new_classcount = str2num(category(1:3));
 
-robot_pressCR(1) % two carriage returns
+robot_pressCR(1) % one carriage returns
 
 end
 

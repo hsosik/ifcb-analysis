@@ -38,7 +38,7 @@ function [  ] = manual_classify_4_1( MCconfig )
 % Aug 2014, revise to address bug #3037, where zero-sized ROIs were previously annotated with default class in 'raw_roi' mode
 % March 2015, begin upgrade transistion from manual_classify_4_0 to manual_classify_4_1, mainly to handle user initiated jumping among classes
 
-global figure_handle listbox_handle1 listbox_handle2 instructions_handle listbox_handle3 new_classcount new_setcount step_flag jump_flag
+global figure_handle listbox_handle1 listbox_handle2 instructions_handle listbox_handle3 new_classcount new_setcount step_flag jump_flag file_jump_flag file_step_amount filelist new_filecount filecount
 close all
 resultpath = MCconfig.resultpath;
 filenum2start = MCconfig.filenum2start;
@@ -89,11 +89,20 @@ border = 3; %to separate images
 %% ***Move this to makescreen***
 set(figure_handle, 'menubar', 'none')
 step_flag  = 0;
-jump_flag = 0;
-change_menu_handle =  uimenu(figure_handle, 'Label', '&Change Class');
+file_jump_flag = 0;
+change_menu_handle =  uimenu(figure_handle, 'Label', 'Change &Class');
 next_menu_handle =  uimenu(change_menu_handle, 'Label', '&Next Class', 'callback', {'class_step_amount', 1}, 'Accelerator', 'n');
 prev_menu_handle =  uimenu(change_menu_handle, 'Label', '&Previous Class', 'callback', {'class_step_amount', -1}, 'Accelerator', 'p');
 jump_menu_handle = uimenu(change_menu_handle, 'Label', '&Jump to Selected Class', 'callback', {'jump_class'}, 'Accelerator', 'j');
+file_change_menu_handle =  uimenu(figure_handle, 'Label', 'Change &File');
+file_next_menu_handle =  uimenu(file_change_menu_handle, 'Label', '&Next File', 'callback', {'file_step_amount', 1}, 'Accelerator', 'l');
+file_prev_menu_handle =  uimenu(file_change_menu_handle, 'Label', '&Previous File', 'callback', {'file_step_amount', -1}, 'Accelerator', 'k');
+file_jump_menu_handle = uimenu(file_change_menu_handle, 'Label', '&Jump to Selected File', 'callback', {'jump_file'}, 'Accelerator', 'm');
+quit_menu_handle =  uimenu(figure_handle, 'Label', '&Quit', 'callback', 'exit');
+
+scale_bar_image = make_scale_bar(MCconfig.pixel_per_micron, MCconfig.bar_length_micron, MCconfig.bar_height_micron);
+scale_bar_image = imresize(scale_bar_image, MCconfig.imresize_factor);
+
 % jFrame = get(handle(figure_handle),'JavaFrame');
 % jMenuBar = jFrame.fHG1Client.getMenuBar;
 % jFileMenu = jMenuBar.getComponent(0);
@@ -114,8 +123,10 @@ elseif MCconfig.dataformat == 1,
     startbyteind = 18;
 end;
 
-for filecount = filenum2start:length(filelist),
+filecount = filenum2start;
+while filecount <= length(filelist),
     new_classcount = NaN; %initialize
+    file_step_amount = NaN; %initialize
     disp(['File number: ' num2str(filecount)])
     [~,outfile] = fileparts(filelist{filecount}); outfile = [outfile '.mat'];
     if ~strcmp(pick_mode, 'raw_roi') & ~exist([filelist{filecount} '.roi']) & ~exist(classfiles{filecount}),
@@ -140,7 +151,7 @@ for filecount = filenum2start:length(filelist),
         classfile_temp = classfiles{filecount};
     end;
     
-%    [ classlist, sub_col, list_titles, newclasslist_flag ] = get_classlistTB( [resultpath outfile],classfile_temp, pick_mode, class2use_manual, class2use_sub, classstr, classnum_default, classnum_default_sub, length(x_all) );
+    %    [ classlist, sub_col, list_titles, newclasslist_flag ] = get_classlistTB( [resultpath outfile],classfile_temp, pick_mode, class2use_manual, class2use_sub, classstr, classnum_default, classnum_default_sub, length(x_all) );
     [ classlist, sub_col, list_titles, newclasslist_flag ] = get_classlistTB( [resultpath outfile],classfile_temp, pick_mode, class2use_manual, [], [], classnum_default, [], length(x_all) );
     if newclasslist_flag,  %only first time creating classlist
         zero_ind = find(x_all == 0);
@@ -157,112 +168,127 @@ for filecount = filenum2start:length(filelist),
         classlist(stitch_info(:,1)+1,2:3) = NaN; %force NaN class for second roi in pair to be stitched
     end;
     mark_col = 2; %added back 11 jan 2010
-%     if ~isempty(sub_col),
-%         eval(['class2use_sub' num2str(sub_col) '= class2use_sub;'])
-%         mark_col = sub_col; %reset col for ID in classlist
-%     end;
+    %     if ~isempty(sub_col),
+    %         eval(['class2use_sub' num2str(sub_col) '= class2use_sub;'])
+    %         mark_col = sub_col; %reset col for ID in classlist
+    %     end;
     
-%     for view_num = 1:2,
-%         if view_num == 1,
-            class2view = class2view1;
-%            class2use_now = class2use;
-%             %        mark_col = 2; %added 9/29/09 Heidi
-%         else
-%             class2view = class2view2;
-%             class2use_now = class2use_sub;
-%             %        mark_col = sub_col; %added 9/29/09 Heidi
-%         end;
-        % class_with_rois = [];
-        classcount = 1;
-        while classcount <= length(class2view),
-            new_setcount = NaN; %initialize
-            classnum = class2view(classcount);
-            %roi_ind_all = get_roi_indices(classlist, classnum, pick_mode, sub_col, view_num);
-            roi_ind_all = get_roi_indices(classlist, classnum, pick_mode, sub_col, 1);
-            
-            if isempty(roi_ind_all),
-                disp(['No images in class: ' class2use{classnum}])
-            else %rois exist in current class
-                setnum = ceil(length(roi_ind_all)./setsize);
-                if exist('set_menu_handle', 'var'),
-                    delete(set_menu_handle), clear set_menu_handle
+    %     for view_num = 1:2,
+    %         if view_num == 1,
+    class2view = class2view1;
+    %            class2use_now = class2use;
+    %             %        mark_col = 2; %added 9/29/09 Heidi
+    %         else
+    %             class2view = class2view2;
+    %             class2use_now = class2use_sub;
+    %             %        mark_col = sub_col; %added 9/29/09 Heidi
+    %         end;
+    % class_with_rois = [];
+    classcount = 1;
+    while classcount <= length(class2view),
+        new_setcount = NaN; %initialize
+        classnum = class2view(classcount);
+        %roi_ind_all = get_roi_indices(classlist, classnum, pick_mode, sub_col, view_num);
+        roi_ind_all = get_roi_indices(classlist, classnum, pick_mode, sub_col, 1);
+        
+        if isempty(roi_ind_all),
+            disp(['No images in class: ' class2use{classnum}])
+        else %rois exist in current class
+            setnum = ceil(length(roi_ind_all)./setsize);
+            if exist('set_menu_handle', 'var'),
+                delete(set_menu_handle), clear set_menu_handle
+            end;
+            if setnum > 1
+                set_menu_handle = uimenu(figure_handle, 'Label', 'Set Start' );
+                for ii = 1:setnum
+                    uimenu(set_menu_handle, 'Label', num2str(setsize*ii-setsize+1), 'callback', {'set_menucount', ii});
                 end;
-                if setnum > 1
-                    set_menu_handle = uimenu(figure_handle, 'Label', 'Set Start' );
-                    for ii = 1:setnum
-                        uimenu(set_menu_handle, 'Label', num2str(setsize*ii-setsize+1), 'callback', {'set_menucount', ii});
-                    end;
+            end;
+            imgset = 1;
+            while imgset <= setnum,
+                loading_handle = text(0, 1.01, 'Loading images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
+                pause(.001) %make sure label displays
+                next_ind = 1; %start with the first roi
+                next_ind_list = next_ind; %keep track of screen start indices within a class
+                imagedat = {};
+                
+                %if appropriate, sort by size before separating into subsets
+                switch MCconfig.displayed_ordered
+                    case 'size'
+                        [~,II] = sortrows([y_all(roi_ind_all) x_all(roi_ind_all) ], [-2,-1]);
+                        roi_ind_all = roi_ind_all(II);
+                end
+                
+                startrange = imgset*setsize-setsize;
+                setrange = (startrange+1):min([imgset*setsize, length(roi_ind_all)]);
+                roi_ind = roi_ind_all(setrange);
+                startbyte_temp = startbyte_all(classlist(roi_ind,1)); %x = x_all(classlist(roi_ind,1)); y = y_all(classlist(roi_ind,1));
+                startbyte = startbyte_all(roi_ind); x = x_all(roi_ind); y = y_all(roi_ind); %heidi 11/5/09
+                if (startbyte_temp - startbyte), disp('CHECK for error!'), keyboard, end;
+                %read roi images
+                for imgcount = 1:length(startbyte),
+                    fseek(fid, startbyte(imgcount), -1);
+                    data = fread(fid, x(imgcount).*y(imgcount), 'ubit8');
+                    imagedat{imgcount} = imresize(reshape(data, x(imgcount), y(imgcount)),MCconfig.imresize_factor);
                 end;
-                imgset = 1;
-                while imgset <= setnum,
-                    loading_handle = text(0, 1.01, 'Loading images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
-                    pause(.001) %make sure label displays
-                    next_ind = 1; %start with the first roi
-                    next_ind_list = next_ind; %keep track of screen start indices within a class
-                    imagedat = {};
-                    
-                    %if appropriate, sort by size before separating into subsets
-                    switch MCconfig.displayed_ordered
-                        case 'size'
-                            [~,II] = sortrows([y_all(roi_ind_all) x_all(roi_ind_all) ], [-2,-1]);
-                            roi_ind_all = roi_ind_all(II);
-                    end
-                    
-                    startrange = imgset*setsize-setsize;
-                    setrange = (startrange+1):min([imgset*setsize, length(roi_ind_all)]);
-                    roi_ind = roi_ind_all(setrange);
-                    startbyte_temp = startbyte_all(classlist(roi_ind,1)); %x = x_all(classlist(roi_ind,1)); y = y_all(classlist(roi_ind,1));
-                    startbyte = startbyte_all(roi_ind); x = x_all(roi_ind); y = y_all(roi_ind); %heidi 11/5/09
-                    if (startbyte_temp - startbyte), disp('CHECK for error!'), keyboard, end;
-                    %read roi images
-                    for imgcount = 1:length(startbyte),
-                        fseek(fid, startbyte(imgcount), -1);
-                        data = fread(fid, x(imgcount).*y(imgcount), 'ubit8');
-                        imagedat{imgcount} = reshape(data, x(imgcount), y(imgcount));
-                    end;
-                    indA = [];
-                    if ~isempty(stitch_info),
-                        [roinum , indA, indB] = intersect(roi_ind, stitch_info(:,1));
-                    end;
-                    for stitchcount = 1:length(indA), %loop over any rois that need to be stitched
-                        startbytet = startbyte_all(roinum(stitchcount)+1); xt = x_all(roinum(stitchcount)+1); yt = y_all(roinum(stitchcount)+1); %heidi 11/5/09
-                        fseek(fid, startbytet,-1); %go to the next aroi in the pair
-                        data = fread(fid, xt.*yt, 'ubit8');
-                        imgB = reshape(data,xt,yt);
-                        xpos = stitch_info(indB(stitchcount),[2,4])'; ypos = stitch_info(indB(stitchcount),[3,5])';
-                        [ imagedat{indA(stitchcount)}, xpos_merge, ypos_merge ] = stitchrois({imagedat{indA(stitchcount)} imgB},xpos,ypos);
-                        clear xt yt startbytet
-                        figure(1)
-                    end;
-                    delete(loading_handle)
-                    if ~isempty(imagedat),                       
-                        while next_ind <= length(roi_ind),
-                            change_col = 2; % if view_num > 1, change_col = sub_col;, end; %1/15/10 to replace mark_col in call to fillscreen
-                            rendering_handle = text(0, 1.01, 'Rendering images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
-                            pause(.001)
-                            [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [class2use(classnum) filelist{filecount}], classlist, change_col, classnum);
-                            next_ind = next_ind + next_ind_increment - 1;
-                            figure(figure_handle)
-                            %[ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2use_pick1, class2use_pick2, mark_col, MCconfig.maxlist1);
-                            [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2use_pick1, [], mark_col, MCconfig.maxlist1);
-                            set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'], 'foregroundcolor', 'k') %reset in case activated warning instruction
-                            
-                            if change_flag,
-%                                 if ~isempty(sub_col),  %strncmp(pick_mode, 'subdiv',6)
-%                                     %reassign manual column (#2) with relevant sub_col entries
-%                                     % keyboard
-%                                     %next line presumes that a manual column ID should NOT be overridden by a subsequent sub_col ID (e.g., put in main ciliate categoryfirst, then move to subdivided catetory
-%                                     %classlist(~isnan(classlist(:,sub_col)) & ~isnan(classlist(:,2)) & classlist(:,2) ~= strmatch(classstr, class2use_manual), sub_col) = NaN;
-%                                     %1/15/10, recast above so the subdivide ID overrides instead (i.e., just skip above line)
-%                                     classlist(classlist(:,sub_col) >= 1,2) = strmatch(classstr, class2use_manual);  %reassign manual column (#2) with relevant sub_col entries
-%                                     classlist(classlist(:,2) == strmatch(classstr, class2use_manual) & isnan(classlist(:,sub_col)), sub_col) = classnum_default_sub;  % = 2; changed 1/15/10 ??correct??
-%                                     eval(['class2use_sub' num2str(sub_col) '= class2use_sub;'])
-%                                     mark_col = sub_col; %reset col for ID in classlist %comment out 9/29/09 Heidi
-%                                 end;
-                                %save([resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'class2use_sub*', 'list_titles'); %omit append option, 6 Jan 2010
-                                save([resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
-                            end;
-                            clear change_flag
+                indA = [];
+                if ~isempty(stitch_info),
+                    [roinum , indA, indB] = intersect(roi_ind, stitch_info(:,1));
+                end;
+                for stitchcount = 1:length(indA), %loop over any rois that need to be stitched
+                    startbytet = startbyte_all(roinum(stitchcount)+1); xt = x_all(roinum(stitchcount)+1); yt = y_all(roinum(stitchcount)+1); %heidi 11/5/09
+                    fseek(fid, startbytet,-1); %go to the next aroi in the pair
+                    data = fread(fid, xt.*yt, 'ubit8');
+                    imgB = reshape(data,xt,yt);
+                    xpos = stitch_info(indB(stitchcount),[2,4])'; ypos = stitch_info(indB(stitchcount),[3,5])';
+                    [ imagedat{indA(stitchcount)}, xpos_merge, ypos_merge ] = stitchrois({imagedat{indA(stitchcount)} imgB},xpos,ypos);
+                    clear xt yt startbytet
+                    figure(1)
+                end;
+                delete(loading_handle)
+                if ~isempty(imagedat),
+                    while next_ind <= length(roi_ind),
+                        change_col = 2; % if view_num > 1, change_col = sub_col;, end; %1/15/10 to replace mark_col in call to fillscreen
+                        rendering_handle = text(0, 1.01, 'Rendering images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
+                        pause(.001)
+                        [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [class2use(classnum) filelist{filecount}], classlist, change_col, classnum);
+                        imagesc(camx-size(scale_bar_image,2)-60,1020,scale_bar_image), text(camx-50,1020,[num2str(MCconfig.bar_length_micron) ' \mum'])
+                        next_ind = next_ind + next_ind_increment - 1;
+                        figure(figure_handle)
+                        %[ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2use_pick1, class2use_pick2, mark_col, MCconfig.maxlist1);
+                        [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2use_pick1, [], mark_col, MCconfig.maxlist1);
+                        set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'], 'foregroundcolor', 'k') %reset in case activated warning instruction
+                        
+                        if change_flag,
+                            %                                 if ~isempty(sub_col),  %strncmp(pick_mode, 'subdiv',6)
+                            %                                     %reassign manual column (#2) with relevant sub_col entries
+                            %                                     % keyboard
+                            %                                     %next line presumes that a manual column ID should NOT be overridden by a subsequent sub_col ID (e.g., put in main ciliate categoryfirst, then move to subdivided catetory
+                            %                                     %classlist(~isnan(classlist(:,sub_col)) & ~isnan(classlist(:,2)) & classlist(:,2) ~= strmatch(classstr, class2use_manual), sub_col) = NaN;
+                            %                                     %1/15/10, recast above so the subdivide ID overrides instead (i.e., just skip above line)
+                            %                                     classlist(classlist(:,sub_col) >= 1,2) = strmatch(classstr, class2use_manual);  %reassign manual column (#2) with relevant sub_col entries
+                            %                                     classlist(classlist(:,2) == strmatch(classstr, class2use_manual) & isnan(classlist(:,sub_col)), sub_col) = classnum_default_sub;  % = 2; changed 1/15/10 ??correct??
+                            %                                     eval(['class2use_sub' num2str(sub_col) '= class2use_sub;'])
+                            %                                     mark_col = sub_col; %reset col for ID in classlist %comment out 9/29/09 Heidi
+                            %                                 end;
+                            %save([resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'class2use_sub*', 'list_titles'); %omit append option, 6 Jan 2010
+                            save([resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
+                        end;
+                        clear change_flag
+                        
+                        if ~isnan(file_step_amount) %case for user changed file
+                            filecount = filecount + file_step_amount - 1;
+                            file_step_amount = NaN;
+                            imgset = setnum; %make sure it leaves on next while
+                            next_ind = length(roi_ind)+1; %make sure it leaves on next while
+                            classcount = length(class2view)+1; %make sure it leaves on next while
+                        elseif file_jump_flag
+                            filecount = new_filecount-1;
+                            file_jump_flag = 0;
+                            imgset = setnum; %make sure it leaves on next while
+                            next_ind = length(roi_ind)+1; %make sure it leaves on next while
+                            classcount = length(class2view)+1; %make sure it leaves on next while
+                        else %consider class changes, then set changes, then page changes
                             if step_flag %case for user stepped to next or previous class, new_classcount
                                 new_classcount = classcount + step_flag; %value of flag specifies direction and amplitude of step within class2view
                                 if step_flag == -1,
@@ -276,7 +302,7 @@ for filecount = filenum2start:length(filelist),
                                 end;
                                 step_flag = 0;
                             elseif jump_flag  %case for user jumped to selected class, new_classcount starts as index in class2use
-                                if ~ismember(new_classcount, class2view), 
+                                if ~ismember(new_classcount, class2view),
                                     temp_ind = get_roi_indices(classlist, class2view(new_classcount), pick_mode, sub_col, 1); %check for rois one class back
                                     if ~isempty(temp_ind) %if there are ROIs add the selected class to class2view, just for this file, in order just after current class
                                         if classcount < length(class2view)
@@ -285,14 +311,14 @@ for filecount = filenum2start:length(filelist),
                                             class2view = [class2view; new_classcount];
                                         end;
                                     else %if no ROIs, stay on current class
-                                      set(instructions_handle, 'string', ['Class jump skipped: no images in ' class2use{new_classcount}], 'foregroundcolor', 'r')
-                                      new_classcount = class2view(classcount);  
+                                        set(instructions_handle, 'string', ['Class jump skipped: no images in ' class2use{new_classcount}], 'foregroundcolor', 'r')
+                                        new_classcount = class2view(classcount);
                                     end;
                                 end;
                                 new_classcount = find(class2view==new_classcount);
                                 jump_flag = 0;
                             end;
-                            if ~isnan(new_classcount) %classcount ~= new_classcount %case for user changed class
+                            if ~isnan(new_classcount) %case for user changed class
                                 classcount = new_classcount - 1;
                                 imgset = setnum; %make sure it leaves while loop
                                 next_ind = length(roi_ind)+1; %make sure it leaves on next while
@@ -329,14 +355,16 @@ for filecount = filenum2start:length(filelist),
                                 end;
                             end;
                             next_ind_list = [next_ind_list next_ind]; %keep track of screen starts within a class to go back
-                        end;  %while next_ind <=length(roi_ind)
-                    end; %if ~isempty(imagedat),
-                    imgset = imgset + 1;
-                    new_setcount = NaN;
-                end; %for imgset = 1:setnum
-            end; %if isempty(roi_ind_all)
-            classcount = classcount + 1;
-            new_classcount = NaN;
-        end; %while classcount
-    end
+                        end; %if ~isnan(file_step_amount)
+                    end;  %while next_ind <=length(roi_ind)
+                end; %if ~isempty(imagedat),
+                imgset = imgset + 1;
+                new_setcount = NaN;
+            end; %for imgset = 1:setnum
+        end; %if isempty(roi_ind_all)
+        classcount = classcount + 1;
+        new_classcount = NaN;
+    end; %while classcount
+    filecount = filecount + 1;
+end
 end

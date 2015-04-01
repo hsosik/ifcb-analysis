@@ -42,6 +42,10 @@ switch MCconfig.group
     case 'MVCO'
         MCconfig.maxlist1 = 75;
         MCconfig.setsize = 200; %how many images to read before displaying 
+        MCconfig.pixel_per_micron= 3.4; %pixel to micrometer conversion factor DO NOT ASSUME THIS VALUE APPLIES FOR YOUR DATA
+        MCconfig.bar_length_micron = 10; %scale bar length in microns
+        MCconfig.bar_height_micron = 2; %scale bar height in microns
+        MCconfig.imresize_factor = 1; %image display scale factor, 1 for no scaling
         MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
         MCconfig.resultpath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\Manual_fromClass\'; %USER set
         temp = load('class2use_MVCOmanual5', 'class2use'); %USER load yours here
