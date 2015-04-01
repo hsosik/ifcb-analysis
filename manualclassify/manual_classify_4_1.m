@@ -38,7 +38,7 @@ function [  ] = manual_classify_4_1( MCconfig )
 % Aug 2014, revise to address bug #3037, where zero-sized ROIs were previously annotated with default class in 'raw_roi' mode
 % March 2015, begin upgrade transistion from manual_classify_4_0 to manual_classify_4_1, mainly to handle user initiated jumping among classes
 
-global figure_handle listbox_handle1 listbox_handle2 instructions_handle listbox_handle3 new_classcount new_setcount step_flag jump_flag file_jump_flag file_step_amount filelist new_filecount filecount
+global figure_handle listbox_handle1 listbox_handle2 instructions_handle listbox_handle3 new_classcount new_setcount step_flag jump_flag file_jump_flag filelist new_filecount filecount
 close all
 resultpath = MCconfig.resultpath;
 filenum2start = MCconfig.filenum2start;
@@ -95,9 +95,9 @@ next_menu_handle =  uimenu(change_menu_handle, 'Label', '&Next Class', 'callback
 prev_menu_handle =  uimenu(change_menu_handle, 'Label', '&Previous Class', 'callback', {'class_step_amount', -1}, 'Accelerator', 'p');
 jump_menu_handle = uimenu(change_menu_handle, 'Label', '&Jump to Selected Class', 'callback', {'jump_class'}, 'Accelerator', 'j');
 file_change_menu_handle =  uimenu(figure_handle, 'Label', 'Change &File');
-file_next_menu_handle =  uimenu(file_change_menu_handle, 'Label', '&Next File', 'callback', {'file_step_amount', 1}, 'Accelerator', 'l');
-file_prev_menu_handle =  uimenu(file_change_menu_handle, 'Label', '&Previous File', 'callback', {'file_step_amount', -1}, 'Accelerator', 'k');
-file_jump_menu_handle = uimenu(file_change_menu_handle, 'Label', '&Jump to Selected File', 'callback', {'jump_file'}, 'Accelerator', 'm');
+file_next_menu_handle =  uimenu(file_change_menu_handle, 'Label', '&Next File', 'callback', {'jump_file', 1}, 'Accelerator', 'l');
+file_prev_menu_handle =  uimenu(file_change_menu_handle, 'Label', '&Previous File', 'callback', {'jump_file', -1}, 'Accelerator', 'k');
+file_jump_menu_handle = uimenu(file_change_menu_handle, 'Label', '&Jump to Selected File', 'callback', {'jump_file', 0}, 'Accelerator', 'm');
 quit_menu_handle =  uimenu(figure_handle, 'Label', '&Quit', 'callback', 'exit');
 
 scale_bar_image = make_scale_bar(MCconfig.pixel_per_micron, MCconfig.bar_length_micron, MCconfig.bar_height_micron);
@@ -126,7 +126,6 @@ end;
 filecount = filenum2start;
 while filecount <= length(filelist),
     new_classcount = NaN; %initialize
-    file_step_amount = NaN; %initialize
     disp(['File number: ' num2str(filecount)])
     [~,outfile] = fileparts(filelist{filecount}); outfile = [outfile '.mat'];
     if ~strcmp(pick_mode, 'raw_roi') & ~exist([filelist{filecount} '.roi']) & ~exist(classfiles{filecount}),
@@ -276,13 +275,7 @@ while filecount <= length(filelist),
                         end;
                         clear change_flag
                         
-                        if ~isnan(file_step_amount) %case for user changed file
-                            filecount = filecount + file_step_amount - 1;
-                            file_step_amount = NaN;
-                            imgset = setnum; %make sure it leaves on next while
-                            next_ind = length(roi_ind)+1; %make sure it leaves on next while
-                            classcount = length(class2view)+1; %make sure it leaves on next while
-                        elseif file_jump_flag
+                        if file_jump_flag
                             filecount = new_filecount-1;
                             file_jump_flag = 0;
                             imgset = setnum; %make sure it leaves on next while
@@ -322,9 +315,11 @@ while filecount <= length(filelist),
                                 classcount = new_classcount - 1;
                                 imgset = setnum; %make sure it leaves while loop
                                 next_ind = length(roi_ind)+1; %make sure it leaves on next while
+                                new_classcount = NaN;
                             elseif ~isnan(new_setcount) %imgset ~= new_setcount; %case for user changed set number
                                 imgset = new_setcount - 1;
                                 next_ind = length(roi_ind)+1; %make sure it leaves on next while
+                                new_setcount = NaN;
                             elseif go_back_flag,
                                 if length(next_ind_list) == 1, %start of a set
                                     if imgset > 1 %case to go back one set in same class
@@ -355,15 +350,13 @@ while filecount <= length(filelist),
                                 end;
                             end;
                             next_ind_list = [next_ind_list next_ind]; %keep track of screen starts within a class to go back
-                        end; %if ~isnan(file_step_amount)
+                        end; %if file_jump_flag
                     end;  %while next_ind <=length(roi_ind)
                 end; %if ~isempty(imagedat),
                 imgset = imgset + 1;
-                new_setcount = NaN;
             end; %for imgset = 1:setnum
         end; %if isempty(roi_ind_all)
         classcount = classcount + 1;
-        new_classcount = NaN;
     end; %while classcount
     filecount = filecount + 1;
 end
