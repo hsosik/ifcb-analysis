@@ -1,6 +1,7 @@
-function [ ] = change_config( hOBj, eventdata, t )
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+function [ ] = change_config( hOBj, eventdata )
+%function [ ] = change_config( hOBj, eventdata )
+%   callback function for Options menu in manual_classify
+%Heidi M. Sosik, Woods Hole Oceanographic Institution, April 2015
 
 global MCconfig
 

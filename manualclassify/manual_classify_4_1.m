@@ -38,10 +38,11 @@ function [  ] = manual_classify_4_1( MCconfig_input )
 % Aug 2014, revise to address bug #3037, where zero-sized ROIs were previously annotated with default class in 'raw_roi' mode
 % March 2015, begin upgrade transistion from manual_classify_4_0 to manual_classify_4_1, mainly to handle user initiated jumping among classes
 
-global figure_handle listbox_handle1 instructions_handle listbox_handle3 new_classcount new_setcount step_flag jump_flag file_jump_flag MCconfig new_filecount filecount filelist select_remaining_flag category
+global figure_handle listbox_handle1 instructions_handle listbox_handle3 new_classcount new_setcount MCflags MCconfig new_filecount filecount filelist category
 
 close all
 MCconfig = MCconfig_input; clear MCconfig_input %use this so MCconfig can now be global with callback functions
+MCflags = struct('class_jump', 0, 'class_step', 0, 'file_jump', 0, 'changed_selectrois', 0, 'select_remaining', 0, 'newclasslist', NaN, 'go_back', 0, 'button', NaN);
 class2use = MCconfig.class2use;
 filelist = MCconfig.filelist;
 classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use, 'exact');
@@ -88,7 +89,7 @@ end;
 
 filecount = MCconfig.filenum2start;
 category = 1;
-select_remaining_flag = 0;
+MCflags.select_remaining = 0;
 while filecount <= length(filelist),
     new_classcount = NaN; %initialize
     disp(['File number: ' num2str(filecount)])
@@ -114,13 +115,13 @@ while filecount <= length(filelist),
     end;
     
     
-    [ classlist, list_titles, newclasslist_flag ] = get_classlistTB( [MCconfig.resultpath outfile],classfile_temp, MCconfig.pick_mode, class2use_manual, classnum_default, length(x_all) );
-    if newclasslist_flag,  %only first time creating classlist
+    [ classlist, list_titles, MCflags.newclasslist ] = get_classlistTB( [MCconfig.resultpath outfile],classfile_temp, MCconfig.pick_mode, class2use_manual, classnum_default, length(x_all) );
+    if MCflags.newclasslist,  %only first time creating classlist
         zero_ind = find(x_all == 0);
         classlist(zero_ind,2) = NaN; %mark zero-sized ROIs as NaNs in manual column (needed for raw_roi case where these are put in default class by get_classlistTB
     end;
     %special case to segregate dirt spots in Healy1101 data
-    if isequal(outfile(1:10), 'IFCB8_2011') && newclasslist_flag,
+    if isequal(outfile(1:10), 'IFCB8_2011') && MCflags.newclasslist,
         classlist((adcdata(:,10) == 1118 & adcdata(:,11) == 290),2) = strmatch('bad', class2use_manual);
     end;
     if isempty(classlist), %indicates bad class2use match
@@ -203,51 +204,52 @@ while filecount <= length(filelist),
                         end;
                         next_ind = next_ind + next_ind_increment - 1;
                         figure(figure_handle)
-                        [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, MCconfig.class2use, MCconfig.maxlist1);
+                        [ classlist ] = selectrois(instructions_handle, imagemap, classlist, MCconfig.class2use, MCconfig.maxlist1 );
                         set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'], 'foregroundcolor', 'k') %reset in case activated warning instruction
-                        if select_remaining_flag
+                        if MCflags.select_remaining
                             classlist(roi_ind_all(setrange(1):end),2) = str2num(category(1:3)); 
-                            select_remaining_flag = 0;
-                            change_flag = 1;
+                            MCflags.select_remaining = 0;
+                            MCflags.changed_selectrois = 1;
                         end;
-                        if change_flag,
+                        if MCflags.changed_selectrois,
                             save([MCconfig.resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
                         end;
-                        clear change_flag
+                        %clear change_flag
+                        MCflags.changed_selectrois = 0;
                         
-                        if file_jump_flag
+                        if MCflags.file_jump
                             filecount = max([0 new_filecount-1]); %just stay on first file if already there
-                            file_jump_flag = 0;
+                            MCflags.file_jump = 0;
                             imgset = setnum; %make sure it leaves on next while
                             next_ind = length(roi_ind)+1; %make sure it leaves on next while
                             classcount = length(class2view)+1; %make sure it leaves on next while
                         else %consider class changes, then set changes, then page changes
-                            if step_flag %case for user stepped to next or previous class, new_classcount
-                                new_classcount = classcount + step_flag; %value of flag specifies direction and amplitude of step within class2view
-                                if step_flag == -1,
+                            if MCflags.class_step %case for user stepped to next or previous class, new_classcount
+                                new_classcount = classcount + MCflags.class_step; %value of flag specifies direction and amplitude of step within class2view
+                                if MCflags.class_step == -1,
                                     temp_ind = get_roi_indices(classlist, class2view(new_classcount), MCconfig.pick_mode); %check for rois one class back
                                     while isempty(temp_ind) && new_classcount > 1 %check until find class with rois in it
-                                        new_classcount = new_classcount + step_flag; % go back one more
+                                        new_classcount = new_classcount + MCflags.class_step; % go back one more
                                         temp_ind = get_roi_indices(classlist, class2view(new_classcount), MCconfig.pick_mode);
                                     end
                                 end;
-                                step_flag = 0;
-                            elseif jump_flag  %case for user jumped to selected class, new_classcount starts as index in class2use
-                                if ~ismember(new_classcount, class2view),
-                                    temp_ind = get_roi_indices(classlist, class2view(new_classcount), MCconfig.pick_mode); %check for rois one class back
-                                    if ~isempty(temp_ind) %if there are ROIs add the selected class to class2view, just for this file, in order just after current class
+                                MCflags.class_step = 0;
+                            elseif MCflags.class_jump  %case for user jumped to selected class, new_classcount starts as index in class2use
+                                temp_ind = get_roi_indices(classlist, class2view(new_classcount), MCconfig.pick_mode); %check for rois one class back
+                                if ~isempty(temp_ind) %if there are ROIs
+                                    if ~ismember(new_classcount, class2view), %add the selected class to class2view, just for this file, in order just after current class
                                         if classcount < length(class2view)
                                             class2view = [class2view(1:classcount); new_classcount; class2view(classcount+1:end)];
                                         else
                                             class2view = [class2view; new_classcount];
                                         end;
-                                    else %if no ROIs, stay on current class
-                                        set(instructions_handle, 'string', ['Class jump skipped: no images in ' class2use{new_classcount}], 'foregroundcolor', 'r')
-                                        new_classcount = class2view(classcount);
                                     end;
+                                else %if no ROIs, stay on current class
+                                    set(instructions_handle, 'string', ['Class jump skipped; No images in ' class2use{new_classcount}], 'foregroundcolor', 'r', 'fontsize', 16)
+                                    new_classcount = class2view(classcount);
                                 end;
                                 new_classcount = find(class2view==new_classcount);
-                                jump_flag = 0;
+                                MCflags.class_jump = 0;
                             end;
                             if ~isnan(new_classcount) %case for user changed class
                                 classcount = new_classcount - 1;
@@ -258,7 +260,7 @@ while filecount <= length(filelist),
                                 imgset = new_setcount - 1;
                                 next_ind = length(roi_ind)+1; %make sure it leaves on next while
                                 new_setcount = NaN;
-                            elseif go_back_flag,
+                            elseif MCflags.go_back,
                                 if length(next_ind_list) == 1, %start of a set
                                     if imgset > 1 %case to go back one set in same class
                                         imgset = imgset - 2;
@@ -287,7 +289,7 @@ while filecount <= length(filelist),
                                 end;
                             end;
                             next_ind_list = [next_ind_list next_ind]; %keep track of screen starts within a class to go back
-                        end; %if file_jump_flag
+                        end; %if MCflags.file_jump
                     end;  %while next_ind <=length(roi_ind)
                 end; %if ~isempty(imagedat),
                 imgset = imgset + 1;

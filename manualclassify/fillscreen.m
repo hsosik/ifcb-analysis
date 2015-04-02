@@ -8,6 +8,7 @@ function [next_ind, imagemap] = fillscreen(imagedat,imgind,camx, camy, border, t
 %modified 12 January 2010 to skip over zero-size rois
 %modified 15 January 2010 so that selected ID displayed on previous pages within a category have proper text color (red for main list, blue for subdivide list)
 %modified 9 September 2014 to adjust axes position
+%April 2015, revised to remove subdivide functionality and recast for manual_classify_4_1
 
 %inputs:
 %   imagedat = cell array of roi images in order to plot
@@ -69,4 +70,4 @@ while ~pagefull && next_ind <= length(imgind)
     end;
 end;
 title(title_str, 'fontsize', 16, 'color', 'r', 'fontweight', 'bold','interpreter','none')
-th = text(1, -5, 'SELECT ALL', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
+th = text(1, -5, {'SELECT all page'}, 'fontsize', 16, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);

@@ -1,6 +1,8 @@
 function [ ] = robot_pressCR( num )
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+%function [ ] = robot_pressCR( num )
+%   perform 'num' robotic carriage returns (as if from keyboard), for
+%   manual_classify GUI performance streamline
+% Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2015
 
 robot = java.awt.Robot;
 pause(.5)  %pause seems to be necessary for the key stroke to be reliably recorded by ginput

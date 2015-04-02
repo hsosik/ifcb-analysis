@@ -1,4 +1,4 @@
-function [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2pick1, maxlist1)
+function [ classlist ] = selectrois(instructions_handle, imagemap, classlist, class2pick1, maxlist1)
 %function [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2pick1, mark_col)
 %For Imaging FlowCytobot roi viewing; Use with manual_classify scripts;
 %Sets up a graph window for manual identification from a roi collage (use
@@ -6,6 +6,7 @@ function [ classlist, change_flag, go_back_flag ] = selectrois(instructions_hand
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, 30 May 2009
 %modified 6 January 2010 to omit save line (all saves are now in manual_classify proper)
 %modifedi 15 January 2010 to change mode of overriding a IDs between main list and subdivide lists, set so latest ID wins
+%April 2015, revised to remove subdivide functionality and recast for manual_classify_4_1
 
 %INPUT:
 %instructions_handles - handle to text box for instructions
@@ -16,15 +17,12 @@ function [ classlist, change_flag, go_back_flag ] = selectrois(instructions_hand
 
 %OUTPUT:
 %classlist - matrix of (modified) class identity results
-%change_flag - value of 1 if classlist has been changed, value of 0 if not
-%go_back_flag - value of 1 if USER selected to go back one screen (default value = 0 to go forward)
 %
-%April 2015, revised to remove subdivide functionality
 
-global category button_flag select_remaining_flag
+global category MCflags
 
-change_flag = 0;
-go_back_flag = 0;
+MCflags.changed_selectrois = 0;
+MCflags.go_back = 0;
 button = 1;  %reset to stop for ginput on next screen
 mark_col_now = 2;
 while button(end) < 3 
@@ -41,17 +39,17 @@ while button(end) < 3
                     selected_roi = imagemap(sub2ind(size(imagemap),x1,y1)); %
                 end;
                 selected_roi = selected_roi(~isnan(selected_roi)); %make sure click was on a ROI, moved before button_flag loop 1/15/10
-                if button_flag == 1, %left side listbox
+                if MCflags.button == 1, %left side listbox
                     catnum = strmatch(category(5:end),class2pick1, 'exact');
                     text(x1,y1, num2str(catnum),'color', 'r', 'fontweight', 'bold')
                     classlist(selected_roi,4:end) = NaN; %any previous subdivide IDs overridden by this new main manual ID, active subdiv will go to default in manual_classify, 1/15/10
-                elseif button_flag == 3, %right side listbox
+                elseif MCflags.button == 3, %right side listbox
                     catnum = strmatch(category(5:end),class2pick1, 'exact');
                     text(x1,y1, num2str(catnum),'color', 'r', 'fontweight', 'bold')
                     classlist(selected_roi,4:end) = NaN; %any previous subdivide IDs overridden by this new main manual ID, active subdiv will go to default in manual_classify, 1/15/10
                 end;
                 classlist(selected_roi,mark_col_now) = catnum;
-                change_flag = 1;
+                MCflags.changed_selectrois = 1;
             else
                 disp('Choose a category first!!')
                 set(instructions_handle, 'string', ['Choose a category first!!'])
@@ -59,7 +57,7 @@ while button(end) < 3
             end;
         else
             if button(end) == 28,
-                go_back_flag = 1;
+                MCflags.go_back = 1;
             end;
         end;
     else

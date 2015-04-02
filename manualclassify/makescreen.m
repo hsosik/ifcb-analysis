@@ -1,4 +1,4 @@
-function [ figure_handle, listbox_handle1, listbox_handle3, instructions_handle] = makescreen( class2pick1, MCconfig )
+function [ figure_handle, listbox_handle1, listbox_handle3, instructions_handle] = makescreen( class2pick1, MCconfig)
 %function [ figure_handle, listbox_handle1, listbox_handle3, instructions_handle] = makescreen( class2pick1, MCconfig )
 %For Imaging FlowCytobot roi viewing; Use with manual_classify scripts;
 %Sets up a graph window for manual identification from a roi collage (use
@@ -16,7 +16,7 @@ function [ figure_handle, listbox_handle1, listbox_handle3, instructions_handle]
 %instructions_handles - handle to text box for instructions
 %
 %Sept 2014, revised for more robust handling of screen size issues
-%April 2015, revised to remove subdivide functionality
+%April 2015, revised to remove subdivide functionality and recast for manual_classify_4_1
 
 screen = get(0, 'ScreenSize');
 
@@ -52,13 +52,13 @@ if ~isempty(class2pick1), %edited 1/12/10 to fix typo pick2 --> pick1
     listbox_handle1 = uicontrol('style', 'listbox', 'string', str1, 'ForegroundColor', 'r', 'callback', 'select_category');
     set(listbox_handle1, 'units', 'normalized', 'position', [0 lmargin lwdth 1-lmargin]);
     instructions_handle = uicontrol('style', 'text');
-    set(instructions_handle, 'units', 'normalized', 'position', [lwdth*1.1 lmargin lwdth*4 lmargin]);% tpos)
+    set(instructions_handle, 'units', 'normalized', 'position', [lwdth*3 lmargin lwdth*4 lmargin]);% tpos)
     set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'])    
 end;
 
 set(figure_handle, 'menubar', 'none')
-step_flag  = 0;
-file_jump_flag = 0;
+%step_flag  = 0;
+%file_jump_flag = 0;
 change_menu_handle =  uimenu(figure_handle, 'Label', 'Change &Class');
 next_menu_handle =  uimenu(change_menu_handle, 'Label', '&Next Class', 'callback', {'class_step_amount', 1}, 'Accelerator', 'n');
 prev_menu_handle =  uimenu(change_menu_handle, 'Label', '&Previous Class', 'callback', {'class_step_amount', -1}, 'Accelerator', 'p');
@@ -72,7 +72,7 @@ quit_menu_handle =  uimenu(figure_handle, 'Label', '&Quit');
 quit_script_menu_handle =  uimenu(quit_menu_handle, 'Label', '&Quit manual_classify', 'callback', 'stopMC', 'Accelerator', 'q');
 exit_menu_handle =  uimenu(quit_menu_handle, 'Label', 'E&xit MATLAB', 'callback', 'exit', 'Accelerator', 'x');
 u = uicontrol(gcf, 'style', 'radiobutton', 'units', 'normalized');
-set(u, 'position', [.1 .9 .1 .05], 'string', 'Select all remaining in class', 'callback', {'select_remaining'})
+set(u, 'position', [lwdth*1.1 lmargin*1.5 lwdth*1.25 lmargin], 'string', 'SELECT remaining in class', 'callback', {'select_remaining'}, 'fontsize', 10)
 
 end
 

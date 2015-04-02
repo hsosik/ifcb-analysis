@@ -1,10 +1,11 @@
 function [  ] = select_remaining( hOBj, eventdata )
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%function [  ] = select_remaining( hOBj, eventdata )
+%   callback function for 'select remaining in class' radio button in manual_classify
+% Heidi M. Sosik, Woods Hole Oceanographic Institution, April 201
 
-global select_remaining_flag
+global MCflags
 
-select_remaining_flag = 1;
+MCflags.select_remaining = 1;
 
 ReleaseFocus(gcf)
 

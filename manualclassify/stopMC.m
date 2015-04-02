@@ -1,6 +1,7 @@
 function [  ] = stopMC( hOBj, eventdata )
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+%function [  ] = stopMC( hOBj, eventdata )
+    %   callback for quit from manual_classify menu entry
+%Heidi M. Sosik, Woods Hole Oceanographic Institution, April 2015
 
 global filelist new_filecount file_jump_flag
 

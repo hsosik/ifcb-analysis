@@ -5,6 +5,7 @@ function [ MCconfig ] = get_MCconfig(MCconfig)
 %   Heidi M. Sosik, Woods Hole Oceanographic Institution, 
 
 %   revised August 2013 to incorporate settings previously done in get_MCfilelist. m
+%   April 2015, revised to remove subdivide functionality and recast for manual_classify_4_1
 
 %Some DEFAULT settings
 %USER - DO NOT CHANGE these, copy desired lines to your case below and change as there
