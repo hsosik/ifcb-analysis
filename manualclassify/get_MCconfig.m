@@ -6,32 +6,29 @@ function [ MCconfig ] = get_MCconfig(MCconfig)
 
 %   revised August 2013 to incorporate settings previously done in get_MCfilelist. m
 
-%MCconfig.pick_mode = 'correct_or_subdivide'; %USER choose one 'correct_or_subdivide' (start from classifier or already sorted images) or 'raw_roi'
-MCconfig.pick_mode = 'raw_roi';
-
-MCconfig.displayed_ordered = 'size'; %USER choose one 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
-%MCconfig.displayed_ordered = 'roi_index'; 
-
-MCconfig.alphabetize='no' ; %yes= alphabetize the list in the identification window, no = do not alphabetize the list.
-
+%Some DEFAULT settings
+%USER - DO NOT CHANGE these, copy desired lines to your case below and change as there
+MCconfig.pick_mode = 'raw_roi';  %CHOICES 'raw_roi' or 'correct_classifier'
+MCconfig.displayed_ordered = 'size'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
+MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identification window, no = do not alphabetize the list.
 MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
-
-%group specific options
-MCconfig.group = 'MVCO'; %MVCO, Sherbrooke, OKEX
-%default length of category list box before split to second box
-MCconfig.maxlist1 = 60; %USER make a copy and edit in your switch case if you want a different value
+MCconfig.maxlist1 = 60; %default length of category list box before split to second box
+%USER - DO NOT CHANGE above lines, copy desired lines to your case below and change as there
 
 switch MCconfig.group
     case 'Sherbrooke'
         MCconfig.resultpath ='/Users/profileur/whoi_data/output_manual_classify/';
         MCconfig.basepath = '/Users/profileur/whoi_data/';
         MCconfig.filepath = 'D2013/D20130426/'; %this is the folder and or file you want to look at (not used in batchmode)
+        MCconfig.pick_mode = 'raw_roi';
         MCconfig.class2use = importfile_species_list('/Users/profileur/whoi_data/manualclassify/Montjoie_species_20130404T173307.txt');%loading data from .txt file
         MCconfig.class_filestr = ''; %USER set, string appended on roi name for class files
         MCconfig.default_class = 'Other';
         MCconfig.class2view2 = { }; %example to skip view2
         MCconfig.classpath = '';
+        MCconfig.displayed_ordered = 'size'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
+        MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identification window, no = do not alphabetize the list.
         switch MCconfig.batchmode
             case 'no'
                 MCconfig.filelist = dir([MCconfig.basepath MCconfig.filepath '*.adc']);
@@ -41,7 +38,7 @@ switch MCconfig.group
         [MCconfig.filelist, MCconfig.classfiles] = resolve_files(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
     case 'MVCO'
         MCconfig.maxlist1 = 75;
-        MCconfig.setsize = 200; %how many images to read before displaying 
+        MCconfig.setsize = 10; %how many images to read before displaying 
         MCconfig.pixel_per_micron= 3.4; %pixel to micrometer conversion factor DO NOT ASSUME THIS VALUE APPLIES FOR YOUR DATA
         MCconfig.bar_length_micron = 10; %scale bar length in microns, enter 0 for no bar displayed
         %MCconfig.bar_height_micron = 2; %scale bar height in microns
@@ -49,6 +46,9 @@ switch MCconfig.group
         MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
         MCconfig.resultpath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\Manual_fromClass\'; %USER set
         temp = load('class2use_MVCOmanual5', 'class2use'); %USER load yours here
+        MCconfig.pick_mode = 'raw_roi';
+        MCconfig.displayed_ordered = 'size'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
+        MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identification window, no = do not alphabetize the list.
         MCconfig.class2use = temp.class2use;
         MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
         MCconfig.default_class = 'unclassified';
@@ -67,24 +67,23 @@ switch MCconfig.group
         end
         [MCconfig.filelist, MCconfig.classfiles, MCconfig.stitchfiles] = resolve_MVCOfiles(MCconfig.filelist, MCconfig.class_filestr);
         %pick one
-        %MCconfig.class2view1 = MCconfig.class2use; %case to view all
-        MCconfig.class2view1 = setdiff(MCconfig.class2use,{'Asterionellopsis' 'Chaetoceros' 'bad' 'detritus' 'mix'}); %example to skip a few
+        MCconfig.class2view1 = MCconfig.class2use; %case to view all
+        %MCconfig.class2view1 = setdiff(MCconfig.class2use,{'Asterionellopsis' 'Chaetoceros' 'bad' 'detritus' 'mix'}); %example to skip a few
         %MCconfig.class2view1 = intersect(MCconfig.class2use, {'other'}); %example to select a few
         %MCconfig.class2view1 = intersect(MCconfig.class2use, {'leptocylindrus' 'other' 'mix_elongated'}); %example to select a few
     case 'OKEX'
         MCconfig.resultpath = '/home/ifcb/ifcb_010_data/manual/'; %USER set
         MCconfig.basepath = '/home/ifcb/ifcb_010_data/'; %USER set
         MCconfig.filepath = '/';
+        MCconfig.pick_mode = 'correct_classifier';
+        MCconfig.displayed_ordered = 'size'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
+        MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identification window, no = do not alphabetize the list.
         temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
         MCconfig.class2use = temp.class2use;
         MCconfig.classpath = '/home/ifcb/ifcb_010_data/class/'; 
         MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
         MCconfig.default_class = 'other';
         temp = load('class2use_MVCOciliate', 'class2use_sub4'); 
-        MCconfig.class2use_sub = temp.class2use_sub4;
-        MCconfig.sub_default_class = 'Ciliate_mix';
-        MCconfig.classstr = 'ciliate';
-        MCconfig.class2view2 = MCconfig.class2use_sub; %example to view all
         filelisttype = 'loadfile'; %manual_list, loadfile, dirlist
         switch filelisttype
             case 'manual_list' % batch system
@@ -101,6 +100,9 @@ switch MCconfig.group
         MCconfig.resultpath = '\\Queenrose\ifcb2_c211a_sea2007\Manual_fromClass\'; %USER set
         MCconfig.basepath = '\\Queenrose\ifcb2_c211a_sea2007\data\'; %USER set
         temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
+        MCconfig.pick_mode = 'correct_classifier';
+        MCconfig.displayed_ordered = 'size'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
+        MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identification window, no = do not alphabetize the list.
         MCconfig.class2use = temp.class2use;
         MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
         MCconfig.classpath = '\\Queenrose\ifcb2_c211a_sea2007\data\class2007_v1\'; 
@@ -130,6 +132,9 @@ switch MCconfig.group
     case 'GEOCAPE'
         MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
         temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
+        MCconfig.pick_mode = 'correct_classifier';
+        MCconfig.displayed_ordered = 'size'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
+        MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identification window, no = do not alphabetize the list.
         MCconfig.class2use = temp.class2use;
         MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
         MCconfig.default_class = 'unclassified';
@@ -159,6 +164,9 @@ switch MCconfig.group
         MCconfig.basepath = '\\QUEENROSE\IFCB14_Dock\ditylum\data\'; %USER set
         %temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
         %MCconfig.class2use = temp.class2use;
+        MCconfig.pick_mode = 'raw_roi';
+        MCconfig.displayed_ordered = 'roi_index'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
+        MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identification window, no = do not alphabetize the list.
         MCconfig.class2use = {'Ditylum', 'Ditylum_with_sperm', 'sperm_free', 'possible_eggs', 'detritus', 'other'};
         MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
         MCconfig.classpath = ''; 
@@ -183,6 +191,9 @@ switch MCconfig.group
         case 'TAMUG'
             MCconfig.resultpath = 'c:\ifcb\manual\'; %USER set
             MCconfig.basepath = 'c:\ifcb\data\'; %USER set
+            MCconfig.pick_mode = 'raw_roi';
+            MCconfig.displayed_ordered = 'size'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
+            MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identification window, no = do not alphabetize the list.
             %temp = load('class2use_MVCOmanual3', 'class2use'); %USER load yours here
             %MCconfig.class2use = temp.class2use;
             MCconfig.class2use = {'dinoflagellates', 'diatoms', 'misc_nano', 'detritus', 'other', 'ciliates'};
@@ -210,6 +221,9 @@ switch MCconfig.group
             %MCconfig.basepath = '\\SosikNAS1\Lab_data\VPR\NBP1201\vpr3\'; %USER set
             MCconfig.resultpath = 'C:\work\vpr\vpr3\manual\'; %USER set
             MCconfig.basepath = 'C:\work\vpr\vpr3\'; %USER set
+            MCconfig.pick_mode = 'correct_classifier';
+            MCconfig.displayed_ordered = 'roi_index'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
+            MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identification window, no = do not alphabetize the list.
             temp = load('C:\work\IFCB\code_svn\VPR\misc\class2use_vpr', 'class2use'); %USER load yours here
             MCconfig.class2use = temp.class2use;
             MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
@@ -232,6 +246,9 @@ switch MCconfig.group
            
             %pick one
             MCconfig.class2view1 = MCconfig.class2use; %case to view all
+    otherwise
+        disp('Invalid configuration case. Check options in get_MCconfig.m')
+        return  
 end
 
 %default
@@ -263,7 +280,7 @@ elseif f(1) == 'D',
     MCconfig.dataformat = 1;
 end;
 
-if strcmp(MCconfig.pick_mode, 'correct_or_subdivide')
+if strcmp(MCconfig.pick_mode, 'correct_classifier')
     if isempty(MCconfig.classfiles)
         disp('No class files specified. Check path setting in get_MCconfig if you want to load classifier results.')
         disp('Hit enter to continue without classifier results.')

@@ -1,5 +1,5 @@
-function [ roi_ind ] = get_roi_indices( classlist, classnum, pick_mode, sub_col, view_set);
-%function [ roi_ind ] = get_roi_indices( classlist, classnum, pick_mode, sub_col, view_set);
+function [ roi_ind ] = get_roi_indices( classlist, classnum, pick_mode );
+%function [ roi_ind ] = get_roi_indices( classlist, classnum, pick_mode );
 %For Imaging FlowCytobot roi picking; Use with manual_classify scripts;
 %Finds the indices for ROIs corresponding to a particular class
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, 31 May 2009
@@ -17,26 +17,13 @@ function [ roi_ind ] = get_roi_indices( classlist, classnum, pick_mode, sub_col,
 %
 %OUTPUTS:
 %roi_ind - list of indices corresponding to selected ROIs
+%
+%April 2015 revised to eliminate subdivide functionality
 
 switch pick_mode
     case 'raw_roi'
-        if view_set == 1,
-            roi_ind = classlist(classlist(:,2) == classnum,1);
-        else
-            if ~isempty(sub_col),
-                roi_ind = find(classlist(:,sub_col) == classnum);
-            end;
-        end;
-        
-    case 'correct_or_subdivide'
-        if ~isempty(sub_col),
-            if view_set == 1, %first part from class2use
-                roi_ind = find(classlist(:,2) == classnum & isnan(classlist(:,sub_col)) | isnan(classlist(:,2)) & isnan(classlist(:,sub_col)) & classlist(:,3) == classnum);
-            else  %second part from class2use_now
-                roi_ind = find(classlist(:,sub_col) == classnum); %-length(class2use));
-            end
-        else
-            roi_ind = classlist(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum),1);
-        end        
-end;
+        roi_ind = classlist(classlist(:,2) == classnum,1);       
+    case 'correct_classifier'
+        roi_ind = classlist(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum),1);        
+end
 

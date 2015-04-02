@@ -1,5 +1,5 @@
-function [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2pick1, class2pick2, mark_col, maxlist1)
-%function [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2pick1, class2pick2, mark_col)
+function [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2pick1, maxlist1)
+%function [ classlist, change_flag, go_back_flag ] = selectrois(instructions_handle, imagemap, classlist, class2pick1, mark_col)
 %For Imaging FlowCytobot roi viewing; Use with manual_classify scripts;
 %Sets up a graph window for manual identification from a roi collage (use
 %fillscreen.m to add the rois);
@@ -12,20 +12,22 @@ function [ classlist, change_flag, go_back_flag ] = selectrois(instructions_hand
 %imagemap = pixel map of roi index numbers as plotted, for use with ginput in manual_classify scripts
 %classlist - matrix of class identity results
 %class2pick1 - cell array of classes to consider for main selection (left buttons)
-%class2pick2 - cell array of classes to consider for sub-divide selection (right buttons)
 %mark_col - column of classlist to edit with manual identifications
 
 %OUTPUT:
 %classlist - matrix of (modified) class identity results
 %change_flag - value of 1 if classlist has been changed, value of 0 if not
 %go_back_flag - value of 1 if USER selected to go back one screen (default value = 0 to go forward)
+%
+%April 2015, revised to remove subdivide functionality
 
-global category button_flag
+global category button_flag select_remaining_flag
 
 change_flag = 0;
 go_back_flag = 0;
 button = 1;  %reset to stop for ginput on next screen
-while button(end) < 3 %& ~isempty(startbyte),  %
+mark_col_now = 2;
+while button(end) < 3 
     [x1,y1,button] = ginput_crosshair;  % choose image locations using left button of mouse
     if ~isempty(x1),
         if length(x1) >= 1 && button(end) <= 3,
@@ -39,24 +41,16 @@ while button(end) < 3 %& ~isempty(startbyte),  %
                     selected_roi = imagemap(sub2ind(size(imagemap),x1,y1)); %
                 end;
                 selected_roi = selected_roi(~isnan(selected_roi)); %make sure click was on a ROI, moved before button_flag loop 1/15/10
-                if button_flag == 1, %first set always goes with manual column
+                if button_flag == 1, %left side listbox
                     catnum = strmatch(category(5:end),class2pick1, 'exact');
-                    mark_col_now = 2;
                     text(x1,y1, num2str(catnum),'color', 'r', 'fontweight', 'bold')
                     classlist(selected_roi,4:end) = NaN; %any previous subdivide IDs overridden by this new main manual ID, active subdiv will go to default in manual_classify, 1/15/10
-                elseif button_flag == 3,
+                elseif button_flag == 3, %right side listbox
                     catnum = strmatch(category(5:end),class2pick1, 'exact');
-                    mark_col_now = 2;
                     text(x1,y1, num2str(catnum),'color', 'r', 'fontweight', 'bold')
                     classlist(selected_roi,4:end) = NaN; %any previous subdivide IDs overridden by this new main manual ID, active subdiv will go to default in manual_classify, 1/15/10
-                else %case for second set for subdividing
-                    catnum = strmatch(category(5:end),class2pick2, 'exact');
-                    mark_col_now = mark_col;
-                    text(x1,y1, num2str(catnum),'color', 'b', 'fontweight', 'bold')
-                    classlist(selected_roi,2) = NaN; %any previous main manual IDs overridden by this new subdivide category, will revert to default main category in manual_classify, 1/15/10
                 end;
                 classlist(selected_roi,mark_col_now) = catnum;
-%                save(resultfile, 'classlist', '-append') 
                 change_flag = 1;
             else
                 disp('Choose a category first!!')
