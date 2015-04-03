@@ -181,7 +181,5 @@ function select_remaining_callback( hOBj, eventdata )
     set(hOBj, 'value',0) %unselect the button
 end
 
-
-
 end
 
