@@ -13,16 +13,18 @@ function [  ] = select_category( hOBj, eventdata )
 
 global category MCflags figure_handle listbox_handle1 listbox_handle3 instructions_handle 
 
-if gco == listbox_handle1,
+if gco == listbox_handle1
     MCflags.button = 1;
+    h = listbox_handle1;
 elseif gco == listbox_handle3,
     MCflags.button = 3;
+    h = listbox_handle3;
 else
     MCflags.button = NaN;
 end;
 
-str = get(gco, 'string');
-category = char(str(get(gco, 'value')));
+str = get(h, 'string');
+category = char(str(get(h, 'value')));
 set(instructions_handle, 'string', ['Click on ' category...
     ' images; then ENTER key to save results before changing categories. ENTER key for new page.'], 'foregroundcolor', 'k')
 

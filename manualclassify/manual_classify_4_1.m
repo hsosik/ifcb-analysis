@@ -42,7 +42,7 @@ global figure_handle listbox_handle1 instructions_handle listbox_handle3 new_cla
 
 close all
 MCconfig = MCconfig_input; clear MCconfig_input %use this so MCconfig can now be global with callback functions
-MCflags = struct('class_jump', 0, 'class_step', 0, 'file_jump', 0, 'changed_selectrois', 0, 'select_remaining', 0, 'newclasslist', NaN, 'go_back', 0, 'button', NaN);
+MCflags = struct('class_jump', 0, 'class_step', 0, 'file_jump', 0, 'changed_selectrois', 0, 'select_remaining', 0, 'newclasslist', NaN, 'go_back', 0, 'button', 1);
 class2use = MCconfig.class2use;
 filelist = MCconfig.filelist;
 classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use, 'exact');
@@ -66,14 +66,15 @@ camy = 1035;  %camera image size, changed from 1034 heidi 6/8/09
 border = 3; %to separate images
 
 %make the collage window
-[figure_handle, listbox_handle1, listbox_handle3, instructions_handle] = makescreen(MCconfig.class2use, MCconfig);
-
+[figure_handle, listbox_handle1, listbox_handle3, instructions_handle] = makescreen(MCconfig.class2use); %, MCconfig);
+str = get(listbox_handle1, 'string');
+category = char(str(get(listbox_handle1, 'value'))); %initialize as first in left listbox
 if isfield(MCconfig,'bar_length_micron')
     if MCconfig.bar_length_micron > 0
         MCconfig.bar_height_micron = 2;
-        scale_bar_image = make_scale_bar(MCconfig.pixel_per_micron, MCconfig.bar_length_micron, MCconfig.bar_height_micron);
+        scale_bar_image1 = make_scale_bar(MCconfig.pixel_per_micron, MCconfig.bar_length_micron, MCconfig.bar_height_micron);
     else
-        scale_bar_image = NaN;
+        scale_bar_image1 = NaN;
     end
 end
 
@@ -88,8 +89,6 @@ elseif MCconfig.dataformat == 1,
 end;
 
 filecount = MCconfig.filenum2start;
-category = 1;
-MCflags.select_remaining = 0;
 while filecount <= length(filelist),
     new_classcount = NaN; %initialize
     disp(['File number: ' num2str(filecount)])
@@ -130,10 +129,9 @@ while filecount <= length(filelist),
     if ~isempty(stitch_info),
         classlist(stitch_info(:,1)+1,2:3) = NaN; %force NaN class for second roi in pair to be stitched
     end;
-    %mark_col = 2; %added back 11 jan 2010
-    class2view = class2view1;
+    class2view = class2view1; %make sure resets back to initial for each new file 
     classcount = 1;
-    while classcount <= length(class2view),
+    while classcount <= length(class2view) && ~MCflags.file_jump
         new_setcount = NaN; %initialize
         classnum = class2view(classcount);
         roi_ind_all = get_roi_indices(classlist, classnum, MCconfig.pick_mode);
@@ -145,13 +143,13 @@ while filecount <= length(filelist),
                 delete(set_menu_handle), clear set_menu_handle
             end;
             if setnum > 1
-                set_menu_handle = uimenu(figure_handle, 'Label', 'Set Start' );
+                set_menu_handle = uimenu(figure_handle, 'Label', 'Change &Set', 'position', 3 );
                 for ii = 1:setnum
                     uimenu(set_menu_handle, 'Label', num2str(MCconfig.setsize*ii-MCconfig.setsize+1), 'callback', {'set_menucount', ii});
                 end;
             end;
             imgset = 1;
-            while imgset <= setnum,
+            while imgset <= setnum && ~MCflags.file_jump
                 loading_handle = text(0, 1.01, 'Loading images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
                 pause(.001) %make sure label displays
                 next_ind = 1; %start with the first roi
@@ -198,8 +196,8 @@ while filecount <= length(filelist),
                         rendering_handle = text(0, 1.01, 'Rendering images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
                         pause(.001)
                         [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [class2use(classnum) MCconfig.filelist{filecount}], classlist, change_col, classnum);
-                        if ~isnan(scale_bar_image)
-                            scale_bar_image = imresize(scale_bar_image, MCconfig.imresize_factor);
+                        if ~isnan(scale_bar_image1)
+                            scale_bar_image = imresize(scale_bar_image1, MCconfig.imresize_factor);
                             imagesc(camx-size(scale_bar_image,2)-60,1020,scale_bar_image), text(camx-50,1020,[num2str(MCconfig.bar_length_micron) ' \mum'])
                         end;
                         next_ind = next_ind + next_ind_increment - 1;
@@ -214,16 +212,8 @@ while filecount <= length(filelist),
                         if MCflags.changed_selectrois,
                             save([MCconfig.resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
                         end;
-                        %clear change_flag
                         MCflags.changed_selectrois = 0;
                         
-                        if MCflags.file_jump
-                            filecount = max([0 new_filecount-1]); %just stay on first file if already there
-                            MCflags.file_jump = 0;
-                            imgset = setnum; %make sure it leaves on next while
-                            next_ind = length(roi_ind)+1; %make sure it leaves on next while
-                            classcount = length(class2view)+1; %make sure it leaves on next while
-                        else %consider class changes, then set changes, then page changes
                             if MCflags.class_step %case for user stepped to next or previous class, new_classcount
                                 new_classcount = classcount + MCflags.class_step; %value of flag specifies direction and amplitude of step within class2view
                                 if MCflags.class_step == -1,
@@ -289,7 +279,7 @@ while filecount <= length(filelist),
                                 end;
                             end;
                             next_ind_list = [next_ind_list next_ind]; %keep track of screen starts within a class to go back
-                        end; %if MCflags.file_jump
+ %                       end; %if MCflags.file_jump
                     end;  %while next_ind <=length(roi_ind)
                 end; %if ~isempty(imagedat),
                 imgset = imgset + 1;
@@ -298,6 +288,15 @@ while filecount <= length(filelist),
         classcount = classcount + 1;
     end; %while classcount
     filecount = filecount + 1;
+    if MCflags.file_jump
+        if new_filecount < 1 %stay on first file if already there
+            set(instructions_handle, 'string', ['FIRST FILE! No previous file change possible.'], 'foregroundcolor', 'r', 'fontsize', 16)
+            new_filecount = 1;
+        end;
+        filecount = new_filecount; 
+        MCflags.file_jump = 0;
+    end;
 end
 close(figure_handle)
 end
+

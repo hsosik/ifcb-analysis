@@ -253,8 +253,9 @@ switch MCconfig.group
 end
 
 %default
-switch MCconfig.batchmode
-    case 'yes'
+%switch MCconfig.batchmode
+    if isfield(MCconfig, 'batch_class_index') %field only exists if passed in
+    %case 'yes'
         if ischar(MCconfig.batch_class_index) %case when the name is given
             MCconfig.class2view1 = MCconfig.batch_class_index; %if you want to see one file by index
         else %case where the number is given

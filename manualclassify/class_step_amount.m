@@ -4,9 +4,9 @@ function [  ] = class_step_amount( hOBj, eventdata, amount )
 % manual_classify for IFCB
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2015
 
-global step_flag
+global MCflags
 
-step_flag = amount;
+MCflags.step = amount;
 
 robot_pressCR(1)
 
