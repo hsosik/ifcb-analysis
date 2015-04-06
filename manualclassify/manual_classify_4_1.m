@@ -288,6 +288,7 @@ while filecount <= length(filelist),
         classcount = classcount + 1;
     end; %while classcount
     filecount = filecount + 1;
+    fclose(fid);
     if MCflags.file_jump
         if new_filecount < 1 %stay on first file if already there
             set(instructions_handle, 'string', ['FIRST FILE! No previous file change possible.'], 'foregroundcolor', 'r', 'fontsize', 16)
