@@ -202,8 +202,11 @@ while filecount <= length(filelist),
                         end;
                         next_ind = next_ind + next_ind_increment - 1;
                         figure(figure_handle)
+                        
                         [ classlist ] = selectrois(instructions_handle, imagemap, classlist, MCconfig.class2use, MCconfig.maxlist1 );
-                        set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'], 'foregroundcolor', 'k') %reset in case activated warning instruction
+                        %set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'], 'foregroundcolor', 'k') %reset in case activated warning instruction
+                        set(instructions_handle, 'string', ['Click on ' category...
+                                ' images; then ENTER key to save results before changing categories. ENTER key for new page.'], 'foregroundcolor', 'k', 'fontsize', 8)
                         if MCflags.select_remaining
                             classlist(roi_ind_all(setrange(1):end),2) = str2num(category(1:3)); 
                             MCflags.select_remaining = 0;

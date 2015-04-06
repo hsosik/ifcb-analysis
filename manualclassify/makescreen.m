@@ -48,16 +48,16 @@ if ~isempty(class2pick1), %edited 1/12/10 to fix typo pick2 --> pick1
     if length(str) > MCconfig.maxlist1,
         str1 = str(1:MCconfig.maxlist1);
         str2 = str(MCconfig.maxlist1+1:end);
-        listbox_handle3 = uicontrol('style', 'listbox', 'string', str2, 'ForegroundColor', 'r', 'callback', @select_category_callback);
+        listbox_handle3 = uicontrol('style', 'listbox', 'string', str2, 'ForegroundColor', 'r', 'min', -1, 'max', 1, 'value', [], 'callback', @select_category_callback);
+        set(listbox_handle3, 'value', [])
         set(listbox_handle3, 'units', 'normalized', 'position',[1-lwdth lmargin lwdth 1-lmargin])
     end;
-    listbox_handle1 = uicontrol('style', 'listbox', 'string', str1, 'ForegroundColor', 'r', 'callback', @select_category_callback);
+    listbox_handle1 = uicontrol('style', 'listbox', 'string', str1, 'ForegroundColor', 'r', 'min', -1, 'max', 1, 'callback', @select_category_callback);
     set(listbox_handle1, 'units', 'normalized', 'position', [0 lmargin lwdth 1-lmargin]);
     instructions_handle = uicontrol('style', 'text');
     set(instructions_handle, 'units', 'normalized', 'position', [lwdth*3 lmargin lwdth*4 lmargin]);% tpos)
     set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'])    
 end;
-
 set(figure_handle, 'menubar', 'none')
 %step_flag  = 0;
 %file_jump_flag = 0;
@@ -83,9 +83,11 @@ function select_category_callback( hOBj, eventdata )
     if gco == listbox_handle1
         MCflags.button = 1;
         h = listbox_handle1;
+        set(listbox_handle3, 'value', []);
     elseif gco == listbox_handle3,
         MCflags.button = 3;
         h = listbox_handle3;
+        set(listbox_handle1, 'value', []);
     else
         MCflags.button = NaN;
     end;
@@ -144,13 +146,15 @@ function change_config_callback( hOBj, eventdata )
     user_input = inputdlg(prompt,'Configure', 1, defaultanswer);
     if ~isempty(user_input)
         [val status] = str2num(user_input{1});
-        if status && rem(val,1) ~= 0, status = 0; end
+        %if status && rem(val,1) ~= 0, status = 0; end
+        if (status && (rem(val,1) ~= 0 || val <= 0)), status = 0; end
         while ~status
-            uiwait(msgbox(['Set size must be an integer']))
+            uiwait(msgbox(['Set size must be a positive integer']))
             user_input(1) = defaultanswer(1);
             user_input = inputdlg(prompt,'Configure', 1, user_input);
             [val status] = str2num(user_input{1});
-            if status && rem(val,1) ~= 0, status = 0; end
+            %if status && rem(val,1) ~= 0, status = 0; end
+            if (status && (rem(val,1) ~= 0 || val <= 0)), status = 0; end
         end
         MCconfig.setsize = str2num(user_input{1});
         [val status] = str2num(user_input{2});
