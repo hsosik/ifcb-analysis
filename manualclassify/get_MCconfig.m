@@ -15,9 +15,10 @@ MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identifica
 MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
 MCconfig.maxlist1 = 60; %default length of category list box before split to second box
-MCconfig.xbig = 0; %big only cutoff in pixels, 0=show all
-MCconfig.ybig = 0; %big only cutoff in pixels, 0=show all
-
+MCconfig.x_pixel_threshold = 150;  %cutoff in pixels, 1=no threshold
+MCconfig.y_pixel_threshold = 75; %cutoff in pixels, 1=no threshold
+MCconfig.threshold_mode = 0; %0 = show all, 1 = show larger than 1 or both thresholds, 2 = show smaller than both thresholds
+        
 %USER - DO NOT CHANGE above lines, copy desired lines to your case below and change as there
 
 switch MCconfig.group
@@ -45,8 +46,9 @@ switch MCconfig.group
         MCconfig.setsize = 30; %how many images to read before displaying 
         MCconfig.pixel_per_micron= 3.4; %pixel to micrometer conversion factor DO NOT ASSUME THIS VALUE APPLIES FOR YOUR DATA
         MCconfig.bar_length_micron = 10; %scale bar length in microns, enter 0 for no bar displayed
-        MCconfig.xbig = 150;  %big only cutoff in pixels, 0=show all
-        MCconfig.ybig = 75; %big only cutoff in pixels, 0=show all
+        MCconfig.x_pixel_threshold = 150;  %cutoff in pixels, 1=no threshold
+        MCconfig.y_pixel_threshold = 75; %cutoff in pixels, 1=no threshold
+        MCconfig.threshold_mode = 2; %0 = show all, 1 = show larger than 1 or both thresholds, 2 = show smaller than both thresholds
         %MCconfig.bar_height_micron = 2; %scale bar height in microns
         MCconfig.imresize_factor = 1; %image display scale factor, 1 for no scaling
         MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set

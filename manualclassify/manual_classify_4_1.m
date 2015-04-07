@@ -42,7 +42,7 @@ global figure_handle listbox_handle1 instructions_handle listbox_handle3 new_cla
 
 close all
 MCconfig = MCconfig_input; clear MCconfig_input %use this so MCconfig can now be global with callback functions
-MCflags = struct('class_jump', 0, 'class_step', 0, 'file_jump', 0, 'changed_selectrois', 0, 'select_remaining', 0, 'newclasslist', NaN, 'go_back', 0, 'button', 1);
+MCflags = struct('class_jump', 0, 'class_step', 0, 'file_jump', 0, 'changed_selectrois', 0, 'select_remaining', 0, 'newclasslist', NaN, 'go_back', 0, 'button', 1, 'file_jump_back_again', 0);
 class2use = MCconfig.class2use;
 filelist = MCconfig.filelist;
 classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use, 'exact');
@@ -135,11 +135,20 @@ while filecount <= length(filelist),
         new_setcount = NaN; %initialize
         classnum = class2view(classcount);
         roi_ind_all = get_roi_indices(classlist, classnum, MCconfig.pick_mode);
-        big_ind = find(x_all(roi_ind_all) > MCconfig.xbig | y_all(roi_ind_all) > MCconfig.ybig);
-        roi_ind_all = roi_ind_all(big_ind);
+        if MCconfig.threshold_mode == 1
+            temp_ind = find(x_all(roi_ind_all) >= MCconfig.x_pixel_threshold | y_all(roi_ind_all) >= MCconfig.y_pixel_threshold);
+            roi_ind_all = roi_ind_all(temp_ind);
+        elseif MCconfig.threshold_mode == 2
+            temp_ind = find(x_all(roi_ind_all) < MCconfig.x_pixel_threshold & y_all(roi_ind_all) < MCconfig.y_pixel_threshold);
+            roi_ind_all = roi_ind_all(temp_ind);
+        end;
+        
         if isempty(roi_ind_all),
             disp(['No images in class: ' class2use{classnum}])
         else %rois exist in current class
+            if MCflags.file_jump_back_again %successful one step back
+                MCflags.file_jump_back_again = 0;
+            end;
             setnum = ceil(length(roi_ind_all)./MCconfig.setsize);
             if exist('set_menu_handle', 'var'),
                 delete(set_menu_handle), clear set_menu_handle
@@ -285,7 +294,6 @@ while filecount <= length(filelist),
                                 end;
                             end;
                             next_ind_list = [next_ind_list next_ind]; %keep track of screen starts within a class to go back
- %                       end; %if MCflags.file_jump
                     end;  %while next_ind <=length(roi_ind)
                 end; %if ~isempty(imagedat),
                 imgset = imgset + 1;
@@ -295,13 +303,21 @@ while filecount <= length(filelist),
     end; %while classcount
     filecount = filecount + 1;
     fclose(fid);
+    if MCflags.file_jump_back_again %no images displayed after jump back, go back one more
+        new_filecount = filecount - 2;
+    end;
     if MCflags.file_jump
         if new_filecount < 1 %stay on first file if already there
             set(instructions_handle, 'string', ['FIRST FILE! No previous file change possible.'], 'foregroundcolor', 'r', 'fontsize', 16)
             new_filecount = 1;
         end;
+        if filecount-new_filecount == 1 %user asked to go back one
+            MCflags.file_jump_back_again = 1; %trip a flag to check in case previous file has nothing to view
+        end;
         filecount = new_filecount; 
         MCflags.file_jump = 0;
+        
+        MCflags.file_jump_back_again = 1;
     end;
 end
 close(figure_handle)
