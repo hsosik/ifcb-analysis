@@ -305,19 +305,18 @@ while filecount <= length(filelist),
     fclose(fid);
     if MCflags.file_jump_back_again %no images displayed after jump back, go back one more
         new_filecount = filecount - 2;
+        MCflags.file_jump = 1;
     end;
     if MCflags.file_jump
         if new_filecount < 1 %stay on first file if already there
             set(instructions_handle, 'string', ['FIRST FILE! No previous file change possible.'], 'foregroundcolor', 'r', 'fontsize', 16)
             new_filecount = 1;
         end;
-        if filecount-new_filecount == 1 %user asked to go back one
+        if filecount-new_filecount == 2 %user asked to go back one
             MCflags.file_jump_back_again = 1; %trip a flag to check in case previous file has nothing to view
         end;
         filecount = new_filecount; 
-        MCflags.file_jump = 0;
-        
-        MCflags.file_jump_back_again = 1;
+        MCflags.file_jump = 0;        
     end;
 end
 close(figure_handle)
