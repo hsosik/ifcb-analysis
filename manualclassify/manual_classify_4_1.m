@@ -38,7 +38,7 @@ function [  ] = manual_classify_4_1( MCconfig_input )
 % Aug 2014, revise to address bug #3037, where zero-sized ROIs were previously annotated with default class in 'raw_roi' mode
 % March 2015, begin upgrade transistion from manual_classify_4_0 to manual_classify_4_1, mainly to handle user initiated jumping among classes
 
-global figure_handle listbox_handle1 instructions_handle listbox_handle3 new_classcount new_setcount MCflags MCconfig new_filecount filecount filelist category
+global figure_handle listbox_handle1 instructions_handle listbox_handle3 new_classcount new_setcount MCflags MCconfig new_filecount filecount filelist category select_remaining_button_handle
 
 close all
 MCconfig = MCconfig_input; clear MCconfig_input %use this so MCconfig can now be global with callback functions
@@ -135,6 +135,8 @@ while filecount <= length(filelist),
         new_setcount = NaN; %initialize
         classnum = class2view(classcount);
         roi_ind_all = get_roi_indices(classlist, classnum, MCconfig.pick_mode);
+        big_ind = find(x_all(roi_ind_all) > MCconfig.xbig | y_all(roi_ind_all) > MCconfig.ybig);
+        roi_ind_all = roi_ind_all(big_ind);
         if isempty(roi_ind_all),
             disp(['No images in class: ' class2use{classnum}])
         else %rois exist in current class
@@ -149,26 +151,26 @@ while filecount <= length(filelist),
                 end;
             end;
             imgset = 1;
+            
+            %if appropriate, sort by size before separating into subsets
+            switch MCconfig.displayed_ordered
+                case 'size'
+                    [~,II] = sortrows([y_all(roi_ind_all) x_all(roi_ind_all) ], [-2,-1]);
+                    roi_ind_all = roi_ind_all(II);
+            end             
+
             while imgset <= setnum && ~MCflags.file_jump
                 loading_handle = text(0, 1.01, 'Loading images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
                 pause(.001) %make sure label displays
                 next_ind = 1; %start with the first roi
                 next_ind_list = next_ind; %keep track of screen start indices within a class
                 imagedat = {};
-                
-                %if appropriate, sort by size before separating into subsets
-                switch MCconfig.displayed_ordered
-                    case 'size'
-                        [~,II] = sortrows([y_all(roi_ind_all) x_all(roi_ind_all) ], [-2,-1]);
-                        roi_ind_all = roi_ind_all(II);
-                end
-                
+                                            
                 startrange = imgset*MCconfig.setsize-MCconfig.setsize;
                 setrange = (startrange+1):min([imgset*MCconfig.setsize, length(roi_ind_all)]);
                 roi_ind = roi_ind_all(setrange);
-                startbyte_temp = startbyte_all(classlist(roi_ind,1)); 
                 startbyte = startbyte_all(roi_ind); x = x_all(roi_ind); y = y_all(roi_ind); %heidi 11/5/09
-                if (startbyte_temp - startbyte), disp('CHECK for error!'), keyboard, end;
+
                 %read roi images
                 for imgcount = 1:length(startbyte),
                     fseek(fid, startbyte(imgcount), -1);
@@ -177,7 +179,7 @@ while filecount <= length(filelist),
                 end;
                 indA = [];
                 if ~isempty(stitch_info),
-                    [roinum , indA, indB] = intersect(roi_ind, stitch_info(:,1));
+                    [roinum , indA, indB] = intersect(roi_ind_all, stitch_info(:,1));
                 end;
                 for stitchcount = 1:length(indA), %loop over any rois that need to be stitched
                     startbytet = startbyte_all(roinum(stitchcount)+1); xt = x_all(roinum(stitchcount)+1); yt = y_all(roinum(stitchcount)+1); %heidi 11/5/09
@@ -211,6 +213,7 @@ while filecount <= length(filelist),
                             classlist(roi_ind_all(setrange(1):end),2) = str2num(category(1:3)); 
                             MCflags.select_remaining = 0;
                             MCflags.changed_selectrois = 1;
+                            set(select_remaining_button_handle, 'value', 0)
                         end;
                         if MCflags.changed_selectrois,
                             save([MCconfig.resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010

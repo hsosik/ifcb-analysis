@@ -18,7 +18,7 @@ function [ figure_handle, listbox_handle1, listbox_handle3, instructions_handle]
 %Sept 2014, revised for more robust handling of screen size issues
 %April 2015, revised to remove subdivide functionality and recast for manual_classify_4_1
 
-global category MCconfig MCflags new_classcount new_filecount filelist filecount
+global category MCconfig MCflags new_classcount new_filecount filelist filecount select_remaining_button_handle
 
 screen = get(0, 'ScreenSize');
 
@@ -73,8 +73,8 @@ configure_menu_handle = uimenu(figure_handle, 'Label', '&Options', 'callback', @
 quit_menu_handle =  uimenu(figure_handle, 'Label', '&Quit');
 quit_script_menu_handle =  uimenu(quit_menu_handle, 'Label', '&Quit manual_classify', 'callback', @stopMC_callback, 'Accelerator', 'q');
 exit_menu_handle =  uimenu(quit_menu_handle, 'Label', 'E&xit MATLAB', 'callback', 'exit', 'Accelerator', 'x');
-u = uicontrol(gcf, 'style', 'radiobutton', 'units', 'normalized');
-set(u, 'position', [lwdth*1.1 lmargin*1.5 lwdth*1.25 lmargin], 'string', 'SELECT remaining in class', 'callback', @select_remaining_callback, 'fontsize', 10)
+select_remaining_button_handle = uicontrol(gcf, 'style', 'radiobutton', 'units', 'normalized');
+set(select_remaining_button_handle, 'position', [lwdth*1.1 lmargin*1.5 lwdth*1.25 lmargin], 'string', 'SELECT remaining in class', 'callback', @select_remaining_callback, 'fontsize', 10)
 
 function select_category_callback( hOBj, eventdata )
 %Sets up uicontrol for picking categories; callback for class listboxes
@@ -95,11 +95,8 @@ function select_category_callback( hOBj, eventdata )
     category = char(str(get(h, 'value')));
     set(instructions_handle, 'string', ['Click on ' category...
         ' images; then ENTER key to save results before changing categories. ENTER key for new page.'], 'foregroundcolor', 'k')
-    %xl = xlim; yl = ylim;
-    %h = fill([xl([1,2,2,1])]', yl([1,1,2,2])', 'w', 'facealpha', .7);
     ReleaseFocus(gcf)
     robot_pressESC(1)
-    %delete(h)
 end
 
 function class_step_amount_callback( hOBj, eventdata, amount )
@@ -166,8 +163,6 @@ function change_config_callback( hOBj, eventdata )
         end
         MCconfig.imresize_factor = str2num(user_input{2});
     end
-    %ReleaseFocus(gcf)
-    %drawnow
 end
 
 function stopMC_callback( hOBj, eventdata )
@@ -182,7 +177,6 @@ function select_remaining_callback( hOBj, eventdata )
     MCflags.select_remaining = 1;
     ReleaseFocus(gcf)
     robot_pressCR(1)
-    set(hOBj, 'value',0) %unselect the button
 end
 
 end

@@ -15,6 +15,9 @@ MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identifica
 MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
 MCconfig.maxlist1 = 60; %default length of category list box before split to second box
+MCconfig.xbig = 0; %big only cutoff in pixels, 0=show all
+MCconfig.ybig = 0; %big only cutoff in pixels, 0=show all
+
 %USER - DO NOT CHANGE above lines, copy desired lines to your case below and change as there
 
 switch MCconfig.group
@@ -39,9 +42,11 @@ switch MCconfig.group
         [MCconfig.filelist, MCconfig.classfiles] = resolve_files(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
     case 'MVCO'
         MCconfig.maxlist1 = 75;
-        MCconfig.setsize = 10; %how many images to read before displaying 
+        MCconfig.setsize = 30; %how many images to read before displaying 
         MCconfig.pixel_per_micron= 3.4; %pixel to micrometer conversion factor DO NOT ASSUME THIS VALUE APPLIES FOR YOUR DATA
         MCconfig.bar_length_micron = 10; %scale bar length in microns, enter 0 for no bar displayed
+        MCconfig.xbig = 150;  %big only cutoff in pixels, 0=show all
+        MCconfig.ybig = 75; %big only cutoff in pixels, 0=show all
         %MCconfig.bar_height_micron = 2; %scale bar height in microns
         MCconfig.imresize_factor = 1; %image display scale factor, 1 for no scaling
         MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
