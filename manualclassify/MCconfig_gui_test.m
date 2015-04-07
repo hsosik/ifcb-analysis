@@ -21,7 +21,7 @@ function varargout = MCconfig_gui_test(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 % Edit the above text to modify the response to help MCconfig_gui_test
 
-% Last Modified by GUIDE v2.5 07-Apr-2015 13:27:19
+% Last Modified by GUIDE v2.5 07-Apr-2015 15:47:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -59,13 +59,13 @@ handles.config_map = {...
     'display_order' 'images_by_size_checkbox' [] ;...
     'alphabetize' 'alphabetize_checkbox' [];...
     'maxlist1' 'maxlist1_text' '' ;...
-%    'setsize' '' '' ;...
-%    'pixel_per_micron' '' '' ;...
-%    'bar_length_micron' '' '' ;...
+    'setsize' 'setsize_text' '' ;...
+    'pixel_per_micron' 'pixels_per_micron_text' '' ;...
+    'bar_length_micron' 'bar_length_text' '' ;...
     'imresize_factor' 'imresize_text' '' ;...
-%    'x_pixel_threshold' '' '' ;...
-%    'y_pixel_threshold' '' '' ;...
-    'threshold_mode' 'threshold_mode_popup' 'value' ;... %0 = all, 1 = larger, 2 = smaller
+    'x_pixel_threshold' 'xsize_text' '' ;...
+    'y_pixel_threshold' 'ysize_text' '' ;...
+    'threshold_mode' 'threshold_mode_popup' 'value' ;... %1 = all, 2 = larger, 3 = smaller
 %    'dataformat' '' '' ;...
     'class_filestr' 'class_filestr_text' '' ;...
     'class2use' 'class2use_listbox' 'all' ;... %all
@@ -119,7 +119,7 @@ for ii = 1:size(handles.config_map,1),
         if strcmp(map(3), 'value')
             in_v = handles.MCconfig.(char(map(1)));
             if isnumeric(in_v)
-                set(h, 'value', in_v)
+                v = in_v;
                 %[~,~,v] = intersect(in_v, str2num(get(h, 'value')));
             else
                 [~,~,v] = intersect(in_v, get(h, 'string'));
@@ -150,7 +150,7 @@ MCconfig = struct(...
     'display_order', 1,...
     'alphabetize', 1,...
     'maxlist1', 75,...
-    'threshold_mode', 0,...
+    'threshold_mode', 1,...
     'x_pixel_threshold', 150,...
     'y_pixel_threshold', 75,...
     'setsize', 30,...
@@ -711,6 +711,153 @@ function threshold_mode_popup_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 
 % Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function ysize_text_Callback(hObject, eventdata, handles)
+% hObject    handle to ysize_text (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of ysize_text as text
+%        str2double(get(hObject,'String')) returns contents of ysize_text as a double
+  [val status] = str2num(get(hObject,'String'));
+        if ~status || (status && (rem(val,1) ~= 0 || val <= 0))
+            set(hObject,'String', '75');
+           uiwait(msgbox(['y size threshold must be a positive integer']))
+        end;
+
+% --- Executes during object creation, after setting all properties.
+function ysize_text_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to ysize_text (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function xsize_text_Callback(hObject, eventdata, handles)
+% hObject    handle to xsize_text (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of xsize_text as text
+%        str2double(get(hObject,'String')) returns contents of xsize_text as a double
+
+[val status] = str2num(get(hObject,'String'));
+        if ~status || (status && (rem(val,1) ~= 0 || val <= 0))
+            set(hObject,'String', '150');
+           uiwait(msgbox(['x size threshold must be a positive integer']))
+        end;
+% --- Executes during object creation, after setting all properties.
+function xsize_text_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to xsize_text (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in togglebutton2.
+function togglebutton2_Callback(hObject, eventdata, handles)
+% hObject    handle to togglebutton2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of togglebutton2
+
+
+
+function setsize_text_Callback(hObject, eventdata, handles)
+% hObject    handle to setsize_text (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of setsize_text as text
+%        str2double(get(hObject,'String')) returns contents of setsize_text as a double
+
+[val status] = str2num(get(hObject,'String'));
+        if ~status || (status && (rem(val,1) ~= 0 || val <= 0))
+            set(hObject,'String', '50');
+           uiwait(msgbox(['Set size must be a positive integer']))
+        end;
+
+% --- Executes during object creation, after setting all properties.
+function setsize_text_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to setsize_text (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function bar_length_text_Callback(hObject, eventdata, handles)
+% hObject    handle to bar_length_text (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of bar_length_text as text
+%        str2double(get(hObject,'String')) returns contents of bar_length_text as a double
+[val status] = str2num(get(hObject,'String'));
+        if ~status || (status && (rem(val,1) ~= 0 || val <= 0))
+            set(hObject,'String', '10');
+           uiwait(msgbox(['Scale bar length must be a positive integer']))
+        end;
+
+% --- Executes during object creation, after setting all properties.
+function bar_length_text_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to bar_length_text (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function pixels_per_micron_text_Callback(hObject, eventdata, handles)
+% hObject    handle to pixels_per_micron_text (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of pixels_per_micron_text as text
+%        str2double(get(hObject,'String')) returns contents of pixels_per_micron_text as a double
+
+   [val status] = str2num(get(hObject,'String'));
+        if ~status || val <= 0 
+           set(hObject,'String', '3.4');
+           uiwait(msgbox(['Pixels per micron value must be a positive number']))
+        end;
+
+        
+% --- Executes during object creation, after setting all properties.
+function pixels_per_micron_text_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to pixels_per_micron_text (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
