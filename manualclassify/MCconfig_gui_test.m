@@ -21,7 +21,7 @@ function varargout = MCconfig_gui_test(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 % Edit the above text to modify the response to help MCconfig_gui_test
 
-% Last Modified by GUIDE v2.5 07-Apr-2015 15:47:31
+% Last Modified by GUIDE v2.5 08-Apr-2015 06:23:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -84,10 +84,22 @@ else
         handles.MCconfig = temp.MCconfig;
     else
         handles.MCconfig = MCconfig_default();
+        if ~exist('config', 'dir'),
+            mkdir('config')
+        end
     end
 end
 
+map_MCconfig2GUI(hObject, handles)
 
+% Update handles structure
+guidata(hObject, handles);
+
+% UIWAIT makes MCconfig_gui_test wait for user response (see UIRESUME)
+% uiwait(handles.main_figure);
+
+%
+function map_MCconfig2GUI (hObject, handles) 
 %map MCconfig to GUI components
 for ii = 1:size(handles.config_map,1), 
     map = handles.config_map(ii,:);
@@ -136,12 +148,8 @@ if get(handles.pick_mode_checkbox,'value')
 else
     set([handles.classpath_text handles.class_filestr_text], 'enable', 'off')
 end
-    
-% Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes MCconfig_gui_test wait for user response (see UIRESUME)
-% uiwait(handles.main_figure);
 
 %
 function MCconfig = MCconfig_default()
@@ -153,21 +161,22 @@ MCconfig = struct(...
     'threshold_mode', 1,...
     'x_pixel_threshold', 150,...
     'y_pixel_threshold', 75,...
-    'setsize', 30,...
+    'setsize', 200,...
     'pixel_per_micron', 3.4,...
     'bar_length_micron', 10,...
     'imresize_factor', 1,...
-    'resultpath', 'C:\work\IFCB\ifcb_data_MVCO_jun06\Manual_fromClass\',...
+    'resultpath', 'C:\IFCB\Manual\',...
     'class2use_file', 'class2use_MVCOmanual5',...
-    'class2use', [],...
+    'class2use', {'unclassified'},...
     'class_filestr', '_class_v1',...
     'default_class', 'unclassified',...
     'filelist', [],...
-    'class2view1', [],...
+    'class2view1', {'unclassified'},...
     'dataformat', 0,...
     'stitchfiles', [],...
     'classfiles', []...
     );
+MCconfig.class2use = {'unclassified' 'class1'};
 
 
 % --- Outputs from this function are returned to the command line.
@@ -285,16 +294,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in class_order_listbox.
-function class_order_listbox_Callback(hObject, eventdata, handles)
-% hObject    handle to class_order_listbox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns class_order_listbox contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from class_order_listbox
-
-
 % --- Executes during object creation, after setting all properties.
 function class_order_listbox_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to class_order_listbox (see GCBO)
@@ -349,9 +348,11 @@ function pick_mode_checkbox_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of pick_mode_checkbox
 
 if get(hObject, 'Value')
-    set([handles.classpath_text handles.class_filestr_text], 'enable', 'on')
+    %set([handles.classpath_text handles.class_filestr_text], 'enable', 'on')
+    set([handles.classpath_text handles.class_filestr_text handles.classpath_label handles.classpath_browse handles.class_filestr_label], 'visible', 'on')
 else
-    set([handles.classpath_text handles.class_filestr_text], 'enable', 'off')
+    %set([handles.classpath_text handles.class_filestr_text], 'enable', 'off')
+    set([handles.classpath_text handles.class_filestr_text handles.classpath_label handles.classpath_browse handles.class_filestr_label], 'visible', 'off')
 end
 
 
@@ -535,6 +536,9 @@ if ~isempty(v)
 end;
 %reset class2view in case not all retained
 handles.MCconfig.class2view1 = v;
+guidata(hObject, handles);
+%reset highlights for class2view to match status of checkbox
+class2view_all_checkbox_Callback(hObject, eventdata, handles)
 
 
 % --- Executes on selection change in class2use_listbox.
@@ -608,19 +612,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --------------------------------------------------------------------
-function uipushtool3_ClickedCallback(hObject, eventdata, handles)
-% hObject    handle to uipushtool3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
-function File_menu_Callback(hObject, eventdata, handles)
-% hObject    handle to File_menu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 
 % --------------------------------------------------------------------
 function Save_menu_Callback(hObject, eventdata, handles)
@@ -692,6 +683,8 @@ if f
         msgbox('Not a valid configuration file')
     end
 end
+map_MCconfig2GUI(hObject, handles);
+
 
 
 % --- Executes on selection change in threshold_mode_popup.
@@ -702,6 +695,11 @@ function threshold_mode_popup_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns threshold_mode_popup contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from threshold_mode_popup
+if get(handles.threshold_mode_popup, 'value') ~= 1
+    set([handles.xsize_label handles.xsize_text handles.xsize_units_label handles.ysize_label handles.ysize_text handles.ysize_units_label], 'visible', 'on')
+else
+    set([handles.xsize_label handles.xsize_text handles.xsize_units_label handles.ysize_label handles.ysize_text handles.ysize_units_label], 'visible', 'off')
+end
 
 
 % --- Executes during object creation, after setting all properties.
@@ -862,3 +860,10 @@ function pixels_per_micron_text_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes during object creation, after setting all properties.
+function bar_length_label_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to bar_length_label (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
