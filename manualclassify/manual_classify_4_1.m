@@ -227,7 +227,6 @@ while filecount <= length(filelist),
                         if MCflags.changed_selectrois,
                             save([MCconfig.resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
                         end;
-                        class2view
                         MCflags.changed_selectrois = 0;
                         
                             if MCflags.class_step %case for user stepped to next or previous class, new_classcount
