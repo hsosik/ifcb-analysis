@@ -227,6 +227,7 @@ while filecount <= length(filelist),
                         if MCflags.changed_selectrois,
                             save([MCconfig.resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
                         end;
+                        class2view
                         MCflags.changed_selectrois = 0;
                         
                             if MCflags.class_step %case for user stepped to next or previous class, new_classcount
@@ -240,7 +241,7 @@ while filecount <= length(filelist),
                                 end;
                                 MCflags.class_step = 0;
                             elseif MCflags.class_jump  %case for user jumped to selected class, new_classcount starts as index in class2use
-                                temp_ind = get_roi_indices(classlist, class2view(new_classcount), MCconfig.pick_mode); %check for rois one class back
+                                temp_ind = get_roi_indices(classlist, new_classcount, MCconfig.pick_mode); %check for rois one class back
                                 if ~isempty(temp_ind) %if there are ROIs
                                     if ~ismember(new_classcount, class2view), %add the selected class to class2view, just for this file, in order just after current class
                                         if classcount < length(class2view)
@@ -305,6 +306,10 @@ while filecount <= length(filelist),
     fclose(fid);
     if MCflags.file_jump_back_again %no images displayed after jump back, go back one more
         new_filecount = filecount - 2;
+       if new_filecount < 1 %stay on first file if already there
+            set(instructions_handle, 'string', ['FIRST FILE! No previous file change possible.'], 'foregroundcolor', 'r', 'fontsize', 16)
+            new_filecount = 1;
+        end;
         MCflags.file_jump = 1;
     end;
     if MCflags.file_jump
