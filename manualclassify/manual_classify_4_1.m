@@ -188,11 +188,11 @@ while filecount <= length(filelist),
                 end;
                 indA = [];
                 if ~isempty(stitch_info),
-                    [roinum , indA, indB] = intersect(roi_ind_all, stitch_info(:,1));
+                    [roinum , indA, indB] = intersect(roi_ind, stitch_info(:,1));
                 end;
                 for stitchcount = 1:length(indA), %loop over any rois that need to be stitched
                     startbytet = startbyte_all(roinum(stitchcount)+1); xt = x_all(roinum(stitchcount)+1); yt = y_all(roinum(stitchcount)+1); %heidi 11/5/09
-                    fseek(fid, startbytet,-1); %go to the next aroi in the pair
+                    fseek(fid, startbytet,-1); %go to the next roi in the pair
                     data = fread(fid, xt.*yt, 'ubit8');
                     imgB = reshape(data,xt,yt);
                     xpos = stitch_info(indB(stitchcount),[2,4])'; ypos = stitch_info(indB(stitchcount),[3,5])';
