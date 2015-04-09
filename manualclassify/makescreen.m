@@ -138,8 +138,8 @@ end
 
 function change_config_callback( hOBj, eventdata )
 %   callback function for Options menu in manual_classify
-    prompt = {'Set size for image display' 'Image resizing factor (1 = none)'};
-    defaultanswer={num2str(MCconfig.setsize),num2str(MCconfig.imresize_factor)};
+    prompt = {'Number of images to display in a set' 'Image resizing factor (1 = none)' 'x size threshold (pixels)' 'y size threshold (pixels)'};
+    defaultanswer={num2str(MCconfig.setsize),num2str(MCconfig.imresize_factor) num2str(MCconfig.x_pixel_threshold) num2str(MCconfig.y_pixel_threshold)};
     user_input = inputdlg(prompt,'Configure', 1, defaultanswer);
     if ~isempty(user_input)
         [val status] = str2num(user_input{1});
@@ -150,7 +150,6 @@ function change_config_callback( hOBj, eventdata )
             user_input(1) = defaultanswer(1);
             user_input = inputdlg(prompt,'Configure', 1, user_input);
             [val status] = str2num(user_input{1});
-            %if status && rem(val,1) ~= 0, status = 0; end
             if (status && (rem(val,1) ~= 0 || val <= 0)), status = 0; end
         end
         MCconfig.setsize = str2num(user_input{1});
@@ -162,6 +161,24 @@ function change_config_callback( hOBj, eventdata )
             [val status] = str2num(user_input{2});
         end
         MCconfig.imresize_factor = str2num(user_input{2});
+        [val status] = str2num(user_input{3});
+        while ~status
+            uiwait(msgbox(['x size threshold must be a positive integer']))
+            user_input(1) = defaultanswer(3);
+            user_input = inputdlg(prompt,'Configure', 1, user_input);
+            [val status] = str2num(user_input{1});
+            if (status && (rem(val,1) ~= 0 || val <= 0)), status = 0; end
+        end
+        MCconfig.x_pixel_threshold = str2num(user_input{3});
+        [val status] = str2num(user_input{4});
+        while ~status
+            uiwait(msgbox(['y size threshold must be a positive integer']))
+            user_input(1) = defaultanswer(4);
+            user_input = inputdlg(prompt,'Configure', 1, user_input);
+            [val status] = str2num(user_input{1});
+            if (status && (rem(val,1) ~= 0 || val <= 0)), status = 0; end
+        end
+        MCconfig.y_pixel_threshold = str2num(user_input{4});
     end
 end
 
