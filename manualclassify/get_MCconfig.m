@@ -8,18 +8,21 @@ function [ MCconfig ] = get_MCconfig(MCconfig)
 %   April 2015, revised to remove subdivide functionality and recast for manual_classify_4_1
 
 %Some DEFAULT settings
-%USER - DO NOT CHANGE these, copy desired lines to your case below and change as there
+%USER - DO NOT CHANGE these, copy desired lines to your case below and change as desired there
 MCconfig.pick_mode = 'raw_roi';  %CHOICES 'raw_roi' or 'correct_classifier'
 MCconfig.displayed_ordered = 'size'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
 MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identification window, no = do not alphabetize the list.
 MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
 MCconfig.maxlist1 = 60; %default length of category list box before split to second box
+MCconfig.imresize_factor = 1; %image display scale factor, 1 for no scaling
 MCconfig.x_pixel_threshold = 150;  %cutoff in pixels, 1=no threshold
 MCconfig.y_pixel_threshold = 75; %cutoff in pixels, 1=no threshold
-MCconfig.threshold_mode = 0; %0 = show all, 1 = show larger than 1 or both thresholds, 2 = show smaller than both thresholds
-        
-%USER - DO NOT CHANGE above lines, copy desired lines to your case below and change as there
+MCconfig.threshold_mode = 0; %0 = show all, 1 = show larger than one or both thresholds, 2 = show smaller than both thresholds       
+MCconfig.setsize = 200; %how many images to read before displaying (try a smaller number if you have wait times between classes)
+MCconfig.pixel_per_micron= 3.4; %pixel to micrometer conversion factor USER REALLY!! DO NOT JUST ASSUME THIS VALUE APPLIES FOR YOUR DATA
+MCconfig.bar_length_micron = 20; %scale bar length in microns, enter 0 for no bar displayed
+%USER - DO NOT CHANGE above lines, copy desired lines to your case below and change as desired there
 
 switch MCconfig.group
     case 'Sherbrooke'
@@ -43,27 +46,27 @@ switch MCconfig.group
         [MCconfig.filelist, MCconfig.classfiles] = resolve_files(MCconfig.filelist, MCconfig.basepath, MCconfig.classpath, MCconfig.class_filestr);
     case 'MVCO'
         MCconfig.maxlist1 = 75;
-        MCconfig.setsize = 30; %how many images to read before displaying 
+        MCconfig.setsize = 50; %how many images to read before displaying 
         MCconfig.pixel_per_micron= 3.4; %pixel to micrometer conversion factor DO NOT ASSUME THIS VALUE APPLIES FOR YOUR DATA
-        MCconfig.bar_length_micron = 10; %scale bar length in microns, enter 0 for no bar displayed
-        MCconfig.x_pixel_threshold = 150;  %cutoff in pixels, 1=no threshold
-        MCconfig.y_pixel_threshold = 75; %cutoff in pixels, 1=no threshold
-        MCconfig.threshold_mode = 2; %0 = show all, 1 = show larger than 1 or both thresholds, 2 = show smaller than both thresholds
+        MCconfig.bar_length_micron = 20; %scale bar length in microns, enter 0 for no bar displayed
+        MCconfig.x_pixel_threshold = 100;  %cutoff in pixels, 1=no threshold
+        MCconfig.y_pixel_threshold = 100; %cutoff in pixels, 1=no threshold
+        MCconfig.threshold_mode = 1; %0 = show all, 1 = show larger than 1 or both thresholds, 2 = show smaller than both thresholds
         %MCconfig.bar_height_micron = 2; %scale bar height in microns
         MCconfig.imresize_factor = 1; %image display scale factor, 1 for no scaling
         MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
-        MCconfig.resultpath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\Manual_fromClass\'; %USER set
+        %MCconfig.resultpath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\Manual_fromClass\'; %USER set
         temp = load('class2use_MVCOmanual5', 'class2use'); %USER load yours here
-        MCconfig.pick_mode = 'raw_roi';
+        MCconfig.pick_mode = 'correct_classifier';
         MCconfig.displayed_ordered = 'size'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
         MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identification window, no = do not alphabetize the list.
         MCconfig.class2use = temp.class2use;
         MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
         MCconfig.default_class = 'unclassified';
-        MVCOfilelisttype ='thislist'; %manual_list, loadfile, dirlist
+        MVCOfilelisttype ='manual_list'; %manual_list, loadfile, dirlist
         switch MVCOfilelisttype
             case 'manual_list' %MVCO batch system
-                MCconfig.filelist = get_filelist_manual([MCconfig.resultpath 'manual_list'],5,[2014], 'all'); %manual_list, column to use, year to find
+                MCconfig.filelist = get_filelist_manual([MCconfig.resultpath 'manual_list'],5,[2006:2014], 'all'); %manual_list, column to use, year to find
             case 'loadfile'
                 load current_filelist.mat
                 MCconfig.filelist = filelist; 
@@ -77,8 +80,8 @@ switch MCconfig.group
         %pick one
         MCconfig.class2view1 = MCconfig.class2use; %case to view all
         %MCconfig.class2view1 = setdiff(MCconfig.class2use,{'Asterionellopsis' 'Chaetoceros' 'bad' 'detritus' 'mix'}); %example to skip a few
-        %MCconfig.class2view1 = intersect(MCconfig.class2use, {'other'}); %example to select a few
-        %MCconfig.class2view1 = intersect(MCconfig.class2use, {'leptocylindrus' 'other' 'mix_elongated'}); %example to select a few
+        %MCconfig.class2view1 = intersect(MCconfig.class2use, {'detritus'}); %example to select a few
+        %MCconfig.class2view1 = intersect(MCconfig.class2use, {'Asterionellopsis' 'Chaetoceros' 'bad' 'detritus' 'mix' 'leptocylindrus' 'other' 'mix_elongated'}); %example to select a few
     case 'OKEX'
         MCconfig.resultpath = '/home/ifcb/ifcb_010_data/manual/'; %USER set
         MCconfig.basepath = '/home/ifcb/ifcb_010_data/'; %USER set
@@ -260,13 +263,11 @@ switch MCconfig.group
 end
 
 %default
-%switch MCconfig.batchmode
-    if isfield(MCconfig, 'batch_class_index') %field only exists if passed in
-    %case 'yes'
-        if ischar(MCconfig.batch_class_index) %case when the name is given
-            MCconfig.class2view1 = MCconfig.batch_class_index; %if you want to see one file by index
+if isfield(MCconfig, 'batch_class_index') %field only exists if passed in
+        if ischar(MCconfig.batch_class_index) || iscell(MCconfig.batch_class_index) %case when the name is given
+            MCconfig.class2view1 = MCconfig.batch_class_index; %if you want to see one or more classes by name
         else %case where the number is given
-            MCconfig.class2view1 = MCconfig.class2use(MCconfig.batch_class_index); %if you want to see one file by index        
+            MCconfig.class2view1 = MCconfig.class2use(MCconfig.batch_class_index); %if you want to see one or more classes by index        
         end
 end
 
