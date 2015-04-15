@@ -105,7 +105,7 @@ while filecount <= length(filelist),
             load(MCconfig.stitchfiles{filecount});
         end;
     end;
-    fid=fopen([filelist{filecount} '.roi']);
+%    fid=fopen([filelist{filecount} '.roi']);
     disp(filelist{filecount}), disp([num2str(size(adcdata,1)) ' total ROI events'])
     if isempty(MCconfig.classfiles),
         classfile_temp = 'temp';
@@ -143,8 +143,12 @@ while filecount <= length(filelist),
             roi_ind_all = roi_ind_all(temp_ind);
         end;
         
-        if isempty(roi_ind_all),
-            disp(['No images in class: ' class2use{classnum}])
+        if isempty(roi_ind_all) 
+            if MCconfig.verbose, disp(['No images in class: ' class2use{classnum}]), end
+            if ~exist('checking_handle', 'var'), 
+                checking_handle = text(0, 1.01, 'Checking for images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
+                pause(.001) %make sure label displays
+            end;
         else %rois exist in current class
             if MCflags.file_jump_back_again %successful one step back
                 MCflags.file_jump_back_again = 0;
@@ -169,6 +173,7 @@ while filecount <= length(filelist),
             end             
 
             while imgset <= setnum && ~MCflags.file_jump
+                if exist('checking_handle', 'var'), delete(checking_handle), clear checking_handle, pause(.001), end;
                 loading_handle = text(0, 1.01, 'Loading images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
                 pause(.001) %make sure label displays
                 next_ind = 1; %start with the first roi
@@ -181,6 +186,7 @@ while filecount <= length(filelist),
                 startbyte = startbyte_all(roi_ind); x = x_all(roi_ind); y = y_all(roi_ind); %heidi 11/5/09
 
                 %read roi images
+                fid=fopen([filelist{filecount} '.roi']);
                 for imgcount = 1:length(startbyte),
                     fseek(fid, startbyte(imgcount), -1);
                     data = fread(fid, x(imgcount).*y(imgcount), 'ubit8');
@@ -200,6 +206,8 @@ while filecount <= length(filelist),
                     clear xt yt startbytet
                     figure(1)
                 end;
+                fclose(fid);
+                
                 delete(loading_handle)
                 if ~isempty(imagedat),
                     while next_ind <= length(roi_ind),
@@ -228,7 +236,6 @@ while filecount <= length(filelist),
                             save([MCconfig.resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
                         end;
                         MCflags.changed_selectrois = 0;
-                        
                             if MCflags.class_step %case for user stepped to next or previous class, new_classcount
                                 new_classcount = classcount + MCflags.class_step; %value of flag specifies direction and amplitude of step within class2view
                                 if MCflags.class_step == -1,
@@ -256,7 +263,10 @@ while filecount <= length(filelist),
                                 new_classcount = find(class2view==new_classcount);
                                 MCflags.class_jump = 0;
                             end;
-                            if ~isnan(new_classcount) %case for user changed class
+                            if MCflags.file_jump
+                                imgset = setnum; %make sure it leaves while loop
+                                next_ind = length(roi_ind)+1; %make sure it leaves on next while
+                            elseif ~isnan(new_classcount) %case for user changed class
                                 classcount = new_classcount - 1;
                                 imgset = setnum; %make sure it leaves while loop
                                 next_ind = length(roi_ind)+1; %make sure it leaves on next while
@@ -302,7 +312,7 @@ while filecount <= length(filelist),
         classcount = classcount + 1;
     end; %while classcount
     filecount = filecount + 1;
-    fclose(fid);
+    %fclose(fid);
     if MCflags.file_jump_back_again %no images displayed after jump back, go back one more
         new_filecount = filecount - 2;
        if new_filecount < 1 %stay on first file if already there
