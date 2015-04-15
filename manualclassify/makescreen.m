@@ -48,11 +48,11 @@ if ~isempty(class2pick1), %edited 1/12/10 to fix typo pick2 --> pick1
     if length(str) > MCconfig.maxlist1,
         str1 = str(1:MCconfig.maxlist1);
         str2 = str(MCconfig.maxlist1+1:end);
-        listbox_handle3 = uicontrol('style', 'listbox', 'string', str2, 'ForegroundColor', 'r', 'min', -1, 'max', 1, 'value', [], 'callback', @select_category_callback);
+        listbox_handle3 = uicontrol('style', 'listbox', 'string', str2, 'ForegroundColor', 'r', 'min', -1, 'max', 1, 'value', [], 'callback', @select_category_callback, 'fontsize', MCconfig.list_fontsize);
         set(listbox_handle3, 'value', [])
         set(listbox_handle3, 'units', 'normalized', 'position',[1-lwdth lmargin lwdth 1-lmargin])
     end;
-    listbox_handle1 = uicontrol('style', 'listbox', 'string', str1, 'ForegroundColor', 'r', 'min', -1, 'max', 1, 'callback', @select_category_callback);
+    listbox_handle1 = uicontrol('style', 'listbox', 'string', str1, 'ForegroundColor', 'r', 'min', -1, 'max', 1, 'callback', @select_category_callback, 'fontsize', MCconfig.list_fontsize);
     set(listbox_handle1, 'units', 'normalized', 'position', [0 lmargin lwdth 1-lmargin]);
     instructions_handle = uicontrol('style', 'text');
     set(instructions_handle, 'units', 'normalized', 'position', [lwdth*3 lmargin lwdth*4 lmargin]);% tpos)

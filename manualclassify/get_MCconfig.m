@@ -19,6 +19,7 @@ MCconfig.x_pixel_threshold = 150;  %cutoff in pixels, 1=no threshold
 MCconfig.y_pixel_threshold = 75; %cutoff in pixels, 1=no threshold
 MCconfig.threshold_mode = 0; %0 = show all, 1 = show larger than 1 or both thresholds, 2 = show smaller than both thresholds
 MCconfig.verbose = 1; %0 = off, suppresses output to command line for classes with no ROIs
+MCconfig.list_fontsize = 8;
         
 %USER - DO NOT CHANGE above lines, copy desired lines to your case below and change as there
 
@@ -52,6 +53,7 @@ switch MCconfig.group
         MCconfig.threshold_mode = 2; %0 = show all, 1 = show larger than 1 or both thresholds, 2 = show smaller than both thresholds
         %MCconfig.bar_height_micron = 2; %scale bar height in microns
         MCconfig.verbose = 1; %0 = off, suppresses output to command line for classes with no ROIs
+        MCconfig.list_fontsize = 8;
         MCconfig.imresize_factor = 1; %image display scale factor, 1 for no scaling
         MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
         MCconfig.resultpath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\Manual_fromClass\'; %USER set
