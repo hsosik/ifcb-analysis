@@ -42,7 +42,8 @@ global figure_handle listbox_handle1 instructions_handle listbox_handle3 new_cla
 
 close all
 MCconfig = MCconfig_input; clear MCconfig_input %use this so MCconfig can now be global with callback functions
-MCflags = struct('class_jump', 0, 'class_step', 0, 'file_jump', 0, 'changed_selectrois', 0, 'select_remaining', 0, 'newclasslist', NaN, 'go_back', 0, 'button', 1, 'file_jump_back_again', 0);
+MCflags = struct('class_jump', 0, 'class_step', 0, 'file_jump', 0, 'changed_selectrois', 0, 'select_remaining', 0,...
+    'newclasslist', NaN, 'go_back', 0, 'button', 1, 'file_jump_back_again', 0, 'reload_set', 0);
 class2use = MCconfig.class2use;
 filelist = MCconfig.filelist;
 classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use, 'exact');
@@ -197,7 +198,7 @@ while filecount <= length(filelist),
                     startbytet = startbyte_all(roinum(stitchcount)+1); xt = x_all(roinum(stitchcount)+1); yt = y_all(roinum(stitchcount)+1); %heidi 11/5/09
                     fseek(fid, startbytet,-1); %go to the next roi in the pair
                     data = fread(fid, xt.*yt, 'ubit8');
-                    imgB = reshape(data,xt,yt);
+                    imgB = imresize(reshape(data,xt,yt),MCconfig.imresize_factor);
                     xpos = stitch_info(indB(stitchcount),[2,4])'; ypos = stitch_info(indB(stitchcount),[3,5])';
                     [ imagedat{indA(stitchcount)}, xpos_merge, ypos_merge ] = stitchrois({imagedat{indA(stitchcount)} imgB},xpos,ypos);
                     clear xt yt startbytet
@@ -233,6 +234,7 @@ while filecount <= length(filelist),
                             save([MCconfig.resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
                         end;
                         MCflags.changed_selectrois = 0;
+                        if MCflags.reload_set, new_setcount = imgset; MCflags.reload_set = 0;, end
                         if MCflags.class_step %case for user stepped to next or previous class, new_classcount
                             new_classcount = classcount + MCflags.class_step; %value of flag specifies direction and amplitude of step within class2view
                             if MCflags.class_step == -1,

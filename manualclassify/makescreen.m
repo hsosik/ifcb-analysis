@@ -161,6 +161,7 @@ function change_config_callback( hOBj, eventdata )
             [val status] = str2num(user_input{2});
         end
         MCconfig.imresize_factor = str2num(user_input{2});
+        MCflags.reload_set = 1;
         [val status] = str2num(user_input{3});
         while ~status || ~ismember(val,[0 1 2])
             uiwait(msgbox(['Mode must be 0 (all), 1 (larger), or 2 (smaller)']))
@@ -188,6 +189,7 @@ function change_config_callback( hOBj, eventdata )
         end
         MCconfig.y_pixel_threshold = str2num(user_input{5});
     end
+    robot_pressCR(1)
 end
 
 function stopMC_callback( hOBj, eventdata )
