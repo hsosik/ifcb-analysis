@@ -15,12 +15,13 @@ MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identifica
 MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
 MCconfig.maxlist1 = 60; %default length of category list box before split to second box
+MCconfig.setsize = 200; %how many images to read before displaying 
 MCconfig.x_pixel_threshold = 150;  %cutoff in pixels, 1=no threshold
 MCconfig.y_pixel_threshold = 75; %cutoff in pixels, 1=no threshold
 MCconfig.threshold_mode = 0; %0 = show all, 1 = show larger than 1 or both thresholds, 2 = show smaller than both thresholds
+MCconfig.imresize_factor = 1; %image display scale factor, 1 for no scaling
 MCconfig.verbose = 1; %0 = off, suppresses output to command line for classes with no ROIs
-MCconfig.list_fontsize = 8;
-        
+MCconfig.list_fontsize = 8;       
 %USER - DO NOT CHANGE above lines, copy desired lines to your case below and change as there
 
 switch MCconfig.group
@@ -50,7 +51,7 @@ switch MCconfig.group
         MCconfig.bar_length_micron = 10; %scale bar length in microns, enter 0 for no bar displayed
         MCconfig.x_pixel_threshold = 150;  %cutoff in pixels, 1=no threshold
         MCconfig.y_pixel_threshold = 75; %cutoff in pixels, 1=no threshold
-        MCconfig.threshold_mode = 2; %0 = show all, 1 = show larger than 1 or both thresholds, 2 = show smaller than both thresholds
+        MCconfig.threshold_mode = 0; %0 = show all, 1 = show larger than 1 or both thresholds, 2 = show smaller than both thresholds
         %MCconfig.bar_height_micron = 2; %scale bar height in microns
         MCconfig.verbose = 1; %0 = off, suppresses output to command line for classes with no ROIs
         MCconfig.list_fontsize = 8;
@@ -60,7 +61,7 @@ switch MCconfig.group
         temp = load('class2use_MVCOmanual5', 'class2use'); %USER load yours here
         MCconfig.pick_mode = 'raw_roi';
         MCconfig.displayed_ordered = 'size'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
-        MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identification window, no = do not alphabetize the list.
+        MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in te identification window, no = do not alphabetize the list.
         MCconfig.class2use = temp.class2use;
         MCconfig.class_filestr = '_class_v1'; %USER set, string appended on roi name for class files
         MCconfig.default_class = 'unclassified';
