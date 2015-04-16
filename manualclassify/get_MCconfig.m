@@ -16,6 +16,7 @@ MCconfig.classfiles = [];
 MCconfig.stitchfiles = [];
 MCconfig.maxlist1 = 60; %default length of category list box before split to second box
 MCconfig.setsize = 200; %how many images to read before displaying 
+MCconfig.bar_length_micron = 10; %scale bar length in microns, enter 0 for no bar displayed
 MCconfig.x_pixel_threshold = 150;  %cutoff in pixels, 1=no threshold
 MCconfig.y_pixel_threshold = 75; %cutoff in pixels, 1=no threshold
 MCconfig.threshold_mode = 0; %0 = show all, 1 = show larger than 1 or both thresholds, 2 = show smaller than both thresholds
