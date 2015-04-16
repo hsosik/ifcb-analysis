@@ -30,7 +30,7 @@ end;
 
 category = class2use; %use this syntax to export ALL categories
 
-for filecount = 1:5 %length(resultfilelist),
+for filecount = 1:length(resultfilelist),
     resultfile = char(resultfilelist(filecount));    
     load([resultpath resultfile])
 
