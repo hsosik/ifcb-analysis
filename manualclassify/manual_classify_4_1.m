@@ -90,8 +90,13 @@ elseif MCconfig.dataformat == 1,
 end;
 
 filecount = MCconfig.filenum2start;
+threshold_warn = 0;
+setpref('graphics','threshold_warning', 'ask') %reinitialize box display state each session
 while filecount <= length(filelist),
     new_classcount = NaN; %initialize
+    if MCconfig.threshold_mode,
+        threshold_warn = 1;
+    end
     disp(['File number: ' num2str(filecount)])
     [~,outfile] = fileparts(filelist{filecount}); outfile = [outfile '.mat'];
     if ~strcmp(MCconfig.pick_mode, 'raw_roi') & ~exist([filelist{filecount} '.roi']) & ~exist(MCconfig.classfiles{filecount}),
@@ -136,8 +141,8 @@ while filecount <= length(filelist),
         new_setcount = NaN; %initialize
         classnum = class2view(classcount);
         roi_ind_all = get_roi_indices(classlist, classnum, MCconfig.pick_mode);
-        temp_ind = apply_threshold(roi_ind_all,x_all,y_all, MCconfig);
         if MCconfig.threshold_mode > 0
+            temp_ind = apply_threshold(roi_ind_all,x_all*MCconfig.imresize_factor,y_all*MCconfig.imresize_factor, MCconfig);
             roi_ind_all = roi_ind_all(temp_ind);
         end
         
@@ -148,6 +153,12 @@ while filecount <= length(filelist),
                 pause(.001) %make sure label displays
             end;
         else %rois exist in current class
+            if threshold_warn %if first time showing images on this file
+                [selectedButton,dlgShown]=uigetpref('graphics','threshold_warning','Threshold Mode Reminder',...
+                    'Warning: Image size threshold in effect. You may not be viewing all the images in this file.', {'OK'},...
+                    'CheckBoxString', 'Do not display this reminder again.');
+                threshold_warn = 0; %only once per file
+            end
             if MCflags.file_jump_back_again %successful one step back
                 MCflags.file_jump_back_again = 0;
             end;
@@ -235,15 +246,15 @@ while filecount <= length(filelist),
                         end;
                         MCflags.changed_selectrois = 0;
                         if MCflags.reload_set, new_setcount = imgset; MCflags.reload_set = 0;, end
-                        if MCflags.class_step %case for user stepped to next or previous class, new_classcount
-                            new_classcount = classcount + MCflags.class_step; %value of flag specifies direction and amplitude of step within class2view
-                            if MCflags.class_step == -1,
+                        if MCflags.class_step %case for user stepped to next or previous class, new_classcount OR special case to reload current class (class_step = -0.5)
+                            new_classcount = classcount + ceil(MCflags.class_step); %value of flag specifies direction and amplitude of step within class2view, ceil ensures -0.5 ==> 0
+                            if MCflags.class_step < 0 %-1 (go back one) or -0.5 (reload current)
                                 temp_ind = get_roi_indices(classlist, class2view(new_classcount), MCconfig.pick_mode); %check for rois one class back
-                                temp_ind = apply_threshold(temp_ind,x_all,y_all, MCconfig);
+                                temp_ind = apply_threshold(temp_ind,x_all*MCconfig.imresize_factor,y_all*MCconfig.imresize_factor, MCconfig);
                                 while isempty(temp_ind) && new_classcount > 1 %check until find class with rois in it
-                                    new_classcount = new_classcount + MCflags.class_step; % go back one more
+                                    new_classcount = new_classcount - 1; % go back one more
                                     temp_ind = get_roi_indices(classlist, class2view(new_classcount), MCconfig.pick_mode);
-                                    temp_ind = apply_threshold(temp_ind,x_all,y_all, MCconfig);
+                                    temp_ind = apply_threshold(temp_ind,x_all*MCconfig.imresize_factor,y_all*MCconfig.imresize_factor, MCconfig);
                                 end
                                 end;
                                 MCflags.class_step = 0;
@@ -291,11 +302,11 @@ while filecount <= length(filelist),
                                             classcount = 0;
                                         else
                                             temp_ind = get_roi_indices(classlist, class2view(classcount-1), MCconfig.pick_mode); %check for rois one class back
-                                            temp_ind = apply_threshold(temp_ind, x_all, y_all, MCconfig);                    
+                                            temp_ind = apply_threshold(temp_ind, x_all*MCconfig.imresize_factor, y_all*MCconfig.imresize_factor, MCconfig);                    
                                             classcount = classcount - 1; % go back 1 class
                                             while isempty(temp_ind) && classcount > 1 %check until find class with rois in it
                                                 temp_ind = get_roi_indices(classlist, class2view(classcount), MCconfig.pick_mode);
-                                                temp_ind = apply_threshold(temp_ind,x_all,y_all, MCconfig);
+                                                temp_ind = apply_threshold(temp_ind,x_all*MCconfig.imresize_factor,y_all*MCconfig.imresize_factor, MCconfig);
                                                 classcount = classcount - 1; % go back one more
                                             end;
                                             classcount = classcount - 1; % go back one more to handle increment below
