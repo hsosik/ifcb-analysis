@@ -138,6 +138,8 @@ end
 
 function change_config_callback( hOBj, eventdata )
 %   callback function for Options menu in manual_classify
+    options_test
+    
     prompt = {'Number of images to display in a set' 'Image resizing factor (1 = none)' 'threshold mode (0=all, 1=larger, 2=smaller)' 'x size threshold (pixels)' 'y size threshold (pixels)'};
     defaultanswer={num2str(MCconfig.setsize) num2str(MCconfig.imresize_factor) num2str(MCconfig.threshold_mode) num2str(MCconfig.x_pixel_threshold) num2str(MCconfig.y_pixel_threshold)};
     user_input = inputdlg(prompt,'Configure', 1, defaultanswer);
