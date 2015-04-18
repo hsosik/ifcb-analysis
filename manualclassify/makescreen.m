@@ -24,10 +24,10 @@ screen = get(0, 'ScreenSize');
 
 figure_handle = figure;
 set(figure_handle, 'outerposition', screen, 'color', [1 1 1])
-set(figure_handle, 'units', 'inches')
+set(figure_handle, 'units', 'inches', 'resizefcn', @figure_resize_callback)
 tpos = get(figure_handle, 'position');
-lwdth = .8/tpos(4); %.8 inches as fraction of screen, listbox width
-lmargin = .3/tpos(4); %.2 inches as fraction of screen, bottom margin below list boxes
+lwdth = 1.1/tpos(4); %1.1 inches as fraction of screen, listbox width
+lmargin = .28/tpos(4); %.28 inches as fraction of screen, bottom margin below list boxes
 instructions_handle = NaN;
 
 if ~isempty(class2pick1), %edited 1/12/10 to fix typo pick2 --> pick1
@@ -55,7 +55,8 @@ if ~isempty(class2pick1), %edited 1/12/10 to fix typo pick2 --> pick1
     listbox_handle1 = uicontrol('style', 'listbox', 'string', str1, 'ForegroundColor', 'r', 'min', -1, 'max', 1, 'callback', @select_category_callback, 'fontsize', MCconfig.list_fontsize);
     set(listbox_handle1, 'units', 'normalized', 'position', [0 lmargin lwdth 1-lmargin]);
     instructions_handle = uicontrol('style', 'text');
-    set(instructions_handle, 'units', 'normalized', 'position', [lwdth*3 lmargin lwdth*4 lmargin]);% tpos)
+    %set(instructions_handle, 'units', 'normalized', 'position', [lwdth*3 lmargin lwdth*4 lmargin]);% tpos)
+    set(instructions_handle, 'units', 'normalized', 'position', [1-lwdth*4 lmargin lwdth*3 lmargin]);% tpos)
     set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'])    
 end;
 set(figure_handle, 'menubar', 'none')
@@ -73,8 +74,8 @@ configure_menu_handle = uimenu(figure_handle, 'Label', '&Options', 'callback', @
 quit_menu_handle =  uimenu(figure_handle, 'Label', '&Quit');
 quit_script_menu_handle =  uimenu(quit_menu_handle, 'Label', '&Quit manual_classify', 'callback', @stopMC_callback, 'Accelerator', 'q');
 exit_menu_handle =  uimenu(quit_menu_handle, 'Label', 'E&xit MATLAB', 'callback', 'exit', 'Accelerator', 'x');
-select_remaining_button_handle = uicontrol(gcf, 'style', 'radiobutton', 'units', 'normalized');
-set(select_remaining_button_handle, 'position', [lwdth*1.1 lmargin*1.5 lwdth*1.25 lmargin], 'string', 'SELECT remaining in class', 'callback', @select_remaining_callback, 'fontsize', 10)
+select_remaining_button_handle = uicontrol(gcf, 'style', 'radiobutton', 'units', 'normalized', 'backgroundcolor', 'w');
+set(select_remaining_button_handle, 'position', [lwdth*1.1 lmargin*1.3 lwdth*1.5 lmargin], 'string', 'SELECT remaining in class', 'callback', @select_remaining_callback, 'fontsize', 10)
 
 function select_category_callback( hOBj, eventdata )
 %Sets up uicontrol for picking categories; callback for class listboxes
@@ -138,8 +139,7 @@ end
 
 function change_config_callback( hOBj, eventdata )
 %   callback function for Options menu in manual_classify
-    options_test
-    
+ %   options_test   
     prompt = {'Number of images to display in a set' 'Image resizing factor (1 = none)' 'threshold mode (0=all, 1=larger, 2=smaller)' 'x size threshold (pixels)' 'y size threshold (pixels)'};
     defaultanswer={num2str(MCconfig.setsize) num2str(MCconfig.imresize_factor) num2str(MCconfig.threshold_mode) num2str(MCconfig.x_pixel_threshold) num2str(MCconfig.y_pixel_threshold)};
     user_input = inputdlg(prompt,'Configure', 1, defaultanswer);
@@ -213,5 +213,18 @@ function select_remaining_callback( hOBj, eventdata )
     robot_pressCR(1)
 end
 
+function figure_resize_callback( hObj, eventdata )
+    if ~MCflags.new_figure 
+        MCflags.reload_set = 1;
+        ReleaseFocus(gcf)
+        figure(figure_handle)
+        pause(.001)
+        robot_pressCR(1)
+    else
+        MCflags.new_figure = 0;
+    end
 end
+
+end
+
 

@@ -52,7 +52,9 @@ while ~pagefull && next_ind <= length(imgind)
         end;
         if plotnow
             colormap(gray); shading flat; hold on; axis([1 camx 1 camy]); set(gca, 'ydir', 'reverse', 'yticklabel', [], 'units', 'inches')
-            tpos = get(gca, 'position'); tpos(1:2) = [1.8 1]; set(gca, 'position', tpos)
+            set(gca,'ytick', 0:200:camy, 'xtick', 0:200:camx, 'plotboxAspectRatioMode', 'auto', 'dataAspectRatioMode', 'manual', 'dataAspectRatio', [1 1 1]);
+            grid on
+            %tpos = get(gca, 'position'); tpos(1:2) = [1.5 1]; set(gca, 'position', tpos)
             h = imagesc(imagedat{next_ind}', 'xdata', start_pos(1):check_pos(1), 'ydata', start_pos(2):check_pos(2)); hold on
             text(start_pos(1),start_pos(2), num2str(imgind(next_ind)), 'verticalalignment','top');
             if classlist(imgind(next_ind), mark_col) ~= classnum & ~isnan(classlist(imgind(next_ind), mark_col)),  %if class changed on this round, mark with new class number
@@ -69,5 +71,5 @@ while ~pagefull && next_ind <= length(imgind)
         next_ind = next_ind + 1;
     end;
 end;
-title(title_str, 'fontsize', 16, 'color', 'r', 'fontweight', 'bold','interpreter','none')
+title(title_str, 'fontsize', 12, 'color', 'r', 'fontweight', 'bold','interpreter','tex')
 th = text(1, -5, {'SELECT all page'}, 'fontsize', 16, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);

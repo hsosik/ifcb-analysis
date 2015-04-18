@@ -43,7 +43,7 @@ global figure_handle listbox_handle1 instructions_handle listbox_handle3 new_cla
 close all
 MCconfig = MCconfig_input; clear MCconfig_input %use this so MCconfig can now be global with callback functions
 MCflags = struct('class_jump', 0, 'class_step', 0, 'file_jump', 0, 'changed_selectrois', 0, 'select_remaining', 0,...
-    'newclasslist', NaN, 'go_back', 0, 'button', 1, 'file_jump_back_again', 0, 'reload_set', 0);
+    'newclasslist', NaN, 'go_back', 0, 'button', 1, 'file_jump_back_again', 0, 'reload_set', 0, 'new_figure', 1);
 class2use = MCconfig.class2use;
 filelist = MCconfig.filelist;
 classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use, 'exact');
@@ -223,7 +223,9 @@ while filecount <= length(filelist),
                         change_col = 2; 
                         rendering_handle = text(0, 1.01, 'Rendering images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
                         pause(.001)
-                        [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [class2use(classnum) MCconfig.filelist{filecount}], classlist, change_col, classnum);
+                        %[next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [{[class2use{classnum} '  \fontsize{8} ']} MCconfig.filelist{filecount}], classlist, change_col, classnum);
+                        filestr =  regexprep(regexprep(MCconfig.filelist{filecount}, '\\', '\\\'), '_', '\\_');
+                        [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [{[class2use{classnum} '  \fontsize{10}']} filestr], classlist, change_col, classnum);                       
                         if ~isnan(scale_bar_image1)
                             scale_bar_image = imresize(scale_bar_image1, MCconfig.imresize_factor);
                             imagesc(camx-size(scale_bar_image,2)-60,1020,scale_bar_image), text(camx-50,1020,[num2str(MCconfig.bar_length_micron) ' \mum'])
