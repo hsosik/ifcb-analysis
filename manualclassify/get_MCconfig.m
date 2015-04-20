@@ -58,7 +58,7 @@ switch MCconfig.group
         MCconfig.list_fontsize = 8;
         MCconfig.imresize_factor = 1; %image display scale factor, 1 for no scaling
         MCconfig.resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\'; %USER set
-        MCconfig.resultpath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\Manual_fromClass\'; %USER set
+        %MCconfig.resultpath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\Manual_fromClass\'; %USER set
         temp = load('class2use_MVCOmanual5', 'class2use'); %USER load yours here
         MCconfig.pick_mode = 'raw_roi';
         MCconfig.displayed_ordered = 'size'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
@@ -77,7 +77,7 @@ switch MCconfig.group
                 temp = dir('\\sosiknas1\IFCB_data\MVCO\data\2012\IFCB5_2012_006\IFCB5_2012_006_12*.adc'); temp = char(temp.name);
                 MCconfig.filelist = cellstr(temp(:,1:end-4)); clear temp
             case 'thislist'
-                MCconfig.filelist = {'IFCB5_2011_208_193851' 'IFCB5_2011_075_172900'  'IFCB1_2010_285_001802'}; 
+                MCconfig.filelist = {'IFCB1_2006_158_010552' 'IFCB5_2011_208_193851' 'IFCB5_2011_075_172900'  'IFCB1_2010_285_001802'}; 
         end
         [MCconfig.filelist, MCconfig.classfiles, MCconfig.stitchfiles] = resolve_MVCOfiles(MCconfig.filelist, MCconfig.class_filestr);
         %pick one
@@ -233,10 +233,11 @@ switch MCconfig.group
         case 'VPR'
             %MCconfig.resultpath = '\\SosikNAS1\Lab_data\VPR\NBP1201\vpr3\manual_fromClass\'; %USER set
             %MCconfig.basepath = '\\SosikNAS1\Lab_data\VPR\NBP1201\vpr3\'; %USER set
+            MCconfig.dataformat = 2; %VPR specific value
             MCconfig.resultpath = 'C:\work\vpr\vpr3\manual\'; %USER set
             MCconfig.basepath = 'C:\work\vpr\vpr3\'; %USER set
             MCconfig.pick_mode = 'correct_classifier';
-            MCconfig.displayed_ordered = 'roi_index'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
+            MCconfig.displayed_ordered = 'size'; %CHOICES 'size' (images appear by decreasing size) or 'roi_index' (images in order acquired)
             MCconfig.alphabetize='no' ; %CHOICES yes= alphabetize the list in the identification window, no = do not alphabetize the list.
             temp = load('C:\work\IFCB\code_svn\VPR\misc\class2use_vpr', 'class2use'); %USER load yours here
             MCconfig.class2use = temp.class2use;
@@ -247,12 +248,13 @@ switch MCconfig.group
             MCconfig.class2view2 = {}; %example to skip view2
             MCconfig.setsize = 200; %how many images to read before displaying 
             MCconfig.imresize_factor = 0.2; %image display scale factors
+            MCconfig.bar_length_micron = 0; %scale bar length in microns, enter 0 for no bar displayed
             filelisttype ='dirlist'; %manual_list, loadfile, dirlist
             switch filelisttype
                 case 'loadfile'
                     load mylist.mat
                     MCconfig.filelist = filelist; 
-                case 'dirlist' %other MVCO cases
+                case 'dirlist' 
                     temp = dir('C:\work\vpr\vpr3\class_RossSea_Trees_09Mar2015\N*.mat'); temp = char(temp.name);
                     MCconfig.filelist = cellstr(temp(:,1:end-13)); clear temp
             end
@@ -287,7 +289,7 @@ if ~exist(MCconfig.resultpath, 'dir'),
 end;
 
 [~,f]= fileparts(MCconfig.filelist{1}); 
-if isempty(f) & strmatch(MCconfig.group, 'VPR') %#ok<AND2>
+if isempty(f) & strmatch(MCconfig.group, 'VPR')
     MCconfig.dataformat = 2;
 elseif f(1) == 'I',
     MCconfig.dataformat = 0;

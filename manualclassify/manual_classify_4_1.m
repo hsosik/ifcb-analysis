@@ -103,16 +103,17 @@ while filecount <= length(filelist),
         disp('No class file and no existing result file. You must choose pick_mode "raw_roi" or locate a valid class file.')
         return
     end;
-    adcdata = load([filelist{filecount} '.adc']);
-    x_all = adcdata(:,adcxind);  y_all = adcdata(:,adcyind); startbyte_all = adcdata(:,startbyteind);
+    
+    clear roi_info
+    roi_info = get_roi_info;
     stitch_info = [];
     if ~isempty(MCconfig.stitchfiles),
         if exist([MCconfig.stitchfiles{filecount}]), %exist([stitchpath streamfile '_roistitch.mat']),
-            load(MCconfig.stitchfiles{filecount});
+            temp = load(MCconfig.stitchfiles{filecount}, 'stitch_info');
+            stitch_info = temp.stitch_info; clear temp
         end;
     end;
-%    fid=fopen([filelist{filecount} '.roi']);
-    disp(filelist{filecount}), disp([num2str(size(adcdata,1)) ' total ROI events'])
+    disp(filelist{filecount}), disp([num2str(numrois) ' total ROI events'])
     if isempty(MCconfig.classfiles),
         classfile_temp = 'temp';
     else
@@ -120,11 +121,13 @@ while filecount <= length(filelist),
     end;
     
     
-    [ classlist, list_titles, MCflags.newclasslist ] = get_classlistTB( [MCconfig.resultpath outfile],classfile_temp, MCconfig.pick_mode, class2use_manual, classnum_default, length(x_all) );
-    if MCflags.newclasslist,  %only first time creating classlist
-        zero_ind = find(x_all == 0);
-        classlist(zero_ind,2) = NaN; %mark zero-sized ROIs as NaNs in manual column (needed for raw_roi case where these are put in default class by get_classlistTB
-    end;
+    [ classlist, list_titles, MCflags.newclasslist ] = get_classlistTB( [MCconfig.resultpath outfile],classfile_temp, MCconfig.pick_mode, class2use_manual, classnum_default, numrois );
+    if MCconfig.dataformat <= 1 %IFCB only
+        if MCflags.newclasslist,  %only first time creating classlist
+            zero_ind = find(x_all == 0);
+            classlist(zero_ind,2) = NaN; %mark zero-sized ROIs as NaNs in manual column (needed for raw_roi case where these are put in default class by get_classlistTB
+        end
+    end
     %special case to segregate dirt spots in Healy1101 data
     if isequal(outfile(1:10), 'IFCB8_2011') && MCflags.newclasslist,
         classlist((adcdata(:,10) == 1118 & adcdata(:,11) == 290),2) = strmatch('bad', class2use_manual);
@@ -142,8 +145,13 @@ while filecount <= length(filelist),
         classnum = class2view(classcount);
         roi_ind_all = get_roi_indices(classlist, classnum, MCconfig.pick_mode);
         if MCconfig.threshold_mode > 0
-            temp_ind = apply_threshold(roi_ind_all,x_all*MCconfig.imresize_factor,y_all*MCconfig.imresize_factor, MCconfig);
-            roi_ind_all = roi_ind_all(temp_ind);
+            if MCconfig.dataformat == 2 
+                msgbox('Size thresholding not implemented for VPR tif case') %skip for VPR case
+                MCconfig.threshold_mode = 0;
+            else
+                temp_ind = apply_threshold(roi_ind_all); %,roi_info.x_all*MCconfig.imresize_factor,roi_info.y_all*MCconfig.imresize_factor, MCconfig);
+                roi_ind_all = roi_ind_all(temp_ind);
+            end
         end
         
         if isempty(roi_ind_all) 
@@ -175,10 +183,14 @@ while filecount <= length(filelist),
             imgset = 1;
             
             %if appropriate, sort by size before separating into subsets
-            switch MCconfig.displayed_ordered
-                case 'size'
-                    [~,II] = sortrows([y_all(roi_ind_all) x_all(roi_ind_all) ], [-2,-1]);
-                    roi_ind_all = roi_ind_all(II);
+            if isequal(MCconfig.displayed_ordered, 'size')
+                if MCconfig.dataformat <= 1
+                    [~,ii] = sortrows([roi_info.y_all(roi_ind_all) roi_info.x_all(roi_ind_all) ], [-2,-1]);
+                    roi_ind_all = roi_ind_all(ii);
+                elseif MCconfig.dataformat == 2 %VPR case
+                    [~,temp] = sort(roi_info.disk_size_index(roi_ind_all));
+                    roi_ind_all = roi_ind_all(temp);
+                end
             end             
 
             while imgset <= setnum && ~MCflags.file_jump
@@ -192,30 +204,8 @@ while filecount <= length(filelist),
                 startrange = imgset*MCconfig.setsize-MCconfig.setsize;
                 setrange = (startrange+1):min([imgset*MCconfig.setsize, length(roi_ind_all)]);
                 roi_ind = roi_ind_all(setrange);
-                startbyte = startbyte_all(roi_ind); x = x_all(roi_ind); y = y_all(roi_ind); %heidi 11/5/09
-
-                %read roi images
-                fid=fopen([filelist{filecount} '.roi']);
-                for imgcount = 1:length(startbyte),
-                    fseek(fid, startbyte(imgcount), -1);
-                    data = fread(fid, x(imgcount).*y(imgcount), 'ubit8');
-                    imagedat{imgcount} = imresize(reshape(data, x(imgcount), y(imgcount)),MCconfig.imresize_factor);
-                end;
-                indA = [];
-                if ~isempty(stitch_info),
-                    [roinum , indA, indB] = intersect(roi_ind, stitch_info(:,1));
-                end;
-                for stitchcount = 1:length(indA), %loop over any rois that need to be stitched
-                    startbytet = startbyte_all(roinum(stitchcount)+1); xt = x_all(roinum(stitchcount)+1); yt = y_all(roinum(stitchcount)+1); %heidi 11/5/09
-                    fseek(fid, startbytet,-1); %go to the next roi in the pair
-                    data = fread(fid, xt.*yt, 'ubit8');
-                    imgB = imresize(reshape(data,xt,yt),MCconfig.imresize_factor);
-                    xpos = stitch_info(indB(stitchcount),[2,4])'; ypos = stitch_info(indB(stitchcount),[3,5])';
-                    [ imagedat{indA(stitchcount)}, xpos_merge, ypos_merge ] = stitchrois({imagedat{indA(stitchcount)} imgB},xpos,ypos);
-                    clear xt yt startbytet
-                    figure(1)
-                end;
-                fclose(fid);
+               
+                imagedat = read_images; %read roi images, one set 
                 
                 delete(loading_handle)
                 if ~isempty(imagedat),
@@ -223,9 +213,8 @@ while filecount <= length(filelist),
                         change_col = 2; 
                         rendering_handle = text(0, 1.01, 'Rendering images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
                         pause(.001)
-                        %[next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [{[class2use{classnum} '  \fontsize{8} ']} MCconfig.filelist{filecount}], classlist, change_col, classnum);
                         filestr =  regexprep(regexprep(MCconfig.filelist{filecount}, '\\', '\\\'), '_', '\\_');
-                        [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [{[class2use{classnum} '  \fontsize{10}']} filestr], classlist, change_col, classnum);                       
+                        [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [{[regexprep(class2use{classnum}, '_', '\\_') '  \fontsize{10}']} filestr], classlist, change_col, classnum);
                         if ~isnan(scale_bar_image1)
                             scale_bar_image = imresize(scale_bar_image1, MCconfig.imresize_factor);
                             imagesc(camx-size(scale_bar_image,2)-60,1020,scale_bar_image), text(camx-50,1020,[num2str(MCconfig.bar_length_micron) ' \mum'])
@@ -252,11 +241,11 @@ while filecount <= length(filelist),
                             new_classcount = classcount + ceil(MCflags.class_step); %value of flag specifies direction and amplitude of step within class2view, ceil ensures -0.5 ==> 0
                             if MCflags.class_step < 0 %-1 (go back one) or -0.5 (reload current)
                                 temp_ind = get_roi_indices(classlist, class2view(new_classcount), MCconfig.pick_mode); %check for rois one class back
-                                temp_ind = apply_threshold(temp_ind,x_all*MCconfig.imresize_factor,y_all*MCconfig.imresize_factor, MCconfig);
+                                temp_ind = apply_threshold(temp_ind); %,roi_info.x_all*MCconfig.imresize_factor,roi_info.y_all*MCconfig.imresize_factor, MCconfig);
                                 while isempty(temp_ind) && new_classcount > 1 %check until find class with rois in it
                                     new_classcount = new_classcount - 1; % go back one more
                                     temp_ind = get_roi_indices(classlist, class2view(new_classcount), MCconfig.pick_mode);
-                                    temp_ind = apply_threshold(temp_ind,x_all*MCconfig.imresize_factor,y_all*MCconfig.imresize_factor, MCconfig);
+                                    temp_ind = apply_threshold(temp_ind); %,roi_info.x_all*MCconfig.imresize_factor,roi_info.y_all*MCconfig.imresize_factor, MCconfig);
                                 end
                                 end;
                                 MCflags.class_step = 0;
@@ -304,11 +293,11 @@ while filecount <= length(filelist),
                                             classcount = 0;
                                         else
                                             temp_ind = get_roi_indices(classlist, class2view(classcount-1), MCconfig.pick_mode); %check for rois one class back
-                                            temp_ind = apply_threshold(temp_ind, x_all*MCconfig.imresize_factor, y_all*MCconfig.imresize_factor, MCconfig);                    
+                                            temp_ind = apply_threshold(temp_ind); %, roi_info.x_all*MCconfig.imresize_factor, roi_info.y_all*MCconfig.imresize_factor, MCconfig);                    
                                             classcount = classcount - 1; % go back 1 class
                                             while isempty(temp_ind) && classcount > 1 %check until find class with rois in it
                                                 temp_ind = get_roi_indices(classlist, class2view(classcount), MCconfig.pick_mode);
-                                                temp_ind = apply_threshold(temp_ind,x_all*MCconfig.imresize_factor,y_all*MCconfig.imresize_factor, MCconfig);
+                                                temp_ind = apply_threshold(temp_ind); %,roi_info.x_all*MCconfig.imresize_factor,roi_info.y_all*MCconfig.imresize_factor, MCconfig);
                                                 classcount = classcount - 1; % go back one more
                                             end;
                                             classcount = classcount - 1; % go back one more to handle increment below
@@ -351,11 +340,63 @@ while filecount <= length(filelist),
 end
 close(figure_handle)
 
-function ind = apply_threshold(ind, x, y, MCconfig)
-if MCconfig.threshold_mode == 1
-    ind = find(x(ind) >= MCconfig.x_pixel_threshold | y(ind) >= MCconfig.y_pixel_threshold);
-elseif MCconfig.threshold_mode == 2
-    ind = find(x(ind) < MCconfig.x_pixel_threshold & y(ind) < MCconfig.y_pixel_threshold);
-else
-	ind = ind;
+function imagedat = read_images()
+    if MCconfig.dataformat <= 1 %IFCB
+        startbyte = roi_info.startbyte_all(roi_ind); x = roi_info.x_all(roi_ind); y = roi_info.y_all(roi_ind); %heidi 11/5/09
+        fid=fopen([filelist{filecount} '.roi']);
+        for imgcount = 1:length(startbyte),
+            fseek(fid, startbyte(imgcount), -1);
+            data = fread(fid, x(imgcount).*y(imgcount), 'ubit8');
+            imagedat{imgcount} = imresize(reshape(data, x(imgcount), y(imgcount)),MCconfig.imresize_factor);
+        end;
+        indA = [];
+        if ~isempty(stitch_info),
+            [roinum , indA, indB] = intersect(roi_ind, stitch_info(:,1));
+        end;
+        for stitchcount = 1:length(indA), %loop over any rois that need to be stitched
+            startbytet = roi_info.startbyte_all(roinum(stitchcount)+1); xt = roi_info.x_all(roinum(stitchcount)+1); yt = roi_info.y_all(roinum(stitchcount)+1); %heidi 11/5/09
+            fseek(fid, startbytet,-1); %go to the next roi in the pair
+            data = fread(fid, xt.*yt, 'ubit8');
+            imgB = imresize(reshape(data,xt,yt),MCconfig.imresize_factor);
+            xpos = stitch_info(indB(stitchcount),[2,4])'; ypos = stitch_info(indB(stitchcount),[3,5])';
+            [ imagedat{indA(stitchcount)}, xpos_merge, ypos_merge ] = stitchrois({imagedat{indA(stitchcount)} imgB},xpos,ypos);
+            clear xt yt startbytet
+            figure(1)
+        end;
+        fclose(fid);
+    elseif MCconfig.dataformat == 2 %VPR
+        for imgcount = 1:length(roi_ind)
+            imagedat{imgcount} = imresize(imread(fullfile(roi_info.roipath,roi_info.roilist{roi_ind(imgcount)})),MCconfig.imresize_factor);
+            [roi_info.x_all(roi_ind(imgcount)) roi_info.x_all(roi_ind(imgcount))] = size(imagedat{imgcount});
+        end;
+    end
 end
+
+function roi_info = get_roi_info()
+    if MCconfig.dataformat <= 1, %IFCB
+        adcdata = load([filelist{filecount} '.adc']);
+        roi_info.x_all = adcdata(:,adcxind);  roi_info.y_all = adcdata(:,adcyind); roi_info.startbyte_all = adcdata(:,startbyteind);
+        numrois = size(adcdata,1);
+    elseif MCconfig.dataformat == 2 %VPR
+        roi_info.roipath = fileparts(filelist{filecount});
+        eval(['[~,roi_info.roilist] = dos(''dir ' roi_info.roipath filesep '*.tif /B /O-S'');']) %bare dir reading, sorted largest to smallest size on disk
+        tt = strfind(roi_info.roilist, char(10)); tt = tt(1)-1;
+        roi_info.roilist = regexprep(roi_info.roilist, char(10), '');
+        roi_info.roilist = cellstr(reshape(roi_info.roilist,tt,length(roi_info.roilist)/tt)');
+        numrois = length(roi_info.roilist);
+        [roi_info.roilist roi_info.disk_size_index] = sort(roi_info.roilist);
+    end
+end
+
+function ind = apply_threshold(ind) %, x, y, MCconfig)
+    if MCconfig.threshold_mode == 1
+        ind = find(roi_info.x_all(ind) >= MCconfig.x_pixel_threshold | roi_info.y_all(ind) >= MCconfig.y_pixel_threshold);
+    elseif MCconfig.threshold_mode == 2
+        ind = find(roi_info.x_all(ind) < MCconfig.x_pixel_threshold & roi_info.y_all(ind) < MCconfig.y_pixel_threshold);
+    else
+        ind = ind;
+    end
+end
+end
+
+
