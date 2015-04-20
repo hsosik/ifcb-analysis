@@ -124,7 +124,7 @@ while filecount <= length(filelist),
     [ classlist, list_titles, MCflags.newclasslist ] = get_classlistTB( [MCconfig.resultpath outfile],classfile_temp, MCconfig.pick_mode, class2use_manual, classnum_default, numrois );
     if MCconfig.dataformat <= 1 %IFCB only
         if MCflags.newclasslist,  %only first time creating classlist
-            zero_ind = find(x_all == 0);
+            zero_ind = find(roi_info.x_all == 0);
             classlist(zero_ind,2) = NaN; %mark zero-sized ROIs as NaNs in manual column (needed for raw_roi case where these are put in default class by get_classlistTB
         end
     end
@@ -149,7 +149,7 @@ while filecount <= length(filelist),
                 msgbox('Size thresholding not implemented for VPR tif case') %skip for VPR case
                 MCconfig.threshold_mode = 0;
             else
-                temp_ind = apply_threshold(roi_ind_all); %,roi_info.x_all*MCconfig.imresize_factor,roi_info.y_all*MCconfig.imresize_factor, MCconfig);
+                temp_ind = apply_threshold(roi_ind_all); 
                 roi_ind_all = roi_ind_all(temp_ind);
             end
         end
@@ -241,11 +241,11 @@ while filecount <= length(filelist),
                             new_classcount = classcount + ceil(MCflags.class_step); %value of flag specifies direction and amplitude of step within class2view, ceil ensures -0.5 ==> 0
                             if MCflags.class_step < 0 %-1 (go back one) or -0.5 (reload current)
                                 temp_ind = get_roi_indices(classlist, class2view(new_classcount), MCconfig.pick_mode); %check for rois one class back
-                                temp_ind = apply_threshold(temp_ind); %,roi_info.x_all*MCconfig.imresize_factor,roi_info.y_all*MCconfig.imresize_factor, MCconfig);
+                                temp_ind = apply_threshold(temp_ind); 
                                 while isempty(temp_ind) && new_classcount > 1 %check until find class with rois in it
                                     new_classcount = new_classcount - 1; % go back one more
                                     temp_ind = get_roi_indices(classlist, class2view(new_classcount), MCconfig.pick_mode);
-                                    temp_ind = apply_threshold(temp_ind); %,roi_info.x_all*MCconfig.imresize_factor,roi_info.y_all*MCconfig.imresize_factor, MCconfig);
+                                    temp_ind = apply_threshold(temp_ind); 
                                 end
                                 end;
                                 MCflags.class_step = 0;
@@ -293,11 +293,11 @@ while filecount <= length(filelist),
                                             classcount = 0;
                                         else
                                             temp_ind = get_roi_indices(classlist, class2view(classcount-1), MCconfig.pick_mode); %check for rois one class back
-                                            temp_ind = apply_threshold(temp_ind); %, roi_info.x_all*MCconfig.imresize_factor, roi_info.y_all*MCconfig.imresize_factor, MCconfig);                    
+                                            temp_ind = apply_threshold(temp_ind); 
                                             classcount = classcount - 1; % go back 1 class
                                             while isempty(temp_ind) && classcount > 1 %check until find class with rois in it
                                                 temp_ind = get_roi_indices(classlist, class2view(classcount), MCconfig.pick_mode);
-                                                temp_ind = apply_threshold(temp_ind); %,roi_info.x_all*MCconfig.imresize_factor,roi_info.y_all*MCconfig.imresize_factor, MCconfig);
+                                                temp_ind = apply_threshold(temp_ind); 
                                                 classcount = classcount - 1; % go back one more
                                             end;
                                             classcount = classcount - 1; % go back one more to handle increment below
