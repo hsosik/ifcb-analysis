@@ -24,7 +24,7 @@ screen = get(0, 'ScreenSize');
 
 figure_handle = figure;
 set(figure_handle, 'outerposition', screen, 'color', [1 1 1])
-set(figure_handle, 'units', 'inches', 'resizefcn', @figure_resize_callback)
+set(figure_handle, 'units', 'inches', 'resizefcn', @figure_resize_callback, 'closerequestfcn', @stopMC_callback)
 tpos = get(figure_handle, 'position');
 lwdth = 1.1/tpos(4); %1.1 inches as fraction of screen, listbox width
 lmargin = .28/tpos(4); %.28 inches as fraction of screen, bottom margin below list boxes
@@ -33,11 +33,11 @@ instructions_handle = NaN;
 if ~isempty(class2pick1), %edited 1/12/10 to fix typo pick2 --> pick1
     
     switch MCconfig.alphabetize
-        case 'yes'
+        case {'yes',  1}
             [~, ix] = sort(lower(class2pick1));%sorting class2pick1
             numstr_to_display = (1:length(class2pick1))';%sorting the indexes class2pick1
             str = cellstr([num2str(numstr_to_display(ix), '%03d') repmat(' ',length(class2pick1),1) char(class2pick1{ix})]);
-        case 'no'
+        case {'no',  0}
             str = cellstr([num2str((1:length(class2pick1))', '%03d') repmat(' ',length(class2pick1),1) char(class2pick1)]);
         otherwise
             warning('You should choose ''yes'' or ''no'' for the variable MCconfig.alphabetize_list. The list will not be alphabetized for now')
@@ -203,6 +203,7 @@ function stopMC_callback( hOBj, eventdata )
 %   callback for quit from manual_classify menu entry
     MCflags.file_jump = 1;
     new_filecount = length(filelist)+1;
+    pause(.001)
     robot_pressCR(1)
 end
 
