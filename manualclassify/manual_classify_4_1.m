@@ -37,6 +37,7 @@ function [  ] = manual_classify_4_1( MCconfig_input )
 %23 Aug 2013, revise to pass filelists in as part of MCconfig structure
 % Aug 2014, revise to address bug #3037, where zero-sized ROIs were previously annotated with default class in 'raw_roi' mode
 % March 2015, begin upgrade transistion from manual_classify_4_0 to manual_classify_4_1, mainly to handle user initiated jumping among classes
+% April 2015, upgrade largely complete with many new features including runtime navigation between classes and files
 
 global figure_handle listbox_handle1 instructions_handle listbox_handle3 new_classcount new_setcount MCflags MCconfig new_filecount filecount filelist category select_remaining_button_handle
 
