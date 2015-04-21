@@ -65,7 +65,7 @@ end
 
 handles.msgbox_cs.Interpreter = 'tex';
 handles.msgbox_cs.WindowStyle = 'modal';
-handles.msgbox_fontstr = '\fontsize{12}'
+handles.msgbox_fontstr = '\fontsize{12}';
 
 fullf = fullfile(handles.configpath, 'startMC_path.mat');
 if exist(fullf, 'file')
@@ -84,7 +84,7 @@ if length(varargin) > 0
         set(handles.configfile_text, 'string', []);
     end
 else
-    set(handles.configfile_text, 'string', [handles.configpath 'last.mcconfig.mat'])
+    set(handles.configfile_text, 'string', [handles.configpath 'last.mcconfig.mat']);
 end
 
 % Update handles structure
@@ -161,4 +161,9 @@ function quit_pushbutton_Callback(hObject, eventdata, handles)
 % hObject    handle to quit_pushbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+if ~isfield(handles, 'MCconfig')
+    temp = load(get(handles.configfile_text, 'string'), 'MCconfig');
+    handles.MCconfig = temp.MCconfig;
+end 
+disp(handles.MCconfig)
 figure1_CloseRequestFcn(handles.figure1, eventdata, handles)

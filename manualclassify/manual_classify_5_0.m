@@ -122,7 +122,6 @@ while filecount <= length(filelist),
         classfile_temp = MCconfig.classfiles{filecount};
     end;
     
-    
     [ classlist, list_titles, MCflags.newclasslist ] = get_classlistTB( MCconfig.resultfiles{filecount},classfile_temp, MCconfig.pick_mode, class2use_manual, classnum_default, numrois );
     if MCconfig.dataformat <= 1 %IFCB only
         if MCflags.newclasslist,  %only first time creating classlist

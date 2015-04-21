@@ -50,7 +50,7 @@ else
             classlist = NaN(total_roi,auto_col); %start with auto_col width, grow to sub_col later if needed
             classlist(:,1) = 1:total_roi;
             classlist(:,manual_col) = classnum_default; %strmatch(classstr, class2use, 'exact');   
-        case 'correct_classifier'  %make subcategories starting with an automated class
+        case {'correct_classifier', 'correct'} %make subcategories starting with an automated class
             if exist(classfilename),
                 load(classfilename) %load classifier results
                 if ~exist('classlist', 'var'), 
