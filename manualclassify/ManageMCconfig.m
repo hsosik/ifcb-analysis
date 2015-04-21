@@ -104,8 +104,16 @@ handles.msgbox_cs.WindowStyle = 'modal';
 handles.msgbox_fontstr = '\fontsize{12}';
 
 if length(varargin) > 0
-    temp = load([ handles.configpath varargin{1} '.mcconfig.mat']);
+    f = char(varargin{1});
+    if exist(f, 'file'),
+        temp = load(f);
+        fullf = f;
+    else
+        fullf = [handles.configpath varargin{1} '.mcconfig.mat'];
+        temp = load([handles.configpath varargin{1} '.mcconfig.mat']);
+    end;
     handles.MCconfig = temp.MCconfig;
+    handles.MCconfig.settings.configfile = fullf;
 else
     f = [ handles.configpath 'last.mcconfig.mat'];
     if exist(f, 'file'),
@@ -425,8 +433,8 @@ function pick_mode_checkbox_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % Hint: get(hObject,'Value') returns toggle state of pick_mode_checkbox
-hset = [handles.classpath_text handles.class_filestr_text handles.classpath_label handles.classpath_browse handles.class_filestr_label handles.classfiles_listbox];
-if get(hObject, 'Value')
+hset = [handles.classpath_text handles.class_filestr_text handles.classpath_label handles.classpath_browse handles.class_filestr_label handles.classfiles_listbox handles.classfiles_text];
+if get(handles.pick_mode_checkbox, 'Value')
     set(hset, 'visible', 'on')
     update_filelists(handles)
 else
@@ -559,6 +567,9 @@ function main_figure_CloseRequestFcn(hObject, eventdata, handles)
 
 % Hint: delete(hObject) closes the figure
 Save_menu_Callback([], [], handles) %just save to last.mcconfig.mat
+if ~isfield(handles.MCconfig.settings,'configfile')
+    handles.MCconfig.settings.configfile = [ handles.configpath 'last.mcconfig.mat'];
+end
 %following to manage uiwait to control no output until user is done (heidi)
 if isequal(get(hObject, 'waitstatus'), 'waiting')
 % The GUI is still in UIWAIT, us UIRESUME
@@ -615,9 +626,6 @@ function load_class2use_pushbutton_Callback(hObject, eventdata, handles)
 % hObject    handle to load_class2use_pushbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-%[f p ] = uigetfile([handles.configpath '*class2use*.mat']);
-%temp = load([p f]);
-%handles.MCconfig.class2use = temp.class2use;
 filename = get(handles.class2use_file_text, 'string');
 if ~strcmp(filename, 'class2use_file') && ~isempty(filename)
     temp = ManageClassLabels(cellstr(filename), {'fromMC'});
@@ -789,9 +797,17 @@ MCconfig = handles.MCconfig;
 guidata(handles.main_figure, handles);
 save([ handles.configpath 'last.mcconfig.mat'], 'MCconfig');
 if ~isempty(hObject)
-    [f p] = uiputfile(['*.mcconfig.mat'], 'Save configuration', handles.configpath);
+    if isfield(handles.MCconfig.settings,'configfile')
+        [startp, ~] = fileparts(handles.MCconfig.settings.configfile);
+    else
+        startp = handles.configpath;
+    end
+    [f p] = uiputfile(['*.mcconfig.mat'], 'Save configuration', startp);
     if f
-        save([ p f ], 'MCconfig');
+        fullf = [p f];
+        handles.MCconfig.settings.configfile = fullf;
+        guidata(handles.main_figure, handles);
+        save(fullf, 'MCconfig');
     end
 end
 
@@ -801,11 +817,18 @@ function load_config_menu_Callback(hObject, eventdata, handles)
 % hObject    handle to load_config_menu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-[f p] = uigetfile([handles.configpath '*.mcconfig.mat'], 'Load config');
+if isfield(handles.MCconfig.settings,'configfile')
+    [startp, ~] = fileparts(handles.MCconfig.settings.configfile);
+else
+    startp = handles.configpath;
+end
+[f p] = uigetfile(fullfile(startp, '*.mcconfig.mat'), 'Load config');
 if f
+    fullf = [p f];
     temp = load([ p f]);
     if isfield(temp, 'MCconfig')
         handles.MCconfig = temp.MCconfig;
+        handles.MCconfig.settings.configfile = fullf;
     else
         msgbox([handles.msgbox_fontstr 'Not a valid configuration file'], handles.msgbox_cs)
     end
@@ -1144,6 +1167,7 @@ else
     set(handles.pick_mode_checkbox, 'enable', 'on')
 end
 pick_mode_checkbox_Callback([], [], handles)
+guidata(handles.main_figure, handles);
 
 
 
@@ -1407,7 +1431,6 @@ function dataformat_menu_Callback(hObject, eventdata, handles)
 % hObject    handle to dataformat_menu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-%keyboard
 
 
 % --------------------------------------------------------------------
