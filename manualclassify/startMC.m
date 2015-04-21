@@ -22,7 +22,7 @@ function varargout = startMC(varargin)
 
 % Edit the above text to modify the response to help startMC
 
-% Last Modified by GUIDE v2.5 21-Apr-2015 07:49:42
+% Last Modified by GUIDE v2.5 21-Apr-2015 14:12:21
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -127,7 +127,14 @@ function startMC_pushbutton_Callback(hObject, eventdata, handles)
 % hObject    handle to startMC_pushbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+hset = findobj('style', 'pushbutton');
+set(hset, 'enable', 'inactive')
+if ~isfield(handles, 'MCconfig')
+    temp = load(get(handles.configfile_text, 'string'), 'MCconfig');
+    handles.MCconfig = temp.MCconfig;
+end 
 manual_classify_5_0(handles.MCconfig)
+set(hset, 'enable', 'on')
 
 
 % --- Executes during object creation, after setting all properties.
@@ -147,3 +154,11 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 [last_path,f] = fileparts(get(handles.configfile_text, 'string'));
 save(fullfile(handles.configpath, 'startMC_path'), 'last_path')
 delete(hObject);
+
+
+% --- Executes on button press in quit_pushbutton.
+function quit_pushbutton_Callback(hObject, eventdata, handles)
+% hObject    handle to quit_pushbutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+figure1_CloseRequestFcn(handles.figure1, eventdata, handles)

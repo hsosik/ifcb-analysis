@@ -124,8 +124,9 @@ else
         if ~exist('config', 'dir'),
             mkdir('config')
         end
-    end
+    end    
 end
+handles.MCconfig_saved = handles.MCconfig; %initialize to track save status
 
 map_MCconfig2GUI(hObject, handles)
 %update settings to correspond to existing object status
@@ -795,8 +796,20 @@ end
 
 MCconfig = handles.MCconfig;
 guidata(handles.main_figure, handles);
-save([ handles.configpath 'last.mcconfig.mat'], 'MCconfig');
-if ~isempty(hObject)
+
+if ~isequal(handles.MCconfig, handles.MCconfig_saved) && isempty(hObject)
+    opt.Interpreter = 'tex'; opt.Default = 'Save';
+    selectedButton = questdlg({[handles.msgbox_fontstr ' Are you sure you want to quit without saving changes?']}, 'Quit choice', 'Save', 'Quit now', opt);
+    switch selectedButton
+        case 'Save'
+            if isempty(hObject)
+                hObject = handles.main_figure;
+            end
+        case 'Quit now'
+            hObject = [];
+    end
+end
+if  ~isempty(hObject)
     if isfield(handles.MCconfig.settings,'configfile')
         [startp, ~] = fileparts(handles.MCconfig.settings.configfile);
     else
@@ -806,12 +819,12 @@ if ~isempty(hObject)
     if f
         fullf = [p f];
         handles.MCconfig.settings.configfile = fullf;
+        handles.MCconfig_saved = handles.MCconfig;
         guidata(handles.main_figure, handles);
         save(fullf, 'MCconfig');
     end
 end
-
-
+save([ handles.configpath 'last.mcconfig.mat'], 'MCconfig');
 % --------------------------------------------------------------------
 function load_config_menu_Callback(hObject, eventdata, handles)
 % hObject    handle to load_config_menu (see GCBO)

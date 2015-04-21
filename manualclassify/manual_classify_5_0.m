@@ -42,21 +42,21 @@ function [  ] = manual_classify_5_0( MCconfig_input )
 
 global figure_handle listbox_handle1 instructions_handle listbox_handle3 new_classcount new_setcount MCflags MCconfig new_filecount filecount filelist category select_remaining_button_handle
 
-close all
+%close all
 MCconfig = MCconfig_input; clear MCconfig_input %use this so MCconfig can now be global with callback functions
 MCflags = struct('class_jump', 0, 'class_step', 0, 'file_jump', 0, 'changed_selectrois', 0, 'select_remaining', 0,...
     'newclasslist', NaN, 'go_back', 0, 'button', 1, 'file_jump_back_again', 0, 'reload_set', 0, 'new_figure', 1);
 class2use = MCconfig.class2use;
-filelist = MCconfig.filelist;
+filelist = regexprep(MCconfig.roifiles, '.roi', '');
 classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use, 'exact');
-class2use_manual = MCconfig.class2use;
+class2use_manual = MCconfig.class2use'; %needs to be row vector
 [~,class2view1] = intersect(class2use, MCconfig.class2view1);
 class2view1 = sort(class2view1); %keep same order as class2use
 
 switch MCconfig.pick_mode
     case 'raw_roi' %pick classes from scratch
         class2use_auto = [];
-    case 'correct_classifier'  %make subcategories starting with an automated class
+    case 'correct'  %make subcategories starting with an automated class
         class2use_auto = class2use;
     otherwise
         disp('Invalid pick_mode. Check setting in get_MCconfig')
@@ -96,11 +96,11 @@ threshold_warn = 0;
 setpref('graphics','threshold_warning', 'ask') %reinitialize box display state each session
 while filecount <= length(filelist),
     new_classcount = NaN; %initialize
-    if MCconfig.threshold_mode,
+    if MCconfig.threshold_mode ~= 1,
         threshold_warn = 1;
     end
     disp(['File number: ' num2str(filecount)])
-    [~,outfile] = fileparts(filelist{filecount}); outfile = [outfile '.mat'];
+    %[~,outfile] = fileparts(filelist{filecount}); outfile = [outfile '.mat'];
     if ~strcmp(MCconfig.pick_mode, 'raw_roi') & ~exist([filelist{filecount} '.roi']) & ~exist(MCconfig.classfiles{filecount}),
         disp('No class file and no existing result file. You must choose pick_mode "raw_roi" or locate a valid class file.')
         return
@@ -123,7 +123,7 @@ while filecount <= length(filelist),
     end;
     
     
-    [ classlist, list_titles, MCflags.newclasslist ] = get_classlistTB( [MCconfig.resultpath outfile],classfile_temp, MCconfig.pick_mode, class2use_manual, classnum_default, numrois );
+    [ classlist, list_titles, MCflags.newclasslist ] = get_classlistTB( MCconfig.resultfiles{filecount},classfile_temp, MCconfig.pick_mode, class2use_manual, classnum_default, numrois );
     if MCconfig.dataformat <= 1 %IFCB only
         if MCflags.newclasslist,  %only first time creating classlist
             zero_ind = find(roi_info.x_all == 0);
@@ -131,7 +131,7 @@ while filecount <= length(filelist),
         end
     end
     %special case to segregate dirt spots in Healy1101 data
-    if isequal(outfile(1:10), 'IFCB8_2011') && MCflags.newclasslist,
+    if isequal(MCconfig.resultfiles{filecount}(1:10), 'IFCB8_2011') && MCflags.newclasslist,
         classlist((adcdata(:,10) == 1118 & adcdata(:,11) == 290),2) = strmatch('bad', class2use_manual);
     end;
     if isempty(classlist), %indicates bad class2use match
@@ -185,7 +185,7 @@ while filecount <= length(filelist),
             imgset = 1;
             
             %if appropriate, sort by size before separating into subsets
-            if isequal(MCconfig.displayed_ordered, 'size')
+            if MCconfig.display_order  %1 = 'size'; 0 = 'index'
                 if MCconfig.dataformat <= 1
                     [~,ii] = sortrows([roi_info.y_all(roi_ind_all) roi_info.x_all(roi_ind_all) ], [-2,-1]);
                     roi_ind_all = roi_ind_all(ii);
@@ -215,7 +215,7 @@ while filecount <= length(filelist),
                         change_col = 2; 
                         rendering_handle = text(0, 1.01, 'Rendering images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
                         pause(.001)
-                        filestr =  regexprep(regexprep(MCconfig.filelist{filecount}, '\\', '\\\'), '_', '\\_');
+                        filestr =  regexprep(regexprep(filelist{filecount}, '\\', '\\\'), '_', '\\_');
                         [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [{[regexprep(class2use{classnum}, '_', '\\_') '  \fontsize{10}']} filestr], classlist, change_col, classnum);
                         if ~isnan(scale_bar_image1)
                             scale_bar_image = imresize(scale_bar_image1, MCconfig.imresize_factor);
@@ -234,8 +234,9 @@ while filecount <= length(filelist),
                             MCflags.changed_selectrois = 1;
                             set(select_remaining_button_handle, 'value', 0)
                         end;
-                        if MCflags.changed_selectrois,
-                            save([MCconfig.resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
+                        if MCflags.changed_selectrois
+                            save(MCconfig.resultfiles{filecount}, 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
+                            %save([MCconfig.resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
                         end;
                         MCflags.changed_selectrois = 0;
                         if MCflags.reload_set, new_setcount = imgset; MCflags.reload_set = 0;, end
@@ -340,7 +341,8 @@ while filecount <= length(filelist),
         MCflags.file_jump = 0;        
     end;
 end
-close(figure_handle)
+%close(figure_handle)
+delete(figure_handle)
 
 function imagedat = read_images()
     if MCconfig.dataformat <= 1 %IFCB
