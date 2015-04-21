@@ -339,7 +339,8 @@ while filecount <= length(filelist),
         MCflags.file_jump = 0;        
     end;
 end
-close(figure_handle)
+
+delete(figure_handle)
 
 function imagedat = read_images()
     if MCconfig.dataformat <= 1 %IFCB
@@ -398,6 +399,7 @@ function ind = apply_threshold(ind) %, x, y, MCconfig)
         ind = ind;
     end
 end
+
 end
 
 
