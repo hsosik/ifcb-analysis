@@ -817,7 +817,7 @@ if  ~isempty(hObject)
     end
     [f p] = uiputfile(['*.mcconfig.mat'], 'Save configuration', startp);
     outstr = '.mcconfig.mat'; 
-    if isempty(findstr(f, outstr))  %work around for different behavior of uiputfile on MAC
+    if isempty(regexp(f, outstr))  %work around for different behavior of uiputfile on MAC
         f = regexprep(f, '.mat', outstr);
     end
     if f
