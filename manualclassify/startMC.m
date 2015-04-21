@@ -84,7 +84,12 @@ if length(varargin) > 0
         set(handles.configfile_text, 'string', []);
     end
 else
-    set(handles.configfile_text, 'string', [handles.configpath 'last.mcconfig.mat']);
+    f = [handles.configpath 'last.mcconfig.mat'];
+    if exist(f, 'dir')
+        set(handles.configfile_text, 'string', [handles.configpath 'last.mcconfig.mat']);
+    else
+        set(handles.configfile_text, 'string', []);
+    end
 end
 
 % Update handles structure
