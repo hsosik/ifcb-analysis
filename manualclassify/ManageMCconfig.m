@@ -816,6 +816,10 @@ if  ~isempty(hObject)
         startp = handles.configpath;
     end
     [f p] = uiputfile(['*.mcconfig.mat'], 'Save configuration', startp);
+    outstr = '.mcconfig.mat'; 
+    if ~findstr(f, '.mcconfig.mat')  %work around for different behavior of uiputfile on MAC
+        f = [f outstr];
+    end
     if f
         fullf = [p f];
         handles.MCconfig.settings.configfile = fullf;
