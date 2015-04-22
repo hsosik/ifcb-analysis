@@ -22,7 +22,7 @@ function varargout = startMC(varargin)
 
 % Edit the above text to modify the response to help startMC
 
-% Last Modified by GUIDE v2.5 21-Apr-2015 14:12:21
+% Last Modified by GUIDE v2.5 22-Apr-2015 09:36:45
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -80,7 +80,7 @@ if length(varargin) > 0
     elseif exist(fullfile(last_path,[f '.mcconfig.mat']), 'file')
         set(handles.configfile_text, 'string', fullfile(last_path,[f '.mcconfig.mat']));
     else
-        msgbox({[handles.msgbox_fontstr 'Input config file not found. Starting from last known.'];' ';'Load from the file menu in Edit Configuration to locate your file.'}, handles.msgbox_cs)
+        msgbox({[handles.msgbox_fontstr 'Input config file not found in last known location. Starting from last known.'];' ';'Restart including path or load from the file menu in Edit Configuration to locate your file.'}, handles.msgbox_cs)
         set(handles.configfile_text, 'string', []);
     end
 else
@@ -179,8 +179,27 @@ function quit_pushbutton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if ~isfield(handles, 'MCconfig')
-    temp = load(get(handles.configfile_text, 'string'), 'MCconfig');
-    handles.MCconfig = temp.MCconfig;
+    if ~isempty(get(handles.configfile_text, 'string'))
+        temp = load(get(handles.configfile_text, 'string'), 'MCconfig');
+        handles.MCconfig = temp.MCconfig;
+    else
+        handles.MCconfig = [];
+    end
 end 
 disp(handles.MCconfig)
 figure1_CloseRequestFcn(handles.figure1, eventdata, handles)
+
+
+% --------------------------------------------------------------------
+function quit_menu_Callback(hObject, eventdata, handles)
+% hObject    handle to quit_menu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function quit2_menu_Callback(hObject, eventdata, handles)
+% hObject    handle to quit2_menu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+quit_pushbutton_Callback(hObject, eventdata, handles)
