@@ -295,10 +295,11 @@ while filecount <= length(filelist),
                                             classcount = 0;
                                         else
                                             temp_ind = get_roi_indices(classlist, class2view(classcount-1), MCconfig.pick_mode); %check for rois one class back
+                                            %keyboard
                                             temp_ind = apply_threshold(temp_ind); 
                                             classcount = classcount - 1; % go back 1 class
                                             while isempty(temp_ind) && classcount > 1 %check until find class with rois in it
-                                                temp_ind = get_roi_indices(classlist, class2view(classcount), MCconfig.pick_mode);
+                                                temp_ind = get_roi_indices(classlist, class2view(classcount-1), MCconfig.pick_mode);
                                                 temp_ind = apply_threshold(temp_ind); 
                                                 classcount = classcount - 1; % go back one more
                                             end;
