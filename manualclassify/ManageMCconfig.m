@@ -21,7 +21,7 @@ function varargout = ManageMCconfig(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 % Edit the above text to modify the response to help ManageMCconfig
 
-% Last Modified by GUIDE v2.5 21-Apr-2015 19:30:46
+% Last Modified by GUIDE v2.5 22-Apr-2015 08:38:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -115,10 +115,11 @@ if length(varargin) > 0
     handles.MCconfig = temp.MCconfig;
     handles.MCconfig.settings.configfile = fullf;
 else
-    f = [ handles.configpath 'last.mcconfig.mat'];
-    if exist(f, 'file'),
-        temp = load([ handles.configpath 'last.mcconfig.mat']);
+    fullf = [ handles.configpath 'last.mcconfig.mat'];
+    if exist(fullf, 'file'),
+        temp = load(fullf);
         handles.MCconfig = temp.MCconfig;
+        handles.MCconfig.settings.configfile = fullf;
     else
         handles.MCconfig = MCconfig_default();
         if ~exist('config', 'dir'),
@@ -133,16 +134,17 @@ map_MCconfig2GUI(hObject, handles)
 all_file_checkbox_Callback(hObject, [], handles)
 threshold_mode_popup_Callback(hObject, eventdata, handles)
 eventdata_temp.NewValue = get(handles.resolve_file_locations_buttongroup, 'selectedobject'); %what is it now
+eventdata_temp.opening = 1;
 resolve_file_locations_buttongroup_SelectionChangeFcn(hObject, eventdata_temp, handles)
-new_review_buttongroup_SelectionChangeFcn(handles.new_review_buttongroup, [], handles) %ensure correct related settings
+new_review_buttongroup_SelectionChangeFcn(handles.new_review_buttongroup, eventdata_temp, handles) %ensure correct related settings
 %pick_mode_checkbox_Callback(handles.pick_mode_checkbox, [], handles) %must be done after new_review
 update_filelists(handles)
 
 % Update handles structure
-guidata(handles.main_figure, handles);
+guidata(handles.MCconfig_main_figure, handles);
 
 % UIWAIT makes ManageMCconfig wait for user response (see UIRESUME)
- uiwait(handles.main_figure);  %uncommented to control output wait for user completion (heidi)
+ uiwait(handles.MCconfig_main_figure);  %uncommented to control output wait for user completion (heidi)
 
 %
 function map_MCconfig2GUI (hObject, handles) 
@@ -208,7 +210,7 @@ if get(handles.pick_mode_checkbox,'value')
 else
     set([handles.classpath_text handles.class_filestr_text handles.class_filestr_label handles.classpath_label handles.classpath_browse], 'visible', 'off')
 end
-guidata(handles.main_figure, handles);
+guidata(handles.MCconfig_main_figure, handles);
 
 
 
@@ -257,9 +259,14 @@ function varargout = ManageMCconfig_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 
 %varargout{1} = handles.output;
-varargout{1} = handles.MCconfig;
-% The figure can be deleted now
-delete(hObject);
+if ~isempty(handles) 
+    varargout{1} = handles.MCconfig;
+    % The figure can be deleted now
+    delete(hObject);
+else %user closed window pre-maturely (e.g., closed startMC)
+    varargout{1} = [];
+end
+
 
 
 % --- Executes on selection change in pick_mode.
@@ -319,7 +326,7 @@ function roipath_text_Callback(hObject, eventdata, handles)
 
 oldpath = handles.MCconfig.roibase_path;
 handles.MCconfig.roibase_path = get(hObject, 'string');
-guidata(handles.main_figure, handles);
+guidata(handles.MCconfig_main_figure, handles);
 if ~isequal(get(hObject, 'string'), oldpath) %if path changed
 %       handles.MCconfig.roifiles = [];
        if get(handles.all_file_checkbox, 'value')
@@ -422,8 +429,8 @@ end
 
 
 % --- Executes during object creation, after setting all properties.
-function main_figure_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to main_figure (see GCBO)
+function MCconfig_main_figure_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to MCconfig_main_figure (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -437,11 +444,13 @@ function pick_mode_checkbox_Callback(hObject, eventdata, handles)
 hset = [handles.classpath_text handles.class_filestr_text handles.classpath_label handles.classpath_browse handles.class_filestr_label handles.classfiles_listbox handles.classfiles_text];
 if get(handles.pick_mode_checkbox, 'Value')
     set(hset, 'visible', 'on')
-    update_filelists(handles)
+    if ~isfield(eventdata, 'opening') %skip first time since update_filelists called again just after
+        update_filelists(handles)
+    end
 else
     set(hset, 'visible', 'off')
     handles.MCconfig.classfiles = [];
-    guidata(handles.main_figure, handles);
+    guidata(handles.MCconfig_main_figure, handles);
 end
 
 
@@ -456,7 +465,7 @@ if get(handles.all_file_checkbox, 'value') %&& get(handles.review_radiobutton, '
     all_file_checkbox_Callback(hObject, [], handles)
 end
 update_filelists (handles)
-guidata(handles.main_figure, handles);
+guidata(handles.MCconfig_main_figure, handles);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -494,7 +503,7 @@ function classpath_text_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of classpath_text as a double
 %   p = get(handles.classpath_text, 'string');
    update_filelists(handles)
-   guidata(handles.main_figure, handles);
+   guidata(handles.MCconfig_main_figure, handles);
 
    
    
@@ -525,9 +534,9 @@ if classpath
 end
 
 
-% --- Executes when main_figure is resized.
-function main_figure_ResizeFcn(hObject, eventdata, handles)
-% hObject    handle to main_figure (see GCBO)
+% --- Executes when MCconfig_main_figure is resized.
+function MCconfig_main_figure_ResizeFcn(hObject, eventdata, handles)
+% hObject    handle to MCconfig_main_figure (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -560,9 +569,9 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes when user attempts to close main_figure.
-function main_figure_CloseRequestFcn(hObject, eventdata, handles)
-% hObject    handle to main_figure (see GCBO)
+% --- Executes when user attempts to close MCconfig_main_figure.
+function MCconfig_main_figure_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to MCconfig_main_figure (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -572,12 +581,12 @@ if ~isfield(handles.MCconfig.settings,'configfile')
     handles.MCconfig.settings.configfile = [ handles.configpath 'last.mcconfig.mat'];
 end
 %following to manage uiwait to control no output until user is done (heidi)
-if isequal(get(handles.main_figure, 'waitstatus'), 'waiting')
-% The GUI is still in UIWAIT, us UIRESUME
-uiresume(handles.main_figure);
+if isequal(get(handles.MCconfig_main_figure, 'waitstatus'), 'waiting')
+%% The GUI is still in UIWAIT, us UIRESUME
+uiresume(handles.MCconfig_main_figure);
 else
-% The GUI is no longer waiting, just close it
-delete(handles.main_figure);
+%% The GUI is no longer waiting, just close it
+delete(handles.MCconfig_main_figure);
 end
 
 
@@ -655,7 +664,7 @@ if ~isempty(temp.filename)
         %reset class2view in case not all retained
         handles.MCconfig.class2view1 = v;
     end
-    guidata(handles.main_figure, handles);
+    guidata(handles.MCconfig_main_figure, handles);
     %reset highlights for class2view to match status of checkbox
     class2view_all_checkbox_Callback(hObject, eventdata, handles)
 else
@@ -795,7 +804,7 @@ else %isequal(get(handles.VPR_format1_menu, 'checked'), 'on')
 end
 
 MCconfig = handles.MCconfig;
-guidata(handles.main_figure, handles);
+guidata(handles.MCconfig_main_figure, handles);
 
 if ~isequal(handles.MCconfig, handles.MCconfig_saved) && isempty(hObject)
     opt.Interpreter = 'tex'; opt.Default = 'Save';
@@ -803,7 +812,7 @@ if ~isequal(handles.MCconfig, handles.MCconfig_saved) && isempty(hObject)
     switch selectedButton
         case 'Save'
             if isempty(hObject)
-                hObject = handles.main_figure;
+                hObject = handles.MCconfig_main_figure;
             end
         case 'Quit now'
             hObject = [];
@@ -824,7 +833,7 @@ if  ~isempty(hObject)
         fullf = [p f];
         handles.MCconfig.settings.configfile = fullf;
         handles.MCconfig_saved = handles.MCconfig;
-        guidata(handles.main_figure, handles);
+        guidata(handles.MCconfig_main_figure, handles);
         save(fullf, 'MCconfig');
     end
 end
@@ -846,6 +855,7 @@ if f
     if isfield(temp, 'MCconfig')
         handles.MCconfig = temp.MCconfig;
         handles.MCconfig.settings.configfile = fullf;
+        handles.MCconfig_saved = handles.MCconfig; %initialize to track save status
     else
         msgbox([handles.msgbox_fontstr 'Not a valid configuration file'], handles.msgbox_cs)
     end
@@ -1070,7 +1080,7 @@ if ~isequal(f,0)
     else %review_radiobutton
         handles.MCconfig.resultfiles = unique([handles.MCconfig.resultfiles; fullf]);
     end
-    guidata(handles.main_figure, handles);
+    guidata(handles.MCconfig_main_figure, handles);
     set(handles.select_files_pushbutton, 'string', 'Select more files')
     update_filelists (handles)
 end;
@@ -1133,7 +1143,7 @@ if get(handles.all_file_checkbox,'value')
     else %review_radiobutton
         handles.MCconfig.resultfiles = fullf;
     end
-    guidata(handles.main_figure, handles);
+    guidata(handles.MCconfig_main_figure, handles);
     update_filelists( handles )
 else
     set(handles.select_files_pushbutton, 'enable', 'on')
@@ -1153,7 +1163,8 @@ handles.MCconfig.resultfiles = [];
 handles.MCconfig.roifiles = [];
 handles.MCconfig.classfiles = [];
 set(handles.select_files_pushbutton, 'string', 'Select files')
-guidata(handles.main_figure, handles);
+set(handles.all_file_checkbox, 'value', 0)
+guidata(handles.MCconfig_main_figure, handles);
 
 
 % --- Executes when selected object is changed in new_review_buttongroup.
@@ -1166,12 +1177,12 @@ function new_review_buttongroup_SelectionChangeFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 if ~isempty(get(handles.resultfiles_listbox, 'string'))
     opt.Interpreter = 'tex'; opt.Default = 'Cancel';
-    if isequal(get(handles.main_figure, 'visible'), 'on') %skip the first pass through when starting up
+    if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first pass through when starting up
         button = questdlg([handles.msgbox_fontstr 'Switching file selection method will clear your current file list'], 'New or Review', 'Clear list', 'Cancel', opt);
         if isequal(button, 'Clear list')
             clear_files_pushbutton_Callback(hObject, [], handles)
             if get(handles.all_file_checkbox, 'value')
-                all_file_checkbox_Callback(hObject, [], handles)
+                all_file_checkbox_Callback(hObject, eventdata, handles)
             end
         else
             set(handles.new_review_buttongroup, 'selectedobject', eventdata.OldValue)
@@ -1183,8 +1194,8 @@ if isequal(get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag'), 'r
 else
     set(handles.pick_mode_checkbox, 'enable', 'on')
 end
-pick_mode_checkbox_Callback([], [], handles)
-guidata(handles.main_figure, handles);
+pick_mode_checkbox_Callback([], eventdata, handles)
+guidata(handles.MCconfig_main_figure, handles);
 
 
 
@@ -1285,7 +1296,7 @@ function new_review_buttongroup_CreateFcn(hObject, eventdata, handles)
 
 function update_filelists (handles)
 if ~exist(get(handles.manualpath_text, 'string'), 'dir')
-    if isequal(get(handles.main_figure, 'visible'), 'on') %skip the first passed through when starting up                
+    if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first passed through when starting up                
         msgbox([handles.msgbox_fontstr 'Path not found - select a valid manual result path.'], handles.msgbox_cs)
     end
     set(handles.resultfiles_listbox, 'string', [])
@@ -1311,7 +1322,7 @@ else
             if ~isempty(temp)
                 for ii = 1:length(temp), fullf(temp(ii)) = {['<html><font color="red">', fullf{temp(ii)}, '</font><html>']}; end
                 set(handles.roifiles_listbox, 'string', fullf)
-                    if isequal(get(handles.main_figure, 'visible'), 'on') %skip the first passed through when starting up                
+                    if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first passed through when starting up                
                         msgbox({[handles.msgbox_fontstr 'Image files shown in red text cannot be found.']; ' ';  'If your image data is in multiple folders, ''simple paths'' is not an option.'; ' '; 'Specify a resolver function instead.'}, handles.msgbox_cs)
                     end
                 %handles.file_check_flag = 1; %one or more bad roi files
@@ -1348,7 +1359,7 @@ else
                 if ~isempty(temp)
                     for ii = 1:length(temp), fullf(temp(ii)) = {['<html><font color="red">', fullf{temp(ii)}, '</font><html>']}; end
                     set(handles.classfiles_listbox, 'string', fullf)
-                    if isequal(get(handles.main_figure, 'visible'), 'on') %skip the first passed through when starting up
+                    if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first passed through when starting up
                         msgbox({[handles.msgbox_fontstr 'Class files shown in red text cannot be found. Verify class file path.'];' '; 'If your classes files are in multiple folders, ''simple paths'' is not an option. Specify a resolver function instead.'; ' '; 'If you proceed with these settings, the files in red will be displayed without considering classifier results.'}, 'Missing Class Files', handles.msgbox_cs)
                     end
                  %   handles.file_check_flag = 1; %one or more bad roi files
@@ -1370,7 +1381,7 @@ else
         end
         set(handles.start_file_popup, 'string', cellstr(num2str((1:length(handles.MCconfig.resultfiles))')))
     end
-    guidata(handles.main_figure, handles);
+    guidata(handles.MCconfig_main_figure, handles);
 end
 
 
@@ -1418,7 +1429,7 @@ else
     set(hObject, 'checked', 'off')
 end
 handles.MCconfig.dataformat = 2; %get(handles.VPR_format1_menu, 'value'); 
-guidata(handles.main_figure, handles);
+guidata(handles.MCconfig_main_figure, handles);
 
 
 
@@ -1462,4 +1473,4 @@ function return_pushbutton_Callback(hObject, eventdata, handles)
 % hObject    handle to return_pushbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-main_figure_CloseRequestFcn(hObject, eventdata, handles)
+MCconfig_main_figure_CloseRequestFcn(hObject, eventdata, handles)

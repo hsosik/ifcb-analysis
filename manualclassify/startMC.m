@@ -124,10 +124,12 @@ if ~isempty(fullf)
 else
     handles.MCconfig = ManageMCconfig();
 end
-set(hset, 'enable', 'on')
-set(handles.status_text, 'String', 'Ready')
-set(handles.configfile_text, 'string', handles.MCconfig.settings.configfile)
-guidata(hObject, handles)
+if ishandle(handles.figure1) %otherwise user closed window
+    set(hset, 'enable', 'on')
+    set(handles.status_text, 'String', 'Ready')
+    set(handles.configfile_text, 'string', handles.MCconfig.settings.configfile)
+    guidata(hObject, handles)
+end
 
 % --- Executes on button press in startMC_pushbutton.
 function startMC_pushbutton_Callback(hObject, eventdata, handles)
@@ -143,9 +145,10 @@ if ~isfield(handles, 'MCconfig')
     handles.MCconfig = temp.MCconfig;
 end 
 manual_classify_5_0(handles.MCconfig)
-set(hset, 'enable', 'on')
-set(handles.status_text, 'String', 'Ready')
-
+if ishandle(handles.figure1) %otherwise user closed window
+    set(hset, 'enable', 'on')
+    set(handles.status_text, 'String', 'Ready')
+end
 
 % --- Executes during object creation, after setting all properties.
 function configfile_text_CreateFcn(hObject, eventdata, handles)
@@ -163,6 +166,10 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % Hint: delete(hObject) closes the figure
 [last_path,f] = fileparts(get(handles.configfile_text, 'string'));
 save(fullfile(handles.configpath, 'startMC_path'), 'last_path')
+f = findobj('type', 'figure', 'tag', 'MCconfig_main_figure');
+if ~isempty(f) %ManageMCconfig window still open
+    delete(f) %delete it
+end
 delete(hObject);
 
 
