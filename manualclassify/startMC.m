@@ -116,14 +116,16 @@ function edit_config_pushbutton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 fullf = get(handles.configfile_text, 'string');
+set(handles.status_text, 'String', 'Busy in configuration edit')
 hset = findobj('style', 'pushbutton');
-set(hset, 'enable', 'inactive')
+set(hset, 'enable', 'off')
 if ~isempty(fullf)
     handles.MCconfig = ManageMCconfig(cellstr(fullf));
 else
     handles.MCconfig = ManageMCconfig();
 end
 set(hset, 'enable', 'on')
+set(handles.status_text, 'String', 'Ready')
 set(handles.configfile_text, 'string', handles.MCconfig.settings.configfile)
 guidata(hObject, handles)
 
@@ -132,14 +134,17 @@ function startMC_pushbutton_Callback(hObject, eventdata, handles)
 % hObject    handle to startMC_pushbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+set(handles.status_text, 'String', 'Busy in Manual Classify')
 hset = findobj('style', 'pushbutton');
-set(hset, 'enable', 'inactive')
+set(hset, 'enable', 'off')
 if ~isfield(handles, 'MCconfig')
     temp = load(get(handles.configfile_text, 'string'), 'MCconfig');
     handles.MCconfig = temp.MCconfig;
 end 
 manual_classify_5_0(handles.MCconfig)
 set(hset, 'enable', 'on')
+set(handles.status_text, 'String', 'Ready')
 
 
 % --- Executes during object creation, after setting all properties.

@@ -21,7 +21,7 @@ function varargout = ManageMCconfig(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 % Edit the above text to modify the response to help ManageMCconfig
 
-% Last Modified by GUIDE v2.5 20-Apr-2015 15:05:15
+% Last Modified by GUIDE v2.5 21-Apr-2015 19:30:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -572,7 +572,7 @@ if ~isfield(handles.MCconfig.settings,'configfile')
     handles.MCconfig.settings.configfile = [ handles.configpath 'last.mcconfig.mat'];
 end
 %following to manage uiwait to control no output until user is done (heidi)
-if isequal(get(hObject, 'waitstatus'), 'waiting')
+if isequal(get(handles.main_figure, 'waitstatus'), 'waiting')
 % The GUI is still in UIWAIT, us UIRESUME
 uiresume(handles.main_figure);
 else
@@ -1166,7 +1166,7 @@ function new_review_buttongroup_SelectionChangeFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 if ~isempty(get(handles.resultfiles_listbox, 'string'))
     opt.Interpreter = 'tex'; opt.Default = 'Cancel';
-    if isequal(get(handles.main_figure, 'visible'), 'on') %skip the first passed through when starting up
+    if isequal(get(handles.main_figure, 'visible'), 'on') %skip the first pass through when starting up
         button = questdlg([handles.msgbox_fontstr 'Switching file selection method will clear your current file list'], 'New or Review', 'Clear list', 'Cancel', opt);
         if isequal(button, 'Clear list')
             clear_files_pushbutton_Callback(hObject, [], handles)
@@ -1455,3 +1455,11 @@ function dataformat_contextmenu_Callback(hObject, eventdata, handles)
 % hObject    handle to dataformat_contextmenu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in return_pushbutton.
+function return_pushbutton_Callback(hObject, eventdata, handles)
+% hObject    handle to return_pushbutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+main_figure_CloseRequestFcn(hObject, eventdata, handles)
