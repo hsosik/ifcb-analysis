@@ -82,6 +82,7 @@ if length(varargin) > 0
     end;
     temp = load(filename, 'class2use');
     set(handles.class2use_uitable, 'data', temp.class2use(:));
+    keyboard
     if length(varargin) > 1,
         if isequal(varargin{2}, {'fromMC'})
             set(handles.back2MC_pushbutton, 'enable', 'on', 'visible', 'on')
