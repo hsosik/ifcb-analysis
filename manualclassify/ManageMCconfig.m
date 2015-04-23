@@ -21,7 +21,7 @@ function varargout = ManageMCconfig(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 % Edit the above text to modify the response to help ManageMCconfig
 
-% Last Modified by GUIDE v2.5 22-Apr-2015 20:38:26
+% Last Modified by GUIDE v2.5 23-Apr-2015 14:39:34
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -576,19 +576,20 @@ function MCconfig_main_figure_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to MCconfig_main_figure (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
 % Hint: delete(hObject) closes the figure
 Save_menu_Callback([], [], handles) %just save to last.mcconfig.mat
 if ~isfield(handles.MCconfig.settings,'configfile')
     handles.MCconfig.settings.configfile = [ handles.configpath 'last.mcconfig.mat'];
 end
+guidata(handles.MCconfig_main_figure, handles);
+
 %following to manage uiwait to control no output until user is done (heidi)
 if isequal(get(handles.MCconfig_main_figure, 'waitstatus'), 'waiting')
 %% The GUI is still in UIWAIT, us UIRESUME
-uiresume(handles.MCconfig_main_figure);
+    uiresume(handles.MCconfig_main_figure);
 else
 %% The GUI is no longer waiting, just close it
-delete(handles.MCconfig_main_figure);
+    delete(handles.MCconfig_main_figure);
 end
 
 
@@ -642,7 +643,7 @@ filename = get(handles.class2use_file_text, 'string');
 if ~strcmp(filename, 'class2use_file') && ~isempty(filename)
     temp = ManageClassLabels(cellstr(filename), {'fromMC'});
 else
-    temp = ManageClassLabels(); %open class2use gui with blank list
+    temp = ManageClassLabels({''}, {'fromMC'}); %open class2use gui with blank list
 end
 if ~isempty(temp.filename)
     handles.MCconfig.class2use = temp.class2use;
@@ -670,7 +671,7 @@ if ~isempty(temp.filename)
     %reset highlights for class2view to match status of checkbox
     class2view_all_checkbox_Callback(hObject, eventdata, handles)
 else
-    msgbox([handles.msgbox_fontstr 'No list loaded. You must save a class2use file to load here.'], handles.msgbox_cs)
+    uiwait(msgbox([handles.msgbox_fontstr 'No list loaded. You must save a class2use file to load here.'], handles.msgbox_cs))
 end;
 
 
@@ -840,6 +841,7 @@ if  ~isempty(hObject)
     end
 end
 save([ handles.configpath 'last.mcconfig.mat'], 'MCconfig');
+
 % --------------------------------------------------------------------
 function load_config_menu_Callback(hObject, eventdata, handles)
 % hObject    handle to load_config_menu (see GCBO)
@@ -859,7 +861,7 @@ if ~isequal(f,0)
         handles.MCconfig.settings.configfile = fullf;
         handles.MCconfig_saved = handles.MCconfig; %initialize to track save status
     else
-        msgbox([handles.msgbox_fontstr 'Not a valid configuration file'], handles.msgbox_cs)
+        uiwait(msgbox([handles.msgbox_fontstr 'Not a valid configuration file'], handles.msgbox_cs))
     end
 end
 map_MCconfig2GUI(hObject, handles);
@@ -1077,7 +1079,9 @@ if ~isequal(f,0)
     f = cellstr(f);
     fullf = cellstr([repmat(p,size(f,2),1), char(f)]);
     if get(handles.start_new_radiobutton, 'value')
-        set(handles.roipath_text, 'string', p)
+        if get(handles.simple_paths_radiobutton, 'value')
+            set(handles.roipath_text, 'string', p)
+        end
         handles.MCconfig.roifiles = unique([handles.MCconfig.roifiles; fullf]);
     else %review_radiobutton
         handles.MCconfig.resultfiles = unique([handles.MCconfig.resultfiles; fullf]);
@@ -1133,7 +1137,7 @@ if get(handles.all_file_checkbox,'value')
     set(handles.select_files_pushbutton, 'enable', 'off')
     temp = dir([p filespec]);
     if isempty(temp)
-        msgbox([handles.msgbox_fontstr 'No files found. Check your ' typestr 'path setting.'], handles.msgbox_cs)
+        uiwait(msgbox([handles.msgbox_fontstr 'No files found. Check your ' typestr 'path setting.'], handles.msgbox_cs))
         fullf = [];
         %set(handles.all_file_checkbox, 'value', 0)
     else
@@ -1211,10 +1215,9 @@ function resolver_function_edit_Callback(hObject, eventdata, handles)
 fullf = get(handles.resolver_function_edit, 'string');
 if exist(fullf, 'file')
     set(handles.resolver_function_edit, 'foregroundcolor', 'k')
-%    resolve_files(handles)
     update_filelists(handles)
 else
-    msgbox([handles.msgbox_fontstr 'Resolver function not found - select a valid function.'], handles.msgbox_cs)
+    uiwait(msgbox([handles.msgbox_fontstr 'Resolver function not found - select a valid function.'], handles.msgbox_cs))
     set(handles.resolver_function_edit, 'foregroundcolor', 'r')
 end
 
@@ -1283,7 +1286,7 @@ if isequal(eventdata.NewValue, handles.resolver_func_radiobutton) %resolver func
     set(hset, 'visible', 'on')
     set(handles.roipath_label, 'string', 'Common image path (roi files)')
     set(handles.classpath_label, 'string', 'Common class file path')
-else %simple paths case
+else %simple paths case or standard resolver case
     set(hset, 'visible', 'off')
     set(handles.roipath_label, 'string', 'Image path (roi files)')
     set(handles.classpath_label, 'string', 'Class file path')
@@ -1313,15 +1316,14 @@ function new_review_buttongroup_CreateFcn(hObject, eventdata, handles)
 
 function update_filelists (handles)
 if ~exist(get(handles.manualpath_text, 'string'), 'dir')
-    if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first passed through when starting up
-        msgbox([handles.msgbox_fontstr 'Path not found - select a valid manual result path.'], handles.msgbox_cs)
+    if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first pass through when starting up
+        uiwait(msgbox([handles.msgbox_fontstr 'Path not found - select a valid manual result path.'], handles.msgbox_cs))
     end
     set(handles.resultfiles_listbox, 'string', [])
-else
+else %some manual files in listbox
     if isequal(get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag'), 'review_radiobutton')
         set(handles.resultfiles_listbox, 'string', handles.MCconfig.resultfiles)
         h = handles.resultfiles_listbox; %review means manual list is master
-        %keyboard
         if get(handles.simple_paths_radiobutton, 'value')
             [~, f] = cellfun(@fileparts,cellstr(get(h, 'string')), 'uniformoutput', false);
             p = get(handles.roipath_text, 'string');
@@ -1335,8 +1337,8 @@ else
                 temp = [];
             end
             handles.MCconfig.roifiles = fullf;
-        else
-            handles = resolve_files(handles, handles.MCconfig.resultfiles)
+        else %resolver case
+            handles = resolve_files(handles, handles.MCconfig.resultfiles);
             if ~isempty(handles.MCconfig.roifiles)
                 temp = cellfun(@exist, handles.MCconfig.roifiles, 'uniformoutput', true);
             else
@@ -1350,7 +1352,7 @@ else
             for ii = 1:length(temp), fullf(temp(ii)) = {['<html><font color="red">', fullf{temp(ii)}, '</font><html>']}; end
             set(handles.roifiles_listbox, 'string', fullf)
             if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first passed through when starting up
-                msgbox({[handles.msgbox_fontstr 'Image files shown in red text cannot be found.']; ' ';  'If your image data is in multiple folders, ''simple paths'' is not an option.'; ' '; 'Specify a resolver function instead.'}, handles.msgbox_cs)
+                uiwait(msgbox({[handles.msgbox_fontstr 'Image files shown in red text cannot be found.']; ' ';  'If your image data is in multiple folders, ''simple paths'' is not an option.'; ' '; 'Specify a resolver function instead.'}, handles.msgbox_cs))
             end
             %handles.file_check_flag = 1; %one or more bad roi files
         end
@@ -1368,11 +1370,6 @@ else
                 fullf = [];
             end;
             handles.MCconfig.resultfiles = fullf;
-        %else
-        %    if ~isempty(handles.MCconfig.roifiles)
-        %        handles = resolve_files(handles, handles.MCconfig.roifiles)
-        %    end
-        %end
         set(handles.resultfiles_listbox, 'string', handles.MCconfig.resultfiles);       
         if get(handles.pick_mode_checkbox, 'value')  %check for classfiles
             if get(handles.simple_paths_radiobutton, 'value')
@@ -1388,7 +1385,7 @@ else
                 handles.MCconfig.classfiles = fullf;
             else
                if ~isempty(handles.MCconfig.roifiles)
-                    handles = resolve_files(handles, handles.MCconfig.roifiles)
+                    handles = resolve_files(handles, handles.MCconfig.roifiles);
                end
             end
             if ~isempty(handles.MCconfig.classfiles)
@@ -1403,7 +1400,7 @@ else
                 for ii = 1:length(temp), fullf(temp(ii)) = {['<html><font color="red">', fullf{temp(ii)}, '</font><html>']}; end
                 set(handles.classfiles_listbox, 'string', fullf)
                 if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first passed through when starting up
-                    msgbox({[handles.msgbox_fontstr 'Class files shown in red text cannot be found. Verify class file path.'];' '; 'If your classes files are in multiple folders, ''simple paths'' is not an option. Specify a resolver function instead.'; ' '; 'If you proceed with these settings, the files in red will be displayed without considering classifier results.'}, 'Missing Class Files', handles.msgbox_cs)
+                    uiwait(msgbox({[handles.msgbox_fontstr 'Class files shown in red text cannot be found. Verify class file path.'];' '; 'If your classes files are in multiple folders, ''simple paths'' is not an option. Specify a resolver function instead.'; ' '; 'If you proceed with these settings, the files in red will be displayed without considering classifier results.'}, 'Missing Class Files', handles.msgbox_cs))
                 end
                 %   handles.file_check_flag = 1; %one or more bad roi files
             end
@@ -1517,13 +1514,22 @@ function return_pushbutton_Callback(hObject, eventdata, handles)
 MCconfig_main_figure_CloseRequestFcn(hObject, eventdata, handles)
 
 function handles = resolve_files(handles, filelist)
-full_func_file = get(handles.resolver_function_edit, 'string');
-[p f] = fileparts(full_func_file);
-if exist(p, 'dir')
-    pnow = pwd;
-    cd(p)
-    resolver_handle = str2func(f);
-    cd(pnow)
+if get(handles.standard_resolver_radiobutton, 'value')
+    resolver_handle = @resolve_standard;
+else
+    full_func_file = get(handles.resolver_function_edit, 'string');
+    [p f] = fileparts(full_func_file);
+    if exist(p, 'dir')
+        pnow = pwd;
+        cd(p)
+        resolver_handle = str2func(f);
+        cd(pnow)
+    else
+        resolver_handle = [];
+        uiwait(msgbox([handles.msgbox_fontstr 'Resolver function not found - select a valid function file.'], handles.msgbox_cs))  
+    end
+end
+if ~isempty(resolver_handle)
     baseroi = get(handles.roipath_text, 'string');
     baseclass = get(handles.classpath_text, 'string');
     class_filestr = get(handles.class_filestr_text, 'string');
@@ -1533,7 +1539,38 @@ if exist(p, 'dir')
     if isfield(fstruct, 'stitchfiles')
         handles.MCconfig.stitchfiles = fstruct.stithfiles;
     end
-    guidata(handles.MCconfig_main_figure, handles);
-else
-    msgbox([handles.msgbox_fontstr 'Resolver function not found - select a valid function file.'], handles.msgbox_cs)
+    guidata(handles.MCconfig_main_figure, handles);   
 end
+
+
+% --- Executes during object creation, after setting all properties.
+function standard_resolver_radiobutton_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to standard_resolver_radiobutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+function files_struct = resolve_standard(filelist, baseroipath, baseclasspath, class_filestr);
+%standard case for <base_path>\yyyy\<IFCB_day_dir>\
+[~,files] = cellfun(@fileparts,filelist, 'uniformoutput', false);
+
+files = char(files);
+n = length(filelist);
+sep = repmat(filesep,n,1);
+
+%create lists of roi/class files with fullpath
+roibase = repmat(char(baseroipath),n,1);
+classbase = repmat(char(baseclasspath),n,1);
+roiext = repmat('.roi',n,1);
+classext = repmat([class_filestr '.mat'],n,1);
+if files(1,1) == 'D',
+    roipath = [roibase files(:,2:5) sep files(:,1:9) sep];
+    classpath = [classbase files(:,2:5) sep files(:,1:9) sep]; %edit and use this line instead of above in case of different structure for class and roi locations
+else      
+    roipath = [roibase sep files(:,7:10) sep files(:,1:14) sep];
+    classpath = [classbase sep files(:,7:10) sep files(:,1:14) sep]; %edit and use this line instead of above in case of different structure for class and roi locations
+end;
+roifiles = cellstr([roipath files roiext]);
+classfiles = cellstr([classpath files classext]);
+
+files_struct.classfiles = classfiles;
+files_struct.roifiles = roifiles;

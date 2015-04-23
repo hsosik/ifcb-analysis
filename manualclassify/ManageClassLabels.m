@@ -69,7 +69,12 @@ function ManageClassLabels_OpeningFcn(hObject, eventdata, handles, varargin)
 %handles.output = hObject;
 
 handles.unsaved = 0;
-if length(varargin) > 0
+if length(varargin) > 1,
+    if isequal(varargin{2}, {'fromMC'})
+        set(handles.back2MC_pushbutton, 'enable', 'on', 'visible', 'on')
+    end
+end
+if length(varargin) > 0 && ~isempty(char(varargin{1}))
     filename = char(varargin{1});
     handles.filename = filename;
     temp = fileparts(filename);
@@ -82,12 +87,6 @@ if length(varargin) > 0
     end;
     temp = load(filename, 'class2use');
     set(handles.class2use_uitable, 'data', temp.class2use(:));
-    keyboard
-    if length(varargin) > 1,
-        if isequal(varargin{2}, {'fromMC'})
-            set(handles.back2MC_pushbutton, 'enable', 'on', 'visible', 'on')
-        end
-    end
 else %make a default place to put class2use files
     temp = fileparts(which('ManageClassLabels'));
     temp = [temp filesep 'config' filesep];
@@ -147,7 +146,6 @@ jtable.editCellAt(row-1, col-1);
 jtable.setSurrendersFocusOnKeystroke(true);jtable.setSurrendersFocusOnKeystroke(true);
 jtable.getEditorComponent().requestFocus();
 handles.unsaved = 1; guidata(handles.figure1, handles);
-
 
 
 % --------------------------------------------------------------------
@@ -330,7 +328,7 @@ if ~get(handles.edit_class_checkbox, 'value'),
     set(handles.class2use_uitable, 'ColumnEditable', logical(0));
     set(handles.edit_class_checkbox, 'value', 0)
    %handles.unsaved = 1; guidata(hObject, handles);
-   jscroll = findjobj(handles.class2use_uitable);
+    jscroll = findjobj(handles.class2use_uitable);
     jtable = jscroll.getViewport.getView;
 end
 

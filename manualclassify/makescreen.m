@@ -31,7 +31,6 @@ lmargin = .28/tpos(4); %.28 inches as fraction of screen, bottom margin below li
 instructions_handle = NaN;
 
 if ~isempty(class2pick1), %edited 1/12/10 to fix typo pick2 --> pick1
-    
     switch MCconfig.alphabetize
         case {'yes',  1}
             [~, ix] = sort(lower(class2pick1));%sorting class2pick1
