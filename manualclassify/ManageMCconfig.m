@@ -132,10 +132,10 @@ handles.MCconfig_saved = handles.MCconfig; %initialize to track save status
 
 map_MCconfig2GUI(hObject, handles)
 %update settings to correspond to existing object status
-all_file_checkbox_Callback(hObject, [], handles)
+eventdata_temp.opening = 1;
+all_file_checkbox_Callback(hObject, eventdata, handles)
 threshold_mode_popup_Callback(hObject, eventdata, handles)
 eventdata_temp.NewValue = get(handles.resolve_file_locations_buttongroup, 'selectedobject'); %what is it now
-eventdata_temp.opening = 1;
 resolve_file_locations_buttongroup_SelectionChangeFcn(hObject, eventdata_temp, handles)
 new_review_buttongroup_SelectionChangeFcn(handles.new_review_buttongroup, eventdata_temp, handles) %ensure correct related settings
 %pick_mode_checkbox_Callback(handles.pick_mode_checkbox, [], handles) %must be done after new_review
@@ -1150,7 +1150,9 @@ if get(handles.all_file_checkbox,'value')
         handles.MCconfig.resultfiles = fullf;
     end
     guidata(handles.MCconfig_main_figure, handles);
-    update_filelists( handles )
+    if ~isfield(eventdata, 'opening') %skip first time since update_filelists called again just after    
+        update_filelists( handles )
+    end
 else
     set(handles.select_files_pushbutton, 'enable', 'on')
     clear_files_pushbutton_Callback(hObject, eventdata, handles)
@@ -1282,14 +1284,18 @@ function resolve_file_locations_buttongroup_SelectionChangeFcn(hObject, eventdat
 % handles    structure with handles and user data (see GUIDATA)
 hset = [handles.resolver_function_edit handles.resolver_browse];
 
-if isequal(eventdata.NewValue, handles.resolver_func_radiobutton) %resolver function case
-    set(hset, 'visible', 'on')
+%simple paths case
+set(hset, 'visible', 'off')
+set(handles.roipath_label, 'string', 'Image path (roi files)')
+set(handles.classpath_label, 'string', 'Class file path')
+if isequal(eventdata.NewValue, handles.standard_resolver_radiobutton) %standard resolver case
     set(handles.roipath_label, 'string', 'Common image path (roi files)')
     set(handles.classpath_label, 'string', 'Common class file path')
-else %simple paths case or standard resolver case
-    set(hset, 'visible', 'off')
-    set(handles.roipath_label, 'string', 'Image path (roi files)')
-    set(handles.classpath_label, 'string', 'Class file path')
+elseif isequal(eventdata.NewValue, handles.resolver_func_radiobutton) %custom resolver case
+    set(hset, 'visible', 'on')
+end
+if ~isfield(eventdata, 'opening') %skip first time since update_filelists called again just after
+    update_filelists(handles)
 end
     
 
@@ -1315,6 +1321,9 @@ function new_review_buttongroup_CreateFcn(hObject, eventdata, handles)
 
 
 function update_filelists (handles)
+set(handles.status_text, 'string', 'Checking files...')
+pause(.001)
+m = msgbox('Checking file status...please wait.');
 if ~exist(get(handles.manualpath_text, 'string'), 'dir')
     if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first pass through when starting up
         uiwait(msgbox([handles.msgbox_fontstr 'Path not found - select a valid manual result path.'], handles.msgbox_cs))
@@ -1338,7 +1347,9 @@ else %some manual files in listbox
             end
             handles.MCconfig.roifiles = fullf;
         else %resolver case
-            handles = resolve_files(handles, handles.MCconfig.resultfiles);
+            if ~isempty(handles.MCconfig.resultfiles),
+                handles = resolve_files(handles, handles.MCconfig.resultfiles);
+            end;
             if ~isempty(handles.MCconfig.roifiles)
                 temp = cellfun(@exist, handles.MCconfig.roifiles, 'uniformoutput', true);
             else
@@ -1421,7 +1432,8 @@ else %some manual files in listbox
     end
     guidata(handles.MCconfig_main_figure, handles);
 end
-
+set(handles.status_text, 'string', 'Status: Ready')
+delete(m)
 
 % --- Executes on button press in verbose_checkbox.
 function verbose_checkbox_Callback(hObject, eventdata, handles)
@@ -1533,11 +1545,11 @@ if ~isempty(resolver_handle)
     baseroi = get(handles.roipath_text, 'string');
     baseclass = get(handles.classpath_text, 'string');
     class_filestr = get(handles.class_filestr_text, 'string');
-    fstruct = feval(resolver_handle, filelist, baseroi, baseclass, class_filestr); 
+    fstruct = feval(resolver_handle, filelist, class_filestr); 
     handles.MCconfig.roifiles = fstruct.roifiles;
     handles.MCconfig.classfiles = fstruct.classfiles;
     if isfield(fstruct, 'stitchfiles')
-        handles.MCconfig.stitchfiles = fstruct.stithfiles;
+        handles.MCconfig.stitchfiles = fstruct.stitchfiles;
     end
     guidata(handles.MCconfig_main_figure, handles);   
 end
