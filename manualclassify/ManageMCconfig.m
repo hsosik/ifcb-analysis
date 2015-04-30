@@ -1127,15 +1127,16 @@ function all_file_checkbox_Callback(hObject, eventdata, handles)
 if get(handles.all_file_checkbox,'value')
     if get(handles.review_radiobutton, 'value')
         p = [get(handles.manualpath_text, 'string') filesep];
-        filespec = '*.mat';
+        %filespec = '*.mat';
         typestr = 'manual result';
+        temp = [dir([p 'I*.mat']); dir([p 'D*.mat'])];
     else
         p = [get(handles.roipath_text, 'string') filesep];
         filespec = '*.roi';
         typestr = 'image';
+        temp = dir([p filespec]);
     end
     set(handles.select_files_pushbutton, 'enable', 'off')
-    temp = dir([p filespec]);
     if isempty(temp)
         uiwait(msgbox([handles.msgbox_fontstr 'No files found. Check your ' typestr 'path setting.'], handles.msgbox_cs))
         fullf = [];
