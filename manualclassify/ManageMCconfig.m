@@ -1434,7 +1434,9 @@ else %some manual files in listbox
     guidata(handles.MCconfig_main_figure, handles);
 end
 set(handles.status_text, 'string', 'Status: Ready')
-delete(m)
+if ishandle(m)
+    delete(m)
+end
 
 % --- Executes on button press in verbose_checkbox.
 function verbose_checkbox_Callback(hObject, eventdata, handles)
@@ -1546,7 +1548,7 @@ if ~isempty(resolver_handle)
     baseroi = get(handles.roipath_text, 'string');
     baseclass = get(handles.classpath_text, 'string');
     class_filestr = get(handles.class_filestr_text, 'string');
-    fstruct = feval(resolver_handle, filelist, class_filestr); 
+    fstruct = feval(resolver_handle, filelist, baseroi, baseclass, class_filestr); 
     handles.MCconfig.roifiles = fstruct.roifiles;
     handles.MCconfig.classfiles = fstruct.classfiles;
     if isfield(fstruct, 'stitchfiles')
