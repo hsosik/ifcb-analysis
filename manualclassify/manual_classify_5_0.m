@@ -145,23 +145,29 @@ while filecount <= length(filelist),
         new_setcount = NaN; %initialize
         classnum = class2view(classcount);
         roi_ind_all = get_roi_indices(classlist, classnum, MCconfig.pick_mode);
-        if MCconfig.threshold_mode > 0
-            if MCconfig.dataformat == 2 
-                msgbox('Size thresholding not implemented for VPR tif case') %skip for VPR case
-                MCconfig.threshold_mode = 0;
-            else
-                temp_ind = apply_threshold(roi_ind_all); 
-                roi_ind_all = roi_ind_all(temp_ind);
+        if ~isempty(roi_ind_all)
+            if MCconfig.threshold_mode > 1
+                if MCconfig.dataformat == 2
+                    msgbox('Size thresholding not implemented for VPR tif case') %skip for VPR case
+                    MCconfig.threshold_mode = 0;
+                else    
+                    temp_ind = apply_threshold(roi_ind_all);
+                    if ~isempty(temp_ind)
+                        roi_ind_all = roi_ind_all(temp_ind);
+                    else
+                        roi_ind_all = [];
+                    end;
+                end
             end
         end
-        
-        if isempty(roi_ind_all) 
+        if isempty(roi_ind_all)
             if MCconfig.verbose, disp(['No images in class: ' class2use{classnum}]), end
             if ~exist('checking_handle', 'var'), 
                 checking_handle = text(0, 1.01, 'Checking for images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
                 pause(.001) %make sure label displays
             end;
         else %rois exist in current class
+            
             if threshold_warn %if first time showing images on this file
                 [selectedButton,dlgShown]=uigetpref('graphics','threshold_warning','Threshold Mode Reminder',...
                     'Warning: Image size threshold in effect. You may not be viewing all the images in this file.', {'OK'},...
@@ -393,9 +399,9 @@ function roi_info = get_roi_info()
 end
 
 function ind = apply_threshold(ind) %, x, y, MCconfig)
-    if MCconfig.threshold_mode == 1
+    if MCconfig.threshold_mode == 2
         ind = find(roi_info.x_all(ind) >= MCconfig.x_pixel_threshold | roi_info.y_all(ind) >= MCconfig.y_pixel_threshold);
-    elseif MCconfig.threshold_mode == 2
+    elseif MCconfig.threshold_mode == 3
         ind = find(roi_info.x_all(ind) < MCconfig.x_pixel_threshold & roi_info.y_all(ind) < MCconfig.y_pixel_threshold);
     else
         ind = ind;

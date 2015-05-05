@@ -1418,6 +1418,10 @@ else %some manual files in listbox
             end
         else
             handles.MCconfig.classfiles = [];%make sure empty if not starting from class even by resolver function
+            %run resolver anyway in case need stitch files for MVCO custom resovler
+            if ~isempty(handles.MCconfig.roifiles)
+                 handles = resolve_files(handles, handles.MCconfig.roifiles);
+            end
         end
     end
     if ~isempty(handles.MCconfig.resultfiles)

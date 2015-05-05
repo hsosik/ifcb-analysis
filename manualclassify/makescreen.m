@@ -139,7 +139,7 @@ end
 function change_config_callback( hOBj, eventdata )
 %   callback function for Options menu in manual_classify
     m = msgbox(''); delete(m) %stupid workaround to make inputdlg work on top of main figure window in MAC OS
-    prompt = {'Number of images to display in a set' 'Image resizing factor (1 = none)' 'threshold mode (0=all, 1=larger, 2=smaller)' 'x size threshold (pixels)' 'y size threshold (pixels)'};
+    prompt = {'Number of images to display in a set' 'Image resizing factor (1 = none)' 'threshold mode (1=all, 2=larger, 3=smaller)' 'x size threshold (pixels)' 'y size threshold (pixels)'};
     defaultanswer={num2str(MCconfig.setsize) num2str(MCconfig.imresize_factor) num2str(MCconfig.threshold_mode) num2str(MCconfig.x_pixel_threshold) num2str(MCconfig.y_pixel_threshold)};
     user_input = inputdlg(prompt,'Configure', 1, defaultanswer);
     if ~isempty(user_input)
@@ -157,15 +157,15 @@ function change_config_callback( hOBj, eventdata )
         [val status] = str2num(user_input{2});
         while ~status
             uiwait(msgbox(['Resize factor must be a number']))
-            user_input(1) = defaultanswer(2);
+            user_input(2) = defaultanswer(2);
             user_input = inputdlg(prompt,'Configure', 1, user_input);
             [val status] = str2num(user_input{2});
         end
         MCconfig.imresize_factor = str2num(user_input{2});
         [val status] = str2num(user_input{3});
-        while ~status || ~ismember(val,[0 1 2])
-            uiwait(msgbox(['Mode must be 0 (all), 1 (larger), or 2 (smaller)']))
-            user_input(1) = defaultanswer(3);
+        while ~status || ~ismember(val,[1 2 3])
+            uiwait(msgbox(['Mode must be 1 (all), 2 (larger), or 3 (smaller)']))
+            user_input(3) = defaultanswer(3);
             user_input = inputdlg(prompt,'Configure', 1, user_input);
             [val status] = str2num(user_input{3});
         end
@@ -173,7 +173,7 @@ function change_config_callback( hOBj, eventdata )
         [val status] = str2num(user_input{4});
         while ~status
             uiwait(msgbox(['x size threshold must be a positive integer']))
-            user_input(1) = defaultanswer(4);
+            user_input(4) = defaultanswer(4);
             user_input = inputdlg(prompt,'Configure', 1, user_input);
             [val status] = str2num(user_input{1});
             if (status && (rem(val,1) ~= 0 || val <= 0)), status = 0; end
@@ -182,7 +182,7 @@ function change_config_callback( hOBj, eventdata )
         [val status] = str2num(user_input{5});
         while ~status
             uiwait(msgbox(['y size threshold must be a positive integer']))
-            user_input(1) = defaultanswer(5);
+            user_input(5) = defaultanswer(5);
             user_input = inputdlg(prompt,'Configure', 1, user_input);
             [val status] = str2num(user_input{1});
             if (status && (rem(val,1) ~= 0 || val <= 0)), status = 0; end
