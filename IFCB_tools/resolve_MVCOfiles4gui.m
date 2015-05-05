@@ -1,7 +1,9 @@
-function files_struct = resolve_MVCOfiles4gui(filelist, class_filestr);
-%function [filelist, classfiles, stitchfiles] = resolve_MVCOfiles(filelist, class_filestr);
+function files_struct = resolve_MVCOfiles4gui(filelist, baseroi, baseclass, class_filestr);
+%function files_struct = resolve_MVCOfiles4gui(filelist, baseroi, baseclass, class_filestr);
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
+%baseroi and baseclass passed in for general resovler case, but not used
+%for this MVCO instance
 
 if isstruct(filelist),
     filelist = {filelist.name}';
