@@ -83,7 +83,9 @@ function select_category_callback( hOBj, eventdata )
     if gco == listbox_handle1
         MCflags.button = 1;
         h = listbox_handle1;
-        set(listbox_handle3, 'value', []);
+        if ~isnan(listbox_handle3)
+            set(listbox_handle3, 'value', []);
+        end
     elseif gco == listbox_handle3,
         MCflags.button = 3;
         h = listbox_handle3;
