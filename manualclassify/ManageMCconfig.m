@@ -21,7 +21,7 @@ function varargout = ManageMCconfig(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 % Edit the above text to modify the response to help ManageMCconfig
 
-% Last Modified by GUIDE v2.5 23-Apr-2015 14:39:34
+% Last Modified by GUIDE v2.5 12-May-2015 15:19:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -81,7 +81,7 @@ handles.config_map = {...
     'classfiles' 'classfiles_listbox' '';...
     'list_fontsize' 'list_fontsize_popup' 'value2str';...
     'verbose' 'verbose_checkbox' '';...
-    'filenum2start' 'start_file_popup' 'value2str';...
+    'filenum2start' 'start_file_popup' 'value';... %'value2str';...
     'resolver_function' 'resolver_function_edit' '';...
  %%now map some settings that are not needed for manual_classify but are needed to reload in ManageMCconfig
     'settings.start_new_radiobutton' 'start_new_radiobutton' ''; ...
@@ -106,12 +106,12 @@ handles.msgbox_fontstr = '\fontsize{12}';
 
 if length(varargin) > 0
     f = char(varargin{1});
-    if exist(f, 'file'),
+    if isequal(exist(f, 'file'), 2),
         temp = load(f);
         fullf = f;
     else
-        fullf = [handles.configpath varargin{1} '.mcconfig.mat'];
-        temp = load([handles.configpath varargin{1} '.mcconfig.mat']);
+        fullf = [handles.configpath f '.mcconfig.mat'];
+        temp = load([handles.configpath f '.mcconfig.mat']);
     end;
     handles.MCconfig = temp.MCconfig;
     handles.MCconfig.settings.configfile = fullf;
@@ -189,6 +189,7 @@ for ii = 1:size(handles.config_map,1),
         elseif strcmp(map(3), 'value2str')
             num = handles.MCconfig.(char(map(1)));
             [~,~,v] = intersect(num2str(num), get(h, 'string'));
+            %[~,~,v] = intersect(num, str2num(cell2mat(get(h, 'string')));
             set(h, 'value', v)
         else %all
             set(h, 'string', str);
@@ -196,6 +197,9 @@ for ii = 1:size(handles.config_map,1),
     end
 end
 
+
+hset = [handles.IFCB_format1_menu handles.IFCB_format2_menu handles.VPR_format1_menu handles.FlowCam_format1_menu];
+set(hset, 'checked', 'off')
 switch handles.MCconfig.dataformat
     case 0
         set(handles.IFCB_format1_menu, 'checked', 'on')
@@ -203,6 +207,8 @@ switch handles.MCconfig.dataformat
         set(handles.IFCB_format2_menu, 'checked', 'on')
     case 2
         set(handles.VPR_format1_menu, 'checked', 'on')
+    case 3
+        set(handles.FlowCam_format1_menu, 'checked', 'on')
 end
 
 %check about enable status
@@ -802,8 +808,10 @@ if isequal(get(handles.IFCB_format1_menu, 'checked'), 'on')
     handles.MCconfig.dataformat = 0;
 elseif isequal(get(handles.IFCB_format2_menu, 'checked'), 'on')
     handles.MCconfig.dataformat = 1;
-else %isequal(get(handles.VPR_format1_menu, 'checked'), 'on')
+elseif isequal(get(handles.VPR_format1_menu, 'checked'), 'on')
     handles.MCconfig.dataformat = 2;
+elseif isequal(get(handles.FlowCam_format1_menu, 'checked'), 'on')
+    handles.MCconfig.dataformat = 3;
 end
 
 MCconfig = handles.MCconfig;
@@ -1294,6 +1302,8 @@ if isequal(eventdata.NewValue, handles.standard_resolver_radiobutton) %standard 
     set(handles.classpath_label, 'string', 'Common class file path')
 elseif isequal(eventdata.NewValue, handles.resolver_func_radiobutton) %custom resolver case
     set(hset, 'visible', 'on')
+elseif isequal(eventdata.NewValue, handles.simple_paths_radiobutton) %simple paths case
+    set(handles.resolver_function_edit, 'string', [])
 end
 if ~isfield(eventdata, 'opening') %skip first time since update_filelists called again just after
     update_filelists(handles)
@@ -1368,7 +1378,7 @@ else %some manual files in listbox
             end
             %handles.file_check_flag = 1; %one or more bad roi files
         end
-    else
+    else  %start new
         set(handles.roifiles_listbox, 'string', handles.MCconfig.roifiles)
         h = handles.roifiles_listbox; %new means roi list is master
         %if get(handles.simple_paths_radiobutton, 'value')
@@ -1416,10 +1426,10 @@ else %some manual files in listbox
                 end
                 %   handles.file_check_flag = 1; %one or more bad roi files
             end
-        else
+        else  %don't start from classifier
             handles.MCconfig.classfiles = [];%make sure empty if not starting from class even by resolver function
-            %run resolver anyway in case need stitch files for MVCO custom resovler
-            if ~isempty(handles.MCconfig.roifiles)
+            %run resolver anyway in case need stitch files for MVCO custom resolver
+            if ~isempty(handles.MCconfig.roifiles) && ~get(handles.simple_paths_radiobutton, 'value')
                  handles = resolve_files(handles, handles.MCconfig.roifiles);
             end
         end
@@ -1488,6 +1498,20 @@ end
 handles.MCconfig.dataformat = 2; %get(handles.VPR_format1_menu, 'value'); 
 guidata(handles.MCconfig_main_figure, handles);
 
+
+% --------------------------------------------------------------------
+function FlowCam_format1_menu_Callback(hObject, eventdata, handles)
+% hObject    handle to FlowCam_format1_menu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if isequal(get(hObject, 'checked'), 'off')
+    set(get(get(hObject, 'parent'), 'children'),'checked', 'off') %set all in submenu to off
+    set(hObject, 'checked', 'on')
+else
+    set(hObject, 'checked', 'off')
+end
+handles.MCconfig.dataformat = 3; %get(handles.VPR_format1_menu, 'value'); 
+guidata(handles.MCconfig_main_figure, handles);
 
 
 % --------------------------------------------------------------------

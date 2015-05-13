@@ -81,11 +81,11 @@ if isfield(MCconfig,'bar_length_micron')
     end
 end
 
-if MCconfig.dataformat == 0,
+if MCconfig.dataformat == 0
     adcxind = 12;
     adcyind = 13;
     startbyteind = 14;
-elseif MCconfig.dataformat == 1,
+elseif MCconfig.dataformat == 1
     adcxind = 16;
     adcyind = 17;
     startbyteind = 18;
@@ -139,7 +139,12 @@ while filecount <= length(filelist),
     if ~isempty(stitch_info),
         classlist(stitch_info(:,1)+1,2:3) = NaN; %force NaN class for second roi in pair to be stitched
     end;
-    class2view = class2view1; %make sure resets back to initial for each new file 
+    class2view = class2view1; %make sure resets back to initial for each new file
+    switch MCconfig.alphabetize
+        case {'yes',  1}
+            [~, ix] = sort(lower(MCconfig.class2use(class2view)));
+            class2view = class2view(ix);
+    end
     classcount = 1;
     while classcount <= length(class2view) && ~MCflags.file_jump
         new_setcount = NaN; %initialize
@@ -351,7 +356,7 @@ end
 delete(figure_handle)
 
 function imagedat = read_images()
-    if MCconfig.dataformat <= 1 %IFCB
+    if MCconfig.dataformat <= 1 || MCconfig.dataformat == 3 %IFCB or FlowCam, Sherbrooke
         startbyte = roi_info.startbyte_all(roi_ind); x = roi_info.x_all(roi_ind); y = roi_info.y_all(roi_ind); %heidi 11/5/09
         fid=fopen([filelist{filecount} '.roi']);
         for imgcount = 1:length(startbyte),
@@ -395,6 +400,11 @@ function roi_info = get_roi_info()
         roi_info.roilist = cellstr(reshape(roi_info.roilist,tt,length(roi_info.roilist)/tt)');
         numrois = length(roi_info.roilist);
         [roi_info.roilist roi_info.disk_size_index] = sort(roi_info.roilist);
+    elseif MCconfig.dataformat == 3 %FlowCAM, Sherbrooke
+        adcdata = load([filelist{filecount} '_ADC.mat']);
+        adcdata = adcdata.data_out;
+        roi_info.x_all = adcdata.image_w;  roi_info.y_all = adcdata.image_h; roi_info.startbyte_all = adcdata.start_byte;
+        numrois = size(adcdata,1);
     end
 end
 
