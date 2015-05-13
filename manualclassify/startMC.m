@@ -141,14 +141,29 @@ set(handles.status_text, 'String', 'Busy in Manual Classify')
 hset = findobj('style', 'pushbutton');
 set(hset, 'enable', 'off')
 if ~isfield(handles, 'MCconfig')
-    temp = load(get(handles.configfile_text, 'string'), 'MCconfig');
-    handles.MCconfig = temp.MCconfig;
-end 
-manual_classify_5_0(handles.MCconfig)
+    f = get(handles.configfile_text, 'string');
+    f = regexprep(f,'.mcconfig.mat', ''); %make sure '.mcconfig.mat' not included already
+    f = [f '.mcconfig.mat']; %add '.mcconfig.mat'
+    if isequal(exist(f, 'file'), 2)  %config file with full path exists
+        temp = load(f, 'MCconfig');
+        handles.MCconfig = temp.MCconfig;
+    elseif isequal(exist(fullfile(handles.configpath, f), 'file'), 2) %config file in default path exists
+        temp = load(fullfile(handles.configpath, f), 'MCconfig');
+        handles.MCconfig = temp.MCconfig;
+    else
+        msgbox({[handles.msgbox_fontstr 'Input config file not found in last known location. Starting from last known.'];' ';'Restart including path or load from the file menu in Edit Configuration to locate your file.'}, handles.msgbox_cs)
+        set(handles.configfile_text, 'string', []);
+    end
+end
+if isfield(handles, 'MCconfig')
+    manual_classify_5_0(handles.MCconfig)
+end
 if ishandle(handles.figure1) %otherwise user closed window
     set(hset, 'enable', 'on')
     set(handles.status_text, 'String', 'Ready')
 end
+ guidata(hObject, handles)
+ 
 
 % --- Executes during object creation, after setting all properties.
 function configfile_text_CreateFcn(hObject, eventdata, handles)
@@ -178,15 +193,9 @@ function quit_pushbutton_Callback(hObject, eventdata, handles)
 % hObject    handle to quit_pushbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if ~isfield(handles, 'MCconfig')
-    if ~isempty(get(handles.configfile_text, 'string'))
-        temp = load(get(handles.configfile_text, 'string'), 'MCconfig');
-        handles.MCconfig = temp.MCconfig;
-    else
-        handles.MCconfig = [];
-    end
-end 
-disp(handles.MCconfig)
+if isfield(handles, 'MCconfig')
+    disp(handles.MCconfig)
+end
 figure1_CloseRequestFcn(handles.figure1, eventdata, handles)
 
 
