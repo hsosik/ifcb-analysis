@@ -115,7 +115,7 @@ function jump_class_callback( hOBj, eventdata )
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2015
     MCflags.class_jump = 1;
     new_classcount = str2num(category(1:3));
-    robot_pressCR(1) % one carriage return
+%    robot_pressCR(1) % one carriage return
 end
 
 function jump_file_callback( hOBj, eventdata, jump_type )
