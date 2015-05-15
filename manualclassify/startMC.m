@@ -75,7 +75,9 @@ else
 end
 if length(varargin) > 0
     f = varargin{1};
-    if exist(f, 'dir') %full path with input
+    if isequal(f, 'default')
+        set(handles.configfile_text, 'string', {'default'});
+    elseif exist(f, 'dir') %full path with input
         set(handles.configfile_text, 'string', f);
     elseif exist(fullfile(last_path,[f '.mcconfig.mat']), 'file')
         set(handles.configfile_text, 'string', fullfile(last_path,[f '.mcconfig.mat']));

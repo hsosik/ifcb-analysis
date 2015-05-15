@@ -103,17 +103,20 @@ end
 handles.msgbox_cs.Interpreter = 'tex';
 handles.msgbox_cs.WindowStyle = 'modal';
 handles.msgbox_fontstr = '\fontsize{12}';
-
 if length(varargin) > 0
     f = char(varargin{1});
-    if isequal(exist(f, 'file'), 2),
+    if isequal(f, 'default')
+        handles.MCconfig = MCconfig_default();
+        fullf = f;
+    elseif isequal(exist(f, 'file'), 2),
         temp = load(f);
         fullf = f;
+        handles.MCconfig = temp.MCconfig;
     else
         fullf = [handles.configpath f '.mcconfig.mat'];
         temp = load([handles.configpath f '.mcconfig.mat']);
+        handles.MCconfig = temp.MCconfig;
     end;
-    handles.MCconfig = temp.MCconfig;
     handles.MCconfig.settings.configfile = fullf;
 else
     fullf = [ handles.configpath 'last.mcconfig.mat'];
@@ -182,6 +185,9 @@ for ii = 1:size(handles.config_map,1),
            % in_v = handles.MCconfig.(char(map(1)));
             if isnumeric(str)
                 v = str;
+                if v > length(get(h, 'string')) %reset to first value to avoid crash if invalid input
+                    v = 1
+                end;
             else
                 [~,~,v] = intersect(str, get(h, 'string'));
             end;
@@ -803,6 +809,11 @@ for ii = 1:size(handles.config_map,1),
     end
 end
 
+%check stitchfile case for MVCO
+if isempty(handles.MCconfig.resultfiles)
+    handles.MCconfig.stitchfiles = [];
+end
+
 %check dataformat
 if isequal(get(handles.IFCB_format1_menu, 'checked'), 'on')
     handles.MCconfig.dataformat = 0;
@@ -1179,6 +1190,7 @@ set(handles.classfiles_listbox, 'string', [])
 handles.MCconfig.resultfiles = [];
 handles.MCconfig.roifiles = [];
 handles.MCconfig.classfiles = [];
+handles.MCconfig.stitchfiles = [];
 set(handles.select_files_pushbutton, 'string', 'Select files')
 set(handles.all_file_checkbox, 'value', 0)
 guidata(handles.MCconfig_main_figure, handles);
