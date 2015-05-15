@@ -183,6 +183,7 @@ if ~isequal(f,0)
     temp = load([p f]);
     handles.filename = [p f];
     set(handles.class2use_uitable, 'data', temp.class2use(:))
+    handles.unsaved = 0; 
     guidata(handles.figure1, handles);
     drawnow
 end;
