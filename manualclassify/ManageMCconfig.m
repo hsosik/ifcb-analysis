@@ -21,7 +21,7 @@ function varargout = ManageMCconfig(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 % Edit the above text to modify the response to help ManageMCconfig
 
-% Last Modified by GUIDE v2.5 12-May-2015 15:19:54
+% Last Modified by GUIDE v2.5 15-May-2015 13:59:21
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1629,3 +1629,18 @@ classfiles = cellstr([classpath files classext]);
 
 files_struct.classfiles = classfiles;
 files_struct.roifiles = roifiles;
+
+
+% --- Executes during object creation, after setting all properties.
+function status_text_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to status_text (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+
+% --- If Enable == 'on', executes on mouse press in 5 pixel border.
+% --- Otherwise, executes on mouse press in 5 pixel border or over return_pushbutton.
+function status_text_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to status_text (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)

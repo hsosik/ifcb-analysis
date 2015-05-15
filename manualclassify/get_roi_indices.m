@@ -4,6 +4,10 @@ function [ roi_ind ] = get_roi_indices( classlist, classnum, pick_mode );
 %Finds the indices for ROIs corresponding to a particular class
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, 31 May 2009
 %April 2015, revised to remove subdivide functionality and recast for manual_classify_4_1
+%ultimately when everyone stops using pre manual_classify_5_0, decimate the
+%switch / case structure here - which is now already effectively disabled
+%to work consistently with manual_classify_5_0 (one version is OK since
+%default classlist will always have a third (auto) column
 
 %INPUTS:
 %classlist - matrix of class identity results
@@ -14,10 +18,11 @@ function [ roi_ind ] = get_roi_indices( classlist, classnum, pick_mode );
 %
 %OUTPUTS:
 %roi_ind - list of indices corresponding to selected ROIs
-
+    
 switch pick_mode
     case 'raw_roi'
-        roi_ind = classlist(classlist(:,2) == classnum,1);       
+        %roi_ind = classlist(classlist(:,2) == classnum,1);
+        roi_ind = classlist(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum),1);        
     case {'correct_classifier', 'correct'}
         roi_ind = classlist(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum),1);        
 end
