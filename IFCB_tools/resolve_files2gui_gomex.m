@@ -23,8 +23,9 @@ classbase = repmat(char(baseclasspath),n,1);
 roiext = repmat('.roi',n,1);
 classext = repmat([class_filestr '.mat'],n,1);
 if files(1,1) == 'D',
-    roipath = [roibase files(:,2:5) sep files(:,1:9) sep];
-    classpath = [classbase]; %edit and use this line instead of above in case of different structure for class and roi locations
+    %roipath = [roibase files(:,2:5) sep files(:,1:9) sep];
+    roipath = [roibase sep files(:,1:9) sep];
+    classpath = [classbase sep]; %edit and use this line instead of above in case of different structure for class and roi locations
 else      
     roipath = [roibase sep files(:,7:10) sep files(:,1:14) sep];
     classpath = [classbase sep files(:,7:10) sep files(:,1:14) sep]; %edit and use this line instead of above in case of different structure for class and roi locations
