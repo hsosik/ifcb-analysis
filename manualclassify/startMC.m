@@ -73,7 +73,7 @@ if exist(fullf, 'file')
 else
     last_path = handles.configpath;
 end
-if length(varargin) > 0
+if length(varargin) > 0 %handle the input config file
     f = varargin{1};
     if isequal(f, 'default')
         set(handles.configfile_text, 'string', {'default'});
@@ -85,7 +85,7 @@ if length(varargin) > 0
         msgbox({[handles.msgbox_fontstr 'Input config file not found in last known location. Starting from last known.'];' ';'Restart including path or load from the file menu in Edit Configuration to locate your file.'}, handles.msgbox_cs)
         set(handles.configfile_text, 'string', []);
     end
-else
+else %otherwise use the last config file if it exists
     f = [handles.configpath 'last.mcconfig.mat'];
     if exist(f, 'dir')
         set(handles.configfile_text, 'string', [handles.configpath 'last.mcconfig.mat']);
@@ -93,7 +93,10 @@ else
         set(handles.configfile_text, 'string', []);
     end
 end
-
+if length(varargin) > 1 %handle an input file list
+    handles.filelist = varargin{2};
+end
+    
 % Update handles structure
 guidata(hObject, handles);
 
@@ -121,8 +124,13 @@ fullf = get(handles.configfile_text, 'string');
 set(handles.status_text, 'String', 'Busy in configuration edit')
 hset = findobj('style', 'pushbutton');
 set(hset, 'enable', 'off')
-if ~isempty(fullf)
-    handles.MCconfig = ManageMCconfig(cellstr(fullf));
+%if ~isempty(fullf)
+%    handles.MCconfig = ManageMCconfig(cellstr(fullf));
+%else
+%    handles.MCconfig = ManageMCconfig();
+%end
+if isfield(handles, 'filelist')
+    handles.MCconfig = ManageMCconfig(cellstr(fullf), cellstr(handles.filelist));
 else
     handles.MCconfig = ManageMCconfig();
 end
