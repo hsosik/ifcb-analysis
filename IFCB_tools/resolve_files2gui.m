@@ -5,10 +5,17 @@ function files_struct = resolve_files2gui(filelist, baseroipath, baseclasspath, 
 % and classpath code below to construct their own local resolver to
 % automatically set complete paths for locating IFCB data and classifier
 % files on different hard drives and/or within subdirectories
-% As written here, this template replicates the pattern coded into the
+%
+% As written here, this template replicates the pattern in the
 % "standard" resolver that is built into StartMC / ManageMCconfig:
 % standard case for <base_path>\yyyy\<IFCB_day_dir>\ or
 % <base_path>/yyyy/<IFCB_day_dir>/, as appropriate
+%
+% In modifying for your own customer resolver, just be careul not to
+% change anything about the the inputs or outputs to the function.
+%
+% To use this function after saving it with a custom name, it is necessary 
+% to select it in the custom resolver box in the ManageMCconfig GUI
 %
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, May 2015
 
