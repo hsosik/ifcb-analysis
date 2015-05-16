@@ -38,6 +38,11 @@ while ~pagefull && next_ind <= length(imgind)
         check_pos = [start_pos(1) + x, start_pos(2) + y];
         if check_pos(2) > camy, %goes off the bottom
             pagefull = 1;
+            if ~exist('plotnow', 'var') %first image too big for page
+                imagedat{next_ind} = imresize(imagedat{next_ind}, camy/y);
+                plotnow = 1;
+                uiwait(msgbox(['Image rescaled to fit on page ' num2str(camy/y*100)]))
+            end
             %next_ind stays on this one
         elseif check_pos(1) > camx, %doesn't fit on this row
             start_pos = [1, ycum + border]; % go to new row
