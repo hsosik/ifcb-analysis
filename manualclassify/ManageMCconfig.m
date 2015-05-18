@@ -106,7 +106,7 @@ handles.msgbox_fontstr = '\fontsize{12}';
 if length(varargin) > 0 %handle input config file
     f = char(varargin{1});
 end;
-if ~isempty(f)
+if exist('f', 'var')%~isempty(f)
     fullf = f;
     if isequal(f, 'default')
         handles.MCconfig = MCconfig_default();
