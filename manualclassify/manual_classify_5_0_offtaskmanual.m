@@ -159,7 +159,7 @@ while filecount <= length(filelist),
     
         %OFFTASKMANUAL heidi
         %roi_ind_all = get_roi_indices(classlist, classnum, MCconfig.pick_mode);
-        roi_ind_all = get_roi_indices(classlist, classnum, 'raw_roi');
+        roi_ind_all = get_roi_indices_offtask(classlist, classnum, 'raw_roi');
         %OFFTASKMANUAL heidi
     
         if MCconfig.threshold_mode > 0
