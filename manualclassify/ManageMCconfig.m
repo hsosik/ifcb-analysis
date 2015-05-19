@@ -1454,8 +1454,12 @@ if ~isempty(handles.MCconfig.classfiles) && isequal(get(handles.classfiles_listb
     set(handles.classfiles_listbox, 'string', fullf)
 end
 if ~isempty(handles.MCconfig.resultfiles)
-    fullf = mark_notfound_inlist(handles.MCconfig.resultfiles, handles);
-    set(handles.resultfiles_listbox, 'string', fullf)
+    if ~exist(get(handles.manualpath_text, 'string'), 'dir')
+        fullf = handles.MCconfig.resultfiles;
+        for ii = 1:length(fullf), fullf(ii) = {['<html><font color="red">', fullf{ii}, '</font><html>']}; end
+        %fullf = mark_notfound_inlist(handles.MCconfig.resultfiles, handles);
+        set(handles.resultfiles_listbox, 'string', fullf)
+    end
 end
 if ~isempty(handles.MCconfig.roifiles)
     fullf = mark_notfound_inlist(handles.MCconfig.roifiles, handles);

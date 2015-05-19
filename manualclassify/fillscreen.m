@@ -58,7 +58,6 @@ while ~pagefull && next_ind <= length(imgind)
         if plotnow
             colormap(gray); shading flat; hold on; axis([1 camx 1 camy]); set(gca, 'ydir', 'reverse', 'yticklabel', [], 'units', 'inches')
             set(gca,'ytick', 0:200:camy, 'xtick', 0:200:camx, 'plotboxAspectRatioMode', 'auto', 'dataAspectRatioMode', 'manual', 'dataAspectRatio', [1 1 1]);
-            grid on
             %tpos = get(gca, 'position'); tpos(1:2) = [1.5 1]; set(gca, 'position', tpos)
             h = imagesc(imagedat{next_ind}', 'xdata', start_pos(1):check_pos(1), 'ydata', start_pos(2):check_pos(2)); hold on
             text(start_pos(1),start_pos(2), num2str(imgind(next_ind)), 'verticalalignment','top');
