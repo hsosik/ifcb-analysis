@@ -21,7 +21,7 @@ function varargout = ManageMCconfig(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 % Edit the above text to modify the response to help ManageMCconfig
 
-% Last Modified by GUIDE v2.5 16-May-2015 13:39:23
+% Last Modified by GUIDE v2.5 19-May-2015 21:08:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -628,6 +628,12 @@ function alphabetize_checkbox_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of alphabetize_checkbox
+if isequal(get(handles.alphabetize_checkbox, 'value'), 1)
+%placeholder for some code to alphabetize the displayed list, track sort
+%order in MCconfig?
+    %   set(handles.class2use_listbox, ' 
+%
+end
 
 
 
@@ -1275,7 +1281,7 @@ function resolver_browse_Callback(hObject, eventdata, handles)
 p = handles.configpath;
 [ f p ] = uigetfile([p filesep 'resolve*.m'], 'resolve*.m');
 if ~isequal(f,0)
-    set(handles.resolver_function_edit, 'string', fullfile(p,f))
+    set(handles.resolver_function_edit, 'string', fullfile(p,f), 'foregroundcolor', 'k')
 end
 
 
@@ -1582,7 +1588,7 @@ if get(handles.standard_resolver_radiobutton, 'value')
 else
     full_func_file = get(handles.resolver_function_edit, 'string');
     [p f] = fileparts(full_func_file);
-    if exist(p, 'dir')
+    if exist(full_func_file, 'file')
         pnow = pwd;
         cd(p)
         resolver_handle = str2func(f);
@@ -1590,6 +1596,7 @@ else
     else
         resolver_handle = [];
         uiwait(msgbox([handles.msgbox_fontstr 'Resolver function not found - select a valid function file.'], handles.msgbox_cs))  
+        set(handles.resolver_function_edit, 'foregroundcolor', 'r')
     end
 end
 if ~isempty(resolver_handle)
@@ -1671,3 +1678,15 @@ function quit_menu_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 MCconfig_main_figure_CloseRequestFcn(hObject, eventdata, handles)
+
+
+% --- Executes on button press in resolver_func_radiobutton.
+function resolver_func_radiobutton_Callback(hObject, eventdata, handles)
+% hObject    handle to resolver_func_radiobutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of resolver_func_radiobutton
+if get(hObject, 'value')
+    resolver_function_edit_Callback(hObject, eventdata, handles)
+end
