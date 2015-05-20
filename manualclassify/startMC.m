@@ -131,6 +131,8 @@ set(hset, 'enable', 'off')
 %end
 if isfield(handles, 'filelist')
     handles.MCconfig = ManageMCconfig(cellstr(fullf), cellstr(handles.filelist));
+elseif ~isempty(fullf)
+    handles.MCconfig = ManageMCconfig(cellstr(fullf));
 else
     handles.MCconfig = ManageMCconfig();
 end
