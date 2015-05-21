@@ -26,7 +26,12 @@ MCflags.go_back = 0;
 button = 1;  %reset to stop for ginput on next screen
 mark_col_now = 2;
 while button(end) < 3 
-    [x1,y1,button] = ginput_crosshair;  % choose image locations using left button of mouse
+    try
+        [x1,y1,button] = ginput_crosshair;  % choose image locations using left button of mouse
+    catch
+        button = 1;
+        msgbox('ginput error; try again; if you can reproduce this error, tell Heidi how!')
+    end
     if ~isempty(x1),
         if length(x1) >= 1 && button(end) <= 3,
             if ~isempty(category),
