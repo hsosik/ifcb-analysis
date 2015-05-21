@@ -197,7 +197,7 @@ while filecount <= length(filelist),
             %if appropriate, sort by size before separating into subsets
             if MCconfig.display_order  %1 = 'size'; 0 = 'index'
                 if MCconfig.dataformat <= 1
-                    [~,ii] = sortrows([roi_info.y_all(roi_ind_all) roi_info.x_all(roi_ind_all) ], [-2,-1]);
+                    [~,ii] = sortrows([roi_info.x_all(roi_ind_all) roi_info.y_all(roi_ind_all) ], [-2,-1]);
                     roi_ind_all = roi_ind_all(ii);
                 elseif MCconfig.dataformat == 2 %VPR case
                     [~,temp] = sort(roi_info.disk_size_index(roi_ind_all));
