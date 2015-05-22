@@ -143,6 +143,7 @@ handles.MCconfig_saved = handles.MCconfig; %initialize to track save status
 map_MCconfig2GUI(hObject, handles)
 %update settings to correspond to existing object status
 eventdata_temp.opening = 1;
+handles = alphabetize_checkbox_Callback(hObject, eventdata, handles);
 all_file_checkbox_Callback(hObject, eventdata, handles)
 threshold_mode_popup_Callback(hObject, eventdata, handles)
 eventdata_temp.NewValue = get(handles.resolve_file_locations_buttongroup, 'selectedobject'); %what is it now
@@ -231,7 +232,6 @@ else
     set([handles.classpath_text handles.class_filestr_text handles.class_filestr_label handles.classpath_label handles.classpath_browse], 'visible', 'off')
 end
 guidata(handles.MCconfig_main_figure, handles);
-
 
 
 %
@@ -622,18 +622,46 @@ function images_by_size_checkbox_Callback(hObject, eventdata, handles)
 
 
 % --- Executes on button press in alphabetize_checkbox.
-function alphabetize_checkbox_Callback(hObject, eventdata, handles)
+function handles = alphabetize_checkbox_Callback(hObject, eventdata, handles)
 % hObject    handle to alphabetize_checkbox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of alphabetize_checkbox
+%get any currently highlighted class2view
+listnow = get(handles.class2use_listbox, 'string');
+tempv = get(handles.class2use_listbox, 'value');
+class2viewnow = listnow(tempv);
+%now make sure the lists are set properly and synced to MCconfig.class2use (even if just loaded from save config)
+listnow = handles.MCconfig.class2use;
 if isequal(get(handles.alphabetize_checkbox, 'value'), 1)
-%placeholder for some code to alphabetize the displayed list, track sort
-%order in MCconfig?
-    %   set(handles.class2use_listbox, ' 
-%
+    [~, sort_ind] = sort(lower(listnow));
+    [~, handles.settings.class2use_sort_ind] = sort(sort_ind); %order to sort back to original from alphabetical
+    listnow = listnow(sort_ind); %make sure keep original capitals
+    set(handles.class2use_listbox, 'string', listnow);
+else
+    set(handles.class2use_listbox, 'string', listnow);
 end
+set(handles.default_class_popup, 'string', listnow);
+[~,~,v] = intersect(handles.MCconfig.default_class, listnow);
+if ~isempty(v)
+    set(handles.default_class_popup, 'value', v);
+else
+    set(handles.default_class_popup, 'value', 1);
+end;
+%reset the highlights for class2view if current are subset of just loaded class2use
+str = class2viewnow;
+if ~isempty(str)
+    [~,~,v] = intersect(str, listnow);
+    if ~isempty(v)
+        set(handles.class2use_listbox,'value', v, 'listboxtop', 1)
+    end;
+    %reset class2view in case not all retained
+    handles.MCconfig.class2view1 = listnow(v);
+end
+guidata(handles.MCconfig_main_figure, handles);
+    %reset highlights for class2view to match status of checkbox
+%class2view_all_checkbox_Callback(hObject, eventdata, handles)
 
 
 
@@ -674,27 +702,9 @@ if ~isempty(temp.filename)
     handles.MCconfig.class2use = temp.class2use;
     handles.filename = temp.filename;
     set(handles.class2use_listbox, 'string', temp.class2use, 'min', 0, 'max', length(temp.class2use), 'value', []);
-    set(handles.default_class_popup, 'string', temp.class2use);
-    [~,~,v] = intersect(handles.MCconfig.default_class, temp.class2use);
-    if ~isempty(v)
-        set(handles.default_class_popup, 'value', v);
-    else
-        set(handles.default_class_popup, 'value', 1);
-    end;
     set(handles.class2use_file_text, 'string', temp.filename);
-    %reset the highlights for class2view if current are subset of just loaded class2use
-    str = handles.MCconfig.class2view1;
-    if ~isempty(str)
-        [~,~,v] = intersect(str, get(handles.class2use_listbox, 'string'));
-        if ~isempty(v)
-            set(handles.class2use_listbox,'value', v, 'listboxtop', 1)
-        end;
-        %reset class2view in case not all retained
-        handles.MCconfig.class2view1 = v;
-    end
+    handles = alphabetize_checkbox_Callback(hObject, eventdata, handles);
     guidata(handles.MCconfig_main_figure, handles);
-    %reset highlights for class2view to match status of checkbox
-    class2view_all_checkbox_Callback(hObject, eventdata, handles)
 else
     uiwait(msgbox([handles.msgbox_fontstr 'No list loaded. You must save a class2use file to load here.'], handles.msgbox_cs))
 end;
@@ -709,7 +719,7 @@ function class2use_listbox_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns class2use_listbox contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from class2use_listbox
 temp = get(hObject, 'value');
-if length(temp) < length(handles.MCconfig.class2use) %if user has deselected some, make sure view all is unchecked
+if length(temp) < length(get(handles.class2use_listbox, 'string')) %if user has deselected some, make sure view all is unchecked
     set(handles.class2view_all_checkbox, 'value', 0);
 end
 set(handles.default_class_popup, 'string', get(hObject, 'string'));
@@ -741,7 +751,7 @@ function class2view_all_checkbox_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of class2view_all_checkbox
-if get(hObject, 'value')
+if get(handles.class2view_all_checkbox, 'value')
     set(handles.class2use_listbox, 'value', 1:length(handles.MCconfig.class2use) , 'listboxtop', 1);
 else
     set(handles.class2use_listbox, 'value', [] , 'listboxtop', 1);
@@ -756,7 +766,10 @@ function default_class_popup_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns default_class_popup contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from default_class_popup
-
+tempall = get(handles.default_class_popup, 'string');
+tempv = get(handles.default_class_popup, 'value');
+handles.MCconfig.default_class = tempall(tempv);
+guidata(handles.MCconfig_main_figure, handles);
 
 % --- Executes during object creation, after setting all properties.
 function default_class_popup_CreateFcn(hObject, eventdata, handles)
@@ -819,6 +832,10 @@ for ii = 1:size(handles.config_map,1),
         end
     end
 end
+%deal with special index conversion case if alphabetize in use
+if isequal(get(handles.alphabetize_checkbox, 'value'), 1)
+    handles.MCconfig.class2use = handles.MCconfig.class2use(handles.settings.class2use_sort_ind);
+end;
 
 %check stitchfile case for MVCO
 if isempty(handles.MCconfig.resultfiles)
@@ -854,6 +871,9 @@ end
 if  ~isempty(hObject)
     if isfield(handles.MCconfig.settings,'configfile')
         [startp, ~] = fileparts(handles.MCconfig.settings.configfile);
+        if isempty(startp)
+            startp = handles.configpath;
+        end
     else
         startp = handles.configpath;
     end
@@ -884,6 +904,9 @@ function load_config_menu_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 if isfield(handles.MCconfig.settings,'configfile')
     [startp, ~] = fileparts(handles.MCconfig.settings.configfile);
+    if isempty(startp)
+        startp = handles.configpath;
+    end
 else
     startp = handles.configpath;
 end
