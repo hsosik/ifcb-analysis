@@ -36,28 +36,31 @@ while ~pagefull && next_ind <= length(imgind)
     if x > 0,  %skip if zero size roi
         %check if the next one fits
         check_pos = [start_pos(1) + x, start_pos(2) + y];
-        if check_pos(2) > camy || check_pos(1) > camx, %goes off the bottom or side
+        if check_pos(2) > camy, %goes off the bottom
             pagefull = 1;
             if ~exist('plotnow', 'var') %first image too big for page
-                if check_pos(2) / camy > check_pos(1) / camx
-                    f = camy/y;
-                    imagedat{next_ind} = imresize(imagedat{next_ind}, f);  
-                else
-                    f = camx/x;
-                    imagedat{next_ind} = imresize(imagedat{next_ind}, f);  
-                end
-                plotnow = 1;
-                uiwait(msgbox(['Image rescaled to fit on page ' num2str(f*100)]))
+                f = camy/y;
+                imagedat{next_ind} = imresize(imagedat{next_ind}, f);
             end
+            plotnow = 1;
+            uiwait(msgbox(['Image rescaled to fit on page ' num2str(f*100,'%0.1f') '%']))
             %next_ind stays on this one
         elseif check_pos(1) > camx, %doesn't fit on this row
-            start_pos = [1, ycum + border]; % go to new row
-            check_pos = [start_pos(1) + x, start_pos(2) + y];
-            if check_pos(2) > camy, %goes off the bottom
-                pagefull = 1;
-            else %fits here
+            if ~exist('plotnow', 'var') %first image too big for page
+                f = camx/x;
+                imagedat{next_ind} = imresize(imagedat{next_ind}, f);
                 plotnow = 1;
-            end;
+                pagefull = 1;
+                uiwait(msgbox(['Image rescaled to fit on page ' num2str(f*100,'%0.1f') '%']))
+            else
+                start_pos = [1, ycum + border]; % go to new row
+                check_pos = [start_pos(1) + x, start_pos(2) + y];
+                if check_pos(2) > camy, %goes off the bottom
+                    pagefull = 1;
+                else %fits here
+                    plotnow = 1;
+                end
+            end
         else %fits here
             plotnow = 1;
         end;
@@ -76,10 +79,10 @@ while ~pagefull && next_ind <= length(imgind)
             start_pos(1) = check_pos(1) + border; %adjust start along x-axis (keep same row)
             ycum = max(ycum, check_pos(2)); %increase maximum y if this image is tallest in the current row
             plotnow = 0;
-        end;
+        end
     else %go on to next one if zero-size roi
         next_ind = next_ind + 1;
-    end;
-end;
+    end
+end
 title(title_str, 'fontsize', 12, 'color', 'r', 'fontweight', 'bold','interpreter','tex')
 th = text(1, -5, {'SELECT all page'}, 'fontsize', 16, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
