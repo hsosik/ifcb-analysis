@@ -239,9 +239,12 @@ while filecount <= length(filelist),
                         set(instructions_handle, 'string', ['Click on ' category...
                                 ' images; then ENTER key to save results before changing categories. ENTER key for new page.'], 'foregroundcolor', 'k', 'fontsize', 8)
                         if MCflags.select_remaining
-                            classlist(roi_ind_all(setrange(1):end),2) = str2num(category(1:3)); 
-                            MCflags.select_remaining = 0;
-                            MCflags.changed_selectrois = 1;
+                            %classlist(roi_ind_all(setrange(1):end),2) = str2num(category(1:3)); 
+                            classlist(roi_ind_all(setrange(next_ind-next_ind_increment+1):end),2) = str2num(category(1:3)); 
+                            if imgset == setnum
+                                MCflags.select_remaining = 0;
+                                MCflags.changed_selectrois = 1;
+                            end
                             set(select_remaining_button_handle, 'value', 0)
                         end;
                         if MCflags.changed_selectrois
