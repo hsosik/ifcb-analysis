@@ -1709,31 +1709,31 @@ function quit_menu_Callback(hObject, eventdata, handles)
 MCconfig_main_figure_CloseRequestFcn(hObject, eventdata, handles)
 
 
-% --- Executes on button press in resolver_func_radiobutton.
-function resolver_func_radiobutton_Callback(hObject, eventdata, handles)
-% hObject    handle to resolver_func_radiobutton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of resolver_func_radiobutton
-% if get(hObject, 'value')
-%     resolver_function_edit_Callback(hObject, eventdata, handles)
-% end
-
-
-% --- Executes on button press in review_radiobutton.
-function review_radiobutton_Callback(hObject, eventdata, handles)
-% hObject    handle to review_radiobutton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of review_radiobutton
-
-
-% --- Executes on button press in simple_paths_radiobutton.
-function simple_paths_radiobutton_Callback(hObject, eventdata, handles)
-% hObject    handle to simple_paths_radiobutton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of simple_paths_radiobutton
+% % --- Executes on button press in resolver_func_radiobutton.
+% function resolver_func_radiobutton_Callback(hObject, eventdata, handles)
+% % hObject    handle to resolver_func_radiobutton (see GCBO)
+% % eventdata  reserved - to be defined in a future version of MATLAB
+% % handles    structure with handles and user data (see GUIDATA)
+% 
+% % Hint: get(hObject,'Value') returns toggle state of resolver_func_radiobutton
+% % if get(hObject, 'value')
+% %     resolver_function_edit_Callback(hObject, eventdata, handles)
+% % end
+% 
+% 
+% % --- Executes on button press in review_radiobutton.
+% function review_radiobutton_Callback(hObject, eventdata, handles)
+% % hObject    handle to review_radiobutton (see GCBO)
+% % eventdata  reserved - to be defined in a future version of MATLAB
+% % handles    structure with handles and user data (see GUIDATA)
+% 
+% % Hint: get(hObject,'Value') returns toggle state of review_radiobutton
+% 
+% 
+% % --- Executes on button press in simple_paths_radiobutton.
+% function simple_paths_radiobutton_Callback(hObject, eventdata, handles)
+% % hObject    handle to simple_paths_radiobutton (see GCBO)
+% % eventdata  reserved - to be defined in a future version of MATLAB
+% % handles    structure with handles and user data (see GUIDATA)
+% 
+% % Hint: get(hObject,'Value') returns toggle state of simple_paths_radiobutton
