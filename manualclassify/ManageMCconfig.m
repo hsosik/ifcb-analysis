@@ -21,7 +21,7 @@ function varargout = ManageMCconfig(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 % Edit the above text to modify the response to help ManageMCconfig
 
-% Last Modified by GUIDE v2.5 19-May-2015 21:08:16
+% Last Modified by GUIDE v2.5 26-May-2015 12:28:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1351,6 +1351,7 @@ if isequal(eventdata.NewValue, handles.standard_resolver_radiobutton) %standard 
     set(handles.classpath_label, 'string', 'Common class file path')
 elseif isequal(eventdata.NewValue, handles.resolver_func_radiobutton) %custom resolver case
     set(hset, 'visible', 'on')
+    resolver_function_edit_Callback(hObject, eventdata, handles)
 elseif isequal(eventdata.NewValue, handles.simple_paths_radiobutton) %simple paths case
     set(handles.resolver_function_edit, 'string', [])
 end
@@ -1390,7 +1391,6 @@ if ~exist(get(handles.manualpath_text, 'string'), 'dir')
     end
 else %some manual files in listbox
     if isequal(get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag'), 'review_radiobutton')
-        
         f = handles.MCconfig.resultfiles;
         x = '.mat';
         [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
@@ -1431,15 +1431,21 @@ else %some manual files in listbox
         h = handles.roifiles_listbox; %new means roi list is master
         [~, f] = cellfun(@fileparts,cellstr(get(h, 'string')), 'uniformoutput', false);
         p = get(handles.manualpath_text, 'string');
+        p2 = get(handles.roipath_text, 'string');
         x = '.mat';
+        x2 = '.roi';
         if ~isempty(f{1})
             fullf = cellstr([char(f) repmat(x,size(f,1),1)]);
             fullf = fullfile(p,fullf);
+            fullf2 = cellstr([char(f) repmat(x2,size(f,1),1)]);
+            fullf2 = fullfile(p2,fullf2);
         else
             fullf = [];
         end;
         handles.MCconfig.resultfiles = fullf;
+        handles.MCconfig.roifiles = fullf2;
         set(handles.resultfiles_listbox, 'string', handles.MCconfig.resultfiles);
+        set(handles.roifiles_listbox, 'string', handles.MCconfig.roifiles);
         if get(handles.pick_mode_checkbox, 'value')  %check for classfiles
             if get(handles.simple_paths_radiobutton, 'value')
                 %f as above
@@ -1710,6 +1716,24 @@ function resolver_func_radiobutton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of resolver_func_radiobutton
-if get(hObject, 'value')
-    resolver_function_edit_Callback(hObject, eventdata, handles)
-end
+% if get(hObject, 'value')
+%     resolver_function_edit_Callback(hObject, eventdata, handles)
+% end
+
+
+% --- Executes on button press in review_radiobutton.
+function review_radiobutton_Callback(hObject, eventdata, handles)
+% hObject    handle to review_radiobutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of review_radiobutton
+
+
+% --- Executes on button press in simple_paths_radiobutton.
+function simple_paths_radiobutton_Callback(hObject, eventdata, handles)
+% hObject    handle to simple_paths_radiobutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of simple_paths_radiobutton
