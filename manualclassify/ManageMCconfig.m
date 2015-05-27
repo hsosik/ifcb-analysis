@@ -140,17 +140,19 @@ end
 
 handles.MCconfig_saved = handles.MCconfig; %initialize to track save status
 
-map_MCconfig2GUI(hObject, handles)
-%update settings to correspond to existing object status
-eventdata_temp.opening = 1;
-handles = alphabetize_checkbox_Callback(hObject, eventdata, handles);
-all_file_checkbox_Callback(hObject, eventdata, handles)
-threshold_mode_popup_Callback(hObject, eventdata, handles)
-eventdata_temp.NewValue = get(handles.resolve_file_locations_buttongroup, 'selectedobject'); %what is it now
-resolve_file_locations_buttongroup_SelectionChangeFcn(hObject, eventdata_temp, handles)
-new_review_buttongroup_SelectionChangeFcn(handles.new_review_buttongroup, eventdata_temp, handles) %ensure correct related settings
-%pick_mode_checkbox_Callback(handles.pick_mode_checkbox, [], handles) %must be done after new_review
-update_filelists(handles)
+map_MCconfig2GUI(hObject, eventdata, handles)
+%Seems like this set of lines should be part of the end of map_MCconfigGUI
+%so they are executed on load of config from disk, etc.
+% %update settings to correspond to existing object status
+% eventdata_temp.opening = 1;
+% handles = alphabetize_checkbox_Callback(hObject, eventdata, handles);
+% all_file_checkbox_Callback(hObject, eventdata, handles)
+% threshold_mode_popup_Callback(hObject, eventdata, handles)
+% eventdata_temp.NewValue = get(handles.resolve_file_locations_buttongroup, 'selectedobject'); %what is it now
+% resolve_file_locations_buttongroup_SelectionChangeFcn(hObject, eventdata_temp, handles)
+% new_review_buttongroup_SelectionChangeFcn(handles.new_review_buttongroup, eventdata_temp, handles) %ensure correct related settings
+% %pick_mode_checkbox_Callback(handles.pick_mode_checkbox, [], handles) %must be done after new_review
+% update_filelists(handles)
 
 % Update handles structure
 guidata(handles.MCconfig_main_figure, handles);
@@ -159,7 +161,7 @@ guidata(handles.MCconfig_main_figure, handles);
  uiwait(handles.MCconfig_main_figure);  %uncommented to control output wait for user completion (heidi)
 
 %
-function map_MCconfig2GUI (hObject, handles) 
+function map_MCconfig2GUI (hObject, eventdata, handles) 
 %map MCconfig to GUI components
 for ii = 1:size(handles.config_map,1), 
     map = handles.config_map(ii,:);
@@ -231,7 +233,19 @@ if get(handles.pick_mode_checkbox,'value')
 else
     set([handles.classpath_text handles.class_filestr_text handles.class_filestr_label handles.classpath_label handles.classpath_browse], 'visible', 'off')
 end
-guidata(handles.MCconfig_main_figure, handles);
+
+%update settings to correspond to existing object status
+eventdata_temp.opening = 1;
+handles = alphabetize_checkbox_Callback(hObject, eventdata, handles);
+all_file_checkbox_Callback(hObject, eventdata, handles)
+threshold_mode_popup_Callback(hObject, eventdata, handles)
+eventdata_temp.NewValue = get(handles.resolve_file_locations_buttongroup, 'selectedobject'); %what is it now
+resolve_file_locations_buttongroup_SelectionChangeFcn(hObject, eventdata_temp, handles)
+new_review_buttongroup_SelectionChangeFcn(handles.new_review_buttongroup, eventdata_temp, handles) %ensure correct related settings
+%pick_mode_checkbox_Callback(handles.pick_mode_checkbox, [], handles) %must be done after new_review
+update_filelists(handles)
+
+%guidata(handles.MCconfig_main_figure, handles);
 
 
 %
@@ -922,7 +936,7 @@ if ~isequal(f,0)
         uiwait(msgbox([handles.msgbox_fontstr 'Not a valid configuration file'], handles.msgbox_cs))
     end
 end
-map_MCconfig2GUI(hObject, handles);
+map_MCconfig2GUI(hObject, eventdata, handles);
 
 
 
@@ -1114,7 +1128,7 @@ function reset_default_menu_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 handles.MCconfig = MCconfig_default();
-map_MCconfig2GUI(hObject, handles)
+map_MCconfig2GUI(hObject, eventdata, handles)
 
 
 
