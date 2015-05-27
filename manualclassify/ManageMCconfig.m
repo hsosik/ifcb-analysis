@@ -204,8 +204,11 @@ for ii = 1:size(handles.config_map,1),
             set(h, 'value', v)
         elseif strcmp(map(3), 'value2str')
             num = handles.MCconfig.(char(map(1)));
-            [~,~,v] = intersect(num2str(num), get(h, 'string'));
+            [~,~,v] = intersect(num2str(num), cellstr(char(get(h, 'string'))));
             %[~,~,v] = intersect(num, str2num(cell2mat(get(h, 'string')));
+            if isempty(v) %reset to first value if invalid input
+                v = 1;
+            end
             set(h, 'value', v)
         else %all
             set(h, 'string', str);
