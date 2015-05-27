@@ -140,7 +140,7 @@ end
 
 handles.MCconfig_saved = handles.MCconfig; %initialize to track save status
 
-map_MCconfig2GUI(hObject, eventdata, handles)
+handles = map_MCconfig2GUI(hObject, eventdata, handles);
 %Seems like this set of lines should be part of the end of map_MCconfigGUI
 %so they are executed on load of config from disk, etc.
 % %update settings to correspond to existing object status
@@ -161,7 +161,7 @@ guidata(handles.MCconfig_main_figure, handles);
  uiwait(handles.MCconfig_main_figure);  %uncommented to control output wait for user completion (heidi)
 
 %
-function map_MCconfig2GUI (hObject, eventdata, handles) 
+function handles = map_MCconfig2GUI (hObject, eventdata, handles) 
 %map MCconfig to GUI components
 for ii = 1:size(handles.config_map,1), 
     map = handles.config_map(ii,:);
@@ -196,7 +196,7 @@ for ii = 1:size(handles.config_map,1),
             if isnumeric(str)
                 v = str;
                 if v > length(get(h, 'string')) %reset to first value to avoid crash if invalid input
-                    v = 1
+                    v = 1;
                 end;
             else
                 [~,~,v] = intersect(str, get(h, 'string'));
@@ -936,7 +936,7 @@ if ~isequal(f,0)
         uiwait(msgbox([handles.msgbox_fontstr 'Not a valid configuration file'], handles.msgbox_cs))
     end
 end
-map_MCconfig2GUI(hObject, eventdata, handles);
+map_MCconfig2GUI(hObject, eventdata, handles)
 
 
 
@@ -1455,6 +1455,7 @@ else %some manual files in listbox
             fullf2 = fullfile(p2,fullf2);
         else
             fullf = [];
+            fullf2 = [];
         end;
         handles.MCconfig.resultfiles = fullf;
         handles.MCconfig.roifiles = fullf2;
