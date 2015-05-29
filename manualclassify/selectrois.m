@@ -47,11 +47,9 @@ while button(end) < 3
                 if MCflags.button == 1, %left side listbox
                     catnum = strmatch(category(5:end),class2pick1, 'exact');
                     text(x1,y1, num2str(catnum),'color', 'r', 'fontweight', 'bold')
-                    classlist(selected_roi,4:end) = NaN; %any previous subdivide IDs overridden by this new main manual ID, active subdiv will go to default in manual_classify, 1/15/10
                 elseif MCflags.button == 3, %right side listbox
                     catnum = strmatch(category(5:end),class2pick1, 'exact');
                     text(x1,y1, num2str(catnum),'color', 'r', 'fontweight', 'bold')
-                    classlist(selected_roi,4:end) = NaN; %any previous subdivide IDs overridden by this new main manual ID, active subdiv will go to default in manual_classify, 1/15/10
                 end;
                 classlist(selected_roi,mark_col_now) = catnum;
                 MCflags.changed_selectrois = 1;

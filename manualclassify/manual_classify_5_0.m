@@ -10,7 +10,7 @@ function [  ] = manual_classify_5_0( MCconfig_input )
 %   makescreen.m
 %   select_category.m
 %   get_classlist.m
-%   get_roi_indices.mo
+%   get_roi_indices.m
 %   fillscreen.m
 %   selectrois.m
 %   stitchrois.m
@@ -38,7 +38,7 @@ function [  ] = manual_classify_5_0( MCconfig_input )
 % Aug 2014, revise to address bug #3037, where zero-sized ROIs were previously annotated with default class in 'raw_roi' mode
 % March 2015, begin upgrade transistion from manual_classify_4_0 to manual_classify_4_1, mainly to handle user initiated jumping among classes
 % April 2015, upgrade largely complete with many new features including runtime navigation between classes and files
-% April 2015, move to manual_classify_5_0 for integration with ManageMCconfig GUI  
+% April 2015, move to manual_classify_5_0 for integration with ManageMCconfig GUI
 
 global figure_handle listbox_handle1 instructions_handle listbox_handle3 new_classcount new_setcount MCflags MCconfig new_filecount filecount filelist category select_remaining_button_handle
 
@@ -122,13 +122,13 @@ while filecount <= length(filelist),
         classfile_temp = MCconfig.classfiles{filecount};
     end;
     
-    [ classlist, list_titles, MCflags.newclasslist ] = get_classlistTB( MCconfig.resultfiles{filecount},classfile_temp, MCconfig.pick_mode, class2use_manual, classnum_default, numrois );
-    if MCconfig.dataformat <= 1 %IFCB only
-        if MCflags.newclasslist,  %only first time creating classlist
-            zero_ind = find(roi_info.x_all == 0);
-            classlist(zero_ind,2) = NaN; %mark zero-sized ROIs as NaNs in manual column (needed for raw_roi case where these are put in default class by get_classlistTB
-        end
-    end
+    [ classlist, list_titles, MCflags.newclasslist, default_class_original ] = get_classlistTB2( MCconfig.resultfiles{filecount},classfile_temp, MCconfig.pick_mode, class2use_manual, classnum_default, numrois, roi_info.x_all);
+%     if MCconfig.dataformat <= 1 %IFCB only
+%         if MCflags.newclasslist,  %only first time creating classlist
+%             zero_ind = find(roi_info.x_all == 0);
+%             classlist(zero_ind,2) = NaN; %mark zero-sized ROIs as NaNs in manual column (needed for raw_roi case where these are put in default class by get_classlistTB
+%         end
+%     end
     %special case to segregate dirt spots in Healy1101 data
     if isequal(MCconfig.resultfiles{filecount}(1:10), 'IFCB8_2011') && MCflags.newclasslist,
         classlist((adcdata(:,10) == 1118 & adcdata(:,11) == 290),2) = strmatch('bad', class2use_manual);
@@ -208,7 +208,7 @@ while filecount <= length(filelist),
             while imgset <= setnum && ~MCflags.file_jump
                 if exist('checking_handle', 'var'), delete(checking_handle), clear checking_handle, pause(.001), end;
                 loading_handle = text(0, 1.01, 'Loading images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
-                pause(.001) %make sure label displays
+                pause(.01) %make sure label displays
                 next_ind = 1; %start with the first roi
                 next_ind_list = next_ind; %keep track of screen start indices within a class
                 imagedat = {};
@@ -235,11 +235,9 @@ while filecount <= length(filelist),
                         figure(figure_handle)
                         
                         [ classlist ] = selectrois(instructions_handle, imagemap, classlist, MCconfig.class2use, MCconfig.maxlist1 );
-                        %set(instructions_handle, 'string', ['Use mouse button to choose category. Then click on ROIs. Hit ENTER key to stop choosing.'], 'foregroundcolor', 'k') %reset in case activated warning instruction
                         set(instructions_handle, 'string', ['Click on ' category...
                                 ' images; then ENTER key to save results before changing categories. ENTER key for new page.'], 'foregroundcolor', 'k', 'fontsize', 8)
                         if MCflags.select_remaining
-                            %classlist(roi_ind_all(setrange(1):end),2) = str2num(category(1:3)); 
                             classlist(roi_ind_all(setrange(next_ind-next_ind_increment+1):end),2) = str2num(category(1:3)); 
                             if imgset == setnum
                                 MCflags.select_remaining = 0;
@@ -248,11 +246,10 @@ while filecount <= length(filelist),
                             set(select_remaining_button_handle, 'value', 0)
                         end;
                         if MCflags.changed_selectrois
-                            save(MCconfig.resultfiles{filecount}, 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
-                            %save([MCconfig.resultpath outfile], 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles'); %omit append option, 6 Jan 2010
+                            save(MCconfig.resultfiles{filecount}, 'classlist', 'class2use_auto', 'class2use_manual', 'list_titles', 'default_class_original'); %omit append option, 6 Jan 2010
                         end;
                         MCflags.changed_selectrois = 0;
-                        if MCflags.reload_set, new_setcount = imgset; MCflags.reload_set = 0;, end
+                        if MCflags.reload_set, new_setcount = imgset; MCflags.reload_set = 0; end
                         if MCflags.class_step %case for user stepped to next or previous class, new_classcount OR special case to reload current class (class_step = -0.5)
                             new_classcount = classcount + ceil(MCflags.class_step); %value of flag specifies direction and amplitude of step within class2view, ceil ensures -0.5 ==> 0
                             if MCflags.class_step < 0 %-1 (go back one) or -0.5 (reload current)

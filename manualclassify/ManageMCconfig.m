@@ -21,7 +21,7 @@ function varargout = ManageMCconfig(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 % Edit the above text to modify the response to help ManageMCconfig
 
-% Last Modified by GUIDE v2.5 26-May-2015 12:28:00
+% Last Modified by GUIDE v2.5 27-May-2015 18:59:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -141,19 +141,6 @@ end
 handles.MCconfig_saved = handles.MCconfig; %initialize to track save status
 
 handles = map_MCconfig2GUI(hObject, eventdata, handles);
-%Seems like this set of lines should be part of the end of map_MCconfigGUI
-%so they are executed on load of config from disk, etc.
-% %update settings to correspond to existing object status
-% eventdata_temp.opening = 1;
-% handles = alphabetize_checkbox_Callback(hObject, eventdata, handles);
-% all_file_checkbox_Callback(hObject, eventdata, handles)
-% threshold_mode_popup_Callback(hObject, eventdata, handles)
-% eventdata_temp.NewValue = get(handles.resolve_file_locations_buttongroup, 'selectedobject'); %what is it now
-% resolve_file_locations_buttongroup_SelectionChangeFcn(hObject, eventdata_temp, handles)
-% new_review_buttongroup_SelectionChangeFcn(handles.new_review_buttongroup, eventdata_temp, handles) %ensure correct related settings
-% %pick_mode_checkbox_Callback(handles.pick_mode_checkbox, [], handles) %must be done after new_review
-% update_filelists(handles)
-
 % Update handles structure
 guidata(handles.MCconfig_main_figure, handles);
 
@@ -248,10 +235,8 @@ new_review_buttongroup_SelectionChangeFcn(handles.new_review_buttongroup, eventd
 %pick_mode_checkbox_Callback(handles.pick_mode_checkbox, [], handles) %must be done after new_review
 update_filelists(handles)
 
-%guidata(handles.MCconfig_main_figure, handles);
 
 
-%
 function MCconfig = MCconfig_default()
 settings = struct('start_new_radiobutton', 1, 'review_radiobutton', 0, 'simple_paths_radiobutton', 1, 'resolver_func_radiobutton', 0, 'pick_mode_checkbox', 0, 'all_file_checkbox', 0);
 MCconfig = struct(...
@@ -306,54 +291,6 @@ else %user closed window pre-maturely (e.g., closed startMC)
 end
 
 
-
-% --- Executes on selection change in pick_mode.
-function pick_mode_Callback(hObject, eventdata, handles)
-% hObject    handle to pick_mode (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns pick_mode contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from pick_mode
-
-
-% --- Executes during object creation, after setting all properties.
-function pick_mode_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to pick_mode (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: listbox controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on selection change in display_ordered_listbox.
-function display_ordered_listbox_Callback(hObject, eventdata, handles)
-% hObject    handle to display_ordered_listbox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns display_ordered_listbox contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from display_ordered_listbox
-
-
-% --- Executes during object creation, after setting all properties.
-function display_ordered_listbox_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to display_ordered_listbox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: listbox controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
 function roipath_text_Callback(hObject, eventdata, handles)
 % hObject    handle to roipath_text (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -361,7 +298,6 @@ function roipath_text_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of roipath_text as text
 %        str2double(get(hObject,'String')) returns contents of roipath_text as a double
-
 oldpath = handles.MCconfig.roibase_path;
 handles.MCconfig.roibase_path = get(hObject, 'string');
 guidata(handles.MCconfig_main_figure, handles);
@@ -370,12 +306,11 @@ if ~isequal(get(hObject, 'string'), oldpath) %if path changed
        if get(handles.all_file_checkbox, 'value')
            all_file_checkbox_Callback([], [], handles)
        else
-           handles.MCconfig.roifiles = [];
+          % handles.MCconfig.roifiles = []; %handled now in all_file_checkbox_Callback
            update_filelists(handles)       
        end
 end
    
-
 
 % --- Executes during object creation, after setting all properties.
 function roipath_text_CreateFcn(hObject, eventdata, handles)
@@ -401,17 +336,6 @@ if roipath
     set(handles.roipath_text, 'string', roipath)
     roipath_text_Callback([], [], handles)
 end
-
-
-
-% --- Executes on selection change in start_file_popup.
-function start_file_popup_Callback(hObject, eventdata, handles)
-% hObject    handle to start_file_popup (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns start_file_popup contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from start_file_popup
 
 
 % --- Executes during object creation, after setting all properties.
@@ -453,6 +377,7 @@ function maxlist1_text_Callback(hObject, eventdata, handles)
            uiwait(msgbox([handles.msgbox_fontstr 'Left list size must be a positive integer'], handles.msgbox_cs))
         end;
 
+        
 % --- Executes during object creation, after setting all properties.
 function maxlist1_text_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to maxlist1_text (see GCBO)
@@ -541,9 +466,7 @@ function classpath_text_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of classpath_text as a double
 %   p = get(handles.classpath_text, 'string');
    update_filelists(handles)
-   guidata(handles.MCconfig_main_figure, handles);
-
-   
+   guidata(handles.MCconfig_main_figure, handles); 
    
 
 % --- Executes during object creation, after setting all properties.
@@ -577,7 +500,6 @@ function MCconfig_main_figure_ResizeFcn(hObject, eventdata, handles)
 % hObject    handle to MCconfig_main_figure (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
 
 
 function imresize_text_Callback(hObject, eventdata, handles)
@@ -629,15 +551,6 @@ else
 end
 
 
-% --- Executes on button press in images_by_size_checkbox.
-function images_by_size_checkbox_Callback(hObject, eventdata, handles)
-% hObject    handle to images_by_size_checkbox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of images_by_size_checkbox
-
-
 % --- Executes on button press in alphabetize_checkbox.
 function handles = alphabetize_checkbox_Callback(hObject, eventdata, handles)
 % hObject    handle to alphabetize_checkbox (see GCBO)
@@ -679,16 +592,6 @@ end
 guidata(handles.MCconfig_main_figure, handles);
     %reset highlights for class2view to match status of checkbox
 %class2view_all_checkbox_Callback(hObject, eventdata, handles)
-
-
-
-function class_filestr_text_Callback(hObject, eventdata, handles)
-% hObject    handle to class_filestr_text (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of class_filestr_text as text
-%        str2double(get(hObject,'String')) returns contents of class_filestr_text as a double
 
 
 % --- Executes during object creation, after setting all properties.
@@ -788,6 +691,7 @@ tempv = get(handles.default_class_popup, 'value');
 handles.MCconfig.default_class = tempall(tempv);
 guidata(handles.MCconfig_main_figure, handles);
 
+
 % --- Executes during object creation, after setting all properties.
 function default_class_popup_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to default_class_popup (see GCBO)
@@ -799,6 +703,7 @@ function default_class_popup_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
 
 % --------------------------------------------------------------------
 function handles = Save_menu_Callback(hObject, eventdata, handles)
@@ -914,6 +819,7 @@ end
 guidata(handles.MCconfig_main_figure, handles);
 save([ handles.configpath 'last.mcconfig.mat'], 'MCconfig');
 
+
 % --------------------------------------------------------------------
 function load_config_menu_Callback(hObject, eventdata, handles)
 % hObject    handle to load_config_menu (see GCBO)
@@ -940,7 +846,6 @@ if ~isequal(f,0)
     end
 end
 map_MCconfig2GUI(hObject, eventdata, handles)
-
 
 
 % --- Executes on selection change in threshold_mode_popup.
@@ -985,6 +890,7 @@ function ysize_text_Callback(hObject, eventdata, handles)
            uiwait(msgbox([handles.msgbox_fontstr 'y size threshold must be a positive integer'], handles.msgbox_cs))
         end;
 
+        
 % --- Executes during object creation, after setting all properties.
 function ysize_text_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to ysize_text (see GCBO)
@@ -996,7 +902,6 @@ function ysize_text_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
 
 
 function xsize_text_Callback(hObject, eventdata, handles)
@@ -1027,7 +932,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function setsize_text_Callback(hObject, eventdata, handles)
 % hObject    handle to setsize_text (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -1042,6 +946,7 @@ function setsize_text_Callback(hObject, eventdata, handles)
            uiwait(msgbox([handles.msgbox_fontstr 'Set size must be a positive integer'], handles.msgbox_cs))
         end;
 
+        
 % --- Executes during object creation, after setting all properties.
 function setsize_text_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to setsize_text (see GCBO)
@@ -1053,7 +958,6 @@ function setsize_text_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
 
 
 function bar_length_text_Callback(hObject, eventdata, handles)
@@ -1069,6 +973,7 @@ function bar_length_text_Callback(hObject, eventdata, handles)
            uiwait(msgbox([handles.msgbox_fontstr 'Scale bar length must be a positive integer'], handles.msgbox_cs))
         end;
 
+        
 % --- Executes during object creation, after setting all properties.
 function bar_length_text_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to bar_length_text (see GCBO)
@@ -1090,7 +995,6 @@ function pixels_per_micron_text_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of pixels_per_micron_text as text
 %        str2double(get(hObject,'String')) returns contents of pixels_per_micron_text as a double
-
    [val status] = str2num(get(hObject,'String'));
         if ~status || val <= 0 
            set(hObject,'String', num2str(handles.MCconfig.pixel_per_micron));
@@ -1111,20 +1015,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes during object creation, after setting all properties.
-function bar_length_label_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to bar_length_label (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-
-% --------------------------------------------------------------------
-function File_menu_Callback(hObject, eventdata, handles)
-% hObject    handle to File_menu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
 % --------------------------------------------------------------------
 function reset_default_menu_Callback(hObject, eventdata, handles)
 % hObject    handle to reset_default_menu (see GCBO)
@@ -1132,7 +1022,6 @@ function reset_default_menu_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 handles.MCconfig = MCconfig_default();
 map_MCconfig2GUI(hObject, eventdata, handles)
-
 
 
 % --- Executes on button press in select_files_pushbutton.
@@ -1231,6 +1120,13 @@ if get(handles.all_file_checkbox,'value')
     end
 else
     set(handles.select_files_pushbutton, 'enable', 'on')
+    new_or_review = get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag');
+    switch new_or_review
+        case 'review_radiobutton'
+            handles.MCconfig.resultfiles = [];
+        case 'start_new_radiobutton'
+            handles.MCconfig.roifiles = [];
+    end
     %clear_files_pushbutton_Callback(hObject, eventdata, handles)
 end
 
@@ -1274,11 +1170,11 @@ if ~isempty(get(handles.resultfiles_listbox, 'string'))
         end
     end
 end
-if isequal(get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag'), 'review_radiobutton')
-    set(handles.pick_mode_checkbox, 'enable', 'off', 'value', 0)
-else
-    set(handles.pick_mode_checkbox, 'enable', 'on')
-end
+% if isequal(get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag'), 'review_radiobutton')
+%     set(handles.pick_mode_checkbox, 'enable', 'off', 'value', 0)
+% else
+%     set(handles.pick_mode_checkbox, 'enable', 'on')
+% end
 pick_mode_checkbox_Callback([], eventdata, handles)
 guidata(handles.MCconfig_main_figure, handles);
 
@@ -1406,67 +1302,55 @@ if ~exist(get(handles.manualpath_text, 'string'), 'dir')
     if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first pass through when starting up
         uiwait(msgbox([handles.msgbox_fontstr 'Path not found - select a valid manual result path.'], handles.msgbox_cs))
     end
-else %some manual files in listbox
-    if isequal(get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag'), 'review_radiobutton')
-        f = handles.MCconfig.resultfiles;
-        x = '.mat';
-        [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
-        p = get(handles.manualpath_text, 'string');
-        if ~isempty(f{1})
-                f = cellstr([char(f) repmat(x,length(f),1)]);
-                fullf = fullfile(p,f);
-                temp = cellfun(@exist, fullf, 'uniformoutput', true);
-            else
-                fullf = [];
-                temp = [];
-        end
-        handles.MCconfig.resultfiles = fullf;
-        set(handles.resultfiles_listbox, 'string', handles.MCconfig.resultfiles)
-        h = handles.resultfiles_listbox; %review means manual list is master
-        if get(handles.simple_paths_radiobutton, 'value')
-            [~, f] = cellfun(@fileparts,cellstr(get(h, 'string')), 'uniformoutput', false);
+else %some manual files may be in listbox
+    new_or_review = get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag');
+    switch new_or_review
+        case 'review_radiobutton'
+            f = handles.MCconfig.resultfiles;
+            [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
+        case 'start_new_radiobutton'
+            f = handles.MCconfig.roifiles; 
+            [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
+    end
+    p = get(handles.manualpath_text, 'string');
+    x = '.mat';
+    if ~isempty(f{1}) %set the manual files list
+        fullf = cellstr([char(f) repmat(x,length(f),1)]);
+        fullf = fullfile(p,fullf);
+        temp = cellfun(@exist, fullf, 'uniformoutput', true);
+    else
+        fullf = [];
+        temp = [];
+    end
+    handles.MCconfig.resultfiles = fullf;
+    set(handles.resultfiles_listbox, 'string', handles.MCconfig.resultfiles)
+    
+    %now set the roi files
+    path_method = get(get(handles.resolve_file_locations_buttongroup, 'selectedobject'), 'tag');
+    switch path_method
+        case 'simple_paths_radiobutton'
             p = get(handles.roipath_text, 'string');
             x = '.roi';
             if ~isempty(f{1})
-                f = cellstr([char(f) repmat(x,size(f,1),1)]);
-                fullf = fullfile(p,f);
+                fullf = cellstr([char(f) repmat(x,size(f,1),1)]);
+                fullf = fullfile(p,fullf);
                 temp = cellfun(@exist, fullf, 'uniformoutput', true);
             else
                 fullf = [];
                 temp = [];
             end
             handles.MCconfig.roifiles = fullf;
-        else %resolver case
+        case {'standard_resolver_radiobutton' 'resolver_func_radiobutton'} %resolver case
             if ~isempty(handles.MCconfig.resultfiles),
                 handles = resolve_files(handles, handles.MCconfig.resultfiles);
-            end;
-        end
-        set(handles.roifiles_listbox, 'string', handles.MCconfig.roifiles);
-    else  %start new
-        fullf = handles.MCconfig.roifiles;
-        set(handles.roifiles_listbox, 'string', fullf)
-        h = handles.roifiles_listbox; %new means roi list is master
-        [~, f] = cellfun(@fileparts,cellstr(get(h, 'string')), 'uniformoutput', false);
-        p = get(handles.manualpath_text, 'string');
-        p2 = get(handles.roipath_text, 'string');
-        x = '.mat';
-        x2 = '.roi';
-        if ~isempty(f{1})
-            fullf = cellstr([char(f) repmat(x,size(f,1),1)]);
-            fullf = fullfile(p,fullf);
-            fullf2 = cellstr([char(f) repmat(x2,size(f,1),1)]);
-            fullf2 = fullfile(p2,fullf2);
-        else
-            fullf = [];
-            fullf2 = [];
-        end;
-        handles.MCconfig.resultfiles = fullf;
-        handles.MCconfig.roifiles = fullf2;
-        set(handles.resultfiles_listbox, 'string', handles.MCconfig.resultfiles);
-        set(handles.roifiles_listbox, 'string', handles.MCconfig.roifiles);
-        if get(handles.pick_mode_checkbox, 'value')  %check for classfiles
-            if get(handles.simple_paths_radiobutton, 'value')
-                %f as above
+            end
+    end
+    set(handles.roifiles_listbox, 'string', handles.MCconfig.roifiles);
+    
+    %now set the class files
+    if get(handles.pick_mode_checkbox, 'value')  %check for classfiles
+        switch path_method
+            case 'simple_paths_radiobutton'
                 p = get(handles.classpath_text, 'string');
                 x = [get(handles.class_filestr_text, 'string') '.mat'];
                 if ~isempty(f{1})
@@ -1476,36 +1360,38 @@ else %some manual files in listbox
                     fullf = [];
                 end
                 handles.MCconfig.classfiles = fullf;
-            else
+            case {'standard_resolver_radiobutton' 'resolver_func_radiobutton'}
                 if ~isempty(handles.MCconfig.roifiles)
                     handles = resolve_files(handles, handles.MCconfig.roifiles);
                 end
-            end
-            set(handles.classfiles_listbox, 'string', handles.MCconfig.classfiles);
-        else  %don't start from classifier
-            handles.MCconfig.classfiles = [];%make sure empty if not starting from class even by resolver function
-            %run resolver anyway in case need stitch files for MVCO custom resolver
-            if ~isempty(handles.MCconfig.roifiles) && ~get(handles.simple_paths_radiobutton, 'value')
-                handles = resolve_files(handles, handles.MCconfig.roifiles);
-            end
+        end
+    else %don't start from classifier
+        handles.MCconfig.classfiles = []; %make sure empty if not starting from class even by resolver function
+        %run resolver anyway in case need stitch files for MVCO custom resolver
+        if ~isempty(handles.MCconfig.roifiles) && ~get(handles.simple_paths_radiobutton, 'value')
+            handles = resolve_files(handles, handles.MCconfig.roifiles);
         end
     end
-    if ~isempty(handles.MCconfig.resultfiles)
-        [~,temp] = fileparts(handles.MCconfig.resultfiles{1});
-        if isequal(temp(1), 'I')
-            set(get(get(handles.IFCB_format1_menu, 'parent'), 'children'),'checked', 'off') %set all in submenu to off
-            set(handles.IFCB_format1_menu, 'checked', 'on')
-        elseif isequal(temp(1), 'D')
-            set(get(get(handles.IFCB_format1_menu, 'parent'), 'children'),'checked', 'off') %set all in submenu to off
-            set(handles.IFCB_format2_menu, 'checked', 'on')
-        end
-        set(handles.start_file_popup, 'string', cellstr(num2str((1:length(handles.MCconfig.resultfiles))')))
-    end
+    set(handles.classfiles_listbox, 'string', handles.MCconfig.classfiles);
 end
+
+if ~isempty(handles.MCconfig.resultfiles)
+    [~,temp] = fileparts(handles.MCconfig.resultfiles{1});
+    if isequal(temp(1), 'I')
+        set(get(get(handles.IFCB_format1_menu, 'parent'), 'children'),'checked', 'off') %set all in submenu to off
+        set(handles.IFCB_format1_menu, 'checked', 'on')
+    elseif isequal(temp(1), 'D')
+        set(get(get(handles.IFCB_format1_menu, 'parent'), 'children'),'checked', 'off') %set all in submenu to off
+        set(handles.IFCB_format2_menu, 'checked', 'on')
+    end
+    set(handles.start_file_popup, 'string', cellstr(num2str((1:length(handles.MCconfig.resultfiles))')))
+end
+%check and mark missing class files
 if ~isempty(handles.MCconfig.classfiles) && isequal(get(handles.classfiles_listbox, 'visible'), 'on')
     fullf = mark_notfound_inlist(handles.MCconfig.classfiles, handles);
     set(handles.classfiles_listbox, 'string', fullf)
 end
+%mark all result files missing if manualpath is missing
 if ~isempty(handles.MCconfig.resultfiles)
     if ~exist(get(handles.manualpath_text, 'string'), 'dir')
         fullf = handles.MCconfig.resultfiles;
@@ -1514,6 +1400,7 @@ if ~isempty(handles.MCconfig.resultfiles)
         set(handles.resultfiles_listbox, 'string', fullf)
     end
 end
+%check and mark missing roi files
 if ~isempty(handles.MCconfig.roifiles)
     fullf = mark_notfound_inlist(handles.MCconfig.roifiles, handles);
     set(handles.roifiles_listbox, 'string', fullf)
@@ -1587,41 +1474,6 @@ handles.MCconfig.dataformat = 3; %get(handles.VPR_format1_menu, 'value');
 guidata(handles.MCconfig_main_figure, handles);
 
 
-% --------------------------------------------------------------------
-function IFCB_format1_menu_Callback(hObject, eventdata, handles)
-% hObject    handle to IFCB_format1_menu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
-function IFCB_format2_menu_Callback(hObject, eventdata, handles)
-% hObject    handle to IFCB_format2_menu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
-function advanced_menu_Callback(hObject, eventdata, handles)
-% hObject    handle to advanced_menu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
-function dataformat_menu_Callback(hObject, eventdata, handles)
-% hObject    handle to dataformat_menu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
-function dataformat_contextmenu_Callback(hObject, eventdata, handles)
-% hObject    handle to dataformat_contextmenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
 % --- Executes on button press in return_pushbutton.
 function return_pushbutton_Callback(hObject, eventdata, handles)
 % hObject    handle to return_pushbutton (see GCBO)
@@ -1660,12 +1512,6 @@ if ~isempty(resolver_handle)
 end
 
 
-% --- Executes during object creation, after setting all properties.
-function standard_resolver_radiobutton_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to standard_resolver_radiobutton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
 function files_struct = resolve_standard(filelist, baseroipath, baseclasspath, class_filestr);
 %standard case for <base_path>\yyyy\<IFCB_day_dir>\
 [~,files] = cellfun(@fileparts,filelist, 'uniformoutput', false);
@@ -1693,20 +1539,6 @@ files_struct.classfiles = classfiles;
 files_struct.roifiles = roifiles;
 
 
-% --- Executes during object creation, after setting all properties.
-function status_text_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to status_text (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-
-% --- If Enable == 'on', executes on mouse press in 5 pixel border.
-% --- Otherwise, executes on mouse press in 5 pixel border or over status_text.
-function status_text_ButtonDownFcn(hObject, eventdata, handles)
-% hObject    handle to status_text (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 function fullf = mark_notfound_inlist(fullf, handles)
     missing = cellfun(@exist, fullf, 'uniformoutput', true);
     missing = find(missing==0);
@@ -1727,31 +1559,131 @@ function quit_menu_Callback(hObject, eventdata, handles)
 MCconfig_main_figure_CloseRequestFcn(hObject, eventdata, handles)
 
 
-% % --- Executes on button press in resolver_func_radiobutton.
-% function resolver_func_radiobutton_Callback(hObject, eventdata, handles)
-% % hObject    handle to resolver_func_radiobutton (see GCBO)
-% % eventdata  reserved - to be defined in a future version of MATLAB
-% % handles    structure with handles and user data (see GUIDATA)
-% 
-% % Hint: get(hObject,'Value') returns toggle state of resolver_func_radiobutton
-% % if get(hObject, 'value')
-% %     resolver_function_edit_Callback(hObject, eventdata, handles)
+
+% % DISCARD
+% % function update_filelists (handles)
+% % set(handles.status_text, 'string', 'Checking files...')
+% % pause(.001)
+% % m = msgbox('Checking file status...please wait.');
+% % if ~exist(get(handles.manualpath_text, 'string'), 'dir')
+% %     if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first pass through when starting up
+% %         uiwait(msgbox([handles.msgbox_fontstr 'Path not found - select a valid manual result path.'], handles.msgbox_cs))
+% %     end
+% % else %some manual files in listbox
+% %     if isequal(get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag'), 'review_radiobutton')
+% %         f = handles.MCconfig.resultfiles;
+% %         x = '.mat';
+% %         [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
+% %         p = get(handles.manualpath_text, 'string');
+% %         if ~isempty(f{1})
+% %                 f = cellstr([char(f) repmat(x,length(f),1)]);
+% %                 fullf = fullfile(p,f);
+% %                 temp = cellfun(@exist, fullf, 'uniformoutput', true);
+% %             else
+% %                 fullf = [];
+% %                 temp = [];
+% %         end
+% %         handles.MCconfig.resultfiles = fullf;
+% %         set(handles.resultfiles_listbox, 'string', handles.MCconfig.resultfiles)
+% %         h = handles.resultfiles_listbox; %review means manual list is master
+% %         if get(handles.simple_paths_radiobutton, 'value')
+% %             [~, f] = cellfun(@fileparts,cellstr(get(h, 'string')), 'uniformoutput', false);
+% %             p = get(handles.roipath_text, 'string');
+% %             x = '.roi';
+% %             if ~isempty(f{1})
+% %                 f = cellstr([char(f) repmat(x,size(f,1),1)]);
+% %                 fullf = fullfile(p,f);
+% %                 temp = cellfun(@exist, fullf, 'uniformoutput', true);
+% %             else
+% %                 fullf = [];
+% %                 temp = [];
+% %             end
+% %             handles.MCconfig.roifiles = fullf;
+% %         else %resolver case
+% %             if ~isempty(handles.MCconfig.resultfiles),
+% %                 handles = resolve_files(handles, handles.MCconfig.resultfiles);
+% %             end;
+% %         end
+% %         set(handles.roifiles_listbox, 'string', handles.MCconfig.roifiles);
+% %     else  %start new
+% %         fullf = handles.MCconfig.roifiles;
+% %         set(handles.roifiles_listbox, 'string', fullf)
+% %         h = handles.roifiles_listbox; %new means roi list is master
+% %         [~, f] = cellfun(@fileparts,cellstr(get(h, 'string')), 'uniformoutput', false);
+% %         p = get(handles.manualpath_text, 'string');
+% %         p2 = get(handles.roipath_text, 'string');
+% %         x = '.mat';
+% %         x2 = '.roi';
+% %         if ~isempty(f{1})
+% %             fullf = cellstr([char(f) repmat(x,size(f,1),1)]);
+% %             fullf = fullfile(p,fullf);
+% %             fullf2 = cellstr([char(f) repmat(x2,size(f,1),1)]);
+% %             fullf2 = fullfile(p2,fullf2);
+% %         else
+% %             fullf = [];
+% %             fullf2 = [];
+% %         end;
+% %         handles.MCconfig.resultfiles = fullf;
+% %         handles.MCconfig.roifiles = fullf2;
+% %         set(handles.resultfiles_listbox, 'string', handles.MCconfig.resultfiles);
+% %         set(handles.roifiles_listbox, 'string', handles.MCconfig.roifiles);
+% %         if get(handles.pick_mode_checkbox, 'value')  %check for classfiles
+% %             if get(handles.simple_paths_radiobutton, 'value')
+% %                 %f as above
+% %                 p = get(handles.classpath_text, 'string');
+% %                 x = [get(handles.class_filestr_text, 'string') '.mat'];
+% %                 if ~isempty(f{1})
+% %                     f = cellstr([char(f) repmat(x,size(f,1),1)]);
+% %                     fullf = fullfile(p,f);
+% %                 else
+% %                     fullf = [];
+% %                 end
+% %                 handles.MCconfig.classfiles = fullf;
+% %             else
+% %                 if ~isempty(handles.MCconfig.roifiles)
+% %                     handles = resolve_files(handles, handles.MCconfig.roifiles);
+% %                 end
+% %             end
+% %             set(handles.classfiles_listbox, 'string', handles.MCconfig.classfiles);
+% %         else  %don't start from classifier
+% %             handles.MCconfig.classfiles = [];%make sure empty if not starting from class even by resolver function
+% %             %run resolver anyway in case need stitch files for MVCO custom resolver
+% %             if ~isempty(handles.MCconfig.roifiles) && ~get(handles.simple_paths_radiobutton, 'value')
+% %                 handles = resolve_files(handles, handles.MCconfig.roifiles);
+% %             end
+% %         end
+% %     end
+% %     if ~isempty(handles.MCconfig.resultfiles)
+% %         [~,temp] = fileparts(handles.MCconfig.resultfiles{1});
+% %         if isequal(temp(1), 'I')
+% %             set(get(get(handles.IFCB_format1_menu, 'parent'), 'children'),'checked', 'off') %set all in submenu to off
+% %             set(handles.IFCB_format1_menu, 'checked', 'on')
+% %         elseif isequal(temp(1), 'D')
+% %             set(get(get(handles.IFCB_format1_menu, 'parent'), 'children'),'checked', 'off') %set all in submenu to off
+% %             set(handles.IFCB_format2_menu, 'checked', 'on')
+% %         end
+% %         set(handles.start_file_popup, 'string', cellstr(num2str((1:length(handles.MCconfig.resultfiles))')))
+% %     end
 % % end
-% 
-% 
-% % --- Executes on button press in review_radiobutton.
-% function review_radiobutton_Callback(hObject, eventdata, handles)
-% % hObject    handle to review_radiobutton (see GCBO)
-% % eventdata  reserved - to be defined in a future version of MATLAB
-% % handles    structure with handles and user data (see GUIDATA)
-% 
-% % Hint: get(hObject,'Value') returns toggle state of review_radiobutton
-% 
-% 
-% % --- Executes on button press in simple_paths_radiobutton.
-% function simple_paths_radiobutton_Callback(hObject, eventdata, handles)
-% % hObject    handle to simple_paths_radiobutton (see GCBO)
-% % eventdata  reserved - to be defined in a future version of MATLAB
-% % handles    structure with handles and user data (see GUIDATA)
-% 
-% % Hint: get(hObject,'Value') returns toggle state of simple_paths_radiobutton
+% % if ~isempty(handles.MCconfig.classfiles) && isequal(get(handles.classfiles_listbox, 'visible'), 'on')
+% %     fullf = mark_notfound_inlist(handles.MCconfig.classfiles, handles);
+% %     set(handles.classfiles_listbox, 'string', fullf)
+% % end
+% % if ~isempty(handles.MCconfig.resultfiles)
+% %     if ~exist(get(handles.manualpath_text, 'string'), 'dir')
+% %         fullf = handles.MCconfig.resultfiles;
+% %         for ii = 1:length(fullf), fullf(ii) = {['<html><font color="red">', fullf{ii}, '</font><html>']}; end
+% %         %fullf = mark_notfound_inlist(handles.MCconfig.resultfiles, handles);
+% %         set(handles.resultfiles_listbox, 'string', fullf)
+% %     end
+% % end
+% % if ~isempty(handles.MCconfig.roifiles)
+% %     fullf = mark_notfound_inlist(handles.MCconfig.roifiles, handles);
+% %     set(handles.roifiles_listbox, 'string', fullf)
+% % end
+% % 
+% % guidata(handles.MCconfig_main_figure, handles);
+% % set(handles.status_text, 'string', 'Status: Ready')
+% % if ishandle(m)
+% %     delete(m)
+% % end
