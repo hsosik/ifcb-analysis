@@ -31,7 +31,12 @@ pagefull = 0;
 start_pos = [1 1]; %start at origin
 ycum = 1;
 next_ind = 1;
+f = 1; %initialize to keep image size as input
+imagedat_in = imagedat;  %keep an unchanged copy in case need multiple resize
 while ~pagefull && next_ind <= length(imgind)
+    if f ~= 1,
+        imagedat{next_ind} = imresize(imagedat_in{next_ind},f);
+    end
     [x,y] = size(imagedat{next_ind});  %get image dimensions
     if x > 0,  %skip if zero size roi
         %check if the next one fits
@@ -39,35 +44,39 @@ while ~pagefull && next_ind <= length(imgind)
         if check_pos(2) > camy, %goes off the bottom
             pagefull = 1;
             if ~exist('plotnow', 'var') %first image too big for page
-                f = camy/y;
-                imagedat{next_ind} = imresize(imagedat{next_ind}, f);
+                f = f*camy/y;
+                imagedat{next_ind} = imresize(imagedat_in{next_ind}, f);
             end
             plotnow = 1;
-            uiwait(msgbox(['Image rescaled to fit on page ' num2str(f*100,'%0.1f') '%']))
             %next_ind stays on this one
         elseif check_pos(1) > camx, %doesn't fit on this row
-            if ~exist('plotnow', 'var') %first image too big for page
-                f = camx/x;
-                imagedat{next_ind} = imresize(imagedat{next_ind}, f);
-                plotnow = 1;
-                pagefull = 1;
-                uiwait(msgbox(['Image rescaled to fit on page ' num2str(f*100,'%0.1f') '%']))
-            else
+            if start_pos(1) ~= 1,
                 start_pos = [1, ycum + border]; % go to new row
-                check_pos = [start_pos(1) + x, start_pos(2) + y];
-                if check_pos(2) > camy, %goes off the bottom
-                    pagefull = 1;
-                else %fits here
-                    plotnow = 1;
-                end
             end
+            check_pos = [start_pos(1) + x, start_pos(2) + y];
+            if check_pos(2) > camy, %goes off the bottom
+                pagefull = 1;
+            elseif check_pos(1) > camx %too big for a row of its own
+                f = f*(camx-1)/x; %new resize factor
+                %in this case need to remake the whole page with this f now
+                plotnow = 0;
+                delete(gca)
+                imagemap = NaN(camx, camy);
+                pagefull = 0;
+                start_pos = [1 1]; %start at origin
+                ycum = 1;
+                next_ind = 1;
+            else
+                %fits here
+                plotnow = 1;
+            end
+            %end
         else %fits here
             plotnow = 1;
         end;
         if plotnow
             colormap(gray); shading flat; hold on; axis([1 camx 1 camy]); set(gca, 'ydir', 'reverse', 'yticklabel', [], 'units', 'inches')
             set(gca,'ytick', 0:200:camy, 'xtick', 0:200:camx, 'plotboxAspectRatioMode', 'auto', 'dataAspectRatioMode', 'manual', 'dataAspectRatio', [1 1 1]);
-            %tpos = get(gca, 'position'); tpos(1:2) = [1.5 1]; set(gca, 'position', tpos)
             h = imagesc(imagedat{next_ind}', 'xdata', start_pos(1):check_pos(1), 'ydata', start_pos(2):check_pos(2)); hold on
             text(start_pos(1),start_pos(2), num2str(imgind(next_ind)), 'verticalalignment','top');
             if classlist(imgind(next_ind), mark_col) ~= classnum & ~isnan(classlist(imgind(next_ind), mark_col)),  %if class changed on this round, mark with new class number
@@ -83,6 +92,9 @@ while ~pagefull && next_ind <= length(imgind)
     else %go on to next one if zero-size roi
         next_ind = next_ind + 1;
     end
+end
+if f ~= 1,
+    uiwait(msgbox(['Images on this page rescaled to fit ' num2str(f*100,'%0.1f') '%']))
 end
 title(title_str, 'fontsize', 12, 'color', 'r', 'fontweight', 'bold','interpreter','tex')
 th = text(1, -5, {'SELECT all page'}, 'fontsize', 16, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
