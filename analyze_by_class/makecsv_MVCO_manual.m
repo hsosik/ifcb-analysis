@@ -3,7 +3,7 @@ load([resultpath 'manual_list']) %load the manual list detailing annotate mode f
 
 urlstr = 'http://ifcb-data.whoi.edu/mvco/'
 
-outpath = [resultpath 'annotations_csv_new\'];
+outpath = [resultpath 'annotations_csv_June2015\'];
 if ~exist(outpath, 'dir')
     mkdir(outpath)
 end;
