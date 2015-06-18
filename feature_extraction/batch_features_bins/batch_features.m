@@ -30,7 +30,6 @@ end
 %daydir = dir([in_dir filesep '*.zip']);
 
 if not(debug),
-    keyboard
     if exist('in_dir_blob', 'var')
         parfor filecount = 1:length(filelist)
              bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
