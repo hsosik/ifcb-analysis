@@ -11,7 +11,7 @@ function [ ] = batch_features(in_dir, filelist, out_dir, in_dir_blob )
 % revised input to include optional in_dir_blob = list of directory
 % locations for case for local access (not web services), Heidi M. Sosik, March 2015
 
-debug = true; %false for parallel processing, true for sequential on one process
+debug = false; %false for parallel processing, true for sequential on one process
 
 function log(msg) % not to be confused with logarithm function
     logmsg(['day_blobs ' msg],debug);
@@ -30,11 +30,14 @@ end
 %daydir = dir([in_dir filesep '*.zip']);
 
 if not(debug),
-    parfor filecount = 1:length(filelist)
-        if exist('in_dir_blob', 'var')
-            bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
-        else
-            bin_features(in_dir, [char(filelist(filecount)) '.roi'], out_dir, []);
+    keyboard
+    if exist('in_dir_blob', 'var')
+        parfor filecount = 1:length(filelist)
+             bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
+        end
+    else
+        parfor filecount = 1:length(filelist)
+           bin_features(in_dir, [char(filelist(filecount)) '.roi'], out_dir, []);
         end;
     end
 else
