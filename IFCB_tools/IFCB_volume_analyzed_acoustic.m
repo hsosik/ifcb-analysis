@@ -13,7 +13,7 @@ flowrate = 0.25; %milliliters per minute for syringe pump
 if ischar(hdrfilename), hdrfilename = cellstr(hdrfilename); end;
 ml_analyzed = NaN(size(hdrfilename));
 for count = 1:length(hdrfilename),
-    hdr = IFCBxxx_readhdr_Rob(hdrfilename{count});
+    hdr = IFCBxxx_readhdr_acoustic(hdrfilename{count});
 %     keyboard
     if ~isfield(hdr, 'RunFastFactor') %if it doesn't exist in hdr, set it here
         hdr.RunFastFactor = 1;
