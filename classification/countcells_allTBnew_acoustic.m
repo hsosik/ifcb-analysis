@@ -49,7 +49,18 @@ ml_analyzed = NaN(size(classfiles));
 
 for filecount = 1:length(classfiles)
     if ~rem(filecount,10), disp(['reading ' num2str(filecount) ' of ' num2dostr]), end;
-    ml_analyzed(filecount) = IFCB_volume_analyzed_Rob2(hdrfiles{filecount});
+    %     ml_analyzed(filecount) = IFCB_volume_analyzed_Rob2(hdrfiles{filecount});
+    adcpath  = '\\sosiknas1\Lab_data\IFCB9_Acoustic_Focusing\data';
+    temp = char(classfiles(filecount));
+    slashpos1 = findstr('\', (temp));
+    slashpos1 = slashpos1(end);
+    fname = [adcpath temp(slashpos1:slashpos1+24) '.adc'];
+    adcdata = load(fname);
+    sec2event2 = adcdata(2,2); %Rob added
+%     ml_analyzed(filecount) = IFCB_volume_analyzed_Rob2(hdrfiles{filecount});
+%     ml_analyzed(filecount) = IFCB_volume_analyzed_Rob2(hdrfiles{filecount});
+    ml_analyzed(filecount) = IFCB_volume_analyzed_Rob2a(hdrfiles{filecount}, sec2event2);
+    
     if exist('adhocthresh', 'var'),
         [classcount(filecount,:), classcount_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:)] = summarize_TBclass(classfiles{filecount});
     else
@@ -71,9 +82,9 @@ clear mdate filelist class2use classcount classcount_above_optthresh classcount_
 
 if exist('adhocthresh', 'var'),
     classcountTB_above_adhocthresh = classcount_above_adhocthresh;
-    save([path_out 'summary_allTB'] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'classcountTB_above_adhocthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'adhocthresh', 'classpath_generic')
+    save([path_out 'summary_allTB'] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'classcountTB_above_adhocthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'adhocthresh', 'classpath_generic', 'sec2event2') %Rob added
 else
-    save([path_out 'summary_allTB'] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic')
+    save([path_out 'summary_allTB'] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'sec2event2') %Rob added
 end;
 
 
