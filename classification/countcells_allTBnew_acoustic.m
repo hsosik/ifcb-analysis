@@ -59,7 +59,7 @@ for filecount = 1:length(classfiles)
     sec2event2 = adcdata(2,2); %Rob added
 %     ml_analyzed(filecount) = IFCB_volume_analyzed_Rob2(hdrfiles{filecount});
 %     ml_analyzed(filecount) = IFCB_volume_analyzed_Rob2(hdrfiles{filecount});
-    ml_analyzed(filecount) = IFCB_volume_analyzed_Rob2a(hdrfiles{filecount}, sec2event2);
+    ml_analyzed(filecount) = IFCB_volume_analyzed_acoustic(hdrfiles{filecount}, sec2event2);
     
     if exist('adhocthresh', 'var'),
         [classcount(filecount,:), classcount_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:)] = summarize_TBclass(classfiles{filecount});
