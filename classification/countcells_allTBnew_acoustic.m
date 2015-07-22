@@ -7,8 +7,8 @@
 
 %classpath_generic = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\classxxxx_v1\';
 %classpath_generic = 'C:\IFCB\class_TAMUG_Trees_19Mar2015\xxxx\'; %USER class file location, leave xxxx in place of 4 digit year
-classpath_generic = 'D:\work\IFCB9_acoustic\class\';
-in_dir = 'D:\work\IFCB9_acoustic\'; %USER where to access data (hdr files) (url for web services, full path for local)
+classpath_generic = '\\RASPBERRY\d_work\IFCB9_acoustic\class\';
+in_dir = '\\RASPBERRY\d_work\IFCB9_acoustic\'; %USER where to access data (hdr files) (url for web services, full path for local)
 yrrange = 2015; %USER
 
 path_out = [regexprep(classpath_generic, 'xxxx', ''), 'summary' filesep];
