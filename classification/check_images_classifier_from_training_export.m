@@ -19,6 +19,7 @@ function [  ] = check_images_classifier_from_training_export(class2view_in, trai
 persistent classifier_info last_classifier_name
 last_classifier_name = classifier_name;
 if ~isequal(last_classifier_name, classifier_name) || isempty(classifier_info) %save time by not reloading the same classifier between calls to this function
+    disp('loading classifier...')
     classifier_info = load(classifier_name);
 end;
 
@@ -31,6 +32,7 @@ if ~exist([classifier_name '.mat'], 'file') %check for input error
     return
 end
 classes = classifier_info.classes;
+classifier_info.targets = regexprep(classifier_info.targets, '.png', ''); %make sure not extensions in target list
 
 class2view = 1:length(classes);  %default, step through all classes
 if ~isempty(class2view_in) %overwrite default with user input
@@ -54,7 +56,7 @@ if threshold_flag == 1 %rois in classes if above optimal score threshold (maxthr
     [ winclass ] = apply_TBthreshold( classes, TBscores, classifier_info.maxthre );
     temp = strmatch('unclassified', classes); 
     if isempty(temp)
-        classes = [classes {'unclassified'}];
+        classes(end+1) = {'unclassified'};
     end
     [~,winclass] = ismember(winclass, classes);
     temp = strmatch('unclassified', classes); 
@@ -89,16 +91,16 @@ for count = 1:length(class2view),
             subplot(subplotyx(1),subplotyx(2),subnum)
             roi_id = classifier_info.targets{ii(num)}; %get the ROI name
             img_manual_class = classes(manual_class_num(ii(num))); %true category (training set)
-            roi_fullfile = char(fullfile(train_pngbase, img_manual_class, roi_id)); %ROI name with path
+            roi_fullfile = [char(fullfile(train_pngbase, img_manual_class, roi_id)) '.png']; %ROI name with path
             img = imread(roi_fullfile); %read the image
             imshow(img) %plot the image
             switch display_metric %set the ROI title for this case
                 case 'true_pos'
-                    title({regexprep(roi_id, '.png', '') ; ['; score = ' num2str(maxscore(ii(num)), '%.2f')]}, 'interpreter', 'none', 'fontsize', 8)
+                    title({roi_id ; ['; score = ' num2str(maxscore(ii(num)), '%.2f')]}, 'interpreter', 'none', 'fontsize', 8)
                 case 'false_pos'
-                    title({regexprep(roi_id, '.png', '') ; ['true_class = ' classes{manual_class_num(ii(num))} ' ; score = ' num2str(maxscore(ii(num)), '%.2f')]}, 'interpreter', 'none', 'fontsize', 10)
+                    title({roi_id ; ['true_class = ' classes{manual_class_num(ii(num))} ' ; score = ' num2str(maxscore(ii(num)), '%.2f')]}, 'interpreter', 'none', 'fontsize', 10)
                 case 'false_neg'
-                    title({regexprep(roi_id, '.png', '') ; ['auto_class = ' classes{winclass(ii(num))} ' ; score = ' num2str(maxscore(ii(num)), '%.2f')]}, 'interpreter', 'none', 'fontsize', 10)
+                    title({roi_id ; ['auto_class = ' classes{winclass(ii(num))} ' ; score = ' num2str(maxscore(ii(num)), '%.2f')]}, 'interpreter', 'none', 'fontsize', 10)
             end;
             if subnum == min(subplotyx(1)*subplotyx(2),length(ii)),
                 pause %pause if the screen is full
