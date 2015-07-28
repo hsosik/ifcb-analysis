@@ -109,6 +109,9 @@ for count = 1:length(class2view),
             end;
         end;
     end;
+    if subnum > 0
+        pause %pause for the last screen
+    end
     clf(figh) %clear figure between classes
 end;
 close(figh) %close the figure at the end
