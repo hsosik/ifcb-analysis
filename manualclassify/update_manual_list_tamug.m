@@ -4,7 +4,7 @@ load([resultpath 'manual_list_tamug.mat']) %enter the name of your  manual_list
 %re-sort based on file name to update any previous entries
 %manual_list(2:end,:) = sortrows(manual_list(2:end,:),1);
 %change to sort by date, Heidi 11/10/11
-temp = char(manual_list(2:end,1)); temp = cellstr(temp(:,7:end));
+temp = char(manual_list(2:end,1)); temp = cellstr(temp(:,2:end));
 [~,sortind] = sort(temp);
 manual_list(2:end,:) = manual_list(sortind+1,:);
 
@@ -26,4 +26,4 @@ end;
  end
  
 %clear resultpath newfiles filelist*
-save \\Dq-cytobot-pc\IFCB\manual\manual_list_tamug manual_list
+save([resultpath 'manual_list_tamug.mat'], 'manual_list')
