@@ -6,8 +6,8 @@
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, September 2012
 
 %classpath_generic = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\classxxxx_v1\';
-classpath_generic = 'C:\IFCB\class_TAMUG_Trees_19Mar2015\xxxx\'; %USER class file location, leave xxxx in place of 4 digit year
-in_dir = 'C:\IFCB\data\'; %USER where to access data (hdr files) (url for web services, full path for local)
+classpath_generic = 'D:\IFCB\class_TAMUG_Trees_15Jul2015\xxxx\'; %USER class file location, leave xxxx in place of 4 digit year
+in_dir = 'D:\IFCB\data\'; %USER where to access data (hdr files) (url for web services, full path for local)
 yrrange = 2014:2015; %USER
 
 path_out = [regexprep(classpath_generic, 'xxxx', ''), 'summary' filesep];
@@ -32,8 +32,7 @@ if strcmp('http', in_dir(1:4))
 else
     fsep = repmat(filesep, length(filelist),1);
     hdrfiles = cellstr([repmat(in_dir,length(filelist),1) filelist(:,1:5) fsep filelist(:,1:9) fsep filelist repmat('.hdr', length(filelist), 1)]);
-end;
-mdate = IFCB_file2date(filelist);
+end;mdate = IFCB_file2date(filelist);
 
 %presumes all class files have same class2useTB list
 temp = load(classfiles{1}, 'class2useTB');
@@ -75,8 +74,25 @@ else
     save([path_out 'summary_allTB'] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic')
 end;
 
+% example to search categorical columns for example plotting.
+row_numbers = find(tamug_table.sample_type2 == 'timeseries' |tamug_table.sample_type == 'timeseries'); % gives list of row numbers that meets criteria
+filelist = tamug_table{row_numbers,{'filename'}}; %gives a list of files that meet the criteria
 
-%example plotting code (load summary file first)
+temp = find(ismember(filelistTBstr, filelist)==1);
+
+enddate = '01/08/15'; % enter start date here
+startdate = '11/10/14'; % enter end date here
+enddate = datenum(enddate);
+startdate = datenum(startdate);
+matdate= datenum(tamug_table.date);
+row_numbers = find(matdate >= startdate & matdate <= enddate & tamug_table.sample_type == 'timeseries');
+
+%example plotting code for plotting just certain rows (load summary file first)
+figure, subplot(2,1,1)
+classind = 25;
+plot(mdateTB(temp), classcountTB(temp,classind)./ml_analyzedTB(temp), 'r.')
+
+%example plotting code for all of the data (load summary file first)
 figure, subplot(2,1,1)
 classind = 25;
 plot(mdateTB, classcountTB(:,classind)./ml_analyzedTB, '.-')
