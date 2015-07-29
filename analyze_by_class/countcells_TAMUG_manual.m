@@ -4,7 +4,6 @@ roibasepath = '\\Dq-cytobot-pc\IFCB\data\'; %USER
 load([resultpath 'manual_list_TAMUG']) %load the manual list detailing annotate mode for each sample file
 
 category_list = manual_list(1,2:end);
-%manual_list_col = 1:length(mode_list);
 filelist = char(manual_list(2:end,1)); filelist = cellstr(filelist(:,1:end-4));
 analyzed_flags_byfile = cell2mat(manual_list(2:end,2:end));
 analyzed_flags_byfile(analyzed_flags_byfile == 0) = NaN;
