@@ -1,6 +1,6 @@
-load \\Dq-cytobot-pc\IFCB\class_TAMUG_Trees_15Jul2015\summary\summary_allTB_bythre_Rhizosolenia
+load \\Dq-cytobot-pc\IFCB\class_TAMUG_Trees_15Jul2015\summary\summary_allTB_bythre_Flagellate_MIX
 m = load('\\Dq-cytobot-pc\IFCB\manual\summary\count_manual_28Jul2015'); 
-imclass = strmatch('Rhizosolenia', m.class2use);
+imclass = strmatch('Flagellate_MIX', m.class2use);
 goodm = find(~isnan(m.ml_analyzed_mat(:,imclass)));
 [~,im,it] = intersect(m.filelist(goodm), filelistTB);
 im = goodm(im);
@@ -34,7 +34,8 @@ for ii = 1:length(threlist),
     bins = 0:1:300;
     [n,xbins,nbins]=histmulti5([x, y], [bins; bins]');
     [ix,iy,v] = find(n);
-    scatter(bins(ix),bins(iy),[],log10(v), 'filled'), line(xlim, xlim), caxis([0 2]), axis square
+    if ii == 1, colormax = floor(max(log10(v))); end;
+    scatter(bins(ix),bins(iy),[],log10(v), 'filled'), line(xlim, xlim), caxis([0 colormax]); axis square
     figure(1+d), subplot(3,4,ii), hold on
     plot(x,y, '.')
     axis square
@@ -45,6 +46,7 @@ for ii = 1:length(threlist),
     coefPs(ii,:) = lin_fit{ii}.Coefficients.pValue;
     RMSE(ii) = lin_fit{ii}.RMSE;
     eval(['fplot(''x*' num2str(Coeffs(ii,2)) '+' num2str(Coeffs(ii,1)) ''' , xlim, ''color'', ''r'')'])
+    axis([0 inf 0 inf])
 end;
 figure(1+d)
 subplot(3,4,5), ylabel('Automated')
@@ -53,10 +55,10 @@ figure(2+d)
 subplot(3,4,5), ylabel('Automated')
 subplot(3,4,10), xlabel('Manual')
 figure 
-subplot(2,2,1), plot(threlist, Rsq, '.-'), xlabel('threshold score'), ylabel('r^2'), line([.7 .7], ylim, 'color', 'r')
-subplot(2,2,2), plot(threlist, Coeffs(:,1), '.-'), xlabel('threshold score'), ylabel('y-intercept'), line([.7 .7], ylim, 'color', 'r')
-subplot(2,2,3), plot(threlist, Coeffs(:,2), '.-'), xlabel('threshold score'), ylabel('slope'), line([.7 .7], ylim, 'color', 'r')
-subplot(2,2,4), plot(threlist, RMSE, '.-'), xlabel('threshold score'), ylabel('RMSE'), line([.7 .7], ylim, 'color', 'r')
+subplot(2,2,1), plot(threlist, Rsq, '.-'), xlabel('threshold score'), ylabel('r^2')%, line([.7 .7], ylim, 'color', 'r')
+subplot(2,2,2), plot(threlist, Coeffs(:,1), '.-'), xlabel('threshold score'), ylabel('y-intercept')%, line([.7 .7], ylim, 'color', 'r')
+subplot(2,2,3), plot(threlist, Coeffs(:,2), '.-'), xlabel('threshold score'), ylabel('slope')%, line([.7 .7], ylim, 'color', 'r')
+subplot(2,2,4), plot(threlist, RMSE, '.-'), xlabel('threshold score'), ylabel('RMSE')%, line([.7 .7], ylim, 'color', 'r')
 
 
 
@@ -78,46 +80,3 @@ myall = length(find(~isnan(x)));
 %check good+bad = all
 faction_inside_ci=good/myall; %fraction inside conf interval
 %%
-figure
-
-for ii = 8,
-    handle_1=subplot(2,2,1)
-    set(handle_1,'fontsize',20,'fontname','Times New Roman')
-    % [matdate_bin, classcount_bin, ml_analyzed_mat_bin] = make_hour_bins(mdateTB(it), classcountTB_above_thre(it,ii), ml_analyzedTB(it));
-   %  y=classcount_bin;
-    bins = 0:1:300;
-    [n,xbins,nbins]=histmulti5([x, y], [bins; bins]');
-    [ix,iy,v] = find(n);
-    hold on
-    plot(x,y, '.')
-    %axis square
-    line(xlim, xlim)
-    lin_fit{ii} = fitlm(x,y);
-    Rsq(ii) = lin_fit{ii}.Rsquared.ordinary;
-    Coeffs(ii,:) = lin_fit{ii}.Coefficients.Estimate;
-    coefPs(ii,:) = lin_fit{ii}.Coefficients.pValue;
-    RMSE(ii) = lin_fit{ii}.RMSE;
-    eval(['fplot(''x*' num2str(Coeffs(ii,2)) '+' num2str(Coeffs(ii,1)) ''' , xlim, ''color'', ''r'')'])
-    %legend(' ','1:1 line','line of best fit')
-    text(5,30,' A','fontsize',20, 'fontname', 'Times New Roman')
-    subplot(2,2,1), ylabel('Automated counts','fontsize',20,'fontname','Times New Roman')
-subplot(2,2,1), xlabel('Manual counts','fontsize',20,'fontname','Times New Roman')
-box(handle_1,'on');
-end;
-handle_2=subplot(2,2,2), plot(threlist, Rsq, '.-'), xlabel('threshold score','fontsize',20,'fontname','Times New Roman'), ylabel('r^2','fontsize',20,'fontname','Times New Roman'), line([.7 .7], ylim, 'color', 'r')
-set(handle_2,'fontsize',20,'fontname','Times New Roman')
-text(0.2,0.75,' B','fontsize',20, 'fontname', 'Times New Roman')
-handle_3=subplot(2,2,3), plot(threlist, Coeffs(:,1), '.-'), xlabel('threshold score','fontsize',20,'fontname','Times New Roman'), ylabel('y-intercept','fontsize',20,'fontname','Times New Roman'), line([.7 .7], ylim, 'color', 'r')
-set(handle_3,'fontsize',20,'fontname','Times New Roman')
-text(0.1,0.5,' C','fontsize',20, 'fontname', 'Times New Roman')
-ylim([0 4])
-handle_4=subplot(2,2,4), plot(threlist, Coeffs(:,2), '.-'), xlabel('threshold score','fontsize',20,'fontname','Times New Roman'), ylabel('slope','fontsize',20,'fontname','Times New Roman'), line([.7 .7], ylim, 'color', 'r')
-set(handle_4,'fontsize',20,'fontname','timesnewroman')
-text(0.1,0.2,' D','fontsize',20, 'fontname', 'Times New Roman')
-
-
-
-
-
-
-
