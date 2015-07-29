@@ -75,6 +75,7 @@ else
 end;
 
 % % example to search categorical columns for example plotting.
+load \\dq-cytobot-pc\IFCB\data\tamug_table.mat
  row_numbers = find(tamug_table.sample_type2 == 'timeseries' |tamug_table.sample_type == 'timeseries'); % gives list of row numbers that meets criteria
 filelist = tamug_table{row_numbers,{'filename'}}; %gives a list of files that meet the criteria
  filelistTBstr = cellstr(filelistTB);
