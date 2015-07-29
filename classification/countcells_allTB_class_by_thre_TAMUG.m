@@ -30,7 +30,7 @@ temp = load(classfiles{1}, 'class2useTB');
 class2use = temp.class2useTB; clear temp classfilestr
 num2dostr = num2str(length(classfiles));
 
-class2do = strmatch( 'Ditylum', class2use);
+class2do = strmatch( 'Flagellate_MIX', class2use);
 threlist = [0:.1:1];
 
 classcountTB_above_thre = NaN(length(classfiles),length(threlist));
