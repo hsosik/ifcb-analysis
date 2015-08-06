@@ -1145,6 +1145,8 @@ handles.MCconfig.classfiles = [];
 handles.MCconfig.stitchfiles = [];
 set(handles.select_files_pushbutton, 'string', 'Select files')
 set(handles.all_file_checkbox, 'value', 0)
+set(handles.start_file_popup, 'value', 1)
+handles.MCconfig.filenum2start = 1;
 guidata(handles.MCconfig_main_figure, handles);
 
 

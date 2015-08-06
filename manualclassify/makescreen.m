@@ -94,6 +94,8 @@ function select_category_callback( hOBj, eventdata )
         MCflags.button = NaN;
     end;
     str = get(h, 'string');
+    v = get(h, 'value');
+    if length(v) > 1, v = v(1); set(h, 'value', v); end %user can only pick one
     category = char(str(get(h, 'value')));
     set(instructions_handle, 'string', ['Click on ' category...
         ' images; then ENTER key to save results before changing categories. ENTER key for new page.'], 'foregroundcolor', 'k')
