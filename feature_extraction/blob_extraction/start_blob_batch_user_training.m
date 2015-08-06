@@ -31,5 +31,8 @@ for ii = 1:length(daydir),
     end;
 end;
 
-%disp(['processing ' num2str(length(bins)) ' files'])
-batch_blobs(in_dir, out_dir_blob, bins, parallel_proc_flag);
+nfiles = length(bins); 
+disp(['processing ' num2str(nfiles) ' files'])
+if nfiles > 0
+    batch_blobs(in_dir, out_dir_blob, bins, parallel_proc_flag);
+end

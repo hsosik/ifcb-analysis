@@ -48,7 +48,7 @@ if not(debug),
 else
     for bincount = 1:length(bins)
         %bin_blobs_heidi(in_dir, daydir(daycount).name, out_dir);
-        if length(in_dir) > 1
+        if length(in_dir) >= length(bins) && ~isequal('http', in_dir{bincount}(1:4))
             bin_blobs_heidi(in_dir{bincount}, [char(bins(bincount)) '.roi'], out_dir{bincount});
         else
             bin_blobs_heidi(in_dir, [char(bins(bincount)) '.zip'], out_dir);
