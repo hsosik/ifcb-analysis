@@ -1,10 +1,11 @@
-classifierName = 'C:\work\IFCB\user_training_test_data\manual\summary\UserExample_Trees_06Aug2015';
-yr = 2014;
+classifierName = 'C:\work\IFCB\user_training_test_data\manual\summary\UserExample_Trees_06Aug2015'; %USER what classifier do you want to apply
+yr = 2014; %USER what is the year of your data set
 
-out_dir = ['C:\work\IFCB\user_training_test_data\class\class' num2str(yr) '_v1\'];% USER
+out_dir = ['C:\work\IFCB\user_training_test_data\class\class' num2str(yr) '_v1\'];% USER what is the base path for output files
 %in_dir = 'http://ifcb-data.whoi.edu/mvco/';
 %for V2 web services, set fea_dir = in_dir;
-fea_dir = ['C:\work\IFCB\user_training_test_data\features\' num2str(yr) filesep]; %USER
+fea_dir = ['C:\work\IFCB\user_training_test_data\features\' num2str(yr) filesep]; %USER where are your feature files
+
 filelist = [];
 
 disp('Checking for files to run')
