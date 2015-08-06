@@ -1,5 +1,5 @@
 
-function [ ] = batch_features(in_dir, filelist, out_dir, in_dir_blob )
+function [ ] = batch_features(in_dir, filelist, out_dir, in_dir_blob, parflag )
 % Accept a list of bin files to process and a directory in which to place the output volume files
 % Start a matlab pool
 % Process the bins in parallel.
@@ -11,7 +11,12 @@ function [ ] = batch_features(in_dir, filelist, out_dir, in_dir_blob )
 % revised input to include optional in_dir_blob = list of directory
 % locations for case for local access (not web services), Heidi M. Sosik, March 2015
 
-debug = false; %false for parallel processing, true for sequential on one process
+debug = true; %false for parallel processing, true for sequential on one process
+if exist('parflag', 'var')
+    if parflag
+        debug = false; %use parallel processing
+    end
+end
 
 function log(msg) % not to be confused with logarithm function
     logmsg(['day_blobs ' msg],debug);
