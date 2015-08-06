@@ -44,7 +44,7 @@ save([resultpath 'summary\count_manual_' datestr], 'matdate', 'ml_analyzed', 'cl
 return
 
 figure %example
-classnum = 1;
+classnum = 3;
 plot(matdate, classcount(:,classnum)./ml_analyzed, '.-')
 datetick('x')
 ylabel([class2use{classnum} ' (mL^{-1})'])
