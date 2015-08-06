@@ -1,11 +1,11 @@
 %USER SET PATHS
 %where are your manual classification results? same resultpath as for manual_classify
-resultpath = '\\maddie\work\TAMUG\manual\';
-outputpath = '\\maddie\work\TAMUG\manual_test\png\'; %USER where to write out pngs
-roibasepath = '\\maddie\work\TAMUG\data\Dxxxx\'; %USER where are your ROIs, put xxxx to mark loaction so of year digits
+resultpath = 'C:\work\IFCB\user_training_test_data\manual\';
+outputpath = 'C:\work\IFCB\user_training_test_data\manual\pngs\'; %USER where to write out pngs
+roibasepath = 'C:\work\IFCB\user_training_test_data\data\xxxx\'; %USER where are your ROIs, put xxxx to mark loaction so of year digits
 %urlbase = 'http://ifcb-data.whoi.edu/mvco/'; %USER where is your dashboard\web server
 
-resultfilelist = dir([resultpath 'D2*.mat']);
+resultfilelist = dir([resultpath 'D*.mat']);
 resultfilelist = char(resultfilelist.name);
 resultfilelist = cellstr(resultfilelist(:,1:end-4));
 
@@ -15,8 +15,9 @@ for filecount = 1:length(resultfilelist),
 
     %USER CHOOSE A LINE AND EDIT FOR YOUR CASE
     %category = class2use_manual; %use this syntax to export ALL categories
-    category = {'Ceratium', 'Ditylum'}; %use this syntax to export ONLY the listed categories
+    %category = {'Ceratium', 'Ditylum'}; %use this syntax to export ONLY the listed categories
     %category = setdiff(class2use_manual, {'bad' 'ciliate' 'detritus'});  %use this syntax to export all EXCEPT the listed categories
+    category = setdiff(class2use_manual, {'other' 'misc_nano'});  %use this syntax to export all EXCEPT the listed categories
 
     disp(resultfile)
     %make subdirs for tiffs
