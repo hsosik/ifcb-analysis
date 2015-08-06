@@ -5,8 +5,8 @@ feapath_base = 'C:\work\IFCB\user_training_test_data\features\';
 %classifier. So try to have evenly distributed number within all classes.
 maxn = 100; %maximum number of images per class to include
 minn = 30; %minimum number for inclusion
-%class2skip = {'other'};
-class2skip = {};
+class2skip = {'other'};
+%class2skip = {};
 
 manual_files = dir([manualpath 'D*.mat']);
 manual_files = {manual_files.name}';

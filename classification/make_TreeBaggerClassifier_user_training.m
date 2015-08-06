@@ -2,7 +2,7 @@
 %run compile_train_features_TAMUG.m to generate train and class_vector
 clear all
 outputpath = 'C:\work\IFCB\user_training_test_data\manual\summary\'; %USER
-load([outputpath 'UserExample_Train_05Aug2015']); %USER
+load([outputpath 'UserExample_Train_06Aug2015']); %USER
 %load fea2use
 fea2use = 1:length(featitles);
 featitles = featitles(fea2use);
