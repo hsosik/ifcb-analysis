@@ -10,8 +10,12 @@ end
 [~,~,x] = fileparts(file);
 roi_flag = strmatch('.roi',x);
 if roi_flag
+    targets = get_images_fromROI([in_dir file]);
+    png_dir = [out_dir filesep regexprep(file,'.roi','')];
     archive = [out_dir filesep regexprep(file,'.roi','_blobs_v2.zip')];
-else
+else %assume zip
+    targets = get_bin_file([in_dir file]);
+    png_dir = [out_dir filesep regexprep(file,'.zip','')];
     archive = [out_dir filesep regexprep(file,'.zip','_blobs_v2.zip')];
 end;
 
@@ -22,16 +26,6 @@ end
 
 % load the zip file
 log(['LOAD ' file]);
-
-[~,~,x] = fileparts(file);
-roi_flag = strmatch('.roi',x);
-if roi_flag
-    targets = get_images_fromROI([in_dir file]);
-    png_dir = [out_dir filesep regexprep(file,'.roi','')];
-else %assume zip
-    targets = get_bin_file([in_dir file]);
-    png_dir = [out_dir filesep regexprep(file,'.zip','')];
-end;
 
 nt = length(targets.targetNumber);  
 %png_dir = [out_dir filesep regexprep(file,'.zip','')];
