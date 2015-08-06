@@ -1,4 +1,4 @@
-function [ ] = batch_blobs( in_dir, out_dir, bins )
+function [ ] = batch_blobs( in_dir, out_dir, bins, parflag)
 % Accept parameters specifying a directory or web service URL full of .zip files (one for each bin) 
 % and a directory in which to place the output .zip files, and a list of the files (bins) to process
 % Start a matlab pool
@@ -11,6 +11,11 @@ function [ ] = batch_blobs( in_dir, out_dir, bins )
 % modified from Joe's day_blobs, Heidi Aug 2012
 
 debug = true; %change to true to skip parallel processing
+if exist('parflag', 'var')
+    if parflag
+        debug = false; %use parallel processing
+    end
+end
 
 function log(msg) % not to be confused with logarithm function
     logmsg(['batch_blobs ' msg],debug);
