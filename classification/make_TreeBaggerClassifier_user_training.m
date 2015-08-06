@@ -54,4 +54,4 @@ datestring = datestr(now, 'ddmmmyyyy');
 
 save([outputpath 'UserExample_Trees_' datestring],'b', 'targets', 'featitles', 'classes', 'maxthre')
 
-classifier_obb_analysis( [outputpath 'UserExample_Trees_' datestring] )
+classifier_oob_analysis( [outputpath 'UserExample_Trees_' datestring] )
