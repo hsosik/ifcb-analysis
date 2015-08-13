@@ -21,9 +21,10 @@ function [ roi_ind ] = get_roi_indices( classlist, classnum, pick_mode );
     
 switch pick_mode
     case 'raw_roi'
-        %roi_ind = classlist(classlist(:,2) == classnum,1);
-        roi_ind = classlist(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum),1);        
+        %roi_ind = classlist(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum),1);
+        roi_ind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum)); %case to work for VPR also
     case {'correct_classifier', 'correct'}
-        roi_ind = classlist(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum),1);        
+        %roi_ind = classlist(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum),1);
+        roi_ind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum)); %case to work for VPR also
 end
 

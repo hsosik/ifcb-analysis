@@ -1332,10 +1332,14 @@ else %some manual files may be in listbox
     switch path_method
         case 'simple_paths_radiobutton'
             p = get(handles.roipath_text, 'string');
-            x = '.roi';
             if ~isempty(f{1})
-                fullf = cellstr([char(f) repmat(x,size(f,1),1)]);
-                fullf = fullfile(p,fullf);
+                if handles.MCconfig.dataformat == 2 %VPR case
+                    fullf = cellstr(fullfile(p,filesep)); %make sure has trailing filesep
+                else %other cases
+                    x = '.roi';
+                    fullf = cellstr([char(f) repmat(x,size(f,1),1)]);
+                    fullf = fullfile(p,fullf);
+                end;
                 temp = cellfun(@exist, fullf, 'uniformoutput', true);
             else
                 fullf = [];

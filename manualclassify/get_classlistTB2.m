@@ -62,7 +62,9 @@ else   %make new classlist %if isequal(pick_mode, 'raw_roi')
     newclasslist_flag = 1;
     default_class_original = class2use(classnum_default);
     new_manual = 1;
-    classlist(x_size == 0,2) = NaN; %mark zero-sized ROIs as NaNs in manual column (needed for raw_roi case where these are put in default class by get_classlistTB
+    if ~isnan(x_size) %NaN is VPR case that doesn't need this
+        classlist(x_size == 0,2) = NaN; %mark zero-sized ROIs as NaNs in manual column (needed for raw_roi case where these are put in default class by get_classlistTB
+    end
 end
 clear class2use_in
 

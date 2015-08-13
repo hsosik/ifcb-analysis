@@ -47,7 +47,11 @@ MCconfig = MCconfig_input; clear MCconfig_input %use this so MCconfig can now be
 MCflags = struct('class_jump', 0, 'class_step', 0, 'file_jump', 0, 'changed_selectrois', 0, 'select_remaining', 0,...
     'newclasslist', NaN, 'go_back', 0, 'button', 1, 'file_jump_back_again', 0, 'reload_set', 0, 'new_figure', 1);
 class2use = MCconfig.class2use;
-filelist = regexprep(MCconfig.roifiles, '.roi', '');
+if MCconfig.dataformat ~= 2, %2 is VPR, should be tif path
+    filelist = regexprep(MCconfig.roifiles, '.roi', '');
+else
+    filelist = MCconfig.roifiles;
+end
 classnum_default = strmatch(MCconfig.default_class, MCconfig.class2use, 'exact');
 class2use_manual = MCconfig.class2use'; %needs to be row vector
 [~,class2view1] = intersect(class2use, MCconfig.class2view1);
@@ -400,6 +404,7 @@ function roi_info = get_roi_info()
         roi_info.roilist = cellstr(reshape(roi_info.roilist,tt,length(roi_info.roilist)/tt)');
         numrois = length(roi_info.roilist);
         [roi_info.roilist roi_info.disk_size_index] = sort(roi_info.roilist);
+        roi_info.x_all = NaN; %placeholder for passing into get_claslistTB2
     elseif MCconfig.dataformat == 3 %FlowCAM, Sherbrooke
         adcdata = load([filelist{filecount} '_ADC.mat']);
         adcdata = adcdata.data_out;
