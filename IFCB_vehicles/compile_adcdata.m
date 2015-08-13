@@ -5,19 +5,26 @@
 %file ='Z:\IFCB1_2014_160\IFCB1_2014_160_125311.adc'
 
 %IFCB1 Sept deployment starts day 260
-startday = 288;
-endday   = 289;
-
+startday = 117;
+endday   = 152;
+year = '2015';
 days2look = startday:endday;
 
 allfiles = [];
 bytes    = [];
 for count = 1:length(days2look)
-    datadir  = dir(['\\demi\ifcbnew\IFCB*' datestr(now,'yyyy') '_' num2str(days2look(count))]);
+    datadir  = dir(['\\sosiknas1\IFCB_data\MVCO\data\' year '\IFCB*_' year '_' num2str(days2look(count))]);
+%     datadir  = dir(['\\demi\ifcbnew\IFCB*' datestr(now,'yyyy') '_' num2str(days2look(count))]);
+if ~isempty(datadir)
     datadir  = datadir.name;
-    files    = dir(['\\demi\ifcbnew\' datadir '\IFCB*.adc']);
-    allfiles = [allfiles; cellstr([repmat(['\\demi\ifcbnew\' datadir '\'],length(files),1) char(files.name)])];
+    files    = dir(['\\sosiknas1\IFCB_data\MVCO\data\' year '\' datadir '\IFCB*.adc']);
+%     files    = dir(['\\demi\ifcbnew\' datadir '\IFCB*.adc']);
+if ~isempty(files)
+    allfiles = [allfiles; cellstr([repmat(['\\sosiknas1\IFCB_data\MVCO\data\' year '\' datadir '\'],length(files),1) char(files.name)])];
+%     allfiles = [allfiles; cellstr([repmat(['\\demi\ifcbnew\' datadir '\'],length(files),1) char(files.name)])];
     bytes    = [bytes; [files.bytes]'];
+end
+end
 end
 %make matdate from filename for each adc file, thus each row of compiled %missed data
 temp      = char(allfiles);
@@ -28,11 +35,16 @@ clear datadir files temp*
 adcdata = NaN(length(allfiles),5);
 place = 1;
 for count = 1:length(allfiles)
+% for count = 1:length(allfiles)
     tempdata = load(cell2mat(allfiles(count)));
     if size(tempdata,1)>1
     adcdata(place,3) = size(tempdata,1);
     adcdata(place,4) = sum(tempdata(:,10)<0);
     adcdata(place,5) = sum(tempdata(:,10)<0)/size(tempdata,1);
+    if rem(count,50) == 0,
+        disp(allfiles(count))
+    end;
+
 %     adcdata(place).fname          = files(count).name;
 %     adcdata(place).adcdata        = tempdata;
 %     adcdata(place).datenum        = datenum(files(count).date);
@@ -58,6 +70,50 @@ plot(adcdata(:,1),adcdata(:,5))
 datetick('x')
 ylabel('% missed rois')
 title(['% missed rois -' allfiles(1) 'to' allfiles(end)])
+
+
+%{
+figure
+subplot(3,1,1)
+plot(adc15(:,1),adc15(:,5),'.-')
+hold on
+plot(adc14(:,1)+365,adc14(:,5),'r.-')
+line([adc15(824,1) adc15(824,1)],[0 1],'color','k','linestyle','--','linewidth',2)
+datetick('x','keeplimits')
+set(gca,'xlim',[min(adc14(:,1))+365 max(adc14(:,1))+365])
+datetick('x','keeplimits')
+grid on
+grid minor
+legend('2015','2014','swap 2015')
+title('% missed rois - 2015 vs 2014')
+xlabel('date','fontweight','bold'); ylabel('% missed','fontweight','bold');
+
+subplot(3,1,2)
+plot(adc15(:,1),adc15(:,3),'.-')
+hold on
+plot(adc15(:,1),adc15(:,4),'r.-')
+line([adc15(824,1) adc15(824,1)],[0 14000],'color','k','linestyle','--','linewidth',2)
+title('2015 IFCB1')
+xlabel('date','fontweight','bold'); ylabel('count','fontweight','bold');
+legend('total trig','missed trig')
+datetick('x','keeplimits')
+set(gca,'xlim',[min(adc14(:,1))+365 max(adc14(:,1))+365])
+text(adc15(1100,1), 12000,'IFCB1','fontweight','bold','fontsize',15)
+text(adc15(550,1), 12000,'IFCB5','fontweight','bold','fontsize',15)
+
+subplot(3,1,3)
+plot(adc14(:,1),adc14(:,3),'.-')
+hold on
+plot(adc14(:,1),adc14(:,4),'r.-')
+set(gca,'xlim',[min(adc14(:,1)) max(adc14(:,1))])
+datetick('x','keeplimits')
+title('2014 IFCB5')
+xlabel('date','fontweight','bold'); ylabel('count','fontweight','bold');
+line([adc15(824,1) adc15(824,1)],[0 14000],'color','k','linestyle','--','linewidth',2)
+legend('total trig','missed trig')
+
+
+%}
 
 % header_adc = {'nProcessingCount'; 'ADCtime'; 'pmtA low gain'; 'pmtA high gain'; 'pmtC low gain'; 'pmtC high gain';...
 %     'duration of comparator pulse'; 'GrabtimeStart'; 'GrabtimeEnd'; 'xpos'; 'ypos'; 'roiSizeX'; 'roiSizeY'; 'StartByte';'?'};

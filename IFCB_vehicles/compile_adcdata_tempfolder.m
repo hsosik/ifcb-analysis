@@ -6,22 +6,27 @@
 
 %IFCB1 Sept deployment starts day 260
 
-files   = dir(['.\tempadc\IFCB*.adc']);
+files   = dir(['.\temp\IFCB*.adc']);
 % files   = dir(['.\tempadc2013\IFCB*.adc']);
 filename = cell(length(files),1);
-adcdata = NaN(length(files),5);
+fileinfo = NaN(length(files),5);
+adcdata = [];
+matdate = [];
 
 for count = 1:length(files)-1
 %     if ~strcmp(files(count).name,'IFCB5_2013_213_085447.adc') & ~strcmp(files(count).name,'IFCB5_2013_222_064917.adc')
-    tempdata = load(['.\tempadc\' files(count).name]);
+    tempdata = load(['.\temp\' files(count).name]);
 %     tempdata = load(['.\tempadc2013\' files(count).name]);
-    
+if size(tempdata) > 1    
     filename(count) = {files(count).name};
-    adcdata(count,1) = datenum(files(count).date);
-    adcdata(count,2) = files(count).bytes;
-    adcdata(count,3) = length(tempdata);
-    adcdata(count,4) = sum(tempdata(:,10)<0);
-    adcdata(count,5) = sum(tempdata(:,10)<0)/length(tempdata);
+    fileinfo(count,1) = datenum(files(count).date);
+    fileinfo(count,2) = files(count).bytes;
+    fileinfo(count,3) = length(tempdata);
+    fileinfo(count,4) = sum(tempdata(:,10)<0);
+    fileinfo(count,5) = sum(tempdata(:,10)<0)/length(tempdata);
+    
+    adcdata = [adcdata; tempdata];
+    matdate = [matdate; repmat(datenum(files(count).date),length(tempdata),1)];
     
 %     adcdata(place).fname          = files(count).name;
 %      adcdata(place).adcdata        = tempdata;
@@ -30,12 +35,13 @@ for count = 1:length(files)-1
 %     adcdata(place).tot_events     = length(tempdata);
 %     adcdata(place).zero_rois      = sum(tempdata(:,10)<0);
 %     adcdata(place).percent_missed = sum(tempdata(:,10)<0)/length(tempdata);
-    clear tempdata
+end
+clear tempdata
 %     end
 end
 
-header={'datenum','bytes','triggers','zero rois','percent missed'}'
-
+header_filedata={'datenum','bytes','triggers','zero rois','percent missed'}';
+header_adc = {'count','time','PMTA low gain','PMTA high gain','PMTC low gain','PMTC high gain','pulse dur','grab start','grab end','xpos','ypos','SizeX','SizeY','startbyte'};
 % start=adcdata(:,8);
 % finish=adcdata(:,9);
 % start(1:end-1)-finish(2:end)
