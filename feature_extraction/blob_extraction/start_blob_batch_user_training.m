@@ -1,9 +1,18 @@
+function [ ] = start_blob_batch_user_training(in_dir_base , out_dir_blob_base, parallel_proc_flag)
+%function [ ] = start_blob_batch_user_training(in_dir_base , out_dir_blob_base, parallel_proc_flag)
+%For example:  
+%start_blob_batch_user_training('C:\work\IFCB\user_training_test_data\data\2014\', 'C:\work\IFCB\user_training_test_data\blobs\2014\', false)
 %IFCB image processing; Heidi M. Sosik, Woods Hole Oceanographic Institution, Aug 2015
 %configure and initiate batch processing for blob extractiom
+%
+%example input variables
+%   in_dir_base = 'C:\work\IFCB\user_training_test_data\data\2014\'; %USER local data location (where are your *.roi files)
+%   out_dir_blob_base = 'C:\work\IFCB\user_training_test_data\blobs\2014\'; %USER local data location for blob reults
+%   parallel_proc_flag = false; %USER true to enable parallel processing
 
-in_dir_base = 'C:\work\IFCB\user_training_test_data\data\2014\'; %USER web service URL to access data OR local data location
-out_dir_blob_base = 'C:\work\IFCB\user_training_test_data\blobs\2014\'; 
-parallel_proc_flag = false; 
+if ~exist('parallel_proc_flag', 'var')
+    parallel_proc_flag = false; %default
+end
 
 if ~exist(out_dir_blob_base, 'dir'),
     mkdir(out_dir_blob_base)
@@ -35,4 +44,6 @@ nfiles = length(bins);
 disp(['processing ' num2str(nfiles) ' files'])
 if nfiles > 0
     batch_blobs(in_dir, out_dir_blob, bins, parallel_proc_flag);
+end
+
 end
