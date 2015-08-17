@@ -1,14 +1,19 @@
+function [ ] = countcells_allTBnew_user_training(classpath_generic , in_dir, yrrange)
+%function [ ] = countcells_allTBnew_user_training(classpath_generic , in_dir, yrrange)
+%For example:
+%countcells_allTBnew_user_training('C:\work\IFCB\user_training_test_data\class\classxxxx_v1\' , 'C:\work\IFCB\user_training_test_data\data\', 2014)
+% Heidi M. Sosik, Woods Hole Oceanographic Institution, September 2012 / August 2015
+%
+%Example inputs:
+%   classpath_generic = 'C:\work\IFCB\user_training_test_data\class\classxxxx_v1\'; %USER class file location, leave xxxx in place of 4 digit year
+%   in_dir = 'C:\work\IFCB\user_training_test_data\data\'; %USER where to access data (hdr files) (url for web services, full path for local)
+%   yrrange = 2014; %USER one value or range (e.g., 2013:2014)
+
 % countcells_allTBnew.m, modified from countcells_allTBMVCO.m
 % configured for IFCB007 and higher (except IFCB008)
 % summarizes class results for a series of classifier output files (treebagger)
 % summary file will be located in subdir \summary\ at the top level
 % location of classifier output files
-% Heidi M. Sosik, Woods Hole Oceanographic Institution, September 2012
-
-%classpath_generic = '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\classxxxx_v1\';
-classpath_generic = 'C:\work\IFCB\user_training_test_data\class\classxxxx_v1\'; %USER class file location, leave xxxx in place of 4 digit year
-in_dir = 'C:\work\IFCB\user_training_test_data\data\'; %USER where to access data (hdr files) (url for web services, full path for local)
-yrrange = 2014; %USER one value or range (e.g., 2013:2014)
 
 path_out = [regexprep(classpath_generic, 'classxxxx_v1\', ''), 'summary' filesep];
 
