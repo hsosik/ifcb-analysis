@@ -1,12 +1,19 @@
+function [ ] = make_TreeBaggerClassifier_user_training( result_path, train_filename, result_str, nTrees)
+%function [ ] = make_TreeBaggerClassifier_user_training( result_path, train_filename, result_str, nTrees )
+%For example:
+%   make_TreeBaggerClassifier_user_training( 'C:\work\IFCB\user_training_test_data\manual\summary\', 'UserExample_Train_06Aug2015', 'UserExample_Trees_', 100)
+% IFCB classification: create Random Forest classifier from training data
+% Heidi M. Sosik, Woods Hole Oceanographic Institution, August 2015
+%
+%run compile_train_features_user_training.m first to store input results in train_filename
+%Example inputs:
+%result_path = 'C:\work\IFCB\user_training_test_data\manual\summary\'; %USER
+%train_filename = 'UserExample_Train_06Aug2015'; %USER
 
-%run compile_train_features_TAMUG.m to generate train and class_vector
-clear all
-outputpath = 'C:\work\IFCB\user_training_test_data\manual\summary\'; %USER
-load([outputpath 'UserExample_Train_06Aug2015']); %USER
+load([result_path train_filename]); 
 %load fea2use
 fea2use = 1:length(featitles);
 featitles = featitles(fea2use);
-%ii = find(isnan(class_vector)); class_vector(ii) = [];targets(ii)= []; train(ii,:) = [];
 datestring = datestr(now, 'ddmmmyyyy');
 classes = class2use;
 %sort training set
@@ -14,20 +21,16 @@ classes = class2use;
 train = train(sort_ind,:);
 targets = targets(sort_ind);
 
-%%class_vector = classes(class_vector);
 disp('Growing trees...please be patient')
-%b = TreeBagger(300,train,class_vector,'Method','c','OOBVarImp','on','MinLeaf',1);
-
-%matlabpool
 paroptions = statset('UseParallel','always');
-%tic, b = TreeBagger(300,train,class_vector,'Method','c','OOBVarImp','on','MinLeaf',1,'Options',paroptions); toc
-b = TreeBagger(100,train(:,fea2use),class_vec_str,'Method','c','OOBVarImp','on','MinLeaf',1,'Options',paroptions);
-%matlabpool close
+b = TreeBagger(nTrees,train(:,fea2use),class_vec_str,'Method','c','OOBVarImp','on','MinLeaf',1,'Options',paroptions);
+
 figure, hold on
 plot(oobError(b), 'b-');
 xlabel('Number of Grown Trees');
 ylabel('Out-of-Bag Classification Error');
 
+%use code like this to add trees to an existing forest
 %b = growTrees(b,100); %specify how many to add
 %plot(oobError(b), 'g');
 
@@ -43,7 +46,6 @@ maxaccu = NaN(1,length(classes));
 maxthre = maxaccu;
 
 for count = 1:length(classes),
- %[fpr,accu,thr] = perfcurve(b.Y,Sfit(:,count), num2str(count),'ycrit','accu');
     old_ind = strmatch(b.ClassNames(count), class2use, 'exact');
     [fpr,accu,thr] = perfcurve(b.Y,Sfit(:,count), class2use{old_ind},'ycrit','accu');
     [maxaccu(count),iaccu] = max(accu);
@@ -52,6 +54,8 @@ end;
 clear count fpr tpr thr iaccu accu
 datestring = datestr(now, 'ddmmmyyyy');
 
-save([outputpath 'UserExample_Trees_' datestring],'b', 'targets', 'featitles', 'classes', 'maxthre')
+save([result_path result_str datestring],'b', 'targets', 'featitles', 'classes', 'maxthre')
 
 classifier_oob_analysis( [outputpath 'UserExample_Trees_' datestring] )
+
+end
