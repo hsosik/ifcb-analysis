@@ -2,8 +2,8 @@ function [ ] = start_blob_batch_user_training(in_dir_base , out_dir_blob_base, p
 %function [ ] = start_blob_batch_user_training(in_dir_base , out_dir_blob_base, parallel_proc_flag)
 %For example:  
 %start_blob_batch_user_training('C:\work\IFCB\user_training_test_data\data\2014\', 'C:\work\IFCB\user_training_test_data\blobs\2014\', false)
-%IFCB image processing; Heidi M. Sosik, Woods Hole Oceanographic Institution, Aug 2015
-%configure and initiate batch processing for blob extractiom
+%IFCB image processing: configure and initiate batch processing for blob extraction
+%Heidi M. Sosik, Woods Hole Oceanographic Institution, Aug 2015
 %
 %example input variables
 %   in_dir_base = 'C:\work\IFCB\user_training_test_data\data\2014\'; %USER local data location (where are your *.roi files)
