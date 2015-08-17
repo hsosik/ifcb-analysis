@@ -1,16 +1,16 @@
 function [ ] = start_feature_batch_user_training(in_dir_base , in_dir_blob_base, out_dir, parallel_proc_flag)
 %function [ ] = start_feature_batch_user_training(in_dir_base , in_dir_blob_base, out_dir, parallel_proc_flag)
-%Example:
+%For example:
 %start_feature_batch_user_training('C:\work\IFCB\user_training_test_data\data\2014\' , 'C:\work\IFCB\user_training_test_data\blobs\2014\', 'C:\work\IFCB\user_training_test_data\features\2014\', false)
 %
-%IFCB image processing; Heidi M. Sosik, Woods Hole Oceanographic Institution, Aug 2015
-%configure and initiate batch processing for feature extractiom
+%IFCB image processing: configure and initiate batch processing for feature extraction
+%Heidi M. Sosik, Woods Hole Oceanographic Institution, August 2015
 %
 %example input variables:
 %   out_dir = 'C:\work\IFCB\user_training_test_data\features\2014\'; %USER where to output features
 %   in_dir_base = 'C:\work\IFCB\user_training_test_data\data\2014\'; %USER where to access roi data
 %   in_dir_blob_base = 'C:\work\IFCB\user_training_test_data\blobs\2014\'; %USER where to access blobs
-%   parallel_proc_flag = false; 
+%   parallel_proc_flag = false; %USER true for parallel processing
 
 if ~exist('parallel_proc_flag', 'var')
     parallel_proc_flag = false; %default
