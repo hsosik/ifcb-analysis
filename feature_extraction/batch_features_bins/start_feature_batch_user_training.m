@@ -1,14 +1,25 @@
+function [ ] = start_feature_batch_user_training(in_dir_base , in_dir_blob_base, out_dir, parallel_proc_flag)
+%function [ ] = start_feature_batch_user_training(in_dir_base , in_dir_blob_base, out_dir, parallel_proc_flag)
+%Example:
+%start_feature_batch_user_training('C:\work\IFCB\user_training_test_data\data\2014\' , 'C:\work\IFCB\user_training_test_data\blobs\2014\', 'C:\work\IFCB\user_training_test_data\features\2014\', false)
+%
 %IFCB image processing; Heidi M. Sosik, Woods Hole Oceanographic Institution, Aug 2015
 %configure and initiate batch processing for feature extractiom
+%
+%example input variables:
+%   out_dir = 'C:\work\IFCB\user_training_test_data\features\2014\'; %USER where to output features
+%   in_dir_base = 'C:\work\IFCB\user_training_test_data\data\2014\'; %USER where to access roi data
+%   in_dir_blob_base = 'C:\work\IFCB\user_training_test_data\blobs\2014\'; %USER where to access blobs
+%   parallel_proc_flag = false; 
 
-out_dir = 'C:\work\IFCB\user_training_test_data\features\2014\'; %USER where to output features
-in_dir_base = 'C:\work\IFCB\user_training_test_data\data\2014\'; %USER where to access roi data
-in_dir_blob_base = 'C:\work\IFCB\user_training_test_data\blobs\2014\'; %USER where to access blobs
-parallel_proc_flag = true; 
+if ~exist('parallel_proc_flag', 'var')
+    parallel_proc_flag = false; %default
+end
 
 if ~exist(out_dir, 'dir'),
     mkdir(out_dir)
 end;
+
 daydir = dir([in_dir_base 'D*']);
 daydir = daydir([daydir.isdir]); 
 bins = [];
@@ -34,4 +45,6 @@ nfiles = length(bins);
 disp(['processing ' num2str(nfiles) ' files'])
 if nfiles > 0
     batch_features( in_dir, bins, out_dir, in_dir_blob , parallel_proc_flag);
+end
+
 end
