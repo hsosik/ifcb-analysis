@@ -1,5 +1,5 @@
-function [targets, pid  ] = get_images_fromROI( ROIfile_withpath, ROInumbers )
-%function [targets, pid  ] = get_images_fromROI( ROIfile_withpath, ROInumbers )
+function [targets] = get_images_fromROI( ROIfile_withpath, ROInumbers )
+%function [targets  ] = get_images_fromROI( ROIfile_withpath, ROInumbers )
 %read images from ROI file and store in targets structure, if no ROInumbers passed in, then all are exported
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2014
 
