@@ -154,6 +154,9 @@ while filecount <= length(filelist),
         new_setcount = NaN; %initialize
         classnum = class2view(classcount);
         roi_ind_all = get_roi_indices(classlist, classnum, MCconfig.pick_mode);
+        if MCconfig.dataformat == 2 %fudge for now to make VPR analysis subsets
+            roi_ind_all = roi_ind_all(roi_ind_all <= 5000);
+        end
         if ~isempty(roi_ind_all)
             if MCconfig.threshold_mode > 1
                 if MCconfig.dataformat == 2
