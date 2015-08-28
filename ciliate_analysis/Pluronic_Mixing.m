@@ -30,3 +30,5 @@ title('Automated staining 5-11-14')
 legend('Ciliate_mix', 'Mesodinium','Laboea', 'tintinnid');
 
 %%
+
+

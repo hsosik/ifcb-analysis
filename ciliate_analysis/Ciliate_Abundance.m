@@ -34,20 +34,24 @@ Tintinnid_classcount=ciliate_classcount(:,19);
 Tontonia_appendiculariformis_classcount=ciliate_classcount(:,20);
 Tontonia_gracillima_classcount=ciliate_classcount(:,21);
 
+sum_ciliate_classcount=sum(ciliate_classcount,2);
+
+[mdate_mat, Ciliate_all_mat, yearlist, yd ] = timeseries2ydmat( matdate_bin, sum_ciliate_classcount);
+[Ciliate_all_week, mdate_wkmat, yd_wk] =ydmat2weeklymat(Ciliate_all_mat, yearlist);
 
 [mdate_mat, Ciliate_mix_mat, yearlist, yd ] = timeseries2ydmat( matdate_bin, Ciliate_mix_classcount);
 [Ciliate_mix_week, mdate_wkmat, yd_wk] =ydmat2weeklymat(Ciliate_mix_mat, yearlist);
 
 
-% figure 
-% hold on
-% h= plot(yd_wk, Ciliate_mix_week, '.-');
-% legend(num2str((2006:2013)'), 'location', 'south');
-% title('Ciliate Mix', 'fontsize', 10, 'fontname', 'arial');
-% ylabel('Abundance (cell mL^{-1} \mum{-1})', 'fontsize', 12);
-% set(h(8),'DisplayName','2013','Color',[0 0 0]);
-% datetick('x', 3, 'keeplimits');
-% set(gca,'xgrid','on');
+figure 
+hold on
+h= plot(yd_wk, Ciliate_mix_week, '.-');
+legend(num2str((2006:2013)'), 'location', 'south');
+title('Ciliate Mix', 'fontsize', 10, 'fontname', 'arial');
+ylabel('Abundance (cell mL^{-1} \mum{-1})', 'fontsize', 12);
+set(h(8),'DisplayName','2013','Color',[0 0 0]);
+datetick('x', 3, 'keeplimits');
+set(gca,'xgrid','on');
 
 [mdate_mat, Didinium_sp_mat, yearlist, yd ] = timeseries2ydmat( matdate_bin, Didinium_sp_classcount);
 [Didinium_sp_week, mdate_wkmat, yd_wk] =ydmat2weeklymat(Didinium_sp_mat, yearlist);
@@ -330,5 +334,39 @@ Tontonia_gracillima_classcount=ciliate_classcount(:,21);
 % title('S capitatum', 'fontsize', 10, 'fontname', 'arial');
 % datetick('x', 3, 'keeplimits');
 % set(gca,'xgrid','on');
+
+
+oligotrichs=Tontonia_gracillima_classcount+Tontonia_appendiculariformis_classcount+Tintinnid_classcount+Strombidium_wulffi_classcount+Strombidium_oculatum_classcount+Strombidium_morphotype2_classcount+Strombidium_morphotype1_classcount+Strombidium_inclinatum_classcount+Strombidium_conicum_classcount+Strombidium_caudatum_classcount+Strombidium_capitatum_classcount+Strobilidium_morphotype2_classcount+Strobilidium_morphotype1_classcount+Leegaardiella_ovalis_classcount+Laboea_strobila_classcount+Ciliate_mix_classcount;
+oligotrich_percent=oligotrichs./sum_ciliate_classcount;
+other_percent=(sum_ciliate_classcount-oligotrichs)./sum_ciliate_classcount;
+
+%Mesodinium_percent=Mesodinium_sp_classcount./sum_ciliate_classcount;
+
+nan_ind=find(isnan(oligotrich_percent));
+matdate_bin_nan=matdate_bin;
+matdate_bin_nan(nan_ind)=[];
+
+
+oligotrich_percent(~any(~isnan(oligotrich_percent), 2),:)=[];
+other_percent(nan_ind)=[];
+%Mesodinium_percent(nan_ind)=[];
+
+
+figure
+area(matdate_bin_nan, oligotrich_percent);
+datetick('x',12)
+ylabel('Percent abundance oligotrich or choreotrich','fontsize', 14)
+set(gca, 'fontsize', 14)
+ylim([0 1.1])
+
+%%
+figure
+area(matdate_bin_nan, [oligotrich_percent other_percent])
+datetick('x',12)
+ylabel('Percent abundance','fontsize', 14)
+set(gca, 'fontsize', 14)
+ylim([0 1.01])
+legend('oligotrich and choreotrichs', 'other')
+xlim([732835 735586])
 
 

@@ -20,7 +20,7 @@ datetick('x',6)
 set(gca, 'fontsize', 24, 'fontname','arial','XTickLabel',{'08/25','08/27','08/29','08/31','09/02'},...
     'XTick',[735471 735473 735475 735477 735479])
 
-
+%%
 load '/Volumes/IFCB014_OkeanosExplorerAug2013/data/continuous/Manual_fromClass/summary/count_manual_08May2014.mat'
 
 runtype_alt_ind=strmatch('ALT', runtype);
@@ -47,7 +47,7 @@ plot(matdate(runtype_normal_ind),ciliate_perml_normal,'k.-','linewidth',1,'marke
 hold on
 %plot(matdate(runtype_alt_ind),ciliate_perml_alt,'r.-','linewidth',1)
 legend('Traditional IFCB','Staining IFCB-PE settings','Staining IFCB-FDA Settings')
-
+%legend('Staining IFCB-FDA Settings')
 
 
 %%

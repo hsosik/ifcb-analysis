@@ -1,4 +1,60 @@
+%%
+%looking at signals of all cells in sample
+%10% stain
+load '/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-28-14/Manual_fromClass/D20140428T170509_IFCB014.mat'
+adcdata=load ('/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-28-14/D20140428T170509_IFCB014.adc');
 
+figure
+loglog(adcdata(:,4),adcdata(:,5),'r*');
+hold on
+
+load '/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-28-14/Manual_fromClass/D20140428T180050_IFCB014.mat'
+adcdata=load ('/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-28-14/D20140428T180050_IFCB014.adc');
+
+
+loglog(adcdata(:,4),adcdata(:,5),'r*');
+
+
+%25%stain
+load '/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-29-14/Manual_fromClass/D20140429T130531_IFCB014.mat'
+adcdata=load ('/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-29-14/D20140429T130531_IFCB014.adc');
+
+
+loglog(adcdata(:,4),adcdata(:,5),'b*');
+
+load '/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-29-14/Manual_fromClass/D20140429T140527_IFCB014.mat'
+adcdata=load ('/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-29-14/D20140429T140527_IFCB014.adc');
+
+
+loglog(adcdata(:,4),adcdata(:,5),'b*');
+
+%50% stain
+load '/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-29-14/Manual_fromClass/D20140429T152859_IFCB014.mat'
+adcdata=load ('/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-29-14/D20140429T152859_IFCB014.adc');
+
+
+loglog(adcdata(:,4),adcdata(:,5),'k*');
+
+load '/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-29-14/Manual_fromClass/D20140429T162119_IFCB014.mat'
+adcdata=load ('/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-29-14/D20140429T162119_IFCB014.adc');
+
+loglog(adcdata(:,4),adcdata(:,5),'k*');
+%100%stain
+load '/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-29-14/Manual_fromClass/D20140429T172018_IFCB014.mat'
+adcdata=load ('/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-29-14/D20140429T172018_IFCB014.adc');
+
+loglog(adcdata(:,4),adcdata(:,5),'g*');
+
+load '/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-29-14/Manual_fromClass/D20140429T181424_IFCB014.mat'
+adcdata=load ('/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-29-14/D20140429T181424_IFCB014.adc');
+
+loglog(adcdata(:,4),adcdata(:,5),'g*');
+
+legend('10%',' ', '25%',' ', '50%',' ', '100%',' ')
+xlabel('FDA fluorescence')
+ylabel('chlorophyll fluorescence')
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %10% stain
 load '/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-28-14/Manual_fromClass/D20140428T170509_IFCB014.mat'
 adcdata=load ('/Users/markmiller/Documents/Experiments/IFCB_14/FDA_dilution_study/4-28-14/D20140428T170509_IFCB014.adc');

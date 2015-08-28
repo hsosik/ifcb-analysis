@@ -49,22 +49,30 @@ p = polyfit(Lysotracker_conc,FDA_conc,1);   % p returns 2 coefficients fitting r
 r = p(1) .* Lysotracker_conc + p(2); % compute a new vector r that has matching datapoints in x
 hold on
 plot(Lysotracker_conc,r, 'k', 'markersize',2);
-xlabel('Lysotracker count (mL^{-1})\bf', 'fontsize',24, 'fontname', 'Times New Roman')
-ylabel('FDA count (mL^{-1})\bf', 'fontsize', 24, 'fontname', 'Times New Roman')
+%xlabel('Lysotracker cell concentration (mL^{-1})\bf', 'fontsize',16, 'fontname', 'Times New Roman')
+%ylabel('FDA cell concentration (mL^{-1})\bf', 'fontsize', 16, 'fontname', 'Times New Roman')
+xlabel('Lysotracker cell concentration (mL\bf', 'fontsize',16, 'fontname', 'Times New Roman')
+ylabel('FDA cell concentration (mL\bf', 'fontsize', 16, 'fontname', 'Times New Roman')
 set(gca,'XTick',[0:1000:5000])
 %set(gca,'YTick',[0:1000:5000])
-set(gca, 'fontsize', 18, 'fontname', 'Times New Roman')
+set(gca, 'fontsize', 16, 'fontname', 'Times New Roman')
+ylim([0 5000])
+xlim([0 5000])
 
 m = 1; b = 0; x = 1:1000:5000;
-plot(x, m*x+b,'k--');
+plot(x, m*x+b,'k--','linewidth',2);
 
 %refline(1,0);
 
 
 
 one_line_y=m*Lysotracker_conc+b;
-[RHO,PVAL] =corr(r', one_line_y');
+%[RHO,PVAL] =corr(r', one_line_y');
 
+
+set(gca,'linewidth',2)
+
+R = corrcoef([r', one_line_y'])
 
 
 

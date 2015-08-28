@@ -20,11 +20,14 @@ for ii=1:length(matdate);
     end
 end;
 
+matdate_alt=matdate;
+ml_analyzed_alt=ml_analyzed;
 
 iii=find(isnan(match_ind_alt));
 
 match_ind_alt(find(isnan(match_ind_alt))) = [];
 
+tintinnid_alt=classcount(:,90);
 tintinnid_perml_alt=classcount(:,90)./ml_analyzed;
 tintinnid_lat_alt=Lat(match_ind_alt);
 tintinnid_lon_alt=Lon(match_ind_alt);
@@ -48,7 +51,7 @@ end;
 iii=find(isnan(match_ind_norm));
 
 match_ind_norm(find(isnan(match_ind_norm))) = [];
-
+tintinnid_norm=classcount(:,90);
 tintinnid_perml_norm=classcount(:,90)./ml_analyzed;
 tintinnid_lat_norm=Lat(match_ind_norm);
 tintinnid_lon_norm=Lon(match_ind_norm);
@@ -76,13 +79,13 @@ tintinnid_lon_norm=Lon(match_ind_norm);
 iz=find(tintinnid_perml_alt); %finds the nonzeros
 noniz=find(tintinnid_perml_alt==0);
 % 
-worldmap([40 45],[-80 -60])
-load coast
-plotm(lat,long)
-view(3)
-plotm(tintinnid_lat_alt,-tintinnid_lon_alt,'-k')
-stem3m(tintinnid_lat_alt,-tintinnid_lon_alt,tintinnid_perml_alt')
-scatterm(tintinnid_lat_alt(iz),-tintinnid_lon_alt(iz),100,log10(tintinnid_perml_alt(iz))','filled')
+% worldmap([40 45],[-80 -60])
+% load coast
+% plotm(lat,long)
+% view(3)
+% plotm(tintinnid_lat_alt,-tintinnid_lon_alt,'-k')
+% stem3m(tintinnid_lat_alt,-tintinnid_lon_alt,tintinnid_perml_alt')
+% scatterm(tintinnid_lat_alt(iz),-tintinnid_lon_alt(iz),100,log10(tintinnid_perml_alt(iz))','filled')
 % scatterm(tintinnid_lat_alt(noniz),-tintinnid_lon_alt(noniz),50,log10(tintinnid_perml_alt(noniz))')
 
 
@@ -116,7 +119,7 @@ scatterm(tintinnid_lat_alt(iz),-tintinnid_lon_alt(iz),100,log10(tintinnid_perml_
 
 %
 
-alt_metadata_map
+%alt_metadata_map
 
 
 

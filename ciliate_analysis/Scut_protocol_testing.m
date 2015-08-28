@@ -16,23 +16,23 @@ ciliate_green=adcdata(ciliate_roi_ind,4);
 ciliate_ssc=adcdata(ciliate_roi_ind,3);
 other_green=adcdata(other_roi_ind,4);
 other_ssc=adcdata(other_roi_ind,3);
-
+%%
 figure
 
-subplot(1,3,1)
-loglog(other_ssc,other_green,'k.','markersize',14);
+subplot(1,3,2)
+loglog(other_ssc,other_green,'k.','markersize',6);
 hold on
-loglog(ciliate_ssc,ciliate_green,'r.','markersize',14);
+loglog(ciliate_ssc,ciliate_green,'r.','markersize',6);
 % ylim([0.001 0.1])
 % xlim([0.005 10])
  ylim([0.001 0.1])
  xlim([0.005 1])
-%xlabel('Scattering\bf','fontsize',18, 'fontname', 'Times New Roman')
-ylabel('FDA fluorescence\bf','fontsize',24, 'fontname', 'Times New Roman')
-set(gca,'fontsize',18, 'fontname', 'Times New Roman')
-text(0.06,0.03,' A','fontsize',18, 'fontname', 'Times New Roman')
+xlabel('Side scattering','fontsize',12, 'fontname', 'Times New Roman')
+%ylabel('FDA fluorescence\bf','fontsize',24, 'fontname', 'Times New Roman')
+set(gca,'fontsize',12, 'fontname', 'Times New Roman')
+text(0.006,0.06,' B','fontsize',14, 'fontname', 'Times New Roman')
 axis square
-
+%%
 %scatter trigger no stain
 %ml_analyzed= 2.2626
 %  %scut= 41%
@@ -52,18 +52,18 @@ other_ssc=adcdata(other_roi_ind,3);
 % ciliate_ssc=adcdata(2:end,3);
 
 
-subplot(1,3,2)
-loglog(other_ssc,other_green,'k.','markersize',14);
+subplot(1,3,1)
+loglog(other_ssc,other_green,'k.','markersize',6);
 hold on
-loglog(ciliate_ssc,ciliate_green,'r.','markersize',14);
+loglog(ciliate_ssc,ciliate_green,'r.','markersize',6);
 % ylim([0.001 0.1])
 % xlim([0.005 10])
  ylim([0.001 0.1])
  xlim([0.005 1])
-xlabel('Side Scattering','fontsize',24, 'fontname', 'Times New Roman')
-%ylabel('FDA fluorescence','fontsize',18, 'fontname', 'Times New Roman')
-set(gca,'fontsize',18, 'fontname', 'Times New Roman')
-text(0.06,0.03,' B','fontsize',18, 'fontname', 'Times New Roman')
+%xlabel('Side Scattering','fontsize',24, 'fontname', 'Times New Roman')
+ylabel('FDA fluorescence','fontsize',12, 'fontname', 'Times New Roman')
+set(gca,'fontsize',12, 'fontname', 'Times New Roman')
+text(0.006,0.06,' A','fontsize',14, 'fontname', 'Times New Roman')
 axis square
 
 %green trigger with stain
@@ -85,17 +85,17 @@ other_ssc=adcdata(other_roi_ind,3);
 % ciliate_ssc=adcdata(2:end,3);
 
 subplot(1,3,3)
-loglog(other_ssc,other_green,'k.','markersize',14);
+loglog(other_ssc,other_green,'k.','markersize',6);
 hold on
-loglog(ciliate_ssc,ciliate_green,'r.','markersize',14);
+loglog(ciliate_ssc,ciliate_green,'r.','markersize',6);
 % xlim([0.001 0.1])
 % ylim([0.005 10])
  ylim([0.001 0.1])
  xlim([0.005 1])
 %xlabel('Side Scattering','fontsize',18, 'fontname', 'Times New Roman')
 %ylabel('FDA fluorescence','fontsize',18, 'fontname', 'Times New Roman')
-set(gca,'fontsize',18, 'fontname', 'Times New Roman')
-text(0.06,0.03,' C','fontsize',18, 'fontname', 'Times New Roman')
+set(gca,'fontsize',12, 'fontname', 'Times New Roman')
+text(0.006,0.06,' C','fontsize',14, 'fontname', 'Times New Roman')
 
 axis square
 

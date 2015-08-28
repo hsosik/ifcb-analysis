@@ -40,8 +40,8 @@ microscope_ml = 36/5.12;
 microscope_ci_perml=microscope_ci./microscope_ml;
 microscope_conc=microscope_ciliate_bin./microscope_ml;
 
-lower_ci=[normal_conc'-normal_ci_perml(:,1) alt_conc'-alt_ci_perml(:,1) microscope_conc'-microscope_ci_perml(:,1)];
-upper_ci=[normal_ci_perml(:,2)-normal_conc' alt_ci_perml(:,2)-alt_conc' microscope_ci_perml(:,2)-microscope_conc'];
+lower_ci=[normal_conc'-normal_ci_perml(:,1); alt_conc'-alt_ci_perml(:,1); microscope_conc'-microscope_ci_perml(:,1)];
+upper_ci=[normal_ci_perml(:,2)-normal_conc'; alt_ci_perml(:,2)-alt_conc'; microscope_ci_perml(:,2)-microscope_conc'];
 
 b = [normal_conc alt_conc microscope_conc]';
 xaxis=[1 2 3 4 5 6 7 8 9 10 11 12];

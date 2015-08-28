@@ -1,5 +1,6 @@
 %load '/Users/markmiller/Documents/Experiments/count_biovol_size_manual_10Feb2014.mat'
-load '/Volumes/d_work/IFCB1/ifcb_data_mvco_jun06/Manual_fromClass/summary/count_biovol_size_manual_11Jun2014.mat'
+%load '/Volumes/d_work/IFCB1/ifcb_data_mvco_jun06/Manual_fromClass/summary/count_biovol_size_manual_11Jun2014.mat'
+load '/Volumes/d_work/IFCB1/ifcb_data_mvco_jun06/Manual_fromClass/summary/count_biovol_size_manual_current.mat'
 
 %load '/Users/markmiller/Documents/Experiments/count_biovol_size_manual_14May2013.mat'
 Mesodinium_size_structure=eqdiam.Mesodinium_sp;
