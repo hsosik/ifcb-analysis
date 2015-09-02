@@ -85,8 +85,10 @@ if length(varargin) > 0 && ~isempty(char(varargin{1}))
     else
         handles.configpath = [temp filesep];
     end;
-    temp = load(filename, 'class2use');
-    set(handles.class2use_uitable, 'data', temp.class2use(:));
+    if exist(filename, 'file')
+        temp = load(filename, 'class2use');
+        set(handles.class2use_uitable, 'data', temp.class2use(:));
+    end
 else %make a default place to put class2use files
     temp = fileparts(which('ManageClassLabels'));
     temp = [temp filesep 'config' filesep];
