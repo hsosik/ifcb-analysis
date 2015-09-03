@@ -193,15 +193,16 @@ while filecount <= length(filelist),
             if exist('set_menu_handle', 'var'),
                 delete(set_menu_handle), clear set_menu_handle
             end;
+            imgset = 1;
             if setnum > 1
                 set_menu_handle = uimenu(figure_handle, 'Label', 'Change &Set', 'position', 3);
                 for ii = 1:setnum
                     imgset_menu_handles(ii) = uimenu(set_menu_handle, 'Label', num2str(MCconfig.setsize*ii-MCconfig.setsize+1), 'callback', {'set_menucount', ii});
                 end;
+                set(get(set_menu_handle, 'children'), 'checked', 'off')
+                set(imgset_menu_handles(imgset), 'checked', 'on');
             end;
-            imgset = 1;
-            set(get(set_menu_handle, 'children'), 'checked', 'off')
-            set(imgset_menu_handles(imgset), 'checked', 'on');
+                       
             
             %if appropriate, sort by size before separating into subsets
             if MCconfig.display_order  %1 = 'size'; 0 = 'index'
@@ -222,8 +223,10 @@ while filecount <= length(filelist),
                 next_ind_list = next_ind; %keep track of screen start indices within a class
                 imagedat = {};
                 disp(['Set ' num2str(imgset) ' of ' num2str(setnum)])
-                set(get(set_menu_handle, 'children'), 'checked', 'off')
-                set(imgset_menu_handles(imgset), 'checked', 'on');
+                if setnum > 1
+                    set(get(set_menu_handle, 'children'), 'checked', 'off')
+                    set(imgset_menu_handles(imgset), 'checked', 'on');
+                end
                 startrange = imgset*MCconfig.setsize-MCconfig.setsize;
                 setrange = (startrange+1):min([imgset*MCconfig.setsize, length(roi_ind_all)]);
                 roi_ind = roi_ind_all(setrange);
