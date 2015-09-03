@@ -1,21 +1,14 @@
-pngdir = '\\sosiknas1\IFCB_products\MVCO\train_04Nov2011_fromWebServices\'; %output from export train - where the training images are located
+pngdir = '\\sosiknas1\IFCB_products\MVCO\MVCO_train_Aug2015\'; %output from export train - where the training images are located
 savedir = '\\sosiknas1\IFCB_products\MVCO\classifiers\';
 feapath_base = '\\sosiknas1\IFCB_products\MVCO\features\featuresxxxx_v2\'
 maxn = 500; %USER select
-minn = 20; %minimum number for inclusion
-outstring = 'MVCO_train_04Nov2011_fromWebServices'; %e.g., 'MVCO_train_Aug2015'
+minn = 0; %minimum number for inclusion
+outstring = 'MVCO_train_Aug2015'; %e.g., 'MVCO_train_Aug2015'
 
 %find the class names from the subdirs
 temp = dir(pngdir);
 temp = temp([temp.isdir]);
 classes = setdiff({temp([temp.isdir]).name}, {'.' '..'}); 
-
-
-%skip some classes that are empty or not properly annotated
-%classes = setdiff(classes, {'Eucampia_groenlandica' 'Tropidoneis' 'dino10' 'roundCell' 'other' 'flagellate' 'crypto' 'ciliate'});
-%class_vector = [];
-%targets = [];
-%feature_mat = [];
 
 fea_all = [];% nan(5000*length(manual_files), 235);
 class_all = [];% nan(5000*length(manual_files), 1);
@@ -24,8 +17,6 @@ targets_all = [];
 for classcount = 1:length(classes)
     class = char(classes(classcount));
     disp(class)
-%    load([pngdir char(classes(classcount))])
-%    [ feature_mat, featitles ] = format_features( out );
     roilist = dir([pngdir char(classes(classcount)) filesep '*.png']);
     target_list = regexprep({roilist.name}', '.png', '');
     filelist = char({roilist.name}'); filelist = cellstr(filelist(:,1:end-10));
@@ -36,17 +27,31 @@ for classcount = 1:length(classes)
         feaname = [unqfilelist{filecount} '_fea_v2.csv'];
         feapath = regexprep(feapath_base, 'xxxx', feaname(7:10));
         [ feadata, featitles ] = get_fea_file([feapath feaname]);
+        if exist('fea2use', 'var')
+            [~,fea2use_ind] = intersect(featitles,fea2use);
+            %fea2use_ind = sort(fea2use_ind);
+            if ~isequal(featitles(fea2use_ind), fea2use) %error checking
+                disp(feaname)
+                disp('problem: features do not match previous')
+                return
+            end
+        else %first time so create fea2use; CONSIDER which features to exclude...
+            [fea2use,fea2use_ind] = setdiff(featitles, {'roi_number' 'FilledArea' 'summedFilledArea' 'summedBiovolume' 'Area' 'ConvexArea' 'MajorAxisLength' 'MinorAxisLength' 'Perimeter' 'FeretDiameter'}');
+            %[fea2use_ind,s] = sort(fea2use_ind);
+            %fea2use = fea2use(s);
+        end
         ind = find(ismember(filelist, unqfilelist{filecount}));
         temp = char(target_list{ind});
         roinum = str2num(temp(:,end-4:end));
         [~,fea_ind] = intersect(feadata(:,1), roinum);
-        fea_mat(ind,:) = feadata(fea_ind,:);
+        fea_mat(ind,:) = feadata(fea_ind,fea2use_ind);
     end
     fea_all = [fea_all; fea_mat];
     class_all = [class_all; repmat(classcount,length(roilist),1)];
     n(classcount) = length(roilist);    
     targets_all = [targets_all; target_list];
 end
+featitles = fea2use;
 
 clear *temp
 
@@ -92,41 +97,3 @@ datestring = datestr(now, 'ddmmmyyyy');
 
 save([savedir outstring datestring], 'train', 'class_vector', 'targets', 'class2use', 'nclass', 'featitles');
 
-
-return
-    [ feature_mat, featitles ] = add_derived_features( feature_mat, featitles);
-            
-    if classcount == length(classes) | classcount == 1 ,
-        [~,i] = setdiff(featitles, {'FilledArea' 'summedFilledArea' 'Area' 'ConvexArea' 'MajorAxisLength' 'MinorAxisLength' 'Perimeter' 'FeretDiameter'}');
-        featitles = featitles(i);
-    end;
-    feamat{classcount} = feature_mat(i,:);
-    n = [out.features.numBlobs];
-    n_class(classcount) = length(n);
-    
-    t_temp = out.targets;
-    if maxn < n_class(classcount),
-        ind = randperm(n_class(classcount));
-        ind = ind(1:maxn);
-        feamat{classcount} = feamat{classcount}(:,ind);
-        t_temp = t_temp(ind);
-    end;
-    if n_class(classcount) < minn,
-        class_all(ii) = [];
-        fea_all(ii,:) = [];
-        files_all(ii) = [];
-        roinum(ii) = [];
-        n_class(classcount) = 0;
-    end;
-    
-    class_vector = [class_vector repmat(classcount,1,min(maxn,n_class(classcount)))];
-    targets = [targets; t_temp'];
-   
-
-train = cell2mat(feamat)';
-
-datestring = datestr(now, 'ddmmmyyyy');
-
-save([savedir outstring datestring], 'train', 'class_vector', 'classes', 'targets', 'featitles', 'n_class')
-
-clear t_temp classcount i n maxn temp output pngdir out class ind feature_mat outstring savedir datestring minn feamat 
