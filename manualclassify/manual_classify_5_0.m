@@ -201,7 +201,7 @@ while filecount <= length(filelist),
             end;
             imgset = 1;
             set(get(set_menu_handle, 'children'), 'checked', 'off')
-            set(imgset_menu_handles(imgset), 'Label', num2str(MCconfig.setsize*ii-MCconfig.setsize+1), 'checked', 'on');
+            set(imgset_menu_handles(imgset), 'checked', 'on');
             
             %if appropriate, sort by size before separating into subsets
             if MCconfig.display_order  %1 = 'size'; 0 = 'index'
@@ -223,7 +223,7 @@ while filecount <= length(filelist),
                 imagedat = {};
                 disp(['Set ' num2str(imgset) ' of ' num2str(setnum)])
                 set(get(set_menu_handle, 'children'), 'checked', 'off')
-                set(imgset_menu_handles(imgset), 'Label', num2str(MCconfig.setsize*ii-MCconfig.setsize+1), 'checked', 'on');
+                set(imgset_menu_handles(imgset), 'checked', 'on');
                 startrange = imgset*MCconfig.setsize-MCconfig.setsize;
                 setrange = (startrange+1):min([imgset*MCconfig.setsize, length(roi_ind_all)]);
                 roi_ind = roi_ind_all(setrange);
