@@ -194,12 +194,14 @@ while filecount <= length(filelist),
                 delete(set_menu_handle), clear set_menu_handle
             end;
             if setnum > 1
-                set_menu_handle = uimenu(figure_handle, 'Label', 'Change &Set', 'position', 3 );
+                set_menu_handle = uimenu(figure_handle, 'Label', 'Change &Set', 'position', 3);
                 for ii = 1:setnum
-                    uimenu(set_menu_handle, 'Label', num2str(MCconfig.setsize*ii-MCconfig.setsize+1), 'callback', {'set_menucount', ii});
+                    imgset_menu_handles(ii) = uimenu(set_menu_handle, 'Label', num2str(MCconfig.setsize*ii-MCconfig.setsize+1), 'callback', {'set_menucount', ii});
                 end;
             end;
             imgset = 1;
+            set(get(set_menu_handle, 'children'), 'checked', 'off')
+            set(imgset_menu_handles(imgset), 'Label', num2str(MCconfig.setsize*ii-MCconfig.setsize+1), 'checked', 'on');
             
             %if appropriate, sort by size before separating into subsets
             if MCconfig.display_order  %1 = 'size'; 0 = 'index'
@@ -219,7 +221,9 @@ while filecount <= length(filelist),
                 next_ind = 1; %start with the first roi
                 next_ind_list = next_ind; %keep track of screen start indices within a class
                 imagedat = {};
-                                            
+                disp(['Set ' num2str(imgset) ' of ' num2str(setnum)])
+                set(get(set_menu_handle, 'children'), 'checked', 'off')
+                set(imgset_menu_handles(imgset), 'Label', num2str(MCconfig.setsize*ii-MCconfig.setsize+1), 'checked', 'on');
                 startrange = imgset*MCconfig.setsize-MCconfig.setsize;
                 setrange = (startrange+1):min([imgset*MCconfig.setsize, length(roi_ind_all)]);
                 roi_ind = roi_ind_all(setrange);
@@ -233,7 +237,7 @@ while filecount <= length(filelist),
                         rendering_handle = text(0, 1.01, 'Rendering images...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
                         pause(.001)
                         filestr =  regexprep(regexprep(filelist{filecount}, '\\', '\\\'), '_', '\\_');
-                        [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [{[regexprep(class2use{classnum}, '_', '\\_') '  \fontsize{10}']} filestr], classlist, change_col, classnum);
+                        [next_ind_increment, imagemap] = fillscreen(imagedat(next_ind:end),roi_ind(next_ind:end), camx, camy, border, [{[regexprep(class2use{classnum}, '_', '\\_') '  \fontsize{10}']} filestr], classlist, change_col, classnum, MCconfig.dataformat);
                         if ~isnan(scale_bar_image1)
                             scale_bar_image = imresize(scale_bar_image1, MCconfig.imresize_factor);
                             imagesc(camx-size(scale_bar_image,2)-60,1020,scale_bar_image), text(camx-50,1020,[num2str(MCconfig.bar_length_micron) ' \mum'])
@@ -401,7 +405,10 @@ function roi_info = get_roi_info()
         numrois = size(adcdata,1);
     elseif MCconfig.dataformat == 2 %VPR
         roi_info.roipath = fileparts(filelist{filecount});
+        reading_handle = text(0, 1.01, 'Reading image directory...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
+        pause(.01) %make sure label displays
         eval(['[~,roi_info.roilist] = dos(''dir ' roi_info.roipath filesep '*.tif /B /O-S'');']) %bare dir reading, sorted largest to smallest size on disk
+        delete(reading_handle)
         tt = strfind(roi_info.roilist, char(10)); tt = tt(1)-1;
         roi_info.roilist = regexprep(roi_info.roilist, char(10), '');
         roi_info.roilist = cellstr(reshape(roi_info.roilist,tt,length(roi_info.roilist)/tt)');

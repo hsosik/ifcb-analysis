@@ -1,4 +1,4 @@
-function [next_ind, imagemap] = fillscreen(imagedat,imgind,camx, camy, border, title_str, classlist, mark_col, classnum);
+function [next_ind, imagemap] = fillscreen(imagedat,imgind,camx, camy, border, title_str, classlist, mark_col, classnum, dataformat);
 %function [next_ind, imagemap] = fillscreen(imagedat,imgind,camx, camy,border, title_str, classlist, mark_col, classnum);
 %For Imaging FlowCytobot roi viewing; Use with manual_classify scripts;
 %Fills current graph window with a roi collage taken in consecutive from an input set,
@@ -9,6 +9,7 @@ function [next_ind, imagemap] = fillscreen(imagedat,imgind,camx, camy, border, t
 %modified 15 January 2010 so that selected ID displayed on previous pages within a category have proper text color (red for main list, blue for subdivide list)
 %modified 9 September 2014 to adjust axes position
 %April 2015, revised to remove subdivide functionality and recast for manual_classify_4_1
+%Sep 2015, revised to include data format input (optional) so that VPR images can have white font for text labels
 
 %inputs:
 %   imagedat = cell array of roi images in order to plot
@@ -20,6 +21,7 @@ function [next_ind, imagemap] = fillscreen(imagedat,imgind,camx, camy, border, t
 %   classlist - matrix of class identity results
 %   mark_col - column of classlist to edit with manual identifications
 %   classnum - category number being viewed
+%   dataformat - optional input to indicate if input dataformat requires change in font color (b/w)
 
 %outputs:
 %   next_ind = index number of the next image in the set that doesn't fit
@@ -33,6 +35,12 @@ ycum = 1;
 next_ind = 1;
 f = 1; %initialize to keep image size as input
 imagedat_in = imagedat;  %keep an unchanged copy in case need multiple resize
+text_color = 'k';
+if exist('dataformat', 'var')
+    if dataformat == 2 %VPR case
+        text_color = 'w';
+    end
+end
 while ~pagefull && next_ind <= length(imgind)
     if f ~= 1,
         imagedat{next_ind} = imresize(imagedat_in{next_ind},f);
@@ -78,7 +86,7 @@ while ~pagefull && next_ind <= length(imgind)
             colormap(gray); shading flat; hold on; axis([1 camx 1 camy]); set(gca, 'ydir', 'reverse', 'yticklabel', [], 'units', 'inches')
             set(gca,'ytick', 0:200:camy, 'xtick', 0:200:camx, 'plotboxAspectRatioMode', 'auto', 'dataAspectRatioMode', 'manual', 'dataAspectRatio', [1 1 1]);
             h = imagesc(imagedat{next_ind}', 'xdata', start_pos(1):check_pos(1), 'ydata', start_pos(2):check_pos(2)); hold on
-            text(start_pos(1),start_pos(2), num2str(imgind(next_ind)), 'verticalalignment','top');
+            text(start_pos(1),start_pos(2), num2str(imgind(next_ind)), 'verticalalignment','top', 'color', text_color);
             if classlist(imgind(next_ind), mark_col) ~= classnum & ~isnan(classlist(imgind(next_ind), mark_col)),  %if class changed on this round, mark with new class number
                 cstr = 'r'; if mark_col ~= 2, cstr  = 'b'; end;
                 text(start_pos(1),start_pos(2)+20, num2str(classlist(imgind(next_ind),mark_col)), 'color', cstr, 'fontweight', 'bold');
