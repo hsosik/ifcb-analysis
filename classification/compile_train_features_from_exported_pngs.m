@@ -55,7 +55,7 @@ featitles = fea2use;
 
 clear *temp
 
-for classcount = 1:length(class2use),
+for classcount = 1:length(classes),
     ii = find(class_all == classcount);
     n(classcount) = size(ii,1);
     n2del = n(classcount)-maxn;
@@ -64,36 +64,41 @@ for classcount = 1:length(class2use),
         shuffle_ind = shuffle_ind(1:n2del);
         class_all(ii(shuffle_ind)) = [];
         fea_all(ii(shuffle_ind),:) = [];
-        files_all(ii(shuffle_ind)) = [];
-        roinum(ii(shuffle_ind)) = [];
+        targets_all(ii(shuffle_ind),:) = [];
+        %files_all(ii(shuffle_ind)) = [];
+        %roinum(ii(shuffle_ind)) = [];
         ii = find(class_all == classcount);
         n(classcount) = maxn;
     end;
     if n(classcount) < minn,
         class_all(ii) = [];
         fea_all(ii,:) = [];
-        files_all(ii) = [];
-        roinum(ii) = [];
+        targets_all(ii,:) = [];
+        %files_all(ii) = [];
+        %roinum(ii) = [];
         n(classcount) = 0;
     end;
 end;
 
-for classcount = 1:length(class2skip),
-    ind = strmatch(class2skip(classcount),class2use);
-    ii = find(class_all == ind);
-    class_all(ii) = [];
-    fea_all(ii,:) = [];
-    files_all(ii) = [];
-    roinum(ii) = [];
-end;
+% for classcount = 1:length(class2skip),
+%     ind = strmatch(class2skip(classcount),classes);
+%     ii = find(class_all == ind);
+%     class_all(ii) = [];
+%     fea_all(ii,:) = [];
+%     targets_all(ii,:) = [];
+%     %files_all(ii) = [];
+%     %roinum(ii) = [];
+% end;
 
 train = fea_all;
 class_vector = class_all;
-targets = cellstr([char(files_all) repmat('_', length(class_vector),1) num2str(roinum, '%05.0f')]);
+targets = targets_all;
+%targets = cellstr([char(files_all) repmat('_', length(class_vector),1) num2str(roinum, '%05.0f')]);
 nclass = n;
 class2use = classes;
 
 datestring = datestr(now, 'ddmmmyyyy');
 
 save([savedir outstring datestring], 'train', 'class_vector', 'targets', 'class2use', 'nclass', 'featitles');
+
 
