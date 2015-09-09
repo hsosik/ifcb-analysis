@@ -196,7 +196,7 @@ function change_config_callback( hOBj, eventdata )
     if ~isequal(MCconfig.setsize, str2num(defaultanswer{1})) || ~isequal(MCconfig.threshold_mode, str2num(defaultanswer{3}))...
             || ~isequal(MCconfig.x_pixel_threshold, str2num(defaultanswer{4})) || ~isequal(MCconfig.y_pixel_threshold, str2num(defaultanswer{5}))
         class_step_amount_callback( [], [], -0.5 ) %special case to reload current class
-    elseif ~isequal(MCconfig.imresize_factor, defaultanswer(2))
+    elseif ~isequal(MCconfig.imresize_factor, str2num(defaultanswer{2}))
         MCflags.reload_set = 1;
         robot_pressCR(1)
     end   
