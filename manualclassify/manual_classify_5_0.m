@@ -93,6 +93,10 @@ elseif MCconfig.dataformat == 1
     adcxind = 16;
     adcyind = 17;
     startbyteind = 18;
+elseif MCconfig.dataformat == 2
+    if ~exist([MCconfig.resultpath filesep 'roi_info'], 'dir')
+        mkdir([MCconfig.resultpath filesep 'roi_info' filesep])
+    end
 end;
 
 filecount = MCconfig.filenum2start;
@@ -407,16 +411,24 @@ function roi_info = get_roi_info()
         roi_info.x_all = adcdata(:,adcxind);  roi_info.y_all = adcdata(:,adcyind); roi_info.startbyte_all = adcdata(:,startbyteind);
         numrois = size(adcdata,1);
     elseif MCconfig.dataformat == 2 %VPR
-        roi_info.roipath = fileparts(filelist{filecount});
-        reading_handle = text(0, 1.01, 'Reading image directory...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
-        pause(.01) %make sure label displays
-        eval(['[~,roi_info.roilist] = dos(''dir ' roi_info.roipath filesep '*.tif /B /O-S'');']) %bare dir reading, sorted largest to smallest size on disk
-        delete(reading_handle)
-        tt = strfind(roi_info.roilist, char(10)); tt = tt(1)-1;
-        roi_info.roilist = regexprep(roi_info.roilist, char(10), '');
-        roi_info.roilist = cellstr(reshape(roi_info.roilist,tt,length(roi_info.roilist)/tt)');
+        [~,f] = fileparts(MCconfig.resultfiles{filecount});
+        f = [MCconfig.resultpath filesep 'roi_info' filesep f '.mat'];
+        if exist(f, 'file')
+            load(f)
+            roi_info.roipath = fileparts(filelist{filecount});
+        else
+            roi_info.roipath = fileparts(filelist{filecount});
+            reading_handle = text(0, 1.01, 'Reading image directory...', 'fontsize', 20, 'verticalalignment', 'bottom', 'backgroundcolor', [.9 .9 .9]);
+            pause(.01) %make sure label displays
+            eval(['[~,roi_info.roilist] = dos(''dir ' roi_info.roipath filesep '*.tif /B /O-S'');']) %bare dir reading, sorted largest to smallest size on disk
+            delete(reading_handle)
+            tt = strfind(roi_info.roilist, char(10)); tt = tt(1)-1;
+            roi_info.roilist = regexprep(roi_info.roilist, char(10), '');
+            roi_info.roilist = cellstr(reshape(roi_info.roilist,tt,length(roi_info.roilist)/tt)');
+            [roi_info.roilist roi_info.disk_size_index] = sort(roi_info.roilist);
+            save(f, 'roi_info')
+        end
         numrois = length(roi_info.roilist);
-        [roi_info.roilist roi_info.disk_size_index] = sort(roi_info.roilist);
         roi_info.x_all = NaN; %placeholder for passing into get_claslistTB2
     elseif MCconfig.dataformat == 3 %FlowCAM, Sherbrooke
         adcdata = load([filelist{filecount} '_ADC.mat']);
