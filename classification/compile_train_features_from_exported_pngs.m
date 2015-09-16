@@ -99,6 +99,6 @@ class2use = classes;
 
 datestring = datestr(now, 'ddmmmyyyy');
 
-save([savedir outstring datestring], 'train', 'class_vector', 'targets', 'class2use', 'nclass', 'featitles');
+save([savedir outstring '_' datestring], 'train', 'class_vector', 'targets', 'class2use', 'nclass', 'featitles');
 
 
