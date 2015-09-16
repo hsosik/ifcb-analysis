@@ -14,6 +14,19 @@ function [  ] = make_TreeBaggerClassifier_iterative( result_path, train_filename
 %nRound = 25; %USER number of training examples from each class to consider per iteration
 
 t = load([result_path train_filename]); 
+%%temporary
+class2skip = {'other' 'crypto'};
+if exist('class2skip', 'var')
+    [~,classnum2skip] = intersect(t.class2use, class2skip);
+    t.class2use(classnum2skip) = [];
+    t.nclass(classnum2skip) = [];
+    ind2del = find(ismember(t.class_vector,classnum2skip));
+    t.class_vector(ind2del) = [];
+    t.train(ind2del,:) = [];
+    t.targets(ind2del) = [];   
+end
+%%
+
 %load fea2use
 nclass = t.nclass;
 class_vector = t.class_vector;
