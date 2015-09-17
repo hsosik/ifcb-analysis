@@ -331,7 +331,7 @@ function roipath_browse_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 path1 = get(handles.roipath_text,'String');
-roipath = uigetdir(path1);
+roipath = fullfile(uigetdir(path1), filesep);
 if roipath
     set(handles.roipath_text, 'string', roipath)
     roipath_text_Callback([], [], handles)
@@ -450,7 +450,7 @@ function manualpath_browse_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 path1 = get(handles.manualpath_text,'String');
-manualpath = uigetdir(path1);
+manualpath = fullfile(uigetdir(path1), filesep);
 if manualpath
    set(handles.manualpath_text, 'string', manualpath)
    manualpath_text_Callback([], [], handles)
