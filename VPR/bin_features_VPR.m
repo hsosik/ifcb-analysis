@@ -26,6 +26,7 @@ for ii = 1:nt,
     target = blob_geomprop(target); 
     target = blob_rotate(target);
     target = blob_texture(target);
+    target = image_texture(target); %test new added texture features for whole image
     target = blob_invmoments(target);
     target = blob_shapehist_stats(target);
     target = blob_RingWedge(target);
@@ -44,18 +45,18 @@ if nt > 0,
     [ feature_mat, featitles, multiblob_features, multiblob_titles ] = make_feature_matricesVPR(temp);
 
     %write the compiled feature csv file
-    fileout = [char(feaname) '_fea_v2.csv'];
+    fileout = [char(feaname) '_fea_v3.csv'];
     csvwrite_with_headers( fileout, feature_mat, featitles );
     
     %write the raw multi-blob features to separate csv file
-    fileout = [char(feaname_multi) '_multiblob_v2.csv'];
+    fileout = [char(feaname_multi) '_multiblob_v3.csv'];
 
     if ~isempty(multiblob_features),
         csvwrite_with_headers( fileout, multiblob_features, multiblob_titles );
     end; 
     disp([feaname '    done'])
 else
-    log(['no targets SKIPPING ' file]);
+    disp(['no targets SKIPPING ' feaname]);
 end;
 
 end
