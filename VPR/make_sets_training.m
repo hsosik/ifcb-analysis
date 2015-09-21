@@ -7,10 +7,10 @@
 %
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, August 2015
 
-manual_path = '\\sosiknas1\Lab_data\VPR\NBP1201\aid_class\';
-train_path = '\\sosiknas1\Lab_data\VPR\NBP1201\VPR8_trainB\';
-img_path_base = '\\blackburn\public\nbp1201_vpr\rois\';
-
+manual_path = '\\sosiknas1\Lab_data\VPR\NBP1201\manual\';
+train_path = '\\sosiknas1\Lab_data\VPR\NBP1201\VPR8_train_17Sept2015\';
+img_path_base = '\\sosiknas1\Lab_data\VPR\NBP1201\rois\';
+roi2use = 1:5000; %This is because we only looked at the first 5000 images of each VPR hour. Change as needed.
 %make subdirs for pngs
 filelist = dir([manual_path 'NBP1201vpr8*.mat']); 
 filelist = regexprep({filelist.name}, '.mat', '')';
@@ -32,12 +32,12 @@ for filecount = 1:size(filelist,1),
     disp(filelist(filecount))
     load([manual_path filelist{filecount}])
     for classcount = 1:length(class2use_manual),
-        roi_class_byfile{filecount, classcount} = classlist(classlist(:,2) == classcount | isnan(classlist(:,2)) & classlist(:,3) == classcount,1);
+        roi_class_byfile{filecount, classcount} = classlist(classlist(roi2use,2) == classcount | isnan(classlist(roi2use,2)) & classlist(roi2use,3) == classcount,1);
         roi_count_byfile(filecount, classcount) = length(roi_class_byfile{filecount, classcount});
     end;
 end;
 
-train_num = 1000;
+train_num = 500;
 
 filenum_list = cell(length(class2use_manual),1);
 num_roi_list = filenum_list;
