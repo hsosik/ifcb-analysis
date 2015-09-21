@@ -36,7 +36,7 @@ end;
 
 if parflag
     parfor bincount = 1:length(hrlist)
-        if ~exist([fealist{bincount} '_fea_v2.csv'], 'file')
+        if ~exist([fealist{bincount} '_fea_v3.csv'], 'file')
             bin_features_VPR(hrlist{bincount}, bloblist{bincount}, fealist(bincount), fealist_multi(bincount));
         else
             disp([fealist{bincount} ' already done'])
@@ -44,7 +44,7 @@ if parflag
     end
 else
     for bincount = 1:length(hrlist)
-        if ~exist([fealist{bincount} '_fea_v2.csv'], 'file')
+        if ~exist([fealist{bincount} '_fea_v3.csv'], 'file')
             bin_features_VPR(hrlist{bincount}, bloblist{bincount}, fealist(bincount), fealist_multi(bincount));
         else
             disp([fealist{bincount} ' already done'])
