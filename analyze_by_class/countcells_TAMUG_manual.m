@@ -48,6 +48,11 @@ end;
 datestr = date; datestr = regexprep(datestr,'-','');
 save([resultpath 'summary\count_manual_' datestr], 'matdate', 'ml_analyzed_mat', 'classcount', 'filelist', 'class2use')
 
+%create and save daily binned results
+[matdate_bin, classcount_bin, ml_analyzed_mat_bin] = make_day_bins(matdate,classcount, ml_analyzed_mat);
+save([resultpath 'summary\count_manual_' datestr '_day'], 'matdate_bin', 'classcount_bin', 'ml_analyzed_mat_bin', 'class2use')
+save([resultpath 'summary\count_manual_current_day'], 'matdate_bin', 'classcount_bin', 'ml_analyzed_mat_bin', 'class2use')
+
 return
 
 % for example, get manual summary file to plot, load D:\IFCB\manual\summary\count_manual_28Jul2015
