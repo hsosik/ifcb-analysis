@@ -7,14 +7,18 @@ function [ ] = start_bin_blobs_VPR (day_in_path, blob_out_path, parflag)
 
 daylist = dir([day_in_path filesep 'd*']);
 daylist = {daylist([daylist.isdir]).name};
-
 hrlist = [];
 bloblist = [];
+ji = findstr(filesep, day_in_path);
+vprstr = day_in_path(ji(end-1)+1:ji(end)-1);
+cruisestr = day_in_path(ji(end-2)+1:ji(end-1)-1);
+
 for ii = 1:length(daylist)
     junk = dir([day_in_path filesep daylist{ii} filesep 'h*']);
     junk = {junk([junk.isdir]).name};
     hrlist = [hrlist; fullfile(day_in_path,daylist{ii},junk)'];
-    bloblist = [bloblist; fullfile(blob_out_path, cellstr([repmat(daylist{ii}, length(junk),1) char(junk)]))];
+    %bloblist = [bloblist; fullfile(blob_out_path, cellstr([repmat([cruisestr vprstr  daylist{ii}], length(junk),1) char(junk)]))];
+    bloblist = [bloblist; fullfile(blob_out_path, cellstr([repmat([daylist{ii}], length(junk),1) char(junk)]))];
 end;
 clear junk
 
@@ -29,13 +33,14 @@ if parflag
     catch e %#ok<NASGU>
         log('WARNING - workers cannot start, or already active');
     end;
-    parfor bincount = 1:3%1:length(hrlist)
+    parfor bincount = 1:length(hrlist)
         if ~exist([bloblist{bincount} '.zip'], 'file')
             bin_blobs_VPR(hrlist{bincount}, bloblist{bincount});
         else
             disp([bloblist{bincount} ' already done'])
         end;
     end;
+    delete(mypool)
 else
     for bincount = 1:length(hrlist)
         if ~exist([bloblist{bincount} '.zip'], 'file')
@@ -46,7 +51,6 @@ else
     end;
 end;
 
-delete(mypool)
 return
 
 
