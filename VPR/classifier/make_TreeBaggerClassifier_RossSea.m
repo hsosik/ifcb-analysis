@@ -1,14 +1,15 @@
 
 %run compile_train_features_RossSea.m to generate train and class_vector
 clear all
-outputpath = '\\sosiknas1\Lab_data\VPR\NBP1201NewTrain201502\classifier\';
-load([outputpath 'RossSea_TrainSet_02Mar2015']);
+outputpath = '\\sosiknas1\Lab_data\VPR\NBP1201\classifiers\';
+load([outputpath 'NBP1201_train_vpr8_qc22Sep2015']);
 %load fea2use
 fea2use = 1:length(featitles);
 featitles = featitles(fea2use);
 %ii = find(isnan(class_vector)); class_vector(ii) = [];targets(ii)= []; train(ii,:) = [];
 datestring = datestr(now, 'ddmmmyyyy');
 classes = class2use;
+%classes = class2use([1:8 10:12]);
 %sort training set
 [class_vec_str,sort_ind] = sort(classes(class_vector));
 train = train(sort_ind,:);
@@ -21,7 +22,7 @@ disp('Growing trees...please be patient')
 %matlabpool
 paroptions = statset('UseParallel','always');
 %tic, b = TreeBagger(300,train,class_vector,'Method','c','OOBVarImp','on','MinLeaf',1,'Options',paroptions); toc
-b = TreeBagger(100,train(:,fea2use),class_vec_str,'Method','c','OOBVarImp','on','MinLeaf',1,'Options',paroptions);
+b = TreeBagger(200,train(:,fea2use),class_vec_str,'Method','c','OOBVarImp','on','MinLeaf',1,'Options',paroptions);
 %matlabpool close
 figure, hold on
 plot(oobError(b), 'b-');
