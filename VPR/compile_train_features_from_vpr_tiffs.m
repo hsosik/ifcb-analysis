@@ -1,9 +1,9 @@
-pngdir = '\\sosiknas1\Lab_data\VPR\NBP1201\VPR8_train_17Sept2015\'; %output from export train - where the training images are located
+pngdir = '\\sosiknas1\Lab_data\VPR\NBP1201\VPR8_train_20Sept2015_qc\'; %output from export train - where the training images are located
 savedir = '\\sosiknas1\Lab_data\VPR\NBP1201\classifiers\';
 feapath_base = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\features\'
-maxn = 500; %USER select
+maxn = 400; %USER select
 minn = 20; %minimum number for inclusion
-outstring = 'NBP1201_train_vpr8'; %e.g., 'MVCO_train_Aug2015'
+outstring = 'NBP1201_train_vpr8_qc'; %e.g., 'MVCO_train_Aug2015'
 
 %find the class names from the subdirs
 temp = dir(pngdir);
