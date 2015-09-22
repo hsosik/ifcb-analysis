@@ -1,5 +1,5 @@
-load /Volumes/d_work/IFCB1/ifcb_data_mvco_jun06/Manual_fromClass/summary/summary_allTB_bythre_Laboea
-m = load('/Volumes/d_work/IFCB1/ifcb_data_mvco_jun06/Manual_fromClass/summary/count_manual_current'); 
+load \\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\summary_allTB_bythre_Laboea
+m = load('\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_manual_current'); 
 imclass = strmatch('Laboea', m.class2use);
 goodm = find(~isnan(m.ml_analyzed_mat(:,imclass)));
 [~,im,it] = intersect(m.filelist(goodm), filelistTB);
