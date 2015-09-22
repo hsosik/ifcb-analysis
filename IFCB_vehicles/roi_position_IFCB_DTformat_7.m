@@ -59,6 +59,7 @@ while 1
 
 
 
+        [file path] = uigetfile('I:\beads\*.roi'); 
 %         [file path] = uigetfile('D:\IFCB\testwell_Feb2014\ifcb101\*.roi'); 
 %         [file path] = uigetfile('C:\IFCB1\ifcb_data_mvco_jun06\beads\*.roi'); %ifcb5 -- all data is in data subdirectory
 
