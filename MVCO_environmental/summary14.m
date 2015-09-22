@@ -1,28 +1,31 @@
-X=load ('c:\work\mvco\otherdata\2014_OcnDat_s.C99','ascii');
+%datadir = '\\sosiknas1\Lab_data\MVCO\EnvironmentalData\';
+datadir = 'C:\work\mvco\OtherData\';
+yrstr = '2014';
+
+X=load ([datadir ystr '_OcnDat_s.C99'],'ascii');
 loadOcnDat
-yd_ocn2014 = yd_ocn;
-Temp2014 = Temp; 
-Saln2014 = Saln;
+eval(['yd_ocn' ystr '= yd_ocn']);
+eval(['Temp' ystr '= Temp']); 
+eval(['Saln' ystr '= Saln']);
 
- X=load('c:\work\mvco\otherdata\2014_MetDat_s.C99','ascii');
- loadMetDat
- CalcDailySolar
- DailySolar2014 = DailySolar;
- yd_met2014 = yd_met;
- Solar2014 = Solar_campmt_median;
- Wspd2014 = Wspd_son3D_mean;
- Wdir2014 = Wdir_son3D_mean;
- 
- X=load ('c:\work\mvco\otherdata\2014_ADCP_s.C11','ascii');
- loadAdcp
- yd_adcp2014 = yd_adcp;
- vE_mean2014 = vE_mean;
- vN_mean2014 = vN_mean;
- wave_height2014 = wave_height;
- wave_period2014 = wave_period;
+X=load([datadir ystr '_MetDat_s.C99'],'ascii');
+loadMetDat
+CalcDailySolar
+eval(['DailySolar' ystr '= DailySolar']);
+eval(['yd_met' ystr '= yd_met']);
+eval(['Solar' ystr '= Solar_campmt_median']);
+eval(['Wspd' ystr '= Wspd_son3D_mean']);
+eval(['Wdir' ystr '= Wdir_son3D_mean']);
 
- 
-save other14 *2014
+X=load ([datadir ystr '_ADCP_s.C11'],'ascii');
+loadAdcp
+eval(['yd_adcp' ystr ' = yd_adcp']);
+eval(['vE_mean' ystr ' = vE_mean']);
+eval(['vN_mean' ystr ' = vN_mean']);
+eval(['wave_height' ystr ' = wave_height']);
+eval(['wave_period' ystr ' = wave_period']);
+
+save([datadir 'other' ystr ], ['*' ystr]')
 clear all
-load other14
+load([datadir 'other' ystr])
 
