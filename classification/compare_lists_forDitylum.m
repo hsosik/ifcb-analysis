@@ -19,4 +19,3 @@ remove_list = setdiff(roiid_previous, roiidTB);
 add_list = setdiff(roiidTB, roiid_previous);
 
 view_rois(overlap_list)
-    
