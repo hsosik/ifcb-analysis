@@ -1,5 +1,4 @@
-function [ ml_analyzed ] = IFCB_volume_analyzed( hdrfilename, sec2event2, hdr ) %fluidicsActive=1 normally but 0 for testing with signal generator
-% function [ ml_analyzed ] = IFCB_volume_analyzed( hdrfilename, sec2event2, fluidicsActive ) %fluidicsActive=1 normally but 0 for testing with signal generator
+function [ ml_analyzed ] = IFCB_volume_analyzed( hdrfilename, sec2event2, fluidicsActive ) %fluidicsActive=1 normally but 0 for testing with signal generator
 %function [ ml_analyzed ] = IFCB_volume_analyzed( hdrfilename )
 % hdrfilename input as char or cell complete with path (or url)
 % reads sample run time and "inhibit" time from IFCB hdr file 
@@ -13,8 +12,8 @@ flowrate = 0.25; %milliliters per minute for syringe pump
 if ischar(hdrfilename), hdrfilename = cellstr(hdrfilename); end;
 ml_analyzed = NaN(size(hdrfilename));
 for count = 1:length(hdrfilename),
-    hdr = IFCBxxx_readhdr_Rob(hdrfilename{count});
-%     keyboard
+    hdr = IFCBxxx_readhdr_acoustic(hdrfilename{count});
+ 
     if ~isfield(hdr, 'RunFastFactor') %if it doesn't exist in hdr, set it here
         hdr.RunFastFactor = 1;
     end
@@ -29,7 +28,6 @@ for count = 1:length(hdrfilename),
             startlag = 0;
             endlag = 0;
         else
-%             keyboard
             startlag = 14; %instrument-specific: seconds to first real trigger. Measured 14 s on ifcb9.
             endlag = 11; %software-specific???: seconds btween last real (linear portion) trigger and file closing. Measured 11 s on ifcb9.
         end
