@@ -13,8 +13,8 @@ tic, b = TreeBagger(300,train,classes(class_vector),'Method','c','OOBVarImp','on
 matlabpool close
 figure, hold on
 plot(oobError(b), 'b-');
-xlabel('Number of Grown Trees');
-ylabel('Out-of-Bag Classification Error');
+xlabel('Number of grown trees', 'fontsize', 16);
+ylabel('Out-of-bag classification error', 'fontsize', 16);
 
 %b = growTrees(b,250); %specify how many to add
 %plot(oobError(b), 'g');
