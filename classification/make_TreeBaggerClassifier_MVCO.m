@@ -51,7 +51,8 @@ set(gca, 'xtick', 1:length(classes), 'xticklabel', [])
 text(1:length(classes), -text_offset.*ones(size(classes)), classes, 'interpreter', 'none', 'horizontalalignment', 'right', 'rotation', 45) 
 set(gca, 'position', [ 0.13 0.35 0.8 0.6])
 legend('Pd', 'Pr')
-figure, boxplot(max(Sfit'),str2num(char(b.Y)))
+%figure, boxplot(max(Sfit'),str2num(char(b.Y)))
+figure, boxplot(max(Sfit'),b.Y)
 ylabel('Out-of-bag winning scores')
 set(gca, 'xtick', 1:length(classes), 'xticklabel', [])
 text(1:length(classes), -text_offset.*ones(size(classes)), classes, 'interpreter', 'none', 'horizontalalignment', 'right', 'rotation', 45) 
@@ -72,25 +73,37 @@ end;
 ind = find(isnan(Yfit_max));
 Yfit_max(ind) = 0; %unclassified
 %c2 = confusionmat(b.Y(ind),classes(Yfit_max(ind)));
-[c2all, gord] = confusionmat(str2num(char(b.Y)),Yfit_max);
-c2 = c2all(2:end,2:end); %skip the unclassified row/col
+ind = find(Yfit_max);
+[c2, gord] = confusionmat(b.Y(ind),classes(Yfit_max(ind)));
+%[c2all, gord] = confusionmat(str2num(char(b.Y)),Yfit_max);
+%c2 = c2all(2:end,2:end); %skip the unclassified row/col
 total = sum(c2')';
 Pd2 = diag(c2)./total; %true pos rate among accepted classifications
 Pr2 = 1-(sum(c2)-diag(c2)')./total'; %precision of accepted classifications
 sum(sum(c2)-diag(c2)')/sum(total)
 Pm2 = (sum(c1')-sum(c2'))./sum(c1'); %miss rate (true pos in unclassified)
-figure, bar([Pd2 Sp2' Pm2'])
+figure, bar([Pd2 Pr2' Pm2'])
 set(gca, 'xtick', 1:length(classes), 'xticklabel', [])
 text(1:length(classes), -text_offset.*ones(size(classes)), classes, 'interpreter', 'none', 'horizontalalignment', 'right', 'rotation', 45) 
 set(gca, 'position', [ 0.13 0.35 0.8 0.6])
 legend('true pos rate', 'Sp', 'Pmissed')
 set(gca, 'position', [ 0.13 0.35 0.8 0.6])
 
+[ ind_out, class_label ] = get_diatom_ind( classes, classes );
+figure, bar([Pd2(ind_out) Pr2(ind_out)' Pm2(ind_out)'])
+set(gca, 'xtick', 1:length(classes(ind_out)), 'xticklabel', [])
+text(1:length(classes(ind_out)), -text_offset.*ones(size(classes(ind_out))), class_label(ind_out),'horizontalalignment', 'right', 'rotation', 45) 
+set(gca, 'position', [ 0.13 0.35 0.8 0.6])
+legend('True positive rate', 'Specificity', 'Unclassified rate')
+set(gca, 'position', [ 0.13 0.35 0.8 0.6])
+
+
+return
 %what difference if add back unclassified according to max score (even if below maxthre
 ind = find(Yfit_max == 0);
 Yfit_max(ind) = str2num(char(Yfit(ind))); %unclassified
-%c2 = confusionmat(b.Y(ind),classes(Yfit_max(ind)));
-[c3, gord] = confusionmat(str2num(char(b.Y)),Yfit_max);
+c3 = confusionmat(b.Y(ind),classes(Yfit_max(ind)));
+%[c3, gord] = confusionmat(str2num(char(b.Y)),Yfit_max);
 %c2 = c2all(2:end,2:end); %skip the unclassified row/col
 total = sum(c3')';
 Pd3 = diag(c3)./total; %true pos rate among accepted classifications
@@ -103,43 +116,3 @@ text(1:length(classes), -text_offset.*ones(size(classes)), classes, 'interpreter
 set(gca, 'position', [ 0.13 0.35 0.8 0.6])
 legend('true pos rate', 'Sp', 'Pmissed')
 set(gca, 'position', [ 0.13 0.35 0.8 0.6])
-
-
-return
-
-figure, hold on
-for count = 1:length(classes),
- %[fpr,tpr,thr] = perfcurve(b.Y,Sfit(:,count), num2str(count));
-  [fpr,tpr,thr, acu, optrocpt] = perfcurve(b.Y,Sfit(:,count), classes{count});
-  subplot(2,1,1), ph = plot(fpr,tpr, 'r');
-  title(classes(count)), xlabel('False pos rate'), ylabel('True pos rate')
-  %[fpr,accu,thr] = perfcurve(b.Y,Sfit(:,count), num2str(count),'ycrit','accu');
-  [fpr,accu,thr] = perfcurve(b.Y,Sfit(:,count), classes{count},'ycrit','accu');
-  subplot(2,1,2), hold off, ph2 = plot(thr,accu, 'g'); 
-  hold on, ph3 = plot(thr, 1-fpr, 'r'); legend('accuracy', '1-false pos rate')
-  set(ph, 'color', 'k'), set(gca, 'ylim', [max(accu)*.99 1])
-%  [maxaccu(count),iaccu] = max(accu);
-%  maxthre(count) = thr(iaccu);
-  maxthre(count) = thr(find(fpr == optrocpt(1) & tpr == optrocpt(2)));
-  line(maxthre(count)*[1 1], ylim, 'linestyle', ':')
-  xlabel('Threshold for ''good'' Returns');
-  subplot(2,1,1), hold on, plot(fpr(iaccu), tpr(iaccu), 'g*')
-  disp([fpr(iaccu), tpr(iaccu), maxthre(count)])
-  pause
-end;
-
-
-%num_correct = length(find(b.Y==Yfit_max))
-%num_nanincorrect = length(find(b.Y~=Yfit_max))
-num_nan = length(find(isnan(Yfit_max)))
-num_wrong = num_nanincorrect-num_nan
-acc = num_correct./(num_correct+num_wrong)
-unk_rate = num_nan./(num_correct+num_nanincorrect)
-sum(c')-sum(c2') %num unknown per 
-
-figure
-h = histc(Pd, [0:.1:1]); b = 0:10:100;
-bar(fliplr(b)+5,cumsum(flipud(h)/length(Pd)),'width', 1)
-set(gca, 'xtick', 0:10:100, 'xlim', [-5 105], 'xdir', 'rev')
-cumsum(flipud(h./length(Pd)))'
-fliplr(b)
