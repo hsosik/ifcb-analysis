@@ -77,7 +77,17 @@ end;
 save('beadsum', 'fea', 'b', 'pid', 'adc', 'files')
 return
 
+mdate = IFCB_file2date(files);
+[~,ii] = sort(mdate);
+mdate = mdate(ii);
+fea = fea(:,ii);
+files = files(:,ii);
+pid = pid(ii);
+adc = adc(ii);
+b = b(ii);
+clear ii
 
+Eqd_ind = 1;
 for ii = 1:length(b), 
     figure(1), clf,  
     [h,x] = hist(fea{ii}(b{ii},Eqd_ind), 0:50);
@@ -88,9 +98,11 @@ for ii = 1:length(b),
     mn(ii) = mean(fea{ii}(b{ii},Eqd_ind));
     sd(ii) = std(fea{ii}(b{ii},Eqd_ind));
     title(files{ii}, 'interpreter', 'none')
-    pause 
+%    pause 
 end;
-mdate = IFCB_file2date(files);
+
+t = char(files');
+t = str2num(t(:,5));
 
 figure
 subplot(3,1,1)
@@ -110,5 +122,23 @@ plot(mdate(a), std(a)./mn(a), '.-')
 %hold on, plot(mdate(b), std(b)./mn(b), '.c')
 datetick('x')
 ylabel('CV (diam, pixels)')
+
+for ii = 1:length(b), 
+    figure(1), clf,  
+    [h,x] = hist(fea{ii}(b{ii},Eqd_ind), 0:50);
+    bar(x,h)
+    [~,a] =max(h);
+    md(ii) = x(a); clear a
+    n(ii) = size(b{ii},1);
+    mn(ii) = mean(fea{ii}(b{ii},Eqd_ind));
+    sd(ii) = std(fea{ii}(b{ii},Eqd_ind));
+    title(files{ii}, 'interpreter', 'none')
+%    pause 
+end;
+
+
+%8 aug 2011 focus
+%4 Sept 09 focus
+%8 Sep 09 (10:15 local) -- adjust focus 9 CCW -- for less halo...
 
 %for ii = 1:50, figure(99),clf, plot(features.data(b2,ii), '.'), hold on, plot(features.data(b,ii), 'r.'), title(features.colheaders(ii)),pause, end;
