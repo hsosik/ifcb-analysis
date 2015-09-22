@@ -1,10 +1,8 @@
 
 %
-load ('\\raspberry\d_work\IFCB1\code_svn\trunk\Guinardia_parasite_analysis\Tall_day2006_2013.mat')
-load ('\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_biovol_manual_22Nov2013_day.mat')
-
-ind59 = find(~isnan(ml_analyzed_mat_bin(:,59)));
-ind14 = find(~isnan(ml_analyzed_mat_bin(:,14)));
+load ('\\SOSIKNAS1\Lab_data\MVCO\EnvironmentalData\Tall_day') %from Temp_allyears_daily2.m
+Tyear = year;
+load ('\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_biovol_manual_current_day.mat') %from biovolume_summary_MVCO_manual.m
 
 figure1 = figure;
 set(gcf, 'units', 'inches')
@@ -18,15 +16,25 @@ set(gcf, 'position', [1 2 7 7], 'paperposition', [1 1 7 7]);
 %cubic microns per mL
 ind_Gdel_par = strmatch('G_delicatula_parasite',class2use);
 
-[ mdate_mat, y_mat, yearlist, yd ] = timeseries2ydmat( matdate_bin(ind14), sum((classcount_bin(ind14,ind_Gdel)./ml_analyzed_mat_bin(ind14,ind_Gdel)),2));
+ind_main = strmatch('Guinardia_delicatula', class2use);
+ind_parasite = strmatch('G_delicatula_parasite', class2use);
+ind_extparas = strmatch('G_delicatula_external_parasite', class2use);
+
+indp2use = find(~isnan(ml_analyzed_mat_bin(:,ind_parasite)));
+indG2use = find(~isnan(ml_analyzed_mat_bin(:,ind_main)));
+
+[ mdate_mat, y_mat, yearlist, yd ] = timeseries2ydmat( matdate_bin(indG2use), sum((classcount_bin(indG2use,ind_Gdel)./ml_analyzed_mat_bin(indG2use,ind_Gdel)),2));
 Gdel_mat = y_mat;
-[ mdate_mat, y_mat, yearlist, yd ] = timeseries2ydmat( matdate_bin(ind59), (classcount_bin(ind59,59)./ml_analyzed_mat_bin(ind59,59)));
+[ mdate_mat, y_mat, yearlist, yd ] = timeseries2ydmat( matdate_bin(indp2use), (classcount_bin(indp2use,ind_parasite)./ml_analyzed_mat_bin(indp2use,ind_parasite)));
 Gdel_par_mat = y_mat;
  
- X1=   Tday(:);
- Y1= Gdel_par_mat(:)./Gdel_mat(:)*100;
- X2=  Tday(:);
- Y2=  Gdel_mat(:);
+[~,a,~] = intersect(Tyear, yearlist);
+Tday = Tday(:,a); %just keep the overlapping years
+
+X1=   Tday(:);
+Y1= Gdel_par_mat(:)./Gdel_mat(:)*100;
+X2=  Tday(:);
+Y2=  Gdel_mat(:);
 
  ind = find(~isnan(X1)&~isnan(Y1) &~isnan(X2));
  x=   Tday(ind);
