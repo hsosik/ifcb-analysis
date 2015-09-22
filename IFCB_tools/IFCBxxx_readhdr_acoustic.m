@@ -6,7 +6,7 @@ function [ hdr, adcfileformat ] = IFCBxxx_readhdr( fullfilename )
 %Sept 2012, modified to accept URL file locations from web services
 % hdrfilename='M:\D20131107T223633_IFCB009.hdr'
 % fullfilename=hdrfilename
-
+keyboard
 if isequal(fullfilename(1:4), 'http'),
     [filestr,status] = urlwrite(fullfilename, 'temp.hdr');
     if status,
@@ -57,6 +57,24 @@ if ~isempty(ii),
         linestr = char(t(ii));
         colonpos = findstr(':', linestr);
         hdr.fluidsActive = str2num(linestr(colonpos(1)+1:end));
+    end
+    ii = strmatch('AcousticFocusingOnALT:', t);
+    if ~isempty(ii)
+        linestr = char(t(ii));
+        colonpos = findstr(':', linestr);
+        hdr.AcousticFocusingOnALT = str2num(linestr(colonpos(1)+1:end));
+    end
+    ii = strmatch('FileComment:', t);
+    if ~isempty(ii)
+        linestr = char(t(ii));
+        colonpos = findstr(':', linestr);
+        hdr.FileComment = linestr(colonpos(1)+1:end);
+    end
+    ii = strmatch('altSyringeSampleVolume:', t);
+    if ~isempty(ii)
+        linestr = char(t(ii));
+        colonpos = findstr(':', linestr);
+        hdr.altSyringeSampleVolume = str2num(linestr(colonpos(1)+1:end));
     end
     ii = strmatch('SyringeSampleVolume:', t);
     linestr = char(t(ii));
