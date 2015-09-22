@@ -5,7 +5,7 @@ function [ class_out ] = apply_TBthreshold( class2use, scores, thre )
 %considering a threshold score for a positive identification; cases below
 %threshold score returned as 'unclassified'
 %
-%Heidi M. Sosik, WOods Hole Oceanographic Institution
+%Heidi M. Sosik, Woods Hole Oceanographic Institution
 
 if length(thre) == 1, thre = thre*ones(1,length(class2use)-1); end;
 thre = thre(:)';
