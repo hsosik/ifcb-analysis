@@ -1,4 +1,10 @@
-function [ targets ] = read_blob_zip(zipfile)
+function [ targets ] = read_blob_zip(ziploc)
+
+if strfind(ziploc,'://')
+    zipfile = urlwrite(ziploc, tempname);
+else
+    zipfile = ziploc;
+end
 
 zipJavaFile  = java.io.File(zipfile);
 zipFile = org.apache.tools.zip.ZipFile(zipJavaFile);
