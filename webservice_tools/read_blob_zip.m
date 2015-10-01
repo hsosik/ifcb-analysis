@@ -21,14 +21,18 @@ entries = zipFile.getEntries;
 c = 1;
 while entries.hasMoreElements
     entry = entries.nextElement;
-    % target pid is entry name
-    targets.pid{c,1} = entry.getName.toCharArray';
-    % read BufferedImage from entry stream
-    entryStream = zipFile.getInputStream(entry);
-    jbi = javax.imageio.ImageIO.read(entryStream);
-    % convert to MATLAB image and add to target image
-    targets.image{c,1} = jbi2img(jbi);
-    c = c + 1;
+    entryName = entry.getName.toCharArray';
+    [~,~,ext] = fileparts(entryName);
+    if strcmp(ext,'.png')
+        % target pid is entry name
+        targets.pid{c,1} = entryName;
+        % read BufferedImage from entry stream
+        entryStream = zipFile.getInputStream(entry);
+        jbi = javax.imageio.ImageIO.read(entryStream);
+        % convert to MATLAB image and add to target image
+        targets.image{c,1} = jbi2img(jbi);
+        c = c + 1;
+    end
 end
 
 end
