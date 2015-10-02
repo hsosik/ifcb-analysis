@@ -1,9 +1,9 @@
-pngdir = '\\sosiknas1\Lab_data\VPR\NBP1201\VPR8_train_20Sept2015_qc\'; %output from export train - where the training images are located
+pngdir = '\\sosiknas1\Lab_data\VPR\NBP1201\VPR8_train_20Sept2015_extra_qc\'; %output from export train - where the training images are located
 savedir = '\\sosiknas1\Lab_data\VPR\NBP1201\classifiers\';
 feapath_base = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\features\'
 maxn = 400; %USER select
 minn = 20; %minimum number for inclusion
-outstring = 'NBP1201_train_vpr8_qc'; %e.g., 'MVCO_train_Aug2015'
+outstring = 'NBP1201_train_vpr8_combineAllPheao_extra_qc'; %e.g., 'MVCO_train_Aug2015'
 
 %find the class names from the subdirs
 temp = dir(pngdir);
@@ -11,7 +11,10 @@ temp = temp([temp.isdir]);
 classes = setdiff({temp([temp.isdir]).name}, {'.' '..'}); 
 
 %skip some classes that are empty or not properly annotated
-classes = setdiff(classes, {'unknown'});
+%classes = setdiff(classes, {'unknown' 'phaeManyMix'});
+%classes = {'blurry' 'copepod' 'marSnow' 'phaeAll' 'ribbon' 'squashed' 'whiteout'}; %outstring = 'NBP1201_train_vpr8_combineAllPheao';
+classes = {'blurry' 'copepod' 'marSnow' 'phaeAll' 'ribbon' 'squashed' 'whiteout'}; %outstring = 'NBP1201_train_vpr8_combineAllPheao_extra_qc';
+%classes = {'blurry' 'copepod' 'marSnow' 'phae2all' 'phaeRegAll' 'ribbon' 'squashed' 'whiteout'}; %outstring = 'NBP1201_train_vpr8_pheaReg_phae2_noPhaeMix';
 %class_vector = [];
 %targets = [];
 %feature_mat = [];

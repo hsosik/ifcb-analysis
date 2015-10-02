@@ -2,7 +2,7 @@
 %run compile_train_features_RossSea.m to generate train and class_vector
 clear all
 outputpath = '\\sosiknas1\Lab_data\VPR\NBP1201\classifiers\';
-load([outputpath 'NBP1201_train_vpr8_qc22Sep2015']);
+load([outputpath 'NBP1201_train_vpr8_combineAllPheao_extra_qc29Sep2015']);
 %load fea2use
 fea2use = 1:length(featitles);
 featitles = featitles(fea2use);
