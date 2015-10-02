@@ -30,7 +30,7 @@ while entries.hasMoreElements
         entryStream = zipFile.getInputStream(entry);
         jbi = javax.imageio.ImageIO.read(entryStream);
         % convert to MATLAB image and add to target image
-        targets.image{c,1} = jbi2img(jbi);
+        targets.image{c,1} = logical(jbi2img(jbi));
         c = c + 1;
     end
 end
