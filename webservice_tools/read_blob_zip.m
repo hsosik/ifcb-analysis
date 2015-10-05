@@ -16,23 +16,33 @@ end
 zipJavaFile  = java.io.File(zipfile);
 zipFile = org.apache.tools.zip.ZipFile(zipJavaFile);
 
-% consume zip entries
+% consume zip entry names and place lids in cell string array
 entries = zipFile.getEntries;
 c = 1;
 while entries.hasMoreElements
     entry = entries.nextElement;
     entryName = entry.getName.toCharArray';
-    [~,~,ext] = fileparts(entryName);
+    [~,lid,ext] = fileparts(entryName);
     if strcmp(ext,'.png')
-        % target pid is entry name
-        targets.pid{c,1} = entryName;
-        % read BufferedImage from entry stream
-        entryStream = zipFile.getInputStream(entry);
-        jbi = javax.imageio.ImageIO.read(entryStream);
-        % convert to MATLAB image and add to target image
-        targets.image{c,1} = logical(jbi2img(jbi));
+        lids{c} = lid; %#ok<AGROW>
         c = c + 1;
     end
+end
+
+% now sort entry names
+lids = sort(lids);
+
+for c = 1:numel(lids)
+    % target "pid" is lid
+    targets.pid{c,1} = lids{c};
+    % entry name is lid + '.png'
+    entryName = [lids{c} '.png'];
+    % read BufferedImage from entry stream
+    entry = zipFile.getEntry(entryName);
+    entryStream = zipFile.getInputStream(entry);
+    jbi = javax.imageio.ImageIO.read(entryStream);
+    % convert to MATLAB image and add to target image
+    targets.image{c,1} = logical(jbi2img(jbi));
 end
 
 end
