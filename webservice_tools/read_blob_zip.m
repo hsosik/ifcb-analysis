@@ -7,14 +7,18 @@ function [ targets ] = read_blob_zip(ziploc)
 
 if strfind(ziploc,'://')
     % url case, copy to temp file
-    zipfile = urlwrite(ziploc, tempname);
+    zipPath = tempname;
+    % FIXME if the following is interrupted there is no way to
+    % delete the temp file
+    urlwrite(ziploc, zipPath);
 else
-    zipfile = ziploc;
+    zipPath = ziploc;
 end
 
 % open zipfile
-zipJavaFile  = java.io.File(zipfile);
+zipJavaFile  = java.io.File(zipPath);
 zipFile = org.apache.tools.zip.ZipFile(zipJavaFile);
+cleanupZipObj = onCleanup(@() cleanup_zip(zipPath, zipFile));
 
 % consume zip entry names and place lids in cell string array
 entries = zipFile.getEntries;
@@ -45,4 +49,13 @@ for c = 1:numel(lids)
     targets.image{c,1} = logical(jbi2img(jbi));
 end
 
+zipFile.close();
+
+end
+
+function cleanup_zip(tmpPath, zipFile)
+zipFile.close();
+if exist(tmpPath,'file')==2
+    delete(tmpPath);
+end
 end
