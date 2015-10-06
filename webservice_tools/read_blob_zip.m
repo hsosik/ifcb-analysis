@@ -5,11 +5,14 @@ function [ targets ] = read_blob_zip(ziploc)
 % .pid = cell array of blob pids
 % .image = cell array of images
 
+tmpPath = 0;
+
 if strfind(ziploc,'://')
     % url case, copy to temp file
-    zipPath = tempname;
+    tmpPath = tempname;
     % FIXME if the following is interrupted there is no way to
     % delete the temp file
+    zipPath = tmpPath;
     urlwrite(ziploc, zipPath);
 else
     zipPath = ziploc;
@@ -18,7 +21,7 @@ end
 % open zipfile
 zipJavaFile  = java.io.File(zipPath);
 zipFile = org.apache.tools.zip.ZipFile(zipJavaFile);
-cleanupZipObj = onCleanup(@() cleanup_zip(zipPath, zipFile));
+cleanupZipObj = onCleanup(@() cleanup_zip(tmpPath, zipFile));
 
 % consume zip entry names and place lids in cell string array
 entries = zipFile.getEntries;
@@ -55,7 +58,9 @@ end
 
 function cleanup_zip(tmpPath, zipFile)
 zipFile.close();
-if exist(tmpPath,'file')==2
-    delete(tmpPath);
+if ~(tmpPath == 0)
+    if exist(tmpPath,'file')==2
+        delete(tmpPath);
+    end
 end
 end
