@@ -28,8 +28,10 @@ for filecount = 1:length(filelist),
             if ii == 1, class2use_manual_first = class2use_manual; end; %new longest list
         end;
     end;
+    
     roi2use = 1:5000; %This is because we only looked at the first 5000 images of each VPR hour. Change as needed.
     for classnum = 1:numclass,
+            %classcount(filecount,classnum) = size(find(classlist(roi2use,2) == classnum | (isnan(classlist(roi2use,2)) & classlist(roi2use,3) == classnum)),1);
             classcount(filecount,classnum) = size(find(classlist(roi2use,2) == classnum | (isnan(classlist(roi2use,2)) & classlist(roi2use,3) == classnum)),1);
             %classcount(filecount,classnum) = size(find(classlist(:,2) == classnum),1); %manual only
     end;

@@ -32,7 +32,12 @@ if ~exist([classifier_name '.mat'], 'file') %check for input error
     return
 end
 classes = classifier_info.classes;
-classifier_info.targets = regexprep(classifier_info.targets, '.png', ''); %make sure not extensions in target list
+%check for image type
+t = dir([fullfile(train_pngbase), class2view_in{1} filesep]);
+t([t.isdir]) = [];
+[~,~,img_ext] = fileparts(t(2).name)
+
+classifier_info.targets = regexprep(classifier_info.targets, img_ext, ''); %make sure not extensions in target list
 
 class2view = 1:length(classes);  %default, step through all classes
 if ~isempty(class2view_in) %overwrite default with user input
@@ -91,7 +96,7 @@ for count = 1:length(class2view),
             subplot(subplotyx(1),subplotyx(2),subnum)
             roi_id = classifier_info.targets{ii(num)}; %get the ROI name
             img_manual_class = classes(manual_class_num(ii(num))); %true category (training set)
-            roi_fullfile = [char(fullfile(train_pngbase, img_manual_class, roi_id)) '.png']; %ROI name with path
+            roi_fullfile = [char(fullfile(train_pngbase, img_manual_class, roi_id)) img_ext]; %ROI name with path
             img = imread(roi_fullfile); %read the image
             imshow(img) %plot the image
             switch display_metric %set the ROI title for this case
