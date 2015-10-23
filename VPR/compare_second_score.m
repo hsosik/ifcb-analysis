@@ -10,6 +10,8 @@ top_scores_sum = zeros(length(Sfit),1);
 top_score = zeros(length(Sfit),1);
 second_score = zeros(length(Sfit),1);
 third_score = zeros(length(Sfit),1);
+
+
 for i = 1:length(Sfit)
  score_sort = sort(Sfit(i,:));
  score_sum = sum(score_sort(end-1:end));
@@ -19,6 +21,7 @@ for i = 1:length(Sfit)
  third_score(i)= score_sort(end-2);
  
 end
+
 top_score_ind = find(top_scores_sum > 0);
 
 figure
@@ -55,7 +58,7 @@ figure(2)
  for ii = 1:25:length(mistake_ind)
     i = mistake_ind(ii); 
     clf
-    subplot(2,1,1);
+    subplot(3,1,1);
     bar(Sfit(top_score_ind(i),:))
     ylim([0 1])
     xlim([0 12])
@@ -63,10 +66,20 @@ figure(2)
     set(gca, 'XTickLabel', classes);
     
     temp =strcat(train_dir_base, b.Y(top_score_ind(i)), '\', targets(top_score_ind(i)), '.tif');
+   blob_base = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\blobs\';
+   ziploc = char(targets(top_score_ind(i)));
+   blob_target = strcat(cellstr(ziploc(20:34)), '.png');
+   ziploc = strcat(cellstr(ziploc(12:18)), '.zip');
+   ziploc = strcat(blob_base, ziploc);
    
-    
-    subplot(2,1,2);
+
+   
+    blob = read_blob_zip(ziploc{1}, blob_target{1});
+    subplot(3,1,2);
     imshow(imread(char(temp)))
+    
+    subplot(3,1,3);
+    imshow(blob);
     
     pause
   

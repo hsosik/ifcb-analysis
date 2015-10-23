@@ -1,6 +1,6 @@
 
 
-classpath = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_24Sep2015_combineAllPheao24Sep2015\';
+classpath = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_22Sep2015_200trees_allCat\';
 classpath_div = [classpath, filesep, 'classpath_div', filesep];
 
 if ~exist(classpath_div, 'dir'),
@@ -21,7 +21,7 @@ load([classpath temp(ii).name]);
 for i = 1:length(TBclass_orig)./5000;
     TBclass = TBclass_orig(((i-1)*5000+1):i*5000);
     TBclass_above_threshold =  TBclass_above_threshold_orig(((i-1)*5000+1):i*5000);
-    TBscores = TBscores_orig(((i-1)*5000+1):i*5000);
+    TBscores = TBscores_orig([((i-1)*5000+1):i*5000],:);
     roinum = roinum_orig(((i-1)*5000+1):i*5000);
     
     file_section_blank = char('00');
