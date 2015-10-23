@@ -56,13 +56,13 @@ for count=1:length(unq_matdate)
     hxpos(count,:)  = histc(xpos(hi),[0:8:1380]);
 end
 
-hypos = NaN(length(unq_matdate),length(0:10:200)); 
-hxpos = NaN(length(unq_matdate),length(0:8:1380)); 
-for count=1:length(unq_matdate)
-    hi              = find(mattime==unq_matdate(count)); 
-    hypos(count,:)  = histc(ypos(hi),[0:8:1023]);
-    hxpos(count,:)  = histc(xpos(hi),[0:8:1380]);
-end
+% hypos = NaN(length(unq_matdate),length(0:8:200)); 
+% hxpos = NaN(length(unq_matdate),length(0:8:1380)); 
+% for count=1:length(unq_matdate)
+%     hi              = find(mattime==unq_matdate(count)); 
+%     hypos(count,:)  = histc(ypos(hi),[0:8:1023]);
+%     hxpos(count,:)  = histc(xpos(hi),[0:8:1380]);
+% end
 
 
 
