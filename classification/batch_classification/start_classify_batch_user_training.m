@@ -16,7 +16,7 @@ disp('Checking for files to run')
 filelist = dir([in_dir_feature '*.csv']);
 filelist = {filelist.name}';
 filelist = regexprep(filelist, '_fea_v2.csv', '')';
-files_done = dir([out_dir_class 'IFCB*class_v1.mat']);
+files_done = dir([out_dir_class 'D*class_v1.mat']);
 files_done = char(files_done.name);
 files_done = cellstr(files_done(:,1:end-13));
 filelist2 = setdiff(filelist, files_done);

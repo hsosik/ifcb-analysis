@@ -1,5 +1,5 @@
 savedir = '\\sosiknas1\Lab_data\VPR\NBP1201\classifiers\';
-classifierName = 'RossSea_Trees_22Sep2015_200trees_allCat';
+classifierName = 'RossSea_Trees_24Sep2015_combineAllPheao24Sep2015';
 out_dir = ['\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_' classifierName '\'];
 if ~exist(out_dir, 'dir')
     mkdir(out_dir)
