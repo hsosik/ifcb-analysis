@@ -1,5 +1,5 @@
 % Edited from plotHISTOpos
-%is size fraction skewed or incorrect in vert vs horz. need same sample
+%IS SIZE FRACTIONATION SKEWED? or incorrect in vert vs horz. need same sample
 %water for both orientations in order to compare.
 
 %edits T Crockford Dec2014
@@ -12,10 +12,11 @@
 clear all
 
 datadir = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\';
-file = 'D20151023T191437_IFCB102.adc'; figtitle = 'D20151023T191437 Gui HORZ';
-% file = 'D20151023T185218_IFCB102.adc'; figtitle = 'D20151023T185218 Gui HORZ';
-% file = 'D20151023T180105_IFCB102.adc'; figtitle = 'D20151023T180105 Gui VERT';
+file = 'D20151023T191437_IFCB102.adc'; figtitle = 'D20151023T191437 Gui/Dun/Beads HORZ';
+% file = 'D20151023T185218_IFCB102.adc'; figtitle = 'D20151023T185218 Gui/Dun/Beads HORZ';
+% file = 'D20151023T180105_IFCB102.adc'; figtitle = 'D20151023T180105 Gui/Dun/Beads VERT';
 % file = 'D20151023T161217_IFCB102.adc'; figtitle = 'D20151023T161217 Dun & beads VERT'; %Dun&9um beads in FSW in lab, VERT
+% file = 'D20151023T152314_IFCB102.adc'; figtitle = 'D20151023T152314 Dun & beads HORZ'; %Dun&9um beads in FSW in lab, VERT
 % file = 'D20151015T181337_IFCB102.adc'; %dock water horz stationary in lab
 % file = 'D20151015T181337_IFCB102.adc'; %dock water horz stationary in lab
 % file = 'D20151006T192518_IFCB102.adc'; %dock water vert stationary in lab
@@ -43,7 +44,7 @@ peakB       = adcdata(:,8);
 
 
 % initialize var for histc POS counts NaN(x,y)
-timebins = 1:10:1200;
+timebins = 10:10:1200;
 hypos  = NaN(length(timebins),length(0:8:1023)); %how many files along x-axis, how many ypos bins on y-axis
 hxpos  = NaN(length(timebins),length(0:8:1380)); 
 hwidth = NaN(length(timebins),length(1:25:1030));
@@ -64,7 +65,7 @@ for count=1:length(timebins)-1
     tot_bintime(count) = adcdata(hi(end),13)-adcdata(hi(1),12);
 %inhibit time??
     inhibit4bin(count) = sum([adcdata(hi,13)-adcdata(hi,12)]);
-    looktime4bin(count) = tot_bintime - inhibit4bin;
+    looktime4bin(count) = tot_bintime(count) - inhibit4bin(count);
 
     
     hypos(count,:)  = histc(ypos(hi),0:8:1023);
@@ -82,6 +83,7 @@ figure
 pcolor(timebins(isin),1:2000:100000,harea(isin,:)');
 shading flat
 xlabel('Time During Sample(sec)','fontweight','bold');ylabel('Roi Area = width*height (# pix)','fontweight','bold');title(['Roi Area - ' figtitle]);% ' color max 95%'])
+caxis([0 prctile(harea(:),96)]);
 colorbar
 
 %not all samples are a full 20 min, only plot times of run
