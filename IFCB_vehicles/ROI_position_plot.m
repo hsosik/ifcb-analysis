@@ -5,12 +5,14 @@
 %adjust dirlist to specify days or specific day
 
 
-dirlist = dir(( '\\sosiknas1\IFCB_data\MVCO\data\2015\IFCB1_2015_215*'));%adjust to folder(s) of interest
+dirlist = dir(( 'I:\*.adc'));%adjust to folder(s) of interest
+% dirlist = dir(( '\\sosiknas1\IFCB_data\MVCO\data\2015\IFCB1_2015_215*'));%adjust to folder(s) of interest
 dirlist = {dirlist(:).name}';
 
-figure
-for i = 1:length(dirlist);
-adc_location = char(strcat('\\sosiknas1\IFCB_data\MVCO\data\2015\', dirlist(i), '\'));
+% figure
+% for i = 1:length(dirlist);
+% adc_location = char(strcat('\\sosiknas1\IFCB_data\MVCO\data\2015\', dirlist(i), '\'));
+% adclist = dir(strcat(adc_location, '*.adc')); 
 adclist = dir(strcat(adc_location, '*.adc')); 
 adclist = {adclist(:).name}';
     for j = 1:length(adclist);

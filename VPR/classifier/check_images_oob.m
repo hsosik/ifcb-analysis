@@ -1,12 +1,18 @@
-roibase = 'C:\work\IFCB\test_forEliseOlson\test_Aug2014_RossSea\trrois_VPR4Edit\';
-feapath = 'C:\work\IFCB\test_forEliseOlson\test_Aug2014_RossSea\features\';
-outputpath = 'C:\work\IFCB\test_forEliseOlson\test_Aug2014_RossSea\';
-load([outputpath 'RossSea_TrainSet_24Aug2014.mat'])
+% roibase = 'C:\work\IFCB\test_forEliseOlson\test_Aug2014_RossSea\trrois_VPR4Edit\';
+% feapath = 'C:\work\IFCB\test_forEliseOlson\test_Aug2014_RossSea\features\';
+% outputpath = 'C:\work\IFCB\test_forEliseOlson\test_Aug2014_RossSea\';
+% load([outputpath 'RossSea_TrainSet_24Aug2014.mat'])
+
+roibase = '\\sosiknas1\Lab_data\VPR\NBP1201\VPR8_train_20Sept2015_qc\';
+feapath = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\features\';
+outputpath = '\\sosiknas1\Lab_data\VPR\NBP1201\classifiers\';
+load([outputpath 'RossSea_Trees_30Sep2015.mat'])
 
 temp =char(targets);
 roinumstr = temp(:,end-9:end);
 roinumstr(strmatch(' ', roinumstr(:,1)),1) = '0';
-config = config_classifier('C:\work\IFCB\test_forEliseOlson\test_Aug2014_RossSea\RossSea_Trees_24Aug2014');
+config = config_classifier('\\sosiknas1\Lab_data\VPR\NBP1201\classifiers\RossSea_Trees_30Sep2015');
+%config = config_classifier('C:\work\IFCB\test_forEliseOlson\test_Aug2014_RossSea\RossSea_Trees_24Aug2014');
 classes = [config.TBclassifier.ClassNames; 'unclassified'];
 
 [Yfit,Sfit,Sstdfit] = oobPredict(config.TBclassifier);
@@ -26,7 +32,8 @@ ind = find(isnan(Yfit_max));
 Yfit_max(ind) = length(classes); %unclassified
 
 
-[ feadata, feahdrs ] = get_fea_file(['C:\work\IFCB\test_forEliseOlson\test_Aug2014_RossSea\features\' 'other_fea_v2.csv']);
+%[ feadata, feahdrs ] = get_fea_file(['C:\work\IFCB\test_forEliseOlson\test_Aug2014_RossSea\features\' 'other_fea_v2.csv']);
+[ feadata, feahdrs ] = get_fea_file(['\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\features\' 'other_fea_v2.csv']);
 %find the indices that match input features to features used for classifier
 [~,feaorder] = ismember(config.featitles, feahdrs);
 features = feadata(:,feaorder);
