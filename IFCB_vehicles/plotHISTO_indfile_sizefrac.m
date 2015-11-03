@@ -11,8 +11,11 @@
 
 clear all
 
-datadir = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\';
-file = 'D20151023T191437_IFCB102.adc'; figtitle = 'D20151023T191437 Gui/Dun/Beads HORZ';
+[file path] = uigetfile('\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\TowTest3_26Oct2015\*.adc'); %hanging_in_lab\*.roi'); %ifcb101
+figtitle = 'towing'
+
+% file = 'D20151023T191437_IFCB102.adc'; figtitle = 'D20151023T191437 Gui/Dun/Beads HORZ';
+%  path = ['\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\data\' file(2:5) '\' file(1:9) '\'];
 % file = 'D20151023T185218_IFCB102.adc'; figtitle = 'D20151023T185218 Gui/Dun/Beads HORZ';
 % file = 'D20151023T180105_IFCB102.adc'; figtitle = 'D20151023T180105 Gui/Dun/Beads VERT';
 % file = 'D20151023T161217_IFCB102.adc'; figtitle = 'D20151023T161217 Dun & beads VERT'; %Dun&9um beads in FSW in lab, VERT
@@ -33,7 +36,7 @@ temp      = [temp(:,2:9) temp(:,11:16)];
 matdate   = datenum(temp,'yyyymmddHHMMSS');
 clear temp 
 
-adcdata     = load([datadir file]);
+adcdata     = load([path file]);
 time        = adcdata(:,2);
 xpos        = adcdata(:,14); 
 ypos        = adcdata(:,15);
@@ -44,7 +47,7 @@ peakB       = adcdata(:,8);
 
 
 % initialize var for histc POS counts NaN(x,y)
-timebins = 10:10:1200;
+timebins = 10:30:1200;
 hypos  = NaN(length(timebins),length(0:8:1023)); %how many files along x-axis, how many ypos bins on y-axis
 hxpos  = NaN(length(timebins),length(0:8:1380)); 
 hwidth = NaN(length(timebins),length(1:25:1030));
@@ -59,7 +62,7 @@ for count=1:length(timebins)-1
     maxtime = timebins(count+1);
     mintime = timebins(count);
     hi              = find(time<maxtime & time>mintime); 
-
+if ~isempty(hi)
 %figure out concentration??
 %amount of time total in bin
     tot_bintime(count) = adcdata(hi(end),13)-adcdata(hi(1),12);
@@ -75,9 +78,12 @@ for count=1:length(timebins)-1
     harea(count,:)  = histc(roiarea(hi),1:2000:100000);
     hpeakB(count,:)  = histc(peakB(hi),0:1:4);
 end
+end
 
 
 
+%not all samples are a full 20 min, only plot times of run
+isin = find(timebins<=time(end));
 
 figure
 pcolor(timebins(isin),1:2000:100000,harea(isin,:)');
@@ -86,8 +92,6 @@ xlabel('Time During Sample(sec)','fontweight','bold');ylabel('Roi Area = width*h
 caxis([0 prctile(harea(:),96)]);
 colorbar
 
-%not all samples are a full 20 min, only plot times of run
-isin = find(timebins<=time(end));
 
 figure
 %for guinardian get rid of small cells to actual see colors of long cell counts
