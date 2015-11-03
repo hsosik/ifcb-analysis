@@ -11,18 +11,27 @@ clear all
 %IFCB1 Sept deployment starts day 260
 datadir = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\TowTest3_26Oct2015\';
 files   = dir([datadir '*.adc']);
+answer = input('Do you want to exclude initial dock test file before prior to towing? (answer y or n)','s');
+if strcmp(answer,'y')
+    excludelab = find(~strcmp({files.name},'D20151026T150619_IFCB102.adc'));
+    files = files(excludelab);
+elseif strcmp(answer,'n')
+        return
+else error('You must enter y or n');
+end
+   
 % files   = dir(['.\tempadc2013\IFCB*.adc']);
 filename = cell(length(files),1);
 fileinfo = NaN(length(files),5);
 adcdata = [];
 matdate = [];
 
-for count = 1:length(files)-1
+for count = 1:length(files)
     tempdata = load([datadir files(count).name]);
     if strcmp(files(count).name,'D20151026T165236_IFCB102.adc')
         tempdata = tempdata(2:end,:);
     end
-    tempdate = datenum([files(count).name(2:9) files(count).name(11:16)],'yyyymmddHHMMSS')
+    tempdate = datenum([files(count).name(2:9) files(count).name(11:16)],'yyyymmddHHMMSS');
 if size(tempdata) > 1    
     filename(count) = {files(count).name};
     fileinfo(count,1) = tempdate;
@@ -66,7 +75,22 @@ roisizeX    = adcdata(:,16);
 roisizeY    = adcdata(:,17);
 figure
 plot(matdate + adctime_matdate_decimal,ypos,'.')
-
+datetick('x','keeplimits')
+xlabel('Time of day (to show complete of samples from towing','fontweight','bold');
+ylabel('ypos','fontweight','bold')
+title('Ypos over duration of 2.5mL samples for all of Tow Test 3');
+set(gca,'ylim',[0 1030])
+unq_time = unique(matdate);
+for count = 1:length(unq_time)
+    if strcmp(filename(count),'D20151026T160616_IFCB102.adc')
+        text(unq_time(count),100,'Sample Sucked Vert','fontweight','bold')
+        text(unq_time(count),50,'then start towing','fontweight','bold')
+    elseif strcmp(filename(count),'D20151026T171826_IFCB102.adc')
+        text(unq_time(count),100,'Beads Internal','color','r','fontweight','bold')
+        text(unq_time(count),50,'Run While Towing','color','r','fontweight','bold')
+    else text(unq_time(count),100,['Sample # ' num2str(count)],'fontweight','bold')
+    end
+end
 
 
 % save('C:\IFCB1\percent_missed_roisFALL2013')
