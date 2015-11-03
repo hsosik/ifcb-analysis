@@ -19,8 +19,9 @@
 
 %#1 - not that good a compare, horz not many beads
 filename = 'D20150316T154344_IFCB102.adc'; 
-dirpath = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\';
+dirpath = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\data\2015\D20150316\';
 celltype = '9um beads';
+savefilename = 'temp';
 
 % #2
 
@@ -33,7 +34,8 @@ adcdata = load([dirpath filename]);
 %VERT#####################################################
 %#2
 matchfile = 'D20150316T152435_IFCB102.adc'; %beads vert in lab
-path2 = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\';
+path2 = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\data\2015\D20150316\';
+savefilename2 = 'temp2?';
 % [path2, savefilename2] = match_expdir(answer);
 % allfiles = dir([path2 '*.adc']);
 % alltimes = [allfiles.datenum];
