@@ -1,8 +1,8 @@
-classpath = '\\SosikNAS1\Lab_data\VPR\NBP1201\vpr3\class_RossSea_Trees_09Mar2015\';
-outpath_base = '\\SosikNAS1\Lab_data\VPR\NBP1201\vpr3\aid_output_RossSea_Trees_09Mar2015\';
-classfiles = dir([classpath 'N*.mat']);
+classpath = '\\SOSIKNAS1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_21Oct2015\';
+outpath_base = '\\SosikNAS1\Lab_data\VPR\NBP1201\vpr8\aid_output_RossSea_Trees_21Oct2015\';
+classfiles = dir([classpath 'd*.mat']);
 classfiles = {classfiles.name}';
-aidpathstr = 'c:\data\NBP12_01\rois\vpr3\';
+aidpathstr = 'c:\data\NBP12_01\rois\vpr8\';
 tempstr = char(classfiles);
 
 %aid_prefix = fullfile(aidpathstr, cellstr(tempstr(:,1:4)), cellstr(tempstr(:,5:7)), filesep, 'roi0.');
@@ -11,7 +11,7 @@ aid_prefix = fullfile(aidpathstr, cellstr(tempstr(:,12:15)), cellstr(tempstr(:,1
 temp = load([classpath classfiles{1}], 'class2useTB', 'classifierName');
 class2use = temp.class2useTB;
 
-threshold_mode = 'opt';
+threshold_mode = 'adhoc';
 
 switch threshold_mode
     case 'opt'  %"optimal" threshold from oob analysis

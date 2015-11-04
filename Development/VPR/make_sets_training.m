@@ -8,7 +8,7 @@
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, August 2015
 
 manual_path = '\\sosiknas1\Lab_data\VPR\NBP1201\manual\';
-train_path = '\\sosiknas1\Lab_data\VPR\NBP1201\VPR8_train_17Sept2015\';
+train_path = '\\sosiknas1\Lab_data\VPR\NBP1201\VPR8_train_27Oct2015\';
 img_path_base = '\\sosiknas1\Lab_data\VPR\NBP1201\rois\';
 roi2use = 1:5000; %This is because we only looked at the first 5000 images of each VPR hour. Change as needed.
 %make subdirs for pngs
@@ -37,7 +37,7 @@ for filecount = 1:size(filelist,1),
     end;
 end;
 
-train_num = 500;
+train_num = 600;
 
 filenum_list = cell(length(class2use_manual),1);
 num_roi_list = filenum_list;
