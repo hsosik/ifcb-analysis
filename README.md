@@ -3,4 +3,4 @@ This is a set of MATLAB routines for analysis of data from Imaging FlowCytobot. 
 
 More details and instructions for analysis can be found here:
 
-[[https://github.com/hsosik/ifcb-analysis/wiki]]
+https://github.com/hsosik/ifcb-analysis/wiki
