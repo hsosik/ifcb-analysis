@@ -2,16 +2,34 @@
 %run compile_train_features_RossSea.m to generate train and class_vector
 clear all
 outputpath = '\\sosiknas1\Lab_data\VPR\NBP1201\classifiers\';
-load([outputpath 'NBP1201_train_vpr8_combineAllPheao_extra_qc29Sep2015']);
+load([outputpath 'NBP1201_train_vpr8_27Oct201530Oct2015']);
 %load fea2use
-fea2use = 1:length(featitles);
+[~,fea2use] = setdiff(featitles, {'FilledArea' 'summedFilledArea' 'Area' 'ConvexArea' 'MajorAxisLength' 'MinorAxisLength' 'Perimeter', 'roi_number'}');
+%fea2use = 1:length(featitles);
 featitles = featitles(fea2use);
 %ii = find(isnan(class_vector)); class_vector(ii) = [];targets(ii)= []; train(ii,:) = [];
 datestring = datestr(now, 'ddmmmyyyy');
 classes = class2use;
-%classes = class2use([1:8 10:12]);
+classes = class2use([2 6:7 9 11 13:14]); %'blurry_marSnow'    'phae2all'    'phaeIndiv'    'phaeMany'    'squashed'    'whiteout'
 %sort training set
+temp_class_vector = [2 6:7 9 11 13:14];
+num_classes = length(temp_class_vector);
+%n = 1:num_classes;
+temp = [];
+temp2 =[];
+for n = 1:num_classes;
+    ind = find(class_vector == temp_class_vector(n));
+    temp =  [temp;(ind)];
+    ind(:) = n;
+    temp2= [temp2; ind];
+   
+end
+
+class_vector = temp2;
+
+
 [class_vec_str,sort_ind] = sort(classes(class_vector));
+sort_ind = temp;
 train = train(sort_ind,:);
 targets = targets(sort_ind);
 
