@@ -54,7 +54,7 @@ while 1
 %        [file path] = uigetfile('\\72.72.77.26\data\beads\*.roi'); %ifcb5 -- all data is in data subdirectory
 
 %        [file path] = uigetfile('\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\TestTow1_30Apr2015\*.roi'); %hanging_in_lab\*.roi'); %ifcb102
-       [file path] = uigetfile('\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\*.roi'); %hanging_in_lab\*.roi'); %ifcb101
+%        [file path] = uigetfile('\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\*.roi'); %hanging_in_lab\*.roi'); %ifcb101
 %        [file path] = uigetfile('\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB101\hanging_in_lab\*.roi'); %ifcb101
 
 
