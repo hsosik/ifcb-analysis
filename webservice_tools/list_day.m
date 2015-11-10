@@ -10,37 +10,21 @@ function [ bins ] = list_day( date, data_namespace )
 if nargin < 1 || isempty(date)
     date_param = 'now';
 else
-    date_param = [date 'T23:59:59Z'];
+    date_param = date;
 end
 
 if nargin < 2 || isempty(data_namespace)
     data_namespace = ifcb.DATA_NAMESPACE;
 end
 
-try
-    % use the IFCB V2 web services API
-    start_param = [date 'T00:00:00Z'];
-    end_param = [date 'T23:59:59Z'];
-    feed = wget_xml([data_namespace 'api/feed/start/' start_param '/end/' end_param '/format/atom']);
-catch
-    % that didn't work. maybe we're talking to a V1 server?
-    feed = wget_xml([data_namespace 'rss.py?format=atom&date=' date_param '&n=150']);
+if data_namespace(end)~='/'
+    data_namespace = [data_namespace '/'];
 end
-item_nodes = feed.getElementsByTagNameNS('http://www.w3.org/2005/Atom', 'entry');
-n = item_nodes.getLength;
-bins = cell(1,0);
-prev_date = date;
-for count = 1:n
-    entry = item_nodes.item(count-1);
-    id = char(entry.getElementsByTagNameNS(ifcb.ATOM_NAMESPACE, 'id').item(0).getTextContent);
-    entry_date = char(entry.getElementsByTagNameNS(ifcb.ATOM_NAMESPACE, 'updated').item(0).getTextContent);
-    entry_day = regexprep(entry_date,'T.*','');
-    if ~strcmp(entry_day,prev_date),
-        break;
-    end
-    bins{count} = id;
-    prev_date = regexprep(entry_date,'T.*','');
-end
+
+% use the IFCB V>=3 web services API
+feed = webread([data_namespace 'api/feed/day/' date_param]);
+
+bins = cellstr(vertcat(feed.pid));
 
 end
 
