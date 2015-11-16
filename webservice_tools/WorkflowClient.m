@@ -2,10 +2,13 @@ classdef WorkflowClient
     properties
         base_url = 'http://localhost:9270';
         api_prefix = '/workflow/api/v1/';
+        FOREVER = -1;
     end
     methods
         function this = WorkflowClient(base_url)
-            this.base_url = base_url;
+            if nargin > 0
+                this.base_url = base_url;
+            end
         end
         function u = url_for(this, endpoint, pid)
             if nargin==3
@@ -22,6 +25,10 @@ classdef WorkflowClient
             url = this.url_for('create',pid');
             r = webwrite(url,'state',state);
         end
+        function r = get(this, pid)
+            url = this.url_for('get',pid);
+            r = webread(url);
+        end
         function r = depend(this, pid, upstream, role, priority)
             if nargin < 5
                 priority = 100;
@@ -37,7 +44,7 @@ classdef WorkflowClient
             end;if nargin < 5
                 message = '';
             end;if nargin < 6;
-                ttl = -1;
+                ttl = this.FOREVER;
             end
             url = this.url_for('update',pid);
             r = webwrite(url,'state',state,'event',event,'message',message,'ttl',ttl);
@@ -63,7 +70,7 @@ classdef WorkflowClient
             end;if nargin < 6
                 message = '';
             end;if nargin < 7;
-                ttl = -1;
+                ttl = this.FOREVER;
             end
             url = this.url_for('update_if',pid);
             r = webwrite(url,'state',state,'new_state',new_state,'event',event,'message',message,'ttl',ttl);
@@ -78,7 +85,7 @@ classdef WorkflowClient
             end;if nargin < 6
                 message = '';
             end;if nargin < 7;
-                ttl = -1;
+                ttl = this.FOREVER;
             end
             url = this.url_for('expire');
             try
@@ -87,17 +94,24 @@ classdef WorkflowClient
                 % ignore errors
             end
         end
-        function r = heartbeat(this, pid, message)
+        function r = heartbeat(this, pid, message, ttl)
             if nargin < 3
                 message = '';
+            end;if nargin < 4
+                ttl = -2;
             end
-            r = this.update(pid, 'running', 'heartbeat', message);
+            if ttl==-2
+                url = this.url_for('update',pid);
+                r = webwrite(url,'state','running','event','heartbeat','message',message);
+            else
+                r = this.update(pid, 'running', 'heartbeat', message, ttl);
+            end
         end
         function r = start_next(this, role, state, ttl)
             if nargin < 3
                 state = 'waiting';
             end;if nargin < 4;
-                ttl = -1;
+                ttl = this.FOREVER;
             end
             url = this.url_for('start_next',role);
             r = webwrite(url,'state',state,'ttl',ttl);
