@@ -25,8 +25,11 @@ classdef WorkflowClient
             url = this.url_for('create',pid');
             r = webwrite(url,'state',state);
         end
-        function r = get(this, pid)
-            url = this.url_for('get',pid);
+        function r = get(this, pid, product_type)
+            if nargin < 3
+                product_type = 'raw';
+            end
+            url = this.url_for('get',[pid '_' product_type]);
             r = webread(url);
         end
         function r = depend(this, pid, upstream, role, priority)
