@@ -139,8 +139,8 @@ classdef DashboardClient
             url = [char(pid) '_blob.zip'];
             r = get_blob_bin_file(url);
         end
-        function r = deposit_product(this, pid, product_type, filepath)
-            r = deposit_product(filepath, [char(pid) '_' product_type], this.api_key);
+        function r = deposit_product(this, pid, filepath)
+            r = deposit_product(filepath, char(pid), this.api_key);
         end
     end
 end

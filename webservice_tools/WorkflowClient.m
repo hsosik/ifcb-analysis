@@ -110,10 +110,10 @@ classdef WorkflowClient
                 r = this.update(pid, 'running', 'heartbeat', message, ttl);
             end
         end
-        function r = start_next(this, role, state, ttl)
-            if nargin < 3
+        function r = start_next(this, role, ttl, state)
+            if nargin < 4
                 state = 'waiting';
-            end;if nargin < 4;
+            end;if nargin < 3;
                 ttl = this.FOREVER;
             end
             url = this.url_for('start_next',role);
