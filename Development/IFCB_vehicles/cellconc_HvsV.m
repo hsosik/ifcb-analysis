@@ -16,7 +16,9 @@ clear all
 %beads exp of horz vs vert do you get same concentrations? if not, if you
 %run less volume when horz do you get same cellconc as vertcal? maybe just
 %need to run samples more frequently as less volume?
-dirpath = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\beads\';
+dirpath = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\';
+%following files not great because didn't debubble between samples so exp is useless
+%{
 files = {'D20151029T193910'};           figtitle = {'5mL Vert'};            volfilt = 5;             isvert = 1;
 files = [files; 'D20151029T200203'];    figtitle = [figtitle; '5mL Vert'];volfilt = [volfilt; 5];  isvert = [isvert; 1];
 files = [files; 'D20151029T202442'];    figtitle = [figtitle; '2mL Horz'];volfilt = [volfilt; 2];  isvert = [isvert; 1];
@@ -37,6 +39,42 @@ files = [files; 'D20151029T232145'];    figtitle = [figtitle; '5mL Vert'];volfil
 % file = 'D20151006T192518_IFCB102.adc'; %dock water vert stationary in lab
 % file = 'D20151006T195148_IFCB102.adc'; %dock water vert stationary in lab
 % file = 'D20151006T200900_IFCB102.adc'; %dock water horz stationary in lab
+%}
+
+%GUINARDIA 5ML
+files = {'D20151112T164628'};           figtitle = {'5mL Vert'};            volfilt = 5;             isvert = 1;
+files = [files; 'D20151112T170931'];    figtitle = [figtitle; '5mL Vert'];volfilt = [volfilt; 5];  isvert = [isvert; 1];
+files = [files; 'D20151112T173151'];    figtitle = [figtitle; '5mL Vert'];volfilt = [volfilt; 5];  isvert = [isvert; 1];
+files = [files; 'D20151112T175410'];    figtitle = [figtitle; '5mL Vert'];volfilt = [volfilt; 5];  isvert = [isvert; 1];
+files = [files; 'D20151112T181728'];    figtitle = [figtitle; '5mL Vert'];volfilt = [volfilt; 5];  isvert = [isvert; 1];
+files = [files; 'D20151112T184118'];    figtitle = [figtitle; '5mL Vert'];volfilt = [volfilt; 5];  isvert = [isvert; 1];
+files = [files; 'D20151112T191233'];    figtitle = [figtitle; '5mL Horz'];volfilt = [volfilt; 5];  isvert = [isvert; 0];
+files = [files; 'D20151112T193452'];    figtitle = [figtitle; '5mL Horz'];volfilt = [volfilt; 5];  isvert = [isvert; 0];
+files = [files; 'D20151112T195712'];    figtitle = [figtitle; '5mL Horz'];volfilt = [volfilt; 5];  isvert = [isvert; 0];
+files = [files; 'D20151112T201931'];    figtitle = [figtitle; '5mL Horz'];volfilt = [volfilt; 5];  isvert = [isvert; 0];
+files = [files; 'D20151112T204151'];    figtitle = [figtitle; '5mL Horz'];volfilt = [volfilt; 5];  isvert = [isvert; 0];
+files = [files; 'D20151112T210954'];    figtitle = [figtitle; '5mL Vert'];volfilt = [volfilt; 5];  isvert = [isvert; 1];
+files = [files; 'D20151112T213214'];    figtitle = [figtitle; '5mL Vert'];volfilt = [volfilt; 5];  isvert = [isvert; 1];
+files = [files; 'D20151112T215433'];    figtitle = [figtitle; '5mL Vert'];volfilt = [volfilt; 5];  isvert = [isvert; 1];
+%GUINARDIA 1ML
+files = [files; 'D20151112T224220'];    figtitle = [figtitle; '1mL Vert'];volfilt = [volfilt; 1];  isvert = [isvert; 1];
+files = [files; 'D20151112T224924'];    figtitle = [figtitle; '1mL Vert'];volfilt = [volfilt; 1];  isvert = [isvert; 1];
+files = [files; 'D20151112T225523'];    figtitle = [figtitle; '1mL Vert'];volfilt = [volfilt; 1];  isvert = [isvert; 1];
+files = [files; 'D20151112T230123'];    figtitle = [figtitle; '1mL Vert'];volfilt = [volfilt; 1];  isvert = [isvert; 1];
+files = [files; 'D20151112T230723'];    figtitle = [figtitle; '1mL Vert'];volfilt = [volfilt; 1];  isvert = [isvert; 1];
+files = [files; 'D20151112T231706'];    figtitle = [figtitle; '1mL Horz'];volfilt = [volfilt; 1];  isvert = [isvert; 0];
+files = [files; 'D20151112T232306'];    figtitle = [figtitle; '1mL Horz'];volfilt = [volfilt; 1];  isvert = [isvert; 0];
+files = [files; 'D20151112T232906'];    figtitle = [figtitle; '1mL Horz'];volfilt = [volfilt; 1];  isvert = [isvert; 0];
+files = [files; 'D20151112T233506'];    figtitle = [figtitle; '1mL Horz'];volfilt = [volfilt; 1];  isvert = [isvert; 0];
+files = [files; 'D20151112T234106'];    figtitle = [figtitle; '1mL Horz'];volfilt = [volfilt; 1];  isvert = [isvert; 0];
+files = [files; 'D20151112T235221'];    figtitle = [figtitle; '1mL Vert'];volfilt = [volfilt; 1];  isvert = [isvert; 1];
+files = [files; 'D20151112T235821'];    figtitle = [figtitle; '1mL Vert'];volfilt = [volfilt; 1];  isvert = [isvert; 1];
+files = [files; 'D20151113T000421'];    figtitle = [figtitle; '1mL Vert'];volfilt = [volfilt; 1];  isvert = [isvert; 1];
+files = [files; 'D20151113T001020'];    figtitle = [figtitle; '1mL Vert'];volfilt = [volfilt; 1];  isvert = [isvert; 1];
+files = [files; 'D20151113T001620'];    figtitle = [figtitle; '1mL Vert'];volfilt = [volfilt; 1];  isvert = [isvert; 1];
+files = [files; 'D20151113T003006'];    figtitle = [figtitle; '1mL Vert'];volfilt = [volfilt; 1];  isvert = [isvert; 1];
+
+
 
 %what size bins do you want? For roiwidth I chose 100pix bins
 bins = 0:100:1400;
@@ -91,7 +129,7 @@ xlabel('Sample Volume Run','fontweight','bold'); ylabel('Cell Conc (cells/ml)','
 title('9um beads Run on IFCB102 Cell Concentration Vert vs Horz Runs')
 legend('Vert','Horz','location',[0.5534 0.8025 0.1452 0.0814])
 
-temp=1:15;
+temp=1:31;
 figure
 plot(cellconc,'b*','markersize',9)
 hold on
@@ -100,6 +138,25 @@ xlabel('Run # in Sequence','fontweight','bold'); ylabel('Cell Conc (cells/ml)','
 title('9um beads Run on IFCB102 Cell Concentration Over Course of Runs')
 legend('Vert','Horz','location','northwest')
 
-
+figure
+hold on
+for count = 1:size(sizefrac_cellconc,2)
+    plot(sizefrac_cellconc(:,count),'*','markersize',9)
+end
+xlabel('Sample Run #','fontweight','bold'); ylabel('Cell Concentration in each size bin','fontweight','bold')
+title('Bin Size = 0:100:1400, Histogram: Cell Concentration for each size fraction')
+if strcmp(files(1),'D20151112T164628'), 
+    line([6.5 6.5],[0 450],'linewidth',2,'color','k'); 
+    text(1.3,425,'Vert-5ml','fontsize',16,'fontweight','bold','color','r')
+    text(7,425,'Horz-5ml','fontsize',16,'fontweight','bold','color','r')
+    line([11.5 11.5],[0 450],'linewidth',2,'color','k'); 
+    text(12,425,'Vert-5ml','fontsize',16,'fontweight','bold','color','r')
+    line([15.5 15.5],[0 450],'linewidth',3,'linestyle','--','color','r'); 
+    text(16,425,'Vert-1ml','fontsize',16,'fontweight','bold','color','r')
+    line([19.5 19.5],[0 450],'linewidth',2,'color','k'); 
+    text(20,425,'Horz-1ml','fontsize',16,'fontweight','bold','color','r')
+    line([24.5 24.5],[0 450],'linewidth',2,'color','k'); 
+    text(25,425,'Vert-1ml','fontsize',16,'fontweight','bold','color','r')
+end
 
 
