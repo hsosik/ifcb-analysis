@@ -1,5 +1,5 @@
 savedir = '\\sosiknas1\Lab_data\VPR\NBP1201\classifiers\';
-classifierName = 'RossSea_Trees_24Sep2015_combineAllPheao24Sep2015';
+classifierName = 'RossSea_Trees_30Oct2015_seven_classes';
 out_dir = ['\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_' classifierName '\'];
 if ~exist(out_dir, 'dir')
     mkdir(out_dir)
@@ -7,7 +7,6 @@ end;
 classifierName = [savedir classifierName];
 %in_dir = 'http://mellon.whoi.edu/lab/';
 %for V2 web services, set fea_dir = in_dir;
-%fea_dir = '\\SosikNAS1\Lab_data\VPR\NBP1201\vpr3\features3\';
 fea_dir = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\features\';
 filelist = dir([fea_dir 'd018h1*.csv']);
 filelist = {filelist.name}';
