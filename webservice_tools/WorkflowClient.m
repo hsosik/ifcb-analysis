@@ -23,21 +23,21 @@ classdef WorkflowClient
                 state = 'available';
             end
             url = this.url_for('create',pid');
-            r = webwrite(url,'state',state);
+            r = webwrap(@()webwrite(url,'state',state));
         end
         function r = get(this, pid, product_type)
             if nargin < 3
                 product_type = 'raw';
             end
             url = this.url_for('get',[pid '_' product_type]);
-            r = webread(url);
+            r = webwrap(@()webread(url));
         end
         function r = depend(this, pid, upstream, role, priority)
             if nargin < 5
                 priority = 100;
             end
             url = this.url_for('depend',pid);
-            r = webwrite(url,'upstream',upstream,'role',role,'priority',priority);
+            r = webwrap(@()webwrite(url,'upstream',upstream,'role',role,'priority',priority));
         end
         function r = update(this, pid, state, event, message, ttl)
             if nargin < 3
@@ -50,7 +50,7 @@ classdef WorkflowClient
                 ttl = this.FOREVER;
             end
             url = this.url_for('update',pid);
-            r = webwrite(url,'state',state,'event',event,'message',message,'ttl',ttl);
+            r = webwrap(@()webwrite(url,'state',state,'event',event,'message',message,'ttl',ttl));
         end
         function r = complete(this, pid, state, event, message)
             if nargin < 3
@@ -61,7 +61,7 @@ classdef WorkflowClient
                 message = '';
             end
             url = this.url_for('update',pid);
-            r = webwrite(url,'state',state,'event',event,'message',message,'ttl',-1);
+            r = webwrap(@()webwrite(url,'state',state,'event',event,'message',message,'ttl',-1));
         end
         function r = update_if(this, pid, state, new_state, event, message, ttl)
             if nargin < 3
@@ -76,7 +76,10 @@ classdef WorkflowClient
                 ttl = this.FOREVER;
             end
             url = this.url_for('update_if',pid);
-            r = webwrite(url,'state',state,'new_state',new_state,'event',event,'message',message,'ttl',ttl);
+            r = webwrap(@()webwrite(url,'state',state,'new_state',new_state,'event',event,'message',message,'ttl',ttl));
+        end
+        function r = abort(this, pid)
+            r = this.update_if(pid,'running','waiting','aborted');
         end
         function r = expire(this, state, new_state, event, message, ttl)
             if nargin < 3
@@ -91,11 +94,7 @@ classdef WorkflowClient
                 ttl = this.FOREVER;
             end
             url = this.url_for('expire');
-            try
-                r = webwrite(url,'state',state,'new_state',new_state,'event',event,'message',message,'ttl',ttl);
-            catch
-                % ignore errors
-            end
+            r = webwrap(@()webwrite(url,'state',state,'new_state',new_state,'event',event,'message',message,'ttl',ttl));
         end
         function r = heartbeat(this, pid, message, ttl)
             if nargin < 3
@@ -105,7 +104,7 @@ classdef WorkflowClient
             end
             if ttl==-2
                 url = this.url_for('update',pid);
-                r = webwrite(url,'state','running','event','heartbeat','message',message);
+                r = webwrap(@()webwrite(url,'state','running','event','heartbeat','message',message));
             else
                 r = this.update(pid, 'running', 'heartbeat', message, ttl);
             end
@@ -117,7 +116,7 @@ classdef WorkflowClient
                 ttl = this.FOREVER;
             end
             url = this.url_for('start_next',role);
-            r = webwrite(url,'state',state,'ttl',ttl);
+            r = webwrap(@()webwrite(url,'state',state,'ttl',ttl));
         end
     end
 end
