@@ -10,6 +10,8 @@ import java.io.BufferedWriter;
 import org.apache.commons.io.IOUtils;
 import java.io.RandomAccessFile;
 
+import java.io.FileInputStream;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
@@ -37,8 +39,9 @@ end
 % for images, read ADC and ROI files
 adcPath = [tempname '.adc'];
 roiPath = [tempname '.roi'];
+pngPath = [tempname '.png'];
 
-c = onCleanup(@() cleanup(adcPath, roiPath));
+c = onCleanup(@() cleanup(adcPath, roiPath, pngPath));
 
 websave(adcPath,[pid '.adc']);
 websave(roiPath,[pid '.roi']);
@@ -54,15 +57,12 @@ for count = 1:length(startbyte);
     if x(count), %only for cases with x ~= 0
         img = fread(fid, x(count).*y(count), 'ubit8'); %read img pixels
         img = reshape(img, x(count), y(count))'; %reshape to original x-y array
-        ji = im2java(uint8(img));
-        bi = BufferedImage(x(count),y(count),BufferedImage.TYPE_BYTE_GRAY);
-        g2d = bi.createGraphics();
-        g2d.drawImage(ji,0,0,[]);
-        g2d.dispose();
+        imwrite(uint8(img), pngPath, 'png'); %write ROI in png format
+        fis = FileInputStream(pngPath);
         entryName = [bin_lid '_' num2str(count,'%05.0f') '.png'];
         entry = ZipEntry(entryName);
         zos.putNextEntry(entry);
-        ImageIO.write(bi,'png',zos);
+        IOUtils.copy(fis,zos);
         zos.closeEntry();
     end
 end
@@ -71,13 +71,17 @@ zos.close();
 
 fclose(fid);
 
-function cleanup(adcPath, roiPath)
+function cleanup(adcPath, roiPath, pngPath)
     try
         delete(adcPath)
     catch
     end
     try
         delete(roiPath)
+    catch
+    end
+    try
+        delete(pngPath)
     catch
     end
 end
