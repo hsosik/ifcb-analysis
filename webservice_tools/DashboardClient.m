@@ -180,12 +180,12 @@ classdef DashboardClient
             r = this.tags(pid);
         end
         % products
-        function r = product_exists(~, pid, product_type)
+        function r = product_exists(this, pid, product_type)
             % product_exists check to see if a given product exists
             % pid = bin pid
             % product_type = includes 'binzip', 'blobs', 'features'
             
-            r = product_exists([char(pid) '_' product_type]);
+            r = url_exists([this.base_url '/api/product_exists/' pid '_' product_type]);
         end
         function r = get_features(~, pid)
             % get_features get the features for a given bin (if exists)

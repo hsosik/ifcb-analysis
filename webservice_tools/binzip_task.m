@@ -63,6 +63,7 @@ for count = 1:length(startbyte);
         entry = ZipEntry(entryName);
         zos.putNextEntry(entry);
         IOUtils.copy(fis,zos);
+        fis.close();
         zos.closeEntry();
     end
 end
@@ -72,17 +73,14 @@ zos.close();
 fclose(fid);
 
 function cleanup(adcPath, roiPath, pngPath)
-    try
-        delete(adcPath)
-    catch
+    if exist(adcPath,'file')
+        delete(adcPath);
     end
-    try
-        delete(roiPath)
-    catch
+    if exist(roiPath,'file')
+        delete(roiPath);
     end
-    try
-        delete(pngPath)
-    catch
+    if exist(pngPath,'file')
+        delete(pngPath);
     end
 end
 
