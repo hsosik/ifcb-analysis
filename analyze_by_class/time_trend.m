@@ -1,5 +1,5 @@
 function [] = time_trend(mdate_mat, y_mat, yearlist, labelstr)
-%function [] = time_trend(mdate_mat, y_mat, yearlist)
+%function [] = time_trend(mdate_mat, y_mat, yearlist, labelstr)
 
 next_year = yearlist(end)+1;
 %[ y_mat, mdate_mat, yd_wk ] = ydmat2weeklymat_1daysubsample( y_mat, yearlist );
