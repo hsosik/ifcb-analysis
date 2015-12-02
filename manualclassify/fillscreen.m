@@ -55,7 +55,7 @@ while ~pagefull && next_ind <= length(imgind)
                 f = f*camy/y;
                 imagedat{next_ind} = imresize(imagedat_in{next_ind}, f);
             end
-            plotnow = 1;
+            plotnow = 0;
             %next_ind stays on this one
         elseif check_pos(1) > camx, %doesn't fit on this row
             if start_pos(1) ~= 1,

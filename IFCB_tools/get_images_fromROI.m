@@ -10,11 +10,15 @@ ROIfile = [filename '.roi'];
 %get ADC data for startbyte and length of each ROI
 adcfile = [filename '.adc'];
 adcdata = load([basedir filesep adcfile]);
-if isequal(filename(1), 'I'),
-    x = adcdata(:,12);  y = adcdata(:,13); startbyte = adcdata(:,14);
-else  %new file format, case 'D*.roi'
-    x = adcdata(:,16);  y = adcdata(:,17); startbyte = adcdata(:,18);
-end;
+if ~isempty(adcdata)
+    if isequal(filename(1), 'I'),
+        x = adcdata(:,12);  y = adcdata(:,13); startbyte = adcdata(:,14);
+    else  %new file format, case 'D*.roi'
+        x = adcdata(:,16);  y = adcdata(:,17); startbyte = adcdata(:,18);
+    end;
+else
+    x = [];
+end
 if ~exist('ROInumbers', 'var'),
     [ROInumbers] = find(x>0);
 end;

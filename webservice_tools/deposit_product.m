@@ -1,4 +1,4 @@
-function [ out ] = deposit_product ( filepath, pid, api_key )
+function [ r ] = deposit_product ( filepath, pid, api_key )
 % perform HTTP PUT to deposit product
 % filepath - path to local file containing product data
 % pid - web URL of product
@@ -15,7 +15,8 @@ out.close();
 in = httpCon.getInputStream();
 sw = java.io.StringWriter();
 org.apache.commons.io.IOUtils.copy(in,sw);
-out = char(sw.toString());
 in.close();
+
+r = httpCon.getResponseCode();
 
 end

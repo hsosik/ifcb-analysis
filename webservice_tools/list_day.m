@@ -24,7 +24,11 @@ end
 % use the IFCB V>=3 web services API
 feed = webread([data_namespace 'api/feed/day/' date_param]);
 
-bins = cellstr(vertcat(feed.pid));
+if isempty(feed)
+    bins = {};
+else
+    bins = cellstr(vertcat(feed.pid));
+end
 
 end
 

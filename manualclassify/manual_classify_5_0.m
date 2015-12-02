@@ -399,8 +399,8 @@ function imagedat = read_images()
         fclose(fid);
     elseif MCconfig.dataformat == 2 %VPR
         for imgcount = 1:length(roi_ind)
-            imagedat{imgcount} = imresize(imread(fullfile(roi_info.roipath,roi_info.roilist{roi_ind(imgcount)})),MCconfig.imresize_factor);
-            [roi_info.x_all(roi_ind(imgcount)) roi_info.x_all(roi_ind(imgcount))] = size(imagedat{imgcount});
+            imagedat{imgcount} = imresize(imread(fullfile(roi_info.roipath,roi_info.roilist{roi_ind(imgcount)})),MCconfig.imresize_factor)';
+            [roi_info.x_all(roi_ind(imgcount)) roi_info.y_all(roi_ind(imgcount))] = size(imagedat{imgcount});
         end;
     end
 end
@@ -448,5 +448,4 @@ function ind = apply_threshold(ind) %, x, y, MCconfig)
     end
 end
 end
-
 
