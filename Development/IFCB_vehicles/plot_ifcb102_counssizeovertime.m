@@ -18,10 +18,12 @@
 % HORZ###################################################
 
 %#1 - not that good a compare, horz not many beads
-filename = 'D20150316T154344_IFCB102.adc'; 
-dirpath = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\data\2015\D20150316\';
+filename = 'D20151105T210041_IFCB102.adc';
+dirpath = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\';
+% filename = 'D20150316T154344_IFCB102.adc'; 
+% dirpath = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\data\2015\D20150316\';
 celltype = '9um beads';
-savefilename = 'temp';
+savefilename = 'Horz5mL';
 
 % #2
 
@@ -33,9 +35,11 @@ adcdata = load([dirpath filename]);
 
 %VERT#####################################################
 %#2
-matchfile = 'D20150316T152435_IFCB102.adc'; %beads vert in lab
-path2 = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\data\2015\D20150316\';
-savefilename2 = 'temp2?';
+matchfile = 'D20151105T202915_IFCB102.adc';
+path2 = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\';
+% matchfile = 'D20150316T152435_IFCB102.adc'; %beads vert in lab
+% path2 = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\data\2015\D20150316\';
+savefilename2 = 'VertBeads5mL';
 % [path2, savefilename2] = match_expdir(answer);
 % allfiles = dir([path2 '*.adc']);
 % alltimes = [allfiles.datenum];
@@ -55,7 +59,7 @@ pause
 % adcdata2 = adcdata2(ind2,:);
 % clear ind*
 
-bin_steps = 0:10:1200;
+bin_steps = 0:30:1200;%adctime? 10 sec?
 [n1,bin1] = histc(adcdata(:,2),bin_steps);
 [n2,bin2] = histc(adcdata2(:,2),bin_steps);
 % avgs1 = nan(length(bin_steps),2);

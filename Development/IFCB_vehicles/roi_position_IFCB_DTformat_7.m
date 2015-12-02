@@ -50,17 +50,19 @@ while 1
 %        [file path] = uigetfile('\\128.128.200.41\data\D2014*.roi'); %ifcb101 at test well
 %        [file path] = uigetfile('\\128.128.110.213\data\D201403*.roi');%OLD COMPUTER ifcb102 Redfield 
 %       [file path] = uigetfile('\\128.128.109.233\data\D2015*.roi');%ifcb102 Redfield 
+      [file path] = uigetfile('\\128.128.200.49\data\D2015*.roi');%ifcb102 dock 
 
 %        [file path] = uigetfile('\\72.72.77.26\data\beads\*.roi'); %ifcb5 -- all data is in data subdirectory
 
 %        [file path] = uigetfile('\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\TestTow1_30Apr2015\*.roi'); %hanging_in_lab\*.roi'); %ifcb102
-       [file path] = uigetfile('\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\*.roi'); %hanging_in_lab\*.roi'); %ifcb101
+%        [file path] = uigetfile('\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\*.roi'); %hanging_in_lab\*.roi'); %ifcb101
 %        [file path] = uigetfile('\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB101\hanging_in_lab\*.roi'); %ifcb101
 
 
 
-%         [file path] = uigetfile('I:\beads\*.roi'); 
+%         [file path] = uigetfile('\\sosiknas1\IFCB_data\IFCB14_Dock\data\2015\*.roi'); 
 %         [file path] = uigetfile('D:\IFCB\testwell_Feb2014\ifcb101\*.roi'); 
+%         [file path] = uigetfile('F:\MaxYannick_temp\*.roi'); 
 %         [file path] = uigetfile('C:\IFCB1\ifcb_data_mvco_jun06\beads\*.roi'); %ifcb5 -- all data is in data subdirectory
 
 %        [file path] = uigetfile('C:\IFCB7\data\D20130224*.roi');  %ifcb9f

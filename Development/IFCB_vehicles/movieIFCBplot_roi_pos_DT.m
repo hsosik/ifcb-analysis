@@ -1,36 +1,32 @@
 %assumes only using "new" IFCB adc file format. Both adc formats are listed
 %below
-%to analyze/compare vertically stanging IFCB vs horizontally laying
-%mostly look at core position over time. also missed roi rate, beads
-%signal,
-%see movies of xpos vs ypos, and long cells position
+%to see movies of xpos vs ypos over time, could help determine if flow is
+%getting bad
 
-%%%%%%%%%%%%%%%%%%%%%%%%
-%make_pathfiles2load.m - prompts question of what you'd like to plot 
-%set path to data, start & end file, name for saved mat file
-%%%%%%%%%%%%%%%%%%%%%%%%
-make_pathfiles2load
+startday = 1126;
+endday   = 1130;
+year = '2015';
+days2look = startday:endday;
 
-startday  = str2num([startfile(2:9) startfile(11:16)]);
-endday    = str2num([endfile(2:9) endfile(11:16)]);
-allfiles  = dir([dirpath 'D2014*.adc']);
-allfiles  = {allfiles.name}';
-temp      = char(allfiles);
-temp      = [temp(:,2:9) temp(:,11:16)];
-% matdate   = datenum(temp(:,:),'yyyymmddHHMMSS'); %get matdate from filenames
-temp      = str2num(temp);
-files     = allfiles(temp>startday & temp<endday); %find all files between start and end date/time
-
-clear temp ind allfiles startfile endfile
+allfiles = [];
+path = ['\\sosiknas1\IFCB_data\IFCB14_Dock\data\' year '\'];
+path = ['\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\data\' year '\'];
+for count = 1:length(days2look)
+    datadir  = [path 'D' year num2str(days2look(count)) '\'];
+    files = dir([datadir 'D*.adc']);
+if ~isempty(files)
+    allfiles = [allfiles; cellstr([repmat(datadir ,length(files),1) char(files.name)])];
+end
+end
+clear files
 
 figure
-%only need 1 for loop when all files located in 1 dir next for loop set for
-%when data roganized by dir days
-for count = 1:length(files);
-    adcdata = load([dirpath char(files(count))]);
+for count = 1:length(allfiles);
+    adcdata = load(cell2mat(allfiles(count)));
     plot(adcdata(:,14), adcdata(:,15), 'r.') %xpos/ypos column location in new file format
     axis([0 1381 0 1034]) %exact size of camera FOV
-    title(files(count));
+    temp=char(allfiles(count));
+    title(temp(55:end-4));
     pause(.3);
 end
 
