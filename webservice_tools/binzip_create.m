@@ -1,4 +1,4 @@
-function [ ] = binzip_task( pid, zipPath )
+function [ ] = binzip_create( pid, zipPath )
 % use dashboard to create binzip for a given pid
 import java.io.File;
 import java.io.FileOutputStream;

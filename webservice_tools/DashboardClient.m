@@ -7,7 +7,7 @@ classdef DashboardClient
         authz = [];
     end
     methods
-        function this = DashboardClient(base_url, time_series, api_key)
+        function this = DashboardClient(base_url, api_key, time_series)
             % DashboardClient create a dashboard client
             % base_url = root of dashboard URL (e.g., http://ifcb-data.whoi.edu)
             % time_series = label of the time series to access
@@ -16,10 +16,10 @@ classdef DashboardClient
             if nargin > 0
                 this.base_url = base_url;
             end
-            if nargin > 1
+            if nargin > 2
                 this.time_series = time_series;
             end
-            if nargin > 2
+            if nargin > 1
                 this.api_key = api_key;
                 this.authz = weboptions('KeyName','X-Authorization','KeyValue',['Bearer ' api_key]);
             end
@@ -185,7 +185,11 @@ classdef DashboardClient
             % pid = bin pid
             % product_type = includes 'binzip', 'blobs', 'features'
             
-            r = url_exists([this.base_url '/api/product_exists/' pid '_' product_type]);
+            url = [this.base_url '/api_product_exists/' pid];
+            if nargin > 2
+                url = [url '_' product_type];
+            end
+            r = url_exists(url);
         end
         function r = get_features(~, pid)
             % get_features get the features for a given bin (if exists)
@@ -199,12 +203,17 @@ classdef DashboardClient
             url = [char(pid) '_blob.zip'];
             r = get_blob_bin_file(url);
         end
-        function r = deposit_product(this, pid, filepath)
+        function r = deposit_product(this, pid, filepath, check)
             % deposit_product upload a product
             % pid = the full pid of the product
             % filepath = local file containing product data
             
             r = deposit_product(filepath, char(pid), this.api_key);
+            if nargin > 3 && strcmp(check,'check')
+                if r~=200 && ~(this.product_exists(pid))
+                    r = 404;
+                end
+            end
         end
     end
 end
