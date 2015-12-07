@@ -1,10 +1,4 @@
-function [ ] = produce_products ( host, api_key, port )
-
-the_port = 8888;
-if exist('port','var')
-    the_port = port;
-end
-worker = GenericWorker(host,the_port,api_key);
+function [ ] = produce_products ( worker )
 
 spmd
     pause(labindex());
