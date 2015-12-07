@@ -8,9 +8,9 @@ classdef GenericWorker
     end
     
     methods
-        function this = GenericWorker(host, port, api_key)
-            this.wf = WorkflowClient(['http://' char(host) ':9270']);
-            this.db = DashboardClient(['http://' char(host) ':' num2str(port)],api_key);
+        function this = GenericWorker(wf, db)
+            this.wf = wf;
+            this.db = db;
         end
         function log(this, pid, message, ttl)
             disp(message);
