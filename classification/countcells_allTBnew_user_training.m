@@ -15,6 +15,14 @@ function [ ] = countcells_allTBnew_user_training(classpath_generic , in_dir, yrr
 % summary file will be located in subdir \summary\ at the top level
 % location of classifier output files
 
+%make sure input paths end with filesep
+if ~isequal(classpath_generic(end), filesep)
+    classpath_generic = [classpath_generic filesep];
+end
+if ~isequal(in_dir(end), filesep)
+    in_dir = [in_dir filesep];
+end
+
 path_out = [regexprep(classpath_generic, 'classxxxx_v1\', ''), 'summary' filesep];
 
 classfiles = [];
@@ -32,13 +40,21 @@ for yrcount = 1:length(yrrange), %USER not tested yet for multiple years, but sh
     end
     clear temp pathall classpath
 end;
-
 if strcmp('http', in_dir(1:4))
     hdrfiles = cellstr([repmat(in_dir,length(filelist),1) filelist repmat('.hdr', length(filelist), 1)]);
 else
     fsep = repmat(filesep, size(filelist,1),1);
-    %hdrfiles = cellstr([repmat(in_dir,size(filelist,1),1) filelist(:,2:5) fsep filelist(:,1:9) fsep filelist repmat('.hdr', size(filelist,1), 1)]);
-    hdrfiles = cellstr([repmat(in_dir,size(filelist,1),1) filelist(:,2:5) fsep filelist repmat('.hdr', size(filelist,1), 1)]);
+    %determine data subdir structure
+    if exist([in_dir filelist(1,:) '.hdr'], 'file') %presume all files in top level of in_dir
+        hdrfiles = cellstr([repmat(in_dir,size(filelist,1),1) fsep filelist repmat('.hdr', size(filelist,1), 1)]);   
+    elseif exist([in_dir filelist(1,2:5) filesep filelist(1,:) '.hdr'], 'file') %presume all files in subdir by year
+        hdrfiles = cellstr([repmat(in_dir,size(filelist,1),1) filelist(:,2:5) fsep filelist repmat('.hdr', size(filelist,1), 1)]);
+    elseif exist([in_dir filelist(1,2:5) filesep filelist(1,1:9) filesep filelist(1,:) '.hdr'], 'file') %presume all files in subdir by year then day
+        hdrfiles = cellstr([repmat(in_dir,size(filelist,1),1) filelist(:,2:5) fsep filelist(:,1:9) fsep filelist repmat('.hdr', size(filelist,1), 1)]);
+    else
+        disp('First hdr file not found. Check input directory.')
+        return
+    end
 end;
 mdate = IFCB_file2date(filelist);
 
