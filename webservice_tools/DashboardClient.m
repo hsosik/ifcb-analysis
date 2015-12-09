@@ -203,6 +203,17 @@ classdef DashboardClient
             url = [char(pid) '_blob.zip'];
             r = get_blob_bin_file(url);
         end
+        function r = accepts_product(this, pid)
+            % will the dashboard accept the given product
+            
+            url = [this.base_url '/api/accepts_product/' char(pid)];
+            w = webwrap(@()webread(url));
+            if w.http ~= 200
+                r = 0;
+            else
+                r = w.accepts;
+            end
+        end
         function r = deposit_product(this, pid, filepath, check)
             % deposit_product upload a product
             % pid = the full pid of the product

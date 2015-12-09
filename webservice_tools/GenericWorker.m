@@ -32,20 +32,25 @@ classdef GenericWorker
                 not_done = false;
             else
                 product_pid = r.pid;
-                disp(['START ' product_pid]);
-                try
-                    r = callback(this, product_pid);
-                    if r
-                        disp(['DONE ' product_pid]);
-                        this.wf.complete(product_pid);
-                    else
-                        disp(['NOT DONE ' product_pid]);
+                if ~this.db.accepts_product(product_pid)
+                    disp(['SKIP ' product_pid]);
+                    this.wf.skip(product_pid);
+                else
+                    disp(['START ' product_pid]);
+                    try
+                        r = callback(this, product_pid);
+                        if r
+                            disp(['DONE ' product_pid]);
+                            this.wf.complete(product_pid);
+                        else
+                            disp(['NOT DONE ' product_pid]);
+                            this.wf.abort(product_pid);
+                        end
+                    catch exc
+                        disp(getReport(exc));
+                        disp(['ERROR ' product_pid]);
                         this.wf.abort(product_pid);
                     end
-                catch exc
-                    disp(getReport(exc));
-                    disp(['ERROR ' product_pid]);
-                    this.wf.abort(product_pid);
                 end
             end
         end
