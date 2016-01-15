@@ -3,14 +3,14 @@
 %to see movies of xpos vs ypos over time, could help determine if flow is
 %getting bad
 
-startday = 1126;
-endday   = 1130;
+startday = 1203;
+endday   = 1204;
 year = '2015';
 days2look = startday:endday;
 
 allfiles = [];
-path = ['\\sosiknas1\IFCB_data\IFCB14_Dock\data\' year '\'];
-path = ['\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\data\' year '\'];
+path = ['\\sosiknas1\IFCB_data\IFCB102_Dock_Horiz_Nov15\data\' year '\'];
+% path = ['\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\data\' year '\'];
 for count = 1:length(days2look)
     datadir  = [path 'D' year num2str(days2look(count)) '\'];
     files = dir([datadir 'D*.adc']);
