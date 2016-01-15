@@ -1,10 +1,15 @@
-function [ ] = bin_blobs( bin_pid, bin_zip_path, out_dir )
+function [ ] = bin_blobs( bin_pid, bin_zip_path, out_dir, log_callback )
 %BIN_BLOBS Summary of this function goes here
 
 debug = false;
 
 function log(msg) % not to be confused with logarithm function
-    disp(['bin_blobs ' msg])
+    m = ['bin_blobs ' char(msg)];
+    if exist('log_callback','var')
+        log_callback(m);
+    else
+        disp(m);
+    end
 end
 
 bin_lid = lid(bin_pid);

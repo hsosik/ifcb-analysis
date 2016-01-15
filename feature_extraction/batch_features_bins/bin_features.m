@@ -1,4 +1,4 @@
-function [ ] = bin_features( in_dir, file, out_dir, opt1 , in_dir_blob)
+function [ ] = bin_features( in_dir, file, out_dir, opt1 , in_dir_blob, log_callback)
 %function [ ] = bin_features( in_dir, file, out_dir )
 %BIN_FEATURES Summary of this function goes here
 %modified from bin_blobs
@@ -11,7 +11,12 @@ function [ ] = bin_features( in_dir, file, out_dir, opt1 , in_dir_blob)
 debug = false;  %USER leave as is, not for parallel processing
 
 function log(msg) % not to be confused with logarithm function
-    logmsg(['bin_features ' msg],debug);
+    m = ['bin_features ' msg];
+    if exist('log_callback','var')
+        log_callback(m);
+    else
+        logmsg(m,debug);
+    end
 end
 
 % FIXME for more options, iterate over varags

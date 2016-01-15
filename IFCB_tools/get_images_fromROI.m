@@ -24,6 +24,7 @@ if ~exist('ROInumbers', 'var'),
 end;
 fid=fopen([basedir filesep ROIfile]);% '.roi']);
 targets.targetNumber = ROInumbers;
+targets.pid = []; %initialize empty in case no ROIs
 for count = 1:length(ROInumbers),
     num = ROInumbers(count);
     fseek(fid, startbyte(num), -1);

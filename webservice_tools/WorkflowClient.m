@@ -121,6 +121,12 @@ classdef WorkflowClient
             
             r = this.update_if(pid,'running','waiting','aborted');
         end
+        function r = skip(this, pid, ttl)
+            if nargin < 3
+                ttl = 240;
+            end
+            r = this.update(pid, 'running', 'skipped', 'skipped', ttl);
+        end
         function r = expire(this, state, new_state, event, message, ttl)
             % expire cause any expired objects to make the given state transition
             % state = state the products must be in now (default "running")

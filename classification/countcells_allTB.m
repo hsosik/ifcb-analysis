@@ -1,7 +1,8 @@
+%MVCO case
 classpath_generic = '\\SOSIKNAS1\IFCB_products\MVCO\class\classxxxx_v1\';
 
 classfiles = [];
-for yr = 2014, %:2012,
+for yr = 2015, %:2012,
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'I*.mat']);
     pathall = repmat(classpath, length(temp),1);
@@ -49,4 +50,4 @@ ml_analyzedTB = ml_analyzed_list;
 mdateTB = mdate;
 filelistTB = filelist;
 
-save(['summary_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'classcountTB_above_adhocthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'adhocthresh', 'classpath_generic', 'roiids', 'class2list')
+save(['\\sosiknas1\IFCB_products\MVCO\class\summary\summary_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'classcountTB_above_adhocthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'adhocthresh', 'classpath_generic', 'roiids', 'class2list')

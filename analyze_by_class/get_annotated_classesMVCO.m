@@ -39,7 +39,7 @@ for count = 1:length(mode_list),
        case 'chaetoceros'
             [~, class_cat] = intersect(class2use_here, {'Chaetoceros' 'Chaetoceros_flagellate' 'Chaetoceros_pennate' 'Chaetoceros_other' 'Chaetoceros_didymus' 'Chaetoceros_didymus_flagellate'});
        case 'guinardia'
-            [~, class_cat] = intersect(class2use_here, {'Guinardia_delicatula' 'G_delicatula_parasite' 'G_delicatula_external_parasite' 'other_interaction' 'pennates_on_diatoms' 'diatom_flagellate' ...
+            [~, class_cat] = intersect(class2use_here, {'Guinardia_delicatula' 'Guinardia_flaccida' 'Guinardia_striata' 'G_delicatula_parasite' 'G_delicatula_external_parasite' 'other_interaction' 'pennates_on_diatoms' 'diatom_flagellate' ...
                 'G_delicatula_detritus'});
     end;
     classes_bymode.classes_manual_check{count} = class_cat;
