@@ -16,7 +16,8 @@ clear all
 %beads exp of horz vs vert do you get same concentrations? if not, if you
 %run less volume when horz do you get same cellconc as vertcal? maybe just
 %need to run samples more frequently as less volume?
-dirpath = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\';
+% dirpath = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\';
+dirpath = '\\sosiknas1\IFCB_data\IFCB102_Dock_Horiz_Nov15\data\2015\D20151203\';
 %following files not great because didn't debubble between samples so exp is useless
 %DO NOT USE, EXP NOT DONE CORRECTLY
 %{
@@ -122,7 +123,7 @@ files = [files; 'D20151106T222008'];    volfilt = [volfilt; 1];  isvert = [isver
 %}
 %~~~~~~~~~~~~NEW HIGHER CONCENTRATION******************************
 %3ml vs 1ml - no 5ml
-%{
+%
 figtitle = 'Beads High Conc Vert vs Horz';
 files = {'D20151110T183541'};           volfilt = 3;  isvert = 1;
 files = [files; 'D20151110T184951'];    volfilt = [volfilt; 3];  isvert = [isvert; 1];
@@ -151,7 +152,7 @@ files = [files; 'D20151110T230214'];   volfilt = [volfilt; 1];  isvert = [isvert
 %}
 
 %GUINARDIA 5ML
-%
+%{
 % files = {'D20151112T164628'};           figtitle = {'5mL Vert'};            volfilt = 5;             isvert = 1;
 % files = [files; 'D20151112T170931'];    figtitle = [figtitle; '5mL Vert'];volfilt = [volfilt; 5];  isvert = [isvert; 1];
 % files = [files; 'D20151112T173151'];    figtitle = [figtitle; '5mL Vert'];volfilt = [volfilt; 5];  isvert = [isvert; 1];
@@ -186,6 +187,15 @@ files = [files; 'D20151113T001620'];    volfilt = [volfilt; 1];  isvert = [isver
 files = [files; 'D20151113T003006'];    volfilt = [volfilt; 1];  isvert = [isvert; 1];
 %}
 
+%Dock Horz 102 vs Vert/Staining 14
+figtitle = 'Dock Horz 102 vs Vert/Staining 14';
+files = {'D20151203T150259_IFCB102.adc'};           volfilt = 3;  isvert = 0;
+files = [files; 'D20151203T140621_IFCB102.adc'];    volfilt = [volfilt; 3];  isvert = [isvert; 0];
+files = [files; 'D20151203T142031_IFCB102.adc'];    volfilt = [volfilt; 3];  isvert = [isvert; 0];
+files = [files; 'D20151203T143440_IFCB102.adc'];    volfilt = [volfilt; 3];  isvert = [isvert; 0];
+files = [files; 'D20151203T144850_IFCB102.adc'];    volfilt = [volfilt; 3];  isvert = [isvert; 0];
+files = [files; 'D20151203T150259_IFCB102.adc'];    volfilt = [volfilt; 3];  isvert = [isvert; 0];
+
 
 %what size bins do you want? For roiwidth I chose 100pix bins
 bins_size = 0:100:1400; %pixels
@@ -207,6 +217,7 @@ looktime        = samplevol;
 ml_analyzed     = samplevol;
 numtriggers     = samplevol;
 cellconc        = samplevol;
+sec2event2      = samplevol; 
 
 % exclude_small = 0;
 % answer = input('Do you want to exclude smallest size fraction of cells? answer y or n"','s');
@@ -227,8 +238,8 @@ for count = 1:length(files)
     samplevol(count)     = hdr.SyringeSampleVolume;
     runtime(count)       = hdr.runtime;
     inhibittime(count)   = hdr.inhibittime;
-    sec2event2           = adcdata(2,2);
-    looktime(count)      = hdr.runtime - sec2event2 - hdr.inhibittime; %seconds - directly copied from IFCB_volume_analyzed_Rob2, don't really need to call function because already doing half the things in this loop that the function does
+    sec2event2(count)    = adcdata(2,2);
+    looktime(count)      = hdr.runtime - sec2event2(count) - hdr.inhibittime; %seconds - directly copied from IFCB_volume_analyzed_Rob2, don't really need to call function because already doing half the things in this loop that the function does
     ml_analyzed(count)   = flowrate.*looktime(count)/60;
     numtriggers(count)   = length(adcdata(2:end,1)); %took out unique(adcdata(2:end,1)) - copied from roi_position_IFCB_DTformat_7, why is it included there?
     cellconc(count)      = numtriggers(count)/ml_analyzed(count);
@@ -247,7 +258,7 @@ for count = 1:length(files)
 %which way is better to calculate runtime??? we force run time by binning time, so above loop is not needed?    
     sample_ended          = find(bins_time>runtime(count)); %end of run is not necessarily included as last bin, need to account
     temptime = bins_time; temptime(sample_ended) = runtime(count); %set all subsequent bins with same time, easier to zero out non-data later on
-    runtimes_timebins(count,:)  = temptime(2:end)-[sec2event2 bins_time(2:end-1)]; %first tigger isn't exactly at 0sec, sec2event2 is first trigger time, use that as start time of first bin
+    runtimes_timebins(count,:)  = temptime(2:end)-[sec2event2(count) bins_time(2:end-1)]; %first tigger isn't exactly at 0sec, sec2event2 is first trigger time, use that as start time of first bin
     %looktime = runtime - inhibittime
     mlanal_timebins(count,:)    = flowrate.*(runtimes_timebins(count,:)-inhibittime_timebins(count,:))/60; %flow rate ml/min
     cellconc_timebins (count,:) = counts_timebins(count,:)./mlanal_timebins(count,:);%cells per ml
