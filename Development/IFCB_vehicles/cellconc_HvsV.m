@@ -16,8 +16,8 @@ clear all
 %beads exp of horz vs vert do you get same concentrations? if not, if you
 %run less volume when horz do you get same cellconc as vertcal? maybe just
 %need to run samples more frequently as less volume?
-% dirpath = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\';
-dirpath = '\\sosiknas1\IFCB_data\IFCB102_Dock_Horiz_Nov15\data\2015\D20151203\';
+dirpath = '\\sosiknas1\Lab_data\IFCB_forVehicles\IFCB102\';
+% dirpath = '\\sosiknas1\IFCB_data\IFCB102_Dock_Horiz_Nov15\data\2015\D20151203\';
 %following files not great because didn't debubble between samples so exp is useless
 %DO NOT USE, EXP NOT DONE CORRECTLY
 %{
@@ -123,7 +123,7 @@ files = [files; 'D20151106T222008'];    volfilt = [volfilt; 1];  isvert = [isver
 %}
 %~~~~~~~~~~~~NEW HIGHER CONCENTRATION******************************
 %3ml vs 1ml - no 5ml
-%
+%{
 figtitle = 'Beads High Conc Vert vs Horz';
 files = {'D20151110T183541'};           volfilt = 3;  isvert = 1;
 files = [files; 'D20151110T184951'];    volfilt = [volfilt; 3];  isvert = [isvert; 1];
@@ -188,6 +188,7 @@ files = [files; 'D20151113T003006'];    volfilt = [volfilt; 1];  isvert = [isver
 %}
 
 %Dock Horz 102 vs Vert/Staining 14
+%{
 figtitle = 'Dock Horz 102 vs Vert/Staining 14';
 files = {'D20151203T150259_IFCB102.adc'};           volfilt = 3;  isvert = 0;
 files = [files; 'D20151203T140621_IFCB102.adc'];    volfilt = [volfilt; 3];  isvert = [isvert; 0];
@@ -195,7 +196,21 @@ files = [files; 'D20151203T142031_IFCB102.adc'];    volfilt = [volfilt; 3];  isv
 files = [files; 'D20151203T143440_IFCB102.adc'];    volfilt = [volfilt; 3];  isvert = [isvert; 0];
 files = [files; 'D20151203T144850_IFCB102.adc'];    volfilt = [volfilt; 3];  isvert = [isvert; 0];
 files = [files; 'D20151203T150259_IFCB102.adc'];    volfilt = [volfilt; 3];  isvert = [isvert; 0];
+%}
 
+%#######################################################################
+%#######################################################################
+%USE XLSREAD INSTEAD OF INPUTING EACH FILE
+%NEED TO SPECIFY SPREAD SHEET
+%#######################################################################
+%#######################################################################
+
+[num,txt,raw]=xlsread('F:\from_Samwise\ifcb-analysis\Development\IFCB_vehicles\VehicleLabExperimentFiles.xlsx','9um_debubcart');
+files = raw(2:end,1);
+volfilt = num(2:end,1);
+isvert = zeros(length(volfilt),1);
+isvert(strcmp(txt(2:end,3),'V'))=1;
+clear num txt
 
 %what size bins do you want? For roiwidth I chose 100pix bins
 bins_size = 0:100:1400; %pixels
