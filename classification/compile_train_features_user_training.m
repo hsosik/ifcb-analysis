@@ -1,17 +1,33 @@
-function [  ] = compile_train_features_user_training( manualpath , feapath_base, maxn, minn, class2skip)
-% function [  ] = compile_train_features_user_training( manualpath , feapath_base, maxn, minn, class2skip)
+function [  ] = compile_train_features_user_training( manualpath , feapath_base, maxn, minn, varargin)
+% function [  ] = compile_train_features_user_training( manualpath , feapath_base, maxn, minn, class2skip, class2group)
+% class2skipe and class2merge are optional inputs
 % For example:
 %compile_train_features_user_training('C:\work\IFCB\user_training_test_data\manual\', 'C:\work\IFCB\user_training_test_data\features\', 100, 30, {'other'})
 %IFCB classifier production: get training features from pre-computed bin feature files
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, converted to function Jan 2016
 %
-
-%manualpath = 'C:\work\IFCB\user_training_test_data\manual\'; % manual annotation files
-%feapath_base = 'C:\work\IFCB\user_training_test_data\features\';
+%Example inputs:
+%manualpath = 'C:\work\IFCB\user_training_test_data\manual\'; % manual annotation file location
+%feapath_base = 'C:\work\IFCB\user_training_test_data\features\'; %feature file location, assumes \yyyy\ organization
 %maxn = 100; %maximum number of images per class to include
 %minn = 30; %minimum number for inclusion
-%class2skip = {'other'};
-%class2skip = {};
+%Optional inputs;
+%class2skip = {'other'}; % for multiple use: {'myclass1' 'myclass2'}
+%class2skip = {}; %for case to skip none and include class2merge
+%class2group = {{'class1a' 'class1b'} {'class2a' 'class2b' 'class2c'}}; %use nested cells for multiple groups of 2 or more classes 
+
+class2skip = []; %initialize
+class2group = [];
+if length(varargin) >= 1
+    class2skip = varargin{1};
+end
+if length(varargin) > 1
+    class2group = varargin(2);
+end
+
+if length(class2group{1}) > 1 && ischar(class2group{1}{1}) %input of one group without outer cell 
+    class2group = {class2group};
+end
 
 manual_files = dir([manualpath 'D*.mat']);
 manual_files = {manual_files.name}';
@@ -79,27 +95,76 @@ for classcount = 1:length(class2use),
         fea_all(ii(shuffle_ind),:) = [];
         files_all(ii(shuffle_ind)) = [];
         roinum(ii(shuffle_ind)) = [];
-        ii = find(class_all == classcount);
+        %ii = find(class_all == classcount);
         n(classcount) = maxn;
     end;
+%     if n(classcount) < minn,
+%         class_all(ii) = [];
+%         fea_all(ii,:) = [];
+%         files_all(ii) = [];
+%         roinum(ii) = [];
+%         n(classcount) = 0;
+%     end;
+end;
+
+for classcount = 1:length(class2skip),
+    ind = strmatch(class2skip(classcount),class2use);
+    if isempty(ind),
+        disp([class2skip(classcount) ' does not exist in class2use; skip aborted' ])
+    else
+        ii = find(class_all == ind);
+        class_all(ii) = [];
+        fea_all(ii,:) = [];
+        files_all(ii) = [];
+        roinum(ii) = [];
+        n(classcount) = 0;
+    end
+end;
+
+for classcount = 1:length(class2group{1})
+    num2group = length(class2group{1}{classcount});
+    if num2group > 1
+        [~, ~, indc] = intersect(class2group{1}{classcount},class2use);    
+        if length(indc) ~= length(class2group{1}{classcount})
+            [class_missing] = setdiff(class2group{1}{classcount}, class2use);
+            disp(['grouping aborted; Missing: ' class_missing])
+        else
+            newclass = char(class2group{1}{classcount}(1));
+            for ii = 2:length(class2group{1}{classcount})
+                newclass = [newclass ',' char(class2group{1}{classcount}(ii))];
+            end;
+            class2use = [class2use newclass]; %add new class label to end of list
+            ind2group = ismember(class_all,indc, 'rows'); 
+            ind2group = find(ind2group); %indices of original classes
+            class_all(ind2group) = length(class2use); %reset class number to new grouped class
+            n = [n length(ind2group)]; %add count for new class to end of list
+            n(indc) = 0; %reset original classes to 0 count
+            n2del = n(end)-maxn; 
+            if n2del > 0, %randomly remove some if more than maxn
+                shuffle_ind = randperm(n(end));
+                shuffle_ind = shuffle_ind(1:n2del);
+                class_all(ind2group(shuffle_ind)) = [];
+                fea_all(ind2group(shuffle_ind),:) = [];
+                files_all(ind2group(shuffle_ind)) = [];
+                roinum(ind2group(shuffle_ind)) = [];
+                n(end) = maxn; %reset new class count to maxn
+            end
+        end
+    else
+        disp(['grouping requires more than one class; aborting grouping for:' class2group{1}{classcount}])
+    end
+end
+
+%remove classes with too few case after any grouping
+for classcount = 1:length(class2use),
     if n(classcount) < minn,
         class_all(ii) = [];
         fea_all(ii,:) = [];
         files_all(ii) = [];
         roinum(ii) = [];
         n(classcount) = 0;
-    end;
-end;
-
-for classcount = 1:length(class2skip),
-    ind = strmatch(class2skip(classcount),class2use);
-    ii = find(class_all == ind);
-    class_all(ii) = [];
-    fea_all(ii,:) = [];
-    files_all(ii) = [];
-    roinum(ii) = [];
-    n(classcount) = 0;
-end;
+    end
+end
 
 train = fea_all;
 class_vector = class_all;
