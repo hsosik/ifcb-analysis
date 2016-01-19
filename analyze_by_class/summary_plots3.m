@@ -1,22 +1,25 @@
-load '\\raspberry\d_work\ifcb1\ifcb_data_mvco_jun06\manual_fromClass\summary\count_biovol_manual_27Feb2013_day.mat'
+load '\\raspberry\d_work\ifcb1\ifcb_data_mvco_jun06\manual_fromClass\summary\count_biovol_manual_current_day.mat'
 %load '\\queenrose\g_work_ifcb1\ifcb_data_mvco_jun06\biovolume\summary\count_biovol_05Sep2012_day'
 ii = find(floor(matdate_bin) == datenum('2-9-2010')); %skip this day with one partial sample
 classbiovol_bin(ii,:) = []; classcount_bin(ii,:) = []; ml_analyzed_mat_bin(ii,:) = []; matdate_bin(ii) = [];
 
-class_dino = {'Ceratium' 'dino30' 'Dinophysis' 'Gyrodinium' 'Prorocentrum' 'Gonyaulax'};
-class_nonphyto = {'Thalassiosira_dirty' 'bad' 'ciliate' 'detritus' 'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'};
-class_mix = {'mix' 'clusterflagellate' 'crypto' 'Euglena' 'flagellate' 'kiteflagellates' 'Phaeocystis' 'Pyramimonas' 'roundCell' 'mix_elongated'};
-class_diatom = {'Asterionellopsis' 'Cerataulina' 'Chaetoceros' 'Corethron' 'Coscinodiscus' 'Cylindrotheca' 'DactFragCerataul' 'Dactyliosolen'... 
-    'Ditylum' 'Ephemera' 'Eucampia' 'Guinardia' 'Guinardia_flaccida' 'Guinardia_striata' 'Hemiaulus' 'Lauderia' 'Leptocylindrus' 'Licmophora'...
-    'Odontella' 'Paralia' 'Pleurosigma' 'Pseudonitzschia' 'Rhizosolenia' 'Skeletonema' 'Stephanopyxis' 'Thalassionema' 'Thalassiosira' 'pennate'};
-class_ciliate = {'ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'};
-%skip: 'Eucampia_groenlandica' 'Tropidoneis' 'dino10'
-%'other' 'bad'
-[~,ind_diatoms] = intersect(class2use, class_diatom);
-[~,ind_dino] = intersect(class2use, class_dino);
-[~,ind_mix] = intersect(class2use, class_mix);
-%[~,ind_ciliate] = intersect(class2use, class_ciliate); ind_ciliate = sort(ind_ciliate);
+% class_dino = {'Ceratium' 'dino30' 'Dinophysis' 'Gyrodinium' 'Prorocentrum' 'Gonyaulax'};
+% class_nonphyto = {'Thalassiosira_dirty' 'bad' 'ciliate' 'detritus' 'not_ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'};
+% class_mix = {'mix' 'clusterflagellate' 'crypto' 'Euglena' 'flagellate' 'kiteflagellates' 'Phaeocystis' 'Pyramimonas' 'roundCell' 'mix_elongated'};
+% class_diatom = {'Asterionellopsis' 'Cerataulina' 'Chaetoceros' 'Corethron' 'Coscinodiscus' 'Cylindrotheca' 'DactFragCerataul' 'Dactyliosolen'... 
+%     'Ditylum' 'Ephemera' 'Eucampia' 'Guinardia' 'Guinardia_flaccida' 'Guinardia_striata' 'Hemiaulus' 'Lauderia' 'Leptocylindrus' 'Licmophora'...
+%     'Odontella' 'Paralia' 'Pleurosigma' 'Pseudonitzschia' 'Rhizosolenia' 'Skeletonema' 'Stephanopyxis' 'Thalassionema' 'Thalassiosira' 'pennate'};
+% class_ciliate = {'ciliate' 'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea'};
+% %skip: 'Eucampia_groenlandica' 'Tropidoneis' 'dino10'
+% %'other' 'bad'
+% [~,ind_diatoms] = intersect(class2use, class_diatom);
+% [~,ind_dino] = intersect(class2use, class_dino);
+% [~,ind_mix] = intersect(class2use, class_mix);
+% %[~,ind_ciliate] = intersect(class2use, class_ciliate); ind_ciliate = sort(ind_ciliate);
 [ ind_ciliate, class_label ] = get_ciliate_ind( class2use, class2use )
+
+[ ind_diatoms, class_label ] = get_diatom_ind( class2use, class2use );
+
 
 class_label = class2use;
 class_label(strmatch('Leptocylindrus', class_label, 'exact')) = {'\itLeptocylindrus \rmspp.'};
@@ -167,7 +170,7 @@ Synanom = log10(synperml) - repmat(Synmean,1,length(yearall));
 Picoeukmean = nanmean(log10(picoeukperml),2);
 Picoeukanom = log10(picoeukperml) - repmat(Picoeukmean,1,length(yearall));
 
-for classnum = 1:0, %length(ind_diatoms),
+for classnum = 1:length(ind_diatoms), %1:0 %to skip
     xanom = Tanom_ifcb;
     %xanom = Wanom_ifcb;
     yanom = Dallanom_sm(:,:,classnum);

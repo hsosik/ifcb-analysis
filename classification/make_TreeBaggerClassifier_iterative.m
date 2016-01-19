@@ -1,7 +1,7 @@
 function [  ] = make_TreeBaggerClassifier_iterative( result_path, train_filename, result_str, nTrees, nRound )
-%function [ ] = make_TreeBaggerClassifier_iterative( result_path, train_filename, result_str, nTrees )
+%function [ ] = make_TreeBaggerClassifier_iterative( result_path, train_filename, result_str, nTrees, nRound )
 %For example:
-%   make_TreeBaggerClassifier_iterative( 'C:\work\IFCB\user_training_test_data\manual\summary\', 'UserExample_Train_06Aug2015', 'UserExample_Trees_', 100)
+%   make_TreeBaggerClassifier_iterative( 'C:\work\IFCB\user_training_test_data\manual\summary\', 'UserExample_Train_06Aug2015', 'UserExample_Trees_', 100, 25)
 % IFCB classification: create Random Forest classifier from training data,
 % iteratively select which training examples to include
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, August 2015
@@ -14,12 +14,14 @@ function [  ] = make_TreeBaggerClassifier_iterative( result_path, train_filename
 %nRound = 25; %USER number of training examples from each class to consider per iteration
 
 t = load([result_path train_filename]); 
+%keyboard
 %%temporary
 class2skip = {'other' 'crypto'};
+class2skip = [class2skip t.class2use(t.nclass<20)];
 if exist('class2skip', 'var')
     [~,classnum2skip] = intersect(t.class2use, class2skip);
-    t.class2use(classnum2skip) = [];
-    t.nclass(classnum2skip) = [];
+%    t.class2use(classnum2skip) = [];
+%    t.nclass(classnum2skip) = [];
     ind2del = find(ismember(t.class_vector,classnum2skip));
     t.class_vector(ind2del) = [];
     t.train(ind2del,:) = [];
@@ -33,8 +35,8 @@ class_vector = t.class_vector;
 fea2use = 1:length(t.featitles);
 featitles = t.featitles(fea2use);
 datestring = datestr(now, 'ddmmmyyyy');
-%classes = t.class2use(find(nclass)); %only keep classes with non-zero n
-classes = t.class2use;
+classes = t.class2use(find(nclass)); %only keep classes with non-zero n
+%classes = t.class2use;
 %sort training set
 [class_vec_str,sort_ind] = sort(classes(class_vector));
 train = t.train(sort_ind,:);
@@ -65,10 +67,9 @@ disp('Round 1: Growing trees...please be patient')
 b = TreeBagger(nTrees,train(ind4now,fea2use),class_vec_str(ind4now),'Method','c','OOBVarImp','on','MinLeaf',1,'Options',paroptions);
 figure(h),clf, hold on, title('Round 1')
 plot(oobError(b), 'b-'); ylim([0 1]); xlabel('Number of Grown Trees'); ylabel('Out-of-Bag Classification Error');
-
+pause(1)
 
 done_flag = 0;
-
 rounds = ceil(max(nclass)/nRound);
 for round_count = 2:rounds
     %consider the next round
@@ -92,6 +93,8 @@ for round_count = 2:rounds
     b = TreeBagger(nTrees,train(ind4now,fea2use),class_vec_str(ind4now),'Method','c','OOBVarImp','on','MinLeaf',1,'Options',paroptions);
     figure(h),clf, hold on, title(['Round ' num2str(round_count)])
     plot(oobError(b), 'b-'); ylim([0 1]); xlabel('Number of Grown Trees'); ylabel('Out-of-Bag Classification Error');
+    pause(1)
+    keyboard
 end
 
 n2use_byclass = sum(use_flag);
@@ -117,7 +120,8 @@ end;
 clear count fpr tpr thr iaccu accu
 datestring = datestr(now, 'ddmmmyyyy');
 
-save([result_path result_str datestring],'b', 'targets', 'featitles', 'classes', 'maxthre')
+keyboard
+save([result_path result_str datestring],'b', 'targets', 'featitles', 'classes', 'maxthre', '-v7.3')
 
 classifier_oob_analysis( [result_path result_str datestring] )
 

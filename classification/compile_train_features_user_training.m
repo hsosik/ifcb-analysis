@@ -1,11 +1,16 @@
-%get training features from pre-computed bin feature files
-manualpath = 'C:\work\IFCB\user_training_test_data\manual\'; % manual annotation files
-feapath_base = 'C:\work\IFCB\user_training_test_data\features\';
-%WHne number of instances within classes, it helps getting a welle behaved
-%classifier. So try to have evenly distributed number within all classes.
-maxn = 100; %maximum number of images per class to include
-minn = 30; %minimum number for inclusion
-class2skip = {'other'};
+function [  ] = compile_train_features_user_training( manualpath , feapath_base, maxn, minn, class2skip)
+% function [  ] = compile_train_features_user_training( manualpath , feapath_base, maxn, minn, class2skip)
+% For example:
+%compile_train_features_user_training('C:\work\IFCB\user_training_test_data\manual\', 'C:\work\IFCB\user_training_test_data\features\', 100, 30, {'other'})
+%IFCB classifier production: get training features from pre-computed bin feature files
+%Heidi M. Sosik, Woods Hole Oceanographic Institution, converted to function Jan 2016
+%
+
+%manualpath = 'C:\work\IFCB\user_training_test_data\manual\'; % manual annotation files
+%feapath_base = 'C:\work\IFCB\user_training_test_data\features\';
+%maxn = 100; %maximum number of images per class to include
+%minn = 30; %minimum number for inclusion
+%class2skip = {'other'};
 %class2skip = {};
 
 manual_files = dir([manualpath 'D*.mat']);
@@ -14,7 +19,7 @@ fea_files = regexprep(manual_files, '.mat', '_fea_v2.csv');
 manual_files = regexprep(manual_files, '.mat', '');
 %this presumes all the files have the same class to use
 class2use = load([manualpath manual_files{1}], 'class2use_manual');
-class2use = class2use.class2use_manual;
+class2use = class2use.class2use_manual
 %alternatively load your file
 %class2use = load('class2use_TAMUG1', 'class2use');
 %class2use = class2use.class2use;
@@ -24,8 +29,8 @@ if ~exist(outpath, 'dir')
     mkdir(outpath)
 end;
 
-fea_all = [];% nan(5000*length(manual_files), 235);
-class_all = [];% nan(5000*length(manual_files), 1);
+fea_all = [];
+class_all = [];
 files_all = [];
 for filecount = 1:length(manual_files), %looping over the manual files
     feapath=[feapath_base manual_files{filecount}(2:5) filesep];

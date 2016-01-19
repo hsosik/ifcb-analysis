@@ -29,7 +29,8 @@ eval(['wave_period' ystr ' = wave_period;']);
 if strmatch('2015',ystr), 
     Temp_adcp = Temp_adcp_mean;
     ii = find(isnan(Temp2015));
-    Tinterp = interp1(yd_adcp, Temp_adcp, yd_ocn(ii));
+    [~,aa] = unique(yd_adcp);
+    Tinterp = interp1(yd_adcp(aa), Temp_adcp(aa), yd_ocn(ii));
     Temp2015(ii) = Tinterp;
 end;
 
