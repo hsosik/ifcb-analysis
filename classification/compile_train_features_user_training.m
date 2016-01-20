@@ -127,7 +127,8 @@ for classcount = 1:length(class2group{1})
         [~, ~, indc] = intersect(class2group{1}{classcount},class2use);    
         if length(indc) ~= length(class2group{1}{classcount})
             [class_missing] = setdiff(class2group{1}{classcount}, class2use);
-            disp(['grouping aborted; Missing: ' class_missing])
+            disp('grouping aborted; Missing:')
+            disp(class_missing)
         else
             newclass = char(class2group{1}{classcount}(1));
             for ii = 2:length(class2group{1}{classcount})
@@ -151,7 +152,8 @@ for classcount = 1:length(class2group{1})
             end
         end
     else
-        disp(['grouping requires more than one class; aborting grouping for:' class2group{1}{classcount}])
+        disp('grouping requires more than one class; aborting grouping for:')
+        disp(class2group{1}{classcount})
     end
 end
 
@@ -174,4 +176,5 @@ nclass = n;
 datestring = datestr(now, 'ddmmmyyyy');
 
 save([outpath 'UserExample_Train_' datestring], 'train', 'class_vector', 'targets', 'class2use', 'nclass', 'featitles');
-
+disp('Training set feature file stored here:')
+disp([outpath 'UserExample_Train_' datestring])

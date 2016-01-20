@@ -57,6 +57,9 @@ datestring = datestr(now, 'ddmmmyyyy');
 
 save([result_path result_str datestring],'b', 'targets', 'featitles', 'classes', 'maxthre')
 
+disp('Classifier file stored here:')
+disp([result_path result_str datestring])
+
 classifier_oob_analysis( [result_path result_str datestring] )
 
 end
