@@ -2,7 +2,7 @@ function [  ] = compile_train_features_user_training( manualpath , feapath_base,
 % function [  ] = compile_train_features_user_training( manualpath , feapath_base, maxn, minn, class2skip, class2group)
 % class2skipe and class2merge are optional inputs
 % For example:
-%compile_train_features_user_training('C:\work\IFCB\user_training_test_data\manual\', 'C:\work\IFCB\user_training_test_data\features\', 100, 30, {'other'})
+%compile_train_features_user_training('C:\work\IFCB\user_training_test_data\manual\', 'C:\work\IFCB\user_training_test_data\features\', 100, 30, {'other'}, {'misc_nano' 'Karenia'})
 %IFCB classifier production: get training features from pre-computed bin feature files
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, converted to function Jan 2016
 %
@@ -48,18 +48,40 @@ end;
 fea_all = [];
 class_all = [];
 files_all = [];
+%test for feapath format
+feapath_flag = 0;
+feapath=[feapath_base manual_files{1}(2:5) filesep];
+if ~exist([feapath fea_files{1}], 'file')
+    feapath=[feapath_base 'features' manual_files{1}(2:5) '_v2' filesep];
+    feapath_flag = 1;
+    if ~exist([feapath fea_files{1}], 'file')
+        disp('Error: First feature file not found; Check input path')
+        return
+    end
+end
+    
 for filecount = 1:length(manual_files), %looping over the manual files
-    feapath=[feapath_base manual_files{filecount}(2:5) filesep];
+    if feapath_flag
+        feapath=[feapath_base 'features' manual_files{filecount}(2:5) '_v2' filesep];
+    else
+        feapath=[feapath_base manual_files{filecount}(2:5) filesep];
+    end
+    
     disp(['file ' num2str(filecount) ' of ' num2str(length(manual_files)) ': ' manual_files{filecount}])
     manual_temp = load([manualpath manual_files{filecount}]);
     
     fea_temp = importdata([feapath fea_files{filecount}]); %import data from the feature files
     
     if ~isequal(manual_temp.class2use_manual, class2use)
+        class2use_min = min([length(manual_temp.class2use_manual) length(class2use)]);
         disp('class2use_manual does not match previous files!!!')
-        if isequal(manual_temp.class2use_manual, class2use(1:length(manual_temp.class2use_manual))),
-            disp('class2use_manual missing entries on end')
+        if isequal(manual_temp.class2use_manual(1:class2use_min), class2use(1:class2use_min))
+            disp('class2use missing entries on end')
+            if length(class2use) < class2use_min %if the loaded file has more entries update class2use
+                class2use = manual_temp.class2use_manual;
+            end
         else
+            disp('error here: class2use entries do not match')
             keyboard
         end;
     end;
@@ -108,7 +130,7 @@ for classcount = 1:length(class2use),
 end;
 
 for classcount = 1:length(class2skip),
-    ind = strmatch(class2skip(classcount),class2use);
+    ind = strmatch(class2skip(classcount),class2use,'exact');
     if isempty(ind),
         disp([class2skip(classcount) ' does not exist in class2use; skip aborted' ])
     else
@@ -158,7 +180,8 @@ for classcount = 1:length(class2group{1})
 end
 
 %remove classes with too few case after any grouping
-for classcount = 1:length(class2use),
+for classcount = 1:length(class2use)
+    ii = find(class_all == classcount); 
     if n(classcount) < minn,
         class_all(ii) = [];
         fea_all(ii,:) = [];
