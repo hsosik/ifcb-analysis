@@ -1,6 +1,6 @@
 datadir = '\\sosiknas1\Lab_data\MVCO\EnvironmentalData\';
 %datadir = 'C:\work\mvco\OtherData\';
-ystr = '2015';
+ystr = '2016';
 
 X=load ([datadir ystr '_OcnDat_s.C99'],'ascii');
 loadOcnDat
