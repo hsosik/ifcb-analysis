@@ -1,5 +1,6 @@
 feapath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\features_test\';
-manual_path = 'C:\work\IFCB\ifcb_data_MVCO_jun06\Manual_fromClass\';
+%manual_path = 'C:\work\IFCB\ifcb_data_MVCO_jun06\Manual_fromClass\';
+manual_path = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 load([manual_path 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load class2use_MVCOmanual5 %get the master list to start
 class2use_main = class2use;
@@ -85,7 +86,7 @@ for count = 1:length(unqday)
     x = feadata(:,iSA)./feadata(:,iBV)./micron_factor; xbins = SA_BVbins;
     SA_BVstats(count,:) = [mean(x) 10.^(mean(log10(x))) mode(x) median(x)];
     SA_BVhist(count,:) = hist(x, xbins);
-    if 1
+    if 0
         figure(1), loglog(SA_BVbins, SA_BVhist(count,:), '.-'), xlim(SA_BVbins([1,end])), ylim([.9 inf])
         figure(2), loglog(feadata(:,iSA)./feadata(:,iBV)./micron_factor,  feadata(:,imaxF).*micron_factor, '.'), xlim([.1 20]), ylim([5 100])
         hold on, fplot('6/x', xlim), hold off %limit for sphere
