@@ -7,19 +7,12 @@ function [ target ] = biovolume( target )
 volume = NaN;
 t = target.blob_props;
 
-if length(t.Area) > 1,
-    bwl = bwlabel(target.blob_image);
-else
-    bwl = target.blob_image;
-end;
-
 area_ratio = [t.ConvexArea]./[t.Area];
 p = [t.EquivDiameter]./[t.MajorAxisLength];
 for ii = 1:length(t.Area),
     volume(ii) = NaN;
     if t.Area(ii), %skip if no blob (area = 0) 
-        blob_now = bwl; blob_now(blob_now ~= ii) = 0;
-        blob_now = logical(blob_now); %needed for cases with bwlabel applied above    
+        blob_now = target.blob_images{ii};
         if area_ratio(ii) < 1.2 || (t.Eccentricity(ii) < 0.8 && p(ii) > 0.8), %solid of revolution cases
             theta = -1*t.Orientation(ii);
             blob_rot = imrotate(blob_now, theta, 'bilinear'); % rotates the filled image

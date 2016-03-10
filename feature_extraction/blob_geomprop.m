@@ -3,7 +3,8 @@ function [ target ] = blob_geomprop( target )
 
 prop_list = target.config.blob_props;
 
-geomprops = regionprops(logical(target.blob_image), prop_list);
+geomprops = regionprops(logical(target.blob_image), [prop_list {'Image'}]);
+
 %[~,ind] = sort([geomprops.FilledArea], 2,'descend');
 [~,ind] = sort([geomprops.Area], 2,'descend');
 if length(ind) > 1,
@@ -21,6 +22,8 @@ if target.blob_props.numBlobs > 0,
         geomprops(count).FeretDiameter = max(d(:));
     end;
 end;
+target.blob_images = {geomprops.Image};
+geomprops = rmfield(geomprops, 'Image');
 geomprops = rmfield(geomprops, 'ConvexHull');
 s3 = target.blob_props;
 fields = fieldnames(geomprops);
@@ -54,4 +57,3 @@ s3 = rmfield(s3, 'BoundingBox');
 target.blob_props = s3;
 
 end
-
