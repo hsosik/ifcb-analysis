@@ -24,7 +24,7 @@ if target.blob_props.numBlobs > 0,
     img = imrotate(target.blob_image, theta, 'bilinear');
     img = imclose(img, se3);
     img = imdilate(img, se2);
-    img = bwmorph(img, 'thin', 1); % FIXME should be 3 in v3
+    img = bwmorph(img, 'thin', 3);
 %figure(1), subplot(2,2,1), imshow(target.blob_image)
 %subplot(2,2,2), imshow(img), subplot(2,2,4), imshow(img2); subplot(2,2,3), imshow(target.image)
 %pause
