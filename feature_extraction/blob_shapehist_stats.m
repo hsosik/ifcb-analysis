@@ -15,14 +15,18 @@ if isempty(perimeter),
     target.blob_props.shapehist_median_normEqD = 0;
     target.blob_props.shapehist_skewness_normEqD = 0;
     target.blob_props.shapehist_kurtosis_normEqD = 0;
-end;
-for idx = 1:length(perimeter),
-    d = dist(perimeter{idx}'); d = d(:);
-    dnorm = d./target.blob_props.EquivDiameter(idx);
-    target.blob_props.shapehist_mean_normEqD(idx) = mean(dnorm);
-    target.blob_props.shapehist_mode_normEqD(idx) = mode(dnorm);
-    target.blob_props.shapehist_median_normEqD(idx) = median(dnorm);
-    target.blob_props.shapehist_skewness_normEqD(idx) = skewness(dnorm);
-    target.blob_props.shapehist_kurtosis_normEqD(idx) = kurtosis(dnorm);
+else
+    % sort by area
+    gprops = regionprops(target.blob_image,'Area');
+    [~,ind] = sort([gprops.Area], 'descend');
+    for idx = 1:length(perimeter),
+        d = dist(perimeter{ind(idx)}'); d = d(:);
+        dnorm = d./target.blob_props.EquivDiameter(idx);
+        target.blob_props.shapehist_mean_normEqD(idx) = mean(dnorm);
+        target.blob_props.shapehist_mode_normEqD(idx) = mode(dnorm);
+        target.blob_props.shapehist_median_normEqD(idx) = median(dnorm);
+        target.blob_props.shapehist_skewness_normEqD(idx) = skewness(dnorm);
+        target.blob_props.shapehist_kurtosis_normEqD(idx) = kurtosis(dnorm);
+    end;
 end;
 end
