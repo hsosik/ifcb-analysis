@@ -9,7 +9,7 @@ maxy = ceil(max(yall(:))./stdy);
 stdx = nanstd(xall(:));
 maxx = ceil(max(xall(:))./stdx);
 if subplotwidth > 0,
-    figure
+    %figure
     subplotheight = ceil(size(month_bins,1)./subplotwidth);
 end;
 for c = 1:size(month_bins,1), 
@@ -23,8 +23,8 @@ for c = 1:size(month_bins,1),
     p(c) = 1-tcdf(t,n(c)-2);
     if subplotwidth > 0,
         subplot(subplotheight,subplotwidth,c)  
-%        plot(x(:),y(:),'*b');
-        plot(x,y,'*'); t = get(gca, 'children'); set(t(end-3:end), 'marker', 'd');
+        plot(x(:),y(:),'*b');
+%        plot(x,y,'*'); t = get(gca, 'children'); set(t(end-3:end), 'marker', 'd');
         titlestr = [];
         for count = 1:length(mon2find),titlestr = [titlestr char(mon_str(mon2find(count))) '-']; end; titlestr = titlestr(1:end-1);
         title(titlestr), axis([maxx.*[-1 1] maxy.*[-1 1]]); 

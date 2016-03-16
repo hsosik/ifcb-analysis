@@ -41,13 +41,18 @@ if exist([manualfilename], 'file')  %~isempty(tempdir)
         default_class_original = 'NaN';
     end
     if length(class2use_in) < length(class2use_manual)
-        disp('Existing class2use_manual does not match class2use for ROI picking. You must remap the classes in result file first or change your picking categories.')
+        %disp('Existing class2use_manual does not match class2use for ROI picking. You must remap the classes in result file first or change your picking categories.')
+        disp('Existing class2use_manual does not match class2use for ROI picking. Your saved results have more classes than in your list of picking categories.')
         classlist = [];
         return
     elseif ~isequal(class2use_manual, class2use_in(1:length(class2use_manual)))
-        disp('Existing class2use_manual does not match class2use for ROI picking. You must remap the classes in result file first or change your picking categories.')
-        classlist = [];
-        return
+        %disp('Existing class2use_manual does not match class2use for ROI picking. You must remap the classes in result file first or change your picking categories.')
+        %classlist = [];
+        %return
+        ichange = find(~strcmp(class2use_in(1:length(class2use_manual)), class2use_manual));
+        for ci = 1:length(ichange)
+            disp([class2use_manual{ichange(ci)} ' relabeled ' class2use_in{ichange(ci)}])
+        end
     end
     if isempty(find(~isnan(classlist(:,auto_col))))
         old_manual_no_auto = 1;

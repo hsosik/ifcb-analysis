@@ -67,7 +67,7 @@ classcount_above_adhocthresh = classcount;
 num2dostr = num2str(length(classfiles));
 ml_analyzed = NaN(size(classfiles));
 adhocthresh = 0.5.*ones(size(class2use)); %assign all classes the same adhoc decision threshold between 0 and 1
-adhocthresh(strmatch('Karenia', class2use, 'exact')) = 0.8; %reassign value for specific class
+%adhocthresh(strmatch('Karenia', class2use, 'exact')) = 0.8; %reassign value for specific class
 for filecount = 1:length(classfiles)
     if ~rem(filecount,10), disp(['reading ' num2str(filecount) ' of ' num2dostr]), end;
     ml_analyzed(filecount) = IFCB_volume_analyzed(hdrfiles{filecount});
@@ -96,6 +96,10 @@ if exist('adhocthresh', 'var'),
 else
     save([path_out 'summary_allTB'] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic')
 end;
+
+
+disp('Summary cell count file stored here:')
+disp([path_out 'summary_allTB'])
 
 return
 % %example plotting code for all of the data (load summary file first)

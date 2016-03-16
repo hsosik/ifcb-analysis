@@ -1,4 +1,4 @@
-load '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_biovol_manual_25Sep2012_day'
+load '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_biovol_manual_current_day'
 
 [ ind_diatoms, class_label ] = get_diatom_ind( class2use, class2use );
 
@@ -35,8 +35,17 @@ end;
 Dsumanom = Dsumday-repmat(smooth(nanmean(Dsumday,2)),1,length(year_ifcb));
 
 
-[ Tday, Tanom_fcb, Tanom_ifcb ] = get_Tanom_node( year_fcb, year_ifcb );
+load c:\work\mvco\carbon\conc_summary_fcb
+mdate_year_fcb = datenum(yearall,0,0);
+mdate_fcb = repmat(yd_fcb,1,length(yearall))+repmat(mdate_year_fcb,length(yd_fcb),1);
+Synmean = nanmean(log10(synperml),2);
+Synanom = log10(synperml) - repmat(Synmean,1,length(yearall));
+Picoeukmean = nanmean(log10(picoeukperml),2);
+Picoeukanom = log10(picoeukperml) - repmat(Picoeukmean,1,length(yearall));
 
+
+
+[ Tday, Tanom_fcb, Tanom_ifcb ] = get_Tanom_node( year_fcb, year_ifcb );
 
 [~,month,~] = datevec(datenum(0,0,yd));
 
