@@ -20,7 +20,11 @@ else
     gprops = regionprops(target.blob_image,'Area');
     [~,ind] = sort([gprops.Area], 'descend');
     for idx = 1:length(perimeter),
-        d = dist(perimeter{ind(idx)}'); d = d(:);
+        p = perimeter{ind(idx)};
+        p = unique(p,'rows');
+        d = dist(p');
+        nz = find(triu(d));
+        d = d(nz);
         dnorm = d./target.blob_props.EquivDiameter(idx);
         target.blob_props.shapehist_mean_normEqD(idx) = mean(dnorm);
         target.blob_props.shapehist_mode_normEqD(idx) = mode(dnorm);
