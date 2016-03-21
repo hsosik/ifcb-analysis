@@ -1,5 +1,6 @@
 load \\Dq-cytobot-pc\IFCB\class_TAMUG_Trees_15Jul2015\summary\summary_allTB_bythre_Flagellate_MIX
-m = load('\\Dq-cytobot-pc\IFCB\manual\summary\count_manual_28Jul2015'); 
+%m = load('\\Dq-cytobot-pc\IFCB\manual\summary\count_manual_28Jul2015');
+load('\\Dq-cytobot-pc\IFCB\manual\summary\count_manual_28Jul2015')
 imclass = strmatch('Flagellate_MIX', m.class2use);
 goodm = find(~isnan(m.ml_analyzed_mat(:,imclass)));
 [~,im,it] = intersect(m.filelist(goodm), filelistTB);

@@ -61,13 +61,19 @@ AREA_BOT(gg) = 0;
 AREA_TOP(gg) = 0;
 %c = pi/2/sqrt(2);
 c = pi*xr/2./(2*sqrt(2)*xr/2+(1+sqrt(2))/2);
+%offset = (1+sqrt(2))/2;
+%c = pi*xr/2./(sqrt(2)*xr+offset);
 SA = 2*c*(sum(AREA_BOT(:)) + sum(AREA_TOP(:))) ; 
 end
 
 %return 
-%odd
+%odd, half crcle vs triangle
 %pi*D/2 vs 2*sqrt(2)*(D/2+1/2)) = 2*sqrt(2)*D/2+sqrt(2)
+%pi*D/2 vs 2*sqrt(2)*(D/2+1/2) = sqrt(2)*(D+1)
 %even
-%pi*D/2 vs 2*sqrt(2)*D/2+1
+%pi*D/2 vs 2*sqrt(2)*D/2+1 = sqrt(2)*D + 1
 %mean = pi*D/2/(2*sqrt(2)*D/2 + (1+sqrt(2))/2)
+%mean = pi*D/2/(sqrt(2)*D+(1+sqrt(2))/2)
+
+
 %expect odd overest, even underest
