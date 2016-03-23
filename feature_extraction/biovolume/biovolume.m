@@ -5,6 +5,8 @@ function [ target ] = biovolume( target )
 % Heidi M. Sosik, Woods Hole Oceanographic Institution
 
 volume = NaN;
+surface_area = NaN;
+xr = NaN;
 t = target.blob_props;
 
 area_ratio = [t.ConvexArea]./[t.Area];
