@@ -11,19 +11,23 @@ if length(ind) > 1,
     geomprops = geomprops(ind); %sort largest to smallest
 end;
 target.blob_props.numBlobs = length(ind);
-
 geomprops(1).ConvexPerimeter = 0; %initialize at zero
 geomprops(1).FeretDiameter = 0; %initialize at zero
+geomprops(1).maxFeretDiameter = 0; %initialize at zero
+geomprops(1).minFeretDiameter = 0; %initialize at zero
 
+target.blob_images = {geomprops.Image};
 if target.blob_props.numBlobs > 0,
     for count = 1:length(ind),
         d = (geomprops(count).ConvexHull(:,1:2))';
         dd = dist(d);
         geomprops(count).ConvexPerimeter = sum(diag(dd,1));
         geomprops(count).FeretDiameter = max(dd(:));
+        [fd] = imFeretDiameter(target.blob_images{count},0:359);
+        geomprops(count).maxFeretDiameter = max(fd);
+        geomprops(count).minFeretDiameter = min(fd);
     end;
 end;
-target.blob_images = {geomprops.Image};
 geomprops = rmfield(geomprops, 'Image');
 geomprops = rmfield(geomprops, 'ConvexHull');
 s3 = target.blob_props;
