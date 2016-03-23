@@ -3,3 +3,6 @@
 
 # OSX / *nix default autosave extension
 *.m~
+
+# Compiled Python files
+*.pyc

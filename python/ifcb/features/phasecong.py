@@ -1,0 +1,18 @@
+from phasepack import phasecong
+
+PC_NSCALE=4
+PC_NORIENT=6
+PC_MIN_WAVELENGTH=2
+PC_MULT=2.5
+PC_SIGMA_ONF=0.55
+PC_K=2.0
+PC_CUTOFF=0.3
+PC_G=5
+PC_NOISEMETHOD=-1
+
+def phasecong_Mm(roi):
+    r = phasecong(roi,PC_NSCALE,PC_NORIENT,PC_MIN_WAVELENGTH,PC_MULT,PC_SIGMA_ONF,PC_K,PC_CUTOFF,PC_G,PC_NOISEMETHOD)
+
+    M, m = r[0:2]
+
+    return M + m
