@@ -17,7 +17,7 @@ function [  ] = compile_train_features_user_training( manualpath , feapath_base,
 %class2group = {{'class1a' 'class1b'} {'class2a' 'class2b' 'class2c'}}; %use nested cells for multiple groups of 2 or more classes 
 
 class2skip = []; %initialize
-class2group = [];
+class2group = {[]};
 if length(varargin) >= 1
     class2skip = varargin{1};
 end
