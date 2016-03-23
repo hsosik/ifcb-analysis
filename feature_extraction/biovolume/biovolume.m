@@ -16,15 +16,18 @@ for ii = 1:length(t.Area),
         if area_ratio(ii) < 1.2 || (t.Eccentricity(ii) < 0.8 && p(ii) > 0.8), %solid of revolution cases
             theta = -1*t.Orientation(ii);
             blob_rot = imrotate(blob_now, theta, 'bilinear'); % rotates the filled image
-            volume(ii) = volumewalk(blob_rot);
+            %volume(ii) = volumewalk(blob_rot);
+            [volume(ii) xr(ii) surface_area(ii)] = surface_area_revolve_2e(blob_rot); 
         else %distance map cases
            b =  bwboundaries(blob_now,8,'noholes');
            [M N] = size(blob_now);
            perim_img = bound2im(b{1},M,N);
-           volume(ii) = distmap_volume(perim_img);
+            [volume(ii) xr(ii) surface_area(ii)] = distmap_volume(perim_img);
         end;
     end;
 end;
 target.blob_props.Biovolume = volume;
+target.blob_props.SurfaceArea = surface_area;
+target.blob_props.RepresentativeWidth = xr;
 end
 

@@ -1,4 +1,4 @@
- function [ volume ] = distmap_volume( boundary_image )
+ function [ volume x surface_area] = distmap_volume( boundary_image )
 % [ volume ] = distmap_volume( boundary_image )
 % distmap_volume( boundary_image ) returns the volume in pixel cubes 
 % of a target with complex closed boundary shape indicated in the 
@@ -9,6 +9,8 @@
 % 
 % Emily A. Moberg and Heidi M. Sosik
 % Woods Hole Oceanographic Institution, 2012
+%
+% Surface area added (March 2016) according to algorithm by Louis Kilfoyle
 
 % calculate distance map
 dist = bwdist(boundary_image); 
@@ -29,5 +31,7 @@ c2 = pi/2;
 
 % calculate final volume applying correction factors to distance map
 volume = c1*c2*2*nansum(dist(:)); 
+
+surface_area = distance_map2surface_area4(dist, x);
 
 end
