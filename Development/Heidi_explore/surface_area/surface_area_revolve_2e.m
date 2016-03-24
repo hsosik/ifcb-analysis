@@ -90,4 +90,6 @@ b2 = pi * r(i2,1).^2;
 h = diff(x)'; %height of cone slices
 V = sum(h/3 .* (b1 + b2 + sqrt(b1.*b2)));
 
+xr = mean(r(:,1)*2);
+
 end
