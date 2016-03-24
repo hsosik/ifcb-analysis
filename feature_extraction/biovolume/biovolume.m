@@ -4,15 +4,15 @@ function [ target ] = biovolume( target )
 % Modify from biovolume.m to compute along with other features
 % Heidi M. Sosik, Woods Hole Oceanographic Institution
 
-volume = NaN;
-surface_area = NaN;
-xr = NaN;
 t = target.blob_props;
+volume = NaN(size(t));
+surface_area = volume;
+xr = volume;
 
 area_ratio = [t.ConvexArea]./[t.Area];
 p = [t.EquivDiameter]./[t.MajorAxisLength];
 for ii = 1:length(t.Area),
-    volume(ii) = NaN;
+    %volume(ii) = NaN;
     if t.Area(ii), %skip if no blob (area = 0) 
         blob_now = target.blob_images{ii};
         if area_ratio(ii) < 1.2 || (t.Eccentricity(ii) < 0.8 && p(ii) > 0.8), %solid of revolution cases

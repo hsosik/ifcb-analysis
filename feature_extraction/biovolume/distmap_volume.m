@@ -21,7 +21,7 @@ image_fill = imfill(boundary_image,'holes');
 dist(image_fill==0) = NaN; 
 
 % find representative transect length
-x = double(4*nanmean(dist(:)) - 2);
+x = 4*nanmean(dist(:)) - 2;
 
 % define cross-section correction factors 
 % pyramidal cross-section to interpolated diamond
@@ -32,6 +32,6 @@ c2 = pi/2;
 % calculate final volume applying correction factors to distance map
 volume = c1*c2*2*nansum(dist(:)); 
 
-surface_area = double(distance_map2surface_area4(dist, x));
+surface_area = distance_map2surface_area4(dist, x);
 
 end
