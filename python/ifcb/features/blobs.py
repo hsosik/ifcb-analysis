@@ -2,9 +2,11 @@ import numpy as np
 
 from scipy.ndimage import measurements
 
+from skimage.measure import regionprops
 from skimage.transform import rotate
 from skimage.util import pad
 from skimage.morphology import binary_closing, binary_dilation
+from math import ceil, floor
 
 from ifcb.features.morphology import SE2, SE3, EIGHT, bwmorph_thin
 
@@ -24,16 +26,28 @@ def find_blobs(B):
     blobs = [labeled[obj]==ix+1 for ix, obj in zip(range(len(objects)), objects)]
     return labeled, objects, blobs
 
-def rotate_blob(blob, theta, niter=3):
-    """rotate a blob and smooth out rotation artifacts"""
-    # pad image so morphological operations won't produce edge artifacts
-    blob = pad(blob,5,mode='constant')
-    blob = rotate(blob,-1*theta,resize=True)
-    blob = binary_closing(blob,SE3)
-    blob = binary_dilation(blob,SE2)
-    # note that H Sosik's version does one iteration
-    # of thinning but 3 is closer to area-preserving
-    blob = bwmorph_thin(blob,niter)
+def center_blob(B):
+    """returns a new image centered on the blob's
+    centroid"""
+    # compute centroid
+    yc, xc = np.mean(np.vstack(np.where(B)),axis=1)
+    # center
+    h, w = B.shape
+    s = max(yc,h-yc,xc,w-xc)
+    m = ceil(s*2)
+    C = np.zeros((m,m),dtype=np.bool)
+    y0, x0 = floor(s-yc), floor(s-xc)
+    C[y0:y0+h,x0:x0+w]=B
+    return C
+
+def rotate_blob(blob, theta):
+    """rotate a blob counterclockwise"""
+    blob = center_blob(blob)
+    # note that v2 uses bilinear interpolation in MATLAB
+    # and that is not available in skimage rotate
+    # so v3 uses nearest-neighbor
+    blob = rotate(blob,-1*theta,order=0).astype(np.bool)
+    # note that v2 does morphological post-processing and v3 does not
     return blob
     
 def rotate_blob_sor_v2(blob, theta):
