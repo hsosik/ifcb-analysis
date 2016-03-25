@@ -2,7 +2,7 @@ import numpy as np
 
 from scipy.ndimage.morphology import distance_transform_edt
 
-from oii.ifcb2.features.morphology import find_perimeter
+from ifcb.features.morphology import find_perimeter
 
 def distmap_volume(B,perimeter_image=None):
     """Moberg & Sosik biovolume algorithm
