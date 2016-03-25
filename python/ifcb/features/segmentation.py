@@ -4,8 +4,8 @@ from scipy.cluster.vq import kmeans2
 from scipy.ndimage.morphology import binary_fill_holes
 from skimage.morphology import binary_closing, binary_dilation, remove_small_objects
 
-from oii.ifcb2.features.phasecong import phasecong_Mm
-from oii.ifcb2.features.morphology import SE2, SE3, hysthresh, bwmorph_thin
+from ifcb.features.phasecong import phasecong_Mm
+from ifcb.features.morphology import SE2, SE3, hysthresh, bwmorph_thin
 
 # parameters
 HT_T1, HT_T2 = 0.2, 0.1
