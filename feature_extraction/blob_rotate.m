@@ -8,7 +8,7 @@ function [ target ] = blob_rotate( target )
 
 if target.blob_props.numBlobs > 0,
     for i = 1:target.blob_props.numBlobs,
-        theta = -1*target.blob_props.Orientation(1);
+        theta = -1*target.blob_props.Orientation(i);
         centered = center_blob(target.blob_images{i});
         rot = imrotate(centered,theta,'nearest','crop');
         target.rotated_blob_images{i}=rot;
