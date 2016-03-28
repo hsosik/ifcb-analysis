@@ -14,7 +14,7 @@ for i = 1:length(s_temp),
 end;
 largest_ind = [1 cumsum(n(1:end-1))+1];
 
-fields = fieldnames(s_temp);
+fields = sort(fieldnames(s_temp));
 for i = 1:length(fields),
     field = char(fields(i));
     list = [s_temp.(field)];
