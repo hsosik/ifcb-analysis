@@ -19,11 +19,11 @@ target.blob_images = {}; %initialize at empty
 
 if target.blob_props.numBlobs > 0,
     target.blob_images = {geomprops.Image};
-    for count = 1:length(ind),
+    for count = 1:target.blob_props.numBlobs
+        target.blob_perimeter_images{count} = compute_perimeter_img( target.blob_images{count} ); 
         d = (geomprops(count).ConvexHull(:,1:2))';
         dd = dist(d);
         geomprops(count).ConvexPerimeter = sum(diag(dd,1));
-        geomprops(count).FeretDiameter = max(dd(:));
         [fd] = imFeretDiameter(target.blob_images{count},0:359);
         geomprops(count).maxFeretDiameter = max(fd);
         geomprops(count).minFeretDiameter = min(fd);
