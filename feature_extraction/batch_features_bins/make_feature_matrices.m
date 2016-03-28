@@ -23,7 +23,7 @@ ind = strmatch('moment_invariant', names);
 tempfea = rmfield(tempfea, names(ind));
 ind = strmatch('texture_', names);
 tempfea = rmfield(tempfea, names(ind));
-tempfea = rmfield(tempfea, {'HOG', 'Hflip', 'H90', 'H180', 'Wedges', 'Rings', 'numBlobs'});
+tempfea = rmfield(tempfea, {'HOG', 'Wedges', 'Rings', 'numBlobs'});
 multiblob_features = [roinum_multi; cell2mat(squeeze(struct2cell(tempfea)))]';
 multiblob_titles = ['roi_number' 'blob_number' fields(tempfea)'];
 
