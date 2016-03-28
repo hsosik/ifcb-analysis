@@ -17,11 +17,7 @@ for ii = 1:length(t.Area),
             blob_now = target.rotated_blob_images{ii};
             [volume(ii) xr(ii) surface_area(ii)] = surface_area_revolve_2e(blob_now); 
         else %distance map cases
-           blob_now = target.blob_images{ii};
-           b =  bwboundaries(blob_now,8,'noholes');
-           [M N] = size(blob_now);
-           perim_img = bound2im(b{1},M,N);
-           [volume(ii) xr(ii) surface_area(ii)] = distmap_volume(perim_img);
+           [volume(ii) xr(ii) surface_area(ii)] = distmap_volume(target.blob_perimeter_images{ii});
         end;
     end;
 end;
