@@ -420,103 +420,74 @@ class Roi(object):
     @property
     def summed_convex_perimeter_over_perimeter(self):
         return self.summed_convex_perimeter / self.summed_perimeter
-        
-FEATURES_SCHEMA=[
-'Area','Biovolume','BoundingBox_xwidth','BoundingBox_ywidth','ConvexArea',
-'ConvexPerimeter','Eccentricity','EquivDiameter','Extent','FeretDiameter',
-'H180','H90','Hflip','MajorAxisLength','MinorAxisLength','Orientation',
-'Perimeter','RWcenter2total_powerratio','RWhalfpowerintegral','Solidity',
-'moment_invariant1','moment_invariant2','moment_invariant3',
-'moment_invariant4','moment_invariant5','moment_invariant6',
-'moment_invariant7','numBlobs','shapehist_kurtosis_normEqD',
-'shapehist_mean_normEqD','shapehist_median_normEqD',
-'shapehist_mode_normEqD','shapehist_skewness_normEqD','summedArea',
-'summedBiovolume','summedConvexArea','summedConvexPerimeter',
-'summedFeretDiameter','summedMajorAxisLength','summedMinorAxisLength',
-'summedPerimeter','texture_average_contrast','texture_average_gray_level',
-'texture_entropy','texture_smoothness','texture_third_moment',
-'texture_uniformity','RotatedArea','RotatedBoundingBox_xwidth',
-'RotatedBoundingBox_ywidth','Wedge01','Wedge02','Wedge03','Wedge04',
-'Wedge05','Wedge06','Wedge07','Wedge08','Wedge09','Wedge10','Wedge11',
-'Wedge12','Wedge13','Wedge14','Wedge15','Wedge16','Wedge17','Wedge18',
-'Wedge19','Wedge20','Wedge21','Wedge22','Wedge23','Wedge24','Wedge25',
-'Wedge26','Wedge27','Wedge28','Wedge29','Wedge30','Wedge31','Wedge32',
-'Wedge33','Wedge34','Wedge35','Wedge36','Wedge37','Wedge38','Wedge39',
-'Wedge40','Wedge41','Wedge42','Wedge43','Wedge44','Wedge45','Wedge46',
-'Wedge47','Wedge48','Ring01','Ring02','Ring03','Ring04','Ring05','Ring06',
-'Ring07','Ring08','Ring09','Ring10','Ring11','Ring12','Ring13','Ring14',
-'Ring15','Ring16','Ring17','Ring18','Ring19','Ring20','Ring21','Ring22',
-'Ring23','Ring24','Ring25','Ring26','Ring27','Ring28','Ring29','Ring30',
-'Ring31','Ring32','Ring33','Ring34','Ring35','Ring36','Ring37','Ring38',
-'Ring39','Ring40','Ring41','Ring42','Ring43','Ring44','Ring45','Ring46',
-'Ring47','Ring48','Ring49','Ring50','HOG01','HOG02','HOG03','HOG04',
-'HOG05','HOG06','HOG07','HOG08','HOG09','HOG10','HOG11','HOG12','HOG13',
-'HOG14','HOG15','HOG16','HOG17','HOG18','HOG19','HOG20','HOG21','HOG22',
-'HOG23','HOG24','HOG25','HOG26','HOG27','HOG28','HOG29','HOG30','HOG31',
-'HOG32','HOG33','HOG34','HOG35','HOG36','HOG37','HOG38','HOG39','HOG40',
-'HOG41','HOG42','HOG43','HOG44','HOG45','HOG46','HOG47','HOG48','HOG49',
-'HOG50','HOG51','HOG52','HOG53','HOG54','HOG55','HOG56','HOG57','HOG58',
-'HOG59','HOG60','HOG61','HOG62','HOG63','HOG64','HOG65','HOG66','HOG67',
-'HOG68','HOG69','HOG70','HOG71','HOG72','HOG73','HOG74','HOG75','HOG76',
-'HOG77','HOG78','HOG79','HOG80','HOG81','Area_over_PerimeterSquared',
-'Area_over_Perimeter','H90_over_Hflip','H90_over_H180','Hflip_over_H180',
-'summedConvexPerimeter_over_Perimeter','rotated_BoundingBox_solidity'
-]
+
+def get_multifeature(fmt,vals):
+    return [(fmt % (n+1,), v) for n,v in zip(range(len(vals)),vals)]
+
+N_FEATURES=239
 
 def get_all_features(r):
     b = r.blobs[0]
-    return [
-        b.area,
-        b.biovolume,
-        b.bbox_xwidth,
-        b.bbox_ywidth,
-        b.convex_area,
-        b.convex_perimeter,
-        b.eccentricity,
-        b.equiv_diameter,
-        b.extent,
-        b.feret_diameter,
-        b.h180,
-        b.h90,
-        b.hflip,
-        b.major_axis_length,
-        b.minor_axis_length,
-        b.orientation,
-        b.perimeter,
-        r.rw_power_ratio,
-        r.rw_power_integral,
-        b.solidity
-    ] + list(r.invmoments) + [
-        r.num_blobs,
-        b.perimeter_kurtosis,
-        b.perimeter_mean,
-        b.perimeter_median,
-        0, # perimeter mode (deprecated)
-        b.perimeter_skewness,
-        r.summed_area,
-        r.summed_biovolume,
-        r.summed_convex_area,
-        r.summed_convex_perimeter,
-        r.summed_feret_diameter,
-        r.summed_major_axis_length,
-        r.summed_minor_axis_length,
-        r.summed_perimeter,
-        r.texture_average_contrast,
-        r.texture_average_gray_level,
-        r.texture_entropy,
-        r.texture_smoothness,
-        r.texture_third_moment,
-        r.texture_uniformity,
-        b.rotated_area,
-        b.rotated_bbox_xwidth,
-        b.rotated_bbox_ywidth
-    ] + list(r.wedge) + list(r.ring) + list(r.hog) + [
-        b.area_over_perimeter_squared,
-        b.area_over_perimeter,
-        b.h90_over_hflip,
-        b.h90_over_h180,
-        b.hflip_over_h180,
-        r.summed_convex_perimeter_over_perimeter,
-        b.rotated_bbox_solidity
+    f = []
+    f += [
+        ('Area', b.area),
+        ('Biovolume', b.biovolume),
+        ('BoundingBox_xwidth', b.bbox_xwidth),
+        ('BoundingBox_ywidth', b.bbox_ywidth),
+        ('ConvexArea', b.convex_area),
+        ('ConvexPerimeter', b.convex_perimeter),
+        ('Eccentricity', b.eccentricity),
+        ('EquivDiameter', b.equiv_diameter),
+        ('Extent', b.extent),
+        ('H180', b.h180),
+        ('H90', b.h90),
+        ('Hflip', b.hflip),
+        ('MajorAxisLength', b.major_axis_length),
+        ('MinorAxisLength', b.minor_axis_length),
+        ('Orientation', b.orientation),
+        ('Perimeter', b.perimeter),
+        ('RWcenter2total_powerratio', r.rw_power_ratio),
+        ('RWhalfpowerintegral', r.rw_power_integral),
+        ('RepresentativeWidth', 0), # unimplemented
+        ('RotatedArea', 0), # will be removed
+        ('RotatedBoundingBox_xwidth', b.rotated_bbox_xwidth),
+        ('RotatedBoundingBox_ywidth', b.rotated_bbox_ywidth),
+        ('Solidity', b.solidity),
+        ('SurfaceArea', 0), # unimplemented
+        ('maxFeretDiameter', b.max_feret_diameter),
+        ('minFeretDiameter', b.min_feret_diameter)
     ]
-
+    f += get_multifeature('moment_invariant%d', r.invmoments)
+    f += [
+        ('numBlobs', r.num_blobs),
+        ('shapehist_kurtosis_normEqD', b.perimeter_kurtosis),
+        ('shapehist_mean_normEqD', b.perimeter_mean),
+        ('shapehist_median_normEqD', b.perimeter_median),
+        ('shapehist_mode_normEqD', 0), # will be removed
+        ('shapehist_skewness_normEqD', b.perimeter_skewness),
+        ('summedArea', r.summed_area),
+        ('summedBiovolume', r.summed_biovolume),
+        ('summedConvexArea', r.summed_convex_area),
+        ('summedConvexPerimeter', r.summed_convex_perimeter),
+        ('summedMajorAxisLength', r.summed_major_axis_length),
+        ('summedMinorAxisLength', r.summed_minor_axis_length),
+        ('summedPerimeter', r.summed_perimeter),
+        ('texture_average_contrast', r.texture_average_contrast),
+        ('texture_average_gray_level', r.texture_average_gray_level),
+        ('texture_entropy', r.texture_entropy),
+        ('texture_smoothness', r.texture_smoothness),
+        ('texture_third_moment', r.texture_third_moment),
+        ('texture_uniformity', r.texture_uniformity)
+    ]
+    f += get_multifeature('Wedge%02d', r.wedge)
+    f += get_multifeature('Ring%02d', r.ring)
+    f += get_multifeature('HOG%02d', r.hog)
+    f += [
+        ('Area_over_PerimeterSquared', b.area_over_perimeter_squared),
+        ('Area_over_Perimeter', b.area_over_perimeter),
+        ('H90_over_Hflip', b.h90_over_hflip),
+        ('H90_over_H180', b.h90_over_h180),
+        ('summedConvexPerimeter_over_Perimeter', r.summed_convex_perimeter_over_perimeter),
+        ('rotated_BoundingBox_solidity', b.rotated_bbox_solidity)
+    ]
+    return f
