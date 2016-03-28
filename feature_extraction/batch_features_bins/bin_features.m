@@ -79,15 +79,15 @@ if nt > 0,
     [ feature_mat, featitles, multiblob_features, multiblob_titles ] = make_feature_matrices(temp);
 
     %write the compiled feature csv file
-    fileout = regexprep(file, '.zip', '_fea_v2.csv');
-    fileout = regexprep(fileout, '.roi', '_fea_v2.csv');
+    fileout = regexprep(file, '.zip', '_fea_v3.csv');
+    fileout = regexprep(fileout, '.roi', '_fea_v3.csv');
     log(['SAVING ' fileout]);
    
     csvwrite_with_headers( [out_dir fileout], feature_mat, featitles );
     
     %write the raw multi-blob features to separate csv file
-    fileout = regexprep(file, '.zip', '_multiblob_v2.csv');   
-    fileout = regexprep(fileout, '.roi', '_multiblob_v2.csv');   
+    fileout = regexprep(file, '.zip', '_multiblob_v3.csv');   
+    fileout = regexprep(fileout, '.roi', '_multiblob_v3.csv');   
     if ~isempty(multiblob_features),
         mkdir([out_dir filesep 'multiblob']);
         csvwrite_with_headers( [out_dir filesep 'multiblob' filesep fileout], multiblob_features, multiblob_titles );

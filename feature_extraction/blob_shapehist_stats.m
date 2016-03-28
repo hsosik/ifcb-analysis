@@ -5,23 +5,20 @@ function [ target ] = blob_shapehist_stats( target )
 % stats computed and returned in shapehist fields of target: mean, mode, median, skewness, and kurtosis
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, Oct 2011
 
-%if ~exist(target.perimeter_xy), 
-    perimeter = bwboundaries(target.blob_image, 'noholes');
-%end;
-target.perimeter_xy = perimeter;
-if isempty(perimeter),
+
+%perimeter = bwboundaries(target.blob_image, 'noholes');
+%target.perimeter_xy = perimeter;
+if isempty(target.blob_images),
     target.blob_props.shapehist_mean_normEqD = 0;
     target.blob_props.shapehist_mode_normEqD = 0;
     target.blob_props.shapehist_median_normEqD = 0;
     target.blob_props.shapehist_skewness_normEqD = 0;
     target.blob_props.shapehist_kurtosis_normEqD = 0;
 else
-    % sort by area
-    gprops = regionprops(target.blob_image,'Area');
-    [~,ind] = sort([gprops.Area], 'descend');
-    for idx = 1:length(perimeter),
-        p = perimeter{ind(idx)};
-        p = unique(p,'rows');
+    for idx = 1:length(target.blob_images),
+        p = bwboundaries(target.blob_images{idx}, 'noholes');
+        if length(p) > 1, keyboard, end % TEMPORARY REMOVE LATER
+        p = unique(p{1},'rows');
         d = dist(p');
         nz = find(triu(d));
         d = d(nz);

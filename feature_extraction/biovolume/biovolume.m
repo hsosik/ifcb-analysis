@@ -12,19 +12,16 @@ xr = volume;
 area_ratio = [t.ConvexArea]./[t.Area];
 p = [t.EquivDiameter]./[t.MajorAxisLength];
 for ii = 1:length(t.Area),
-    %volume(ii) = NaN;
     if t.Area(ii), %skip if no blob (area = 0) 
-        blob_now = target.blob_images{ii};
         if area_ratio(ii) < 1.2 || (t.Eccentricity(ii) < 0.8 && p(ii) > 0.8), %solid of revolution cases
-            theta = -1*t.Orientation(ii);
-            blob_rot = imrotate(blob_now, theta, 'bilinear'); % rotates the filled image
-            %volume(ii) = volumewalk(blob_rot);
-            [volume(ii) xr(ii) surface_area(ii)] = surface_area_revolve_2e(blob_rot); 
+            blob_now = target.rotated_blob_images{ii};
+            [volume(ii) xr(ii) surface_area(ii)] = surface_area_revolve_2e(blob_now); 
         else %distance map cases
+           blob_now = target.blob_images{ii};
            b =  bwboundaries(blob_now,8,'noholes');
            [M N] = size(blob_now);
            perim_img = bound2im(b{1},M,N);
-            [volume(ii) xr(ii) surface_area(ii)] = distmap_volume(perim_img);
+           [volume(ii) xr(ii) surface_area(ii)] = distmap_volume(perim_img);
         end;
     end;
 end;
