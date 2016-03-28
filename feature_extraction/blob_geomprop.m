@@ -15,9 +15,10 @@ geomprops(1).ConvexPerimeter = 0; %initialize at zero
 geomprops(1).FeretDiameter = 0; %initialize at zero
 geomprops(1).maxFeretDiameter = 0; %initialize at zero
 geomprops(1).minFeretDiameter = 0; %initialize at zero
+target.blob_images = {}; %initialize at empty
 
-target.blob_images = {geomprops.Image};
 if target.blob_props.numBlobs > 0,
+    target.blob_images = {geomprops.Image};
     for count = 1:length(ind),
         d = (geomprops(count).ConvexHull(:,1:2))';
         dd = dist(d);
