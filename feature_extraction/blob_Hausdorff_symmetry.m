@@ -15,7 +15,7 @@ if target.blob_props.numBlobs > 0,
         img = target.rotated_blob_images{i};
         c = size(img) / 2; % assume center of image is centroid
         % find points on the boundary and center them
-        perimeter_img = im2bw(conv2(img,[0 -1 0; -1 4 -1; 0 -1 0]));
+        perimeter_img = compute_perimeter_img( img ); 
         [y, x] = find(perimeter_img);
         % center and correct for 1-based indexing
         p = horzcat(y-c(1)-1,x-c(2)-1);
