@@ -23,16 +23,8 @@ ind = strmatch('moment_invariant', names);
 tempfea = rmfield(tempfea, names(ind));
 ind = strmatch('texture_', names);
 tempfea = rmfield(tempfea, names(ind));
-ind = strmatch('Rotated', names); %skip rotated since not always same number of blobs
-tempfea = rmfield(tempfea, names(ind));
 tempfea = rmfield(tempfea, {'HOG', 'Hflip', 'H90', 'H180', 'Wedges', 'Rings', 'numBlobs'});
 multiblob_features = [roinum_multi; cell2mat(squeeze(struct2cell(tempfea)))]';
-%names = fields(tempfea);
-%multiblob_features = NaN(sum(n), length(names));
-%for ii = length(names),
-%    multiblob_features(:,ii) = [tempfea.(names{ii})]'; 
-%end;
-%multiblob_features = [roinum' multiblob_features];
 multiblob_titles = ['roi_number' 'blob_number' fields(tempfea)'];
 
 %all features in compiled version (summed or largest in case of multiple blobs

@@ -13,30 +13,12 @@ for i = 1:length(s_temp),
     n(i) = size(s_temp(i).Area,2);
 end;
 largest_ind = [1 cumsum(n(1:end-1))+1];
-%keyboard
 
 fields = fieldnames(s_temp);
-fieldstemp = setdiff(fields, {'RotatedArea' 'RotatedBoundingBox_xwidth' 'RotatedBoundingBox_ywidth'})';
-for i = 1:length(fieldstemp),
-    field = char(fieldstemp(i));
+for i = 1:length(fields),
+    field = char(fields(i));
     list = [s_temp.(field)];
     if length(list) > length(n),
-        s_largest.(field) = list(largest_ind);
-    else
-        s_largest.(field) = list;
-    end;
-end;
-%special case for Rotated features since sometimes fewer blobs
-fieldstemp = {'RotatedArea' 'RotatedBoundingBox_xwidth' 'RotatedBoundingBox_ywidth'};
-n_rot = zeros(1,length(s_temp));
-for i = 1:length(s_temp),
-    n_rot(i) = size(s_temp(i).RotatedArea,2);
-end;
-largest_ind = [1 cumsum(n_rot(1:end-1))+1];
-for i = 1:length(fieldstemp),
-    field = char(fieldstemp(i));
-    list = [s_temp.(field)];
-    if length(list) > length(n_rot),
         s_largest.(field) = list(largest_ind);
     else
         s_largest.(field) = list;
