@@ -12,7 +12,6 @@ if length(ind) > 1,
 end;
 target.blob_props.numBlobs = length(ind);
 geomprops(1).ConvexPerimeter = 0; %initialize at zero
-geomprops(1).FeretDiameter = 0; %initialize at zero
 geomprops(1).maxFeretDiameter = 0; %initialize at zero
 geomprops(1).minFeretDiameter = 0; %initialize at zero
 target.blob_images = {}; %initialize at empty
