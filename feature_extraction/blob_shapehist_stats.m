@@ -16,11 +16,9 @@ if isempty(target.blob_images),
     target.blob_props.shapehist_kurtosis_normEqD = 0;
 else
     for idx = 1:length(target.blob_images),
-        p = bwboundaries(target.blob_images{idx}, 'noholes');
-        if length(p) > 1, keyboard, end % TEMPORARY REMOVE LATER
-        p = unique(p{1},'rows');
+        [p(:,1), p(:,2)] = find(target.blob_perimeter_images{idx});
         d = dist(p');
-        nz = find(triu(d));
+        nz = triu(d);
         d = d(nz);
         dnorm = d./target.blob_props.EquivDiameter(idx);
         target.blob_props.shapehist_mean_normEqD(idx) = mean(dnorm);
