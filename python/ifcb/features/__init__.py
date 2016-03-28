@@ -10,7 +10,7 @@ from ifcb.features.segmentation import segment_roi
 from ifcb.features.blobs import find_blobs, rotate_blob, rotate_blob_sor_v2
 from ifcb.features.blob_geometry import equiv_diameter, ellipse_properties, \
     invmoments, convex_hull, convex_hull_image, convex_hull_perimeter, \
-    feret_diameter, binary_symmetry
+    feret_diameter, binary_symmetry, feret_diameters
 from ifcb.features.morphology import find_perimeter
 from ifcb.features.biovolume import distmap_volume, sor_volume, sor_volume_v2
 from ifcb.features.perimeter import perimeter_stats, hausdorff_symmetry
@@ -82,6 +82,18 @@ class Blob(object):
     @imemoize
     def feret_diameter(self):
         return feret_diameter(self.convex_hull)
+    @property
+    @imemoize
+    def _feret_diameters(self):
+        return feret_diameters(self.convex_hull)
+    @property
+    @imemoize
+    def min_feret_diameter(self):
+        return self._feret_diameters[0]
+    @property
+    @imemoize
+    def max_feret_diameter(self):
+        return self._feret_diameters[1]
     @property
     @imemoize
     def convex_hull_image(self):
