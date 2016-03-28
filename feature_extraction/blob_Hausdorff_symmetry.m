@@ -6,6 +6,10 @@ function [ target ] = blob_Hausdorff_symmetry( target )
 %Heidi M. Sosik, Woods Hole Oceanographic Institution
 %November 2011, IFCB processing
 
+target.blob_props.H180 = NaN(1,max(1,target.blob_props.numBlobs));
+target.blob_props.H90 = target.blob_props.H180;
+target.blob_props.Hflip = target.blob_props.H180;
+
 if target.blob_props.numBlobs > 0,
     for i = 1:target.blob_props.numBlobs,
         img = target.rotated_blob_images{i};
@@ -25,9 +29,5 @@ if target.blob_props.numBlobs > 0,
         target.blob_props.H90(i) = hd90;
         target.blob_props.Hflip(i) = hdfud;
     end;
-else
-    target.blob_props.Hflip = NaN;
-    target.blob_props.H90 = NaN;
-    target.blob_props.H180 = NaN;
 end
 
