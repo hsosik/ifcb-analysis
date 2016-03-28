@@ -8,7 +8,8 @@ function [ target ] = blob_Hausdorff_symmetry( target )
 
 if target.blob_props.numBlobs > 0,
     %perimeter = bwboundaries(target.blob_image_rotated, 'noholes');
-    img = target.blob_image_rotated;
+    %img = target.blob_image_rotated;
+    img = target.rotated_blob_images{1}; %28 Mar 2016 FOR now operate only largets blob
     gprops = regionprops(img, 'Centroid', 'Area');
 %    if size(gprops) ~= target.blob_props.numBlobs, keyboard, end;
     [~,ind] = sort([gprops.Area], 'descend'); ind = ind(1); %find largest blob
