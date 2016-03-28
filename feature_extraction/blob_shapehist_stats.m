@@ -16,10 +16,10 @@ if isempty(target.blob_images),
     target.blob_props.shapehist_kurtosis_normEqD = 0;
 else
     for idx = 1:length(target.blob_images),
-        [p(:,1), p(:,2)] = find(target.blob_perimeter_images{idx});
-        d = dist(p');
-        nz = triu(d);
-        d = d(nz);
+        [y, x] = find(target.blob_perimeter_images{idx});
+        d = dist(horzcat(y,x)');
+        nz = find(triu(d));
+        d = d(nz); %#ok<FNDSB>
         dnorm = d./target.blob_props.EquivDiameter(idx);
         target.blob_props.shapehist_mean_normEqD(idx) = mean(dnorm);
         target.blob_props.shapehist_mode_normEqD(idx) = mode(dnorm);
