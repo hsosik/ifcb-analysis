@@ -6,7 +6,6 @@ target.blob_props.RotatedBoundingBox_xwidth = zeros(1,max(1,target.blob_props.nu
 target.blob_props.RotatedBoundingBox_ywidth = target.blob_props.RotatedBoundingBox_xwidth;
 target.blob_props.RotatedArea = target.blob_props.RotatedBoundingBox_xwidth;
 
-
 for idx = 1:target.blob_props.numBlobs,
     %input to region props as label image (single blob labeled as 1s), not input as logical (since possible to get split blobs after rotation)
     geomprops = regionprops(target.rotated_blob_images{idx}, prop_list);  
