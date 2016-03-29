@@ -10,7 +10,6 @@ function [ target ] = blob_shapehist_stats( target )
 %target.perimeter_xy = perimeter;
 if isempty(target.blob_images),
     target.blob_props.shapehist_mean_normEqD = 0;
-    target.blob_props.shapehist_mode_normEqD = 0;
     target.blob_props.shapehist_median_normEqD = 0;
     target.blob_props.shapehist_skewness_normEqD = 0;
     target.blob_props.shapehist_kurtosis_normEqD = 0;
@@ -22,7 +21,6 @@ else
         d = d(nz); %#ok<FNDSB>
         dnorm = d./target.blob_props.EquivDiameter(idx);
         target.blob_props.shapehist_mean_normEqD(idx) = mean(dnorm);
-        target.blob_props.shapehist_mode_normEqD(idx) = mode(dnorm);
         target.blob_props.shapehist_median_normEqD(idx) = median(dnorm);
         target.blob_props.shapehist_skewness_normEqD(idx) = skewness(dnorm);
         target.blob_props.shapehist_kurtosis_normEqD(idx) = kurtosis(dnorm);
