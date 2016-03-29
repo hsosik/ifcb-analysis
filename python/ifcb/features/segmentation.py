@@ -13,10 +13,13 @@ BLOB_MIN = 150
 DARK_THRESHOLD_ADJUSTMENT=0.65
 
 def dark_threshold(roi,adj=DARK_THRESHOLD_ADJUSTMENT):
-    samples = roi.reshape((roi.size, 1))
-    means, _ = kmeans2(samples,k=2)
-    thresh = np.mean(means)
-    return roi < thresh * DARK_THRESHOLD_ADJUSTMENT
+    samples = roi.reshape((-1, 1))
+    (means, labels) = kmeans2(samples,k=np.array([[0],[255]]))
+    bg_label = np.argmax(means)
+    bg_mean = means[bg_label][0]
+    bg_min = np.min(samples.reshape((-1))[labels==bg_label])
+    thresh = bg_min * adj
+    return roi < thresh
 
 def segment_roi(roi):
     # step 1. phase congruency (edge detection)

@@ -3,7 +3,7 @@ warning('off');
 %segment image to conservatively identify dark pixels
 img = im2single(img);
 % use kmeans to separate the background and foreground using the intensity values of the image
-[J, C, ~, ~] = kmeans(img(:),2, 'emptyaction', 'drop');
+[J, C, ~, ~] = kmeans(img(:),2, 'emptyaction', 'drop', 'Start', [0 1]');
 while sum(isnan(C)), %handle error in kmeans due to random start
     [J, C, ~, ~] = kmeans(img(:),2, 'emptyaction', 'drop');
 end;
