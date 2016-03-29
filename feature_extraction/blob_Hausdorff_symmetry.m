@@ -18,7 +18,7 @@ if target.blob_props.numBlobs > 0,
         perimeter_img = compute_perimeter_img( img ); 
         [y, x] = find(perimeter_img);
         % center and correct for 1-based indexing
-        p = horzcat(y-c(1)-1,x-c(2)-1);
+        p = horzcat(y-c(1),x-c(2));
         p90 = [p(:,2), p(:,1)];
         p180 = -p;
         pfud = [-p(:,1) p(:,2)];
