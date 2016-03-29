@@ -66,6 +66,7 @@ for i = 1:nt,
     target = biovolume(target);
     target = blob_sumprops(target);
     target = blob_Hausdorff_symmetry(target);
+    target = blob_binary_symmetry(target);
     target = image_HOG(target);
     target = blob_rotated_geomprop(target);
     temp.features(i) = merge_structs(target.blob_props, target.image_props);
