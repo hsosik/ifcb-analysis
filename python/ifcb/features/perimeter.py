@@ -54,7 +54,7 @@ def hausdorff_symmetry(B):
     across its centroid in the up/down direction. intended to be used
     with binary regions rotated so that their major axis is horizontal.
     """
-    cy, cx = (np.array(B.shape)/2)-1
+    cy, cx = (np.array(B.shape)/2.)-1
     by, bx = np.where(find_perimeter(B))
     P = np.vstack((by,bx)).T - [[cy, cx]]
     P90 = np.roll(P,1,axis=1) # rotated 90 degrees

@@ -424,13 +424,16 @@ class Roi(object):
 def get_multifeature(fmt,vals):
     return [(fmt % (n+1,), v) for n,v in zip(range(len(vals)),vals)]
 
-N_FEATURES=239
+N_FEATURES=240
 
 def get_all_features(r):
     b = r.blobs[0]
     f = []
     f += [
         ('Area', b.area),
+        ('B180', b.b180),
+        ('B90', b.b90),
+        ('Bflip', b.bflip),
         ('Biovolume', b.biovolume),
         ('BoundingBox_xwidth', b.bbox_xwidth),
         ('BoundingBox_ywidth', b.bbox_ywidth),
