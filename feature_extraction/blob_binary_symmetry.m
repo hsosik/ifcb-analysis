@@ -1,7 +1,7 @@
 function [ target ] = blob_binary_symmetry( target )
 
 target.blob_props.B180 = NaN(1,max(1,target.blob_props.numBlobs));
-target.blob_props.B900 = target.blob_props.B180;
+target.blob_props.B90 = target.blob_props.B180;
 target.blob_props.Bflip = target.blob_props.B180;
 
 if target.blob_props.numBlobs > 0,
