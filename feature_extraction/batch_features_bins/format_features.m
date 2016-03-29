@@ -7,11 +7,8 @@ Rings = [s_temp.Rings];
 Wedges = [s_temp.Wedges];
 HOG = [s_temp.HOG];
 s_temp = rmfield(s_temp, {'Rings' 'Wedges' 'HOG'});
-%n = [s_temp.numBlobs];
-n = zeros(1,length(s_temp));
-for i = 1:length(s_temp),
-    n(i) = size(s_temp(i).Area,2);
-end;
+n = [s_temp.numBlobs];
+%assumes first is the largest (as sorted in blob_geomprop)
 largest_ind = [1 cumsum(n(1:end-1))+1];
 
 fields = sort(fieldnames(s_temp));
