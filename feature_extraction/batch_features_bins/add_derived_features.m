@@ -14,9 +14,5 @@ a = strmatch('summedConvexPerimeter', featitles, 'exact'); b = strmatch('summedP
 feature_mat = [feature_mat; feature_mat(a,:)./feature_mat(b,:)]; 
 featitles = [featitles; 'summedConvexPerimeter_over_Perimeter'];
 
-a = strmatch('RotatedBoundingBox_xwidth', featitles, 'exact'); b = strmatch('RotatedBoundingBox_ywidth', featitles, 'exact'); c = strmatch('RotatedArea', featitles, 'exact'); 
-feature_mat = [feature_mat; feature_mat(c,:)./(feature_mat(a,:).*feature_mat(b,:))]; %solidity of rotated bounding box
-featitles = [featitles; 'rotated_BoundingBox_solidity'];
-
 end
 
