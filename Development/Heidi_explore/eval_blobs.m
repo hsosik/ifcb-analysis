@@ -24,7 +24,8 @@ for i = 1:nt,
         b1 = morpho(target.image, ht1);
         b2 = morpho(target.image, ht2);
         b_df = xor(b1,b2);
-        if sum(b_df(:))
+        b_df_sum = sum(b_df(:));
+        if b_df_sum
             subplot(3,1,1);
             imshow(target.image);
             title('ROI');
@@ -33,11 +34,11 @@ for i = 1:nt,
             title('Kovesi blob');
             subplot(3,1,3);
             imshow(b1);
-            title('Futrelle blob');
+            title(['Futrelle blob ' num2str(b_df_sum) ' pixel difference']);
             waitforbuttonpress;
         end
     end
-    disp(i);
+    disp([num2str(i)]);
 end
 
 end
