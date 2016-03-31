@@ -398,6 +398,9 @@ class Roi(object):
     def summed_biovolume(self):
         return self.summed_attr('biovolume')
     @property
+    def summed_surface_area(self):
+        return self.summed_attr('surface_area')
+    @property
     def summed_convex_area(self):
         return self.summed_attr('convex_area')
     @property
@@ -422,7 +425,7 @@ class Roi(object):
 def get_multifeature(fmt,vals):
     return [(fmt % (n+1,), v) for n,v in zip(range(len(vals)),vals)]
 
-N_FEATURES=240
+N_FEATURES=241
 
 def get_all_features(r):
     b = r.blobs[0]
@@ -473,6 +476,7 @@ def get_all_features(r):
         ('summedMajorAxisLength', r.summed_major_axis_length),
         ('summedMinorAxisLength', r.summed_minor_axis_length),
         ('summedPerimeter', r.summed_perimeter),
+        ('summedSurfaceArea', r.summed_surface_area),
         ('texture_average_contrast', r.texture_average_contrast),
         ('texture_average_gray_level', r.texture_average_gray_level),
         ('texture_entropy', r.texture_entropy),
