@@ -11,7 +11,7 @@ for idx = 1:target.blob_props.numBlobs,
     geomprops = regionprops(target.rotated_blob_images{idx}, prop_list);  
     target.blob_props.RotatedBoundingBox_xwidth(idx) = geomprops.BoundingBox(3);
     target.blob_props.RotatedBoundingBox_ywidth(idx) = geomprops.BoundingBox(4);
-    target.blob_props.rotated_BoundingBox_solidity(idx) = geomprops.Area./(geomprops.BoundingBox(4)*geomprops.BoundingBox(4));
+    target.blob_props.rotated_BoundingBox_solidity(idx) = geomprops.Area./(geomprops.BoundingBox(3)*geomprops.BoundingBox(4));
 end;
 
 end

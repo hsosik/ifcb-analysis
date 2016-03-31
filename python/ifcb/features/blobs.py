@@ -50,8 +50,18 @@ def rotate_blob(blob, theta):
     # note that v2 does morphological post-processing and v3 does not
     return blob
     
-def rotate_blob_sor_v2(blob, theta):
-    """rotation with no morphological operations,
-    which simulates rotation used for v2 SOR biovolume"""
-    return rotate(blob,-1*theta,resize=True,order=0)
+def blob_shape(b0):
+    h, w = b0.shape
+    blr = np.fliplr(b0)
+    bud = np.flipud(b0)
+
+    # reproduce MATLAB's center-of-pixel approach
+    x0 = np.argmax(np.sum(b0,axis=0)>0) + 0.5
+    x1 = w - np.argmax(np.sum(blr,axis=0)>0)
+    y0 = np.argmax(np.sum(b0,axis=1)>0) + 0.5
+    y1 = h - np.argmax(np.sum(bud,axis=1)>0)
+    h = int((y1-y0) + 0.5)
+    w = int((x1-x0) + 0.5)
+    
+    return h,w
 

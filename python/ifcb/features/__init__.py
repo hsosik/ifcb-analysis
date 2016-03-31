@@ -7,7 +7,7 @@ from skimage.measure import regionprops
 from ifcb.features.utils import imemoize
 
 from ifcb.features.segmentation import segment_roi
-from ifcb.features.blobs import find_blobs, rotate_blob, rotate_blob_sor_v2
+from ifcb.features.blobs import find_blobs, rotate_blob, blob_shape
 from ifcb.features.blob_geometry import equiv_diameter, ellipse_properties, \
     invmoments, convex_hull, convex_hull_image, convex_hull_perimeter, \
     feret_diameter, binary_symmetry, feret_diameters
@@ -149,10 +149,7 @@ class Blob(object):
     @imemoize
     def rotated_shape(self):
         """height, width of rotated image's bounding box"""
-        ys, xs = find_objects(self.rotated_image)[0]
-        h = ys.stop - ys.start
-        w = xs.stop - xs.start
-        return h, w
+        return blob_shape(self.rotated_image)
     @property
     def rotated_bbox_xwidth(self):
         return self.rotated_shape[1]
