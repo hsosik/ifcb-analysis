@@ -12,7 +12,8 @@ from ifcb.features.blob_geometry import equiv_diameter, ellipse_properties, \
     invmoments, convex_hull, convex_hull_image, convex_hull_perimeter, \
     feret_diameter, binary_symmetry, feret_diameters
 from ifcb.features.morphology import find_perimeter
-from ifcb.features.biovolume import distmap_volume, sor_volume, sor_volume_v2
+from ifcb.features.biovolume import distmap_volume_surface_area, \
+    sor_volume_surface_area
 from ifcb.features.perimeter import perimeter_stats, hausdorff_symmetry
 from ifcb.features.texture import statxture, masked_pixels, texture_pixels
 from ifcb.features.hog import image_hog
@@ -174,39 +175,39 @@ class Blob(object):
         return np.where(self.perimeter_image)
     @property
     @imemoize
-    def distmap_volume(self):
+    def distmap_volume_surface_area(self):
         """volume of blob computed via Moberg & Sosik algorithm"""
-        return distmap_volume(self.image, self.perimeter_image)
+        return distmap_volume_surface_area(self.image, self.perimeter_image)
     @property
     @imemoize
-    def sor_volume(self):
+    def sor_volume_surface_area(self):
         """volume of blob computed via solid of revolution method"""
-        # FIXME v2. post-testing should use self.rotated_image
-        rotated_image = rotate_blob_sor_v2(self.image, self.orientation)
-        # FIXME v2. post-testing should use sor_volume
-        return sor_volume_v2(rotated_image)
+        return sor_volume_surface_area(self.rotated_image)
     @property
     @imemoize
-    def biovolume_and_transect(self):
+    def biovolume_surface_area(self):
         """biovolume and representative transect computed using
         Moberg & Sosik algorithm"""
         area_ratio = float(self.convex_area) / self.area
         p = self.equiv_diameter / self.major_axis_length
         if area_ratio < 1.2 or (self.eccentricity < 0.8 and p > 0.8):
-            return self.sor_volume, 0
+            return self.sor_volume_surface_area
         else:
-            return self.distmap_volume
+            return self.distmap_volume_surface_area
     @property
     @imemoize
     def biovolume(self):
         """biovolume computed using Moberg & Sosik algorithm"""
-        return self.biovolume_and_transect[0]
+        return self.biovolume_surface_area[0]
     @property
     @imemoize
-    def rep_transect(self):
-        """representative transect length computed using Moberg & Sosik
-        algorithm"""
-        return self.biovolume_and_transect[1]
+    def representative_width(self):
+        """representative width"""
+        return self.biovolume_surface_area[1]
+    @property
+    @imemoize
+    def surface_area(self):
+        return self.biovolume_surface_area[2]
     @property
     @imemoize
     def perimeter_stats(self):
@@ -451,12 +452,12 @@ def get_all_features(r):
         ('Perimeter', b.perimeter),
         ('RWcenter2total_powerratio', r.rw_power_ratio),
         ('RWhalfpowerintegral', r.rw_power_integral),
-        ('RepresentativeWidth', 0), # unimplemented
+        ('RepresentativeWidth', b.representative_width), # unimplemented
         ('RotatedArea', 0), # will be removed
         ('RotatedBoundingBox_xwidth', b.rotated_bbox_xwidth),
         ('RotatedBoundingBox_ywidth', b.rotated_bbox_ywidth),
         ('Solidity', b.solidity),
-        ('SurfaceArea', 0), # unimplemented
+        ('SurfaceArea', b.surface_area), # unimplemented
         ('maxFeretDiameter', b.max_feret_diameter),
         ('minFeretDiameter', b.min_feret_diameter)
     ]
