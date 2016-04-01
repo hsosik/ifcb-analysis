@@ -34,6 +34,19 @@ def ring_mask(i,dim=_DIM,n_rings=_N_RINGS):
     inner_rad = i*w
     outer_rad = (i+1)*w
     return (r > inner_rad) & (r < outer_rad)
+
+@memoize
+def kaccie_ring(i,dim=301,n_rings=_N_RINGS):
+    c = dim//2
+    df = (1./dim)*(1/6.45)
+    f = np.linspace(-0.5/6.45,0.5/6.45,dim+1)
+    X, Y = np.meshgrid(f,f)
+    r = np.sqrt(X**2 + Y**2)
+    inner_rad = (i / (n_rings-1.)) * (c-3) * df # 50 rings
+    outer_rad = (i / (n_rings-1.)) * (c-3) * df + (3 * df) # 50 rings
+    out = np.zeros((dim,dim),dtype=np.bool)
+    out[(r > inner_rad) & (r < outer_rad)] = 1
+    return out
     
 @memoize
 def wedge_mask(i,dim=_DIM,n_wedges=_N_WEDGES):
