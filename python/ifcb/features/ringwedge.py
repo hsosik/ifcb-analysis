@@ -53,7 +53,7 @@ def wedge_mask(i,dim=_DIM,n_wedges=_N_WEDGES):
     # wedge masks are adjacent, equal-sized "pie slices" of the
     # bottom half of the unit circle
     r, th = unit_circle(dim)
-    return (r<1) & (th > i*np.pi/n_wedges) & (th < (i+1)*np.pi/n_wedges)
+    return (r<1) & (th > i*np.pi/n_wedges) & (th <= (i+1)*np.pi/n_wedges)
     
 @memoize
 def filter_masks(dim=_DIM,radius=0.1):
