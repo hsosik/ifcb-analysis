@@ -62,6 +62,15 @@ def filter_masks(dim=_DIM,radius=0.1):
     r, _ = unit_circle(dim)
     center_mask = r < radius
     return center_mask, np.invert(center_mask)
+
+@memoize
+def kaccie_filter_masks(dim=_DIM):
+    df = (1./(dim-1)) / 6.45
+    I = np.linspace(-0.5/6.45,0.5/6.45,dim)
+    Y, X = np.meshgrid(I,I)
+    R = np.sqrt(X**2 + Y**2)
+    filt = R > 15*df
+    return np.invert(filt), filt
     
 def ring_wedge(image,dim=_DIM):
     # perform fft and scale its intensities to dim x dim
@@ -70,7 +79,7 @@ def ring_wedge(image,dim=_DIM):
     z = (1.*dim/image.shape[0], 1.*dim/image.shape[1])
     int_trans = zoom(int_trans,z,order=1) # bilinear
     # now compute stats of filtered intensities
-    mask, filt = filter_masks(dim)
+    mask, filt = kaccie_filter_masks(dim)
     filter_img = mask * int_trans
     # intensities inside central area
     inner_int = np.sum(filter_img)
@@ -87,7 +96,7 @@ def ring_wedge(image,dim=_DIM):
     # now compute unscaled wedge and ring vectors for all wedges and rings
     # these represent the total power found in each ring / wedge
     wedge_vector = np.array([np.sum(wedge_mask(i) * wedge_half) for i in range(48)])
-    ring_vector = np.array([np.sum(ring_mask(i) * ring_half) for i in range(50)])
+    ring_vector = np.array([np.sum(kaccie_ring(i) * ring_half) for i in range(50)])
     # compute power integral over wedge vectors and scale vectors by it
     pwr_integral = np.sum(wedge_vector)
     wedges = wedge_vector / pwr_integral
