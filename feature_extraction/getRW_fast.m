@@ -56,8 +56,14 @@ end
 %Begin the fourier transform part
 amp_trans = fftshift(fft2(img));
 int_trans = (amp_trans.*conj(amp_trans));
-%int_trans = imresize(int_trans, [dim dim], 'bilinear', 0); %use this code for matlab before v5.4
-int_trans = imresize(int_trans, [dim dim], 'bilinear');
+
+% now resize intensity matrix to dim x dim
+[h, w] = size(int_trans);
+y = linspace(1,h,dim);
+x = linspace(1,w,dim);
+[Y, X] = meshgrid(x,y);
+int_trans = interp2(int_trans,Y,X);
+
 clear amp_trans;
 clear input_image;
 
