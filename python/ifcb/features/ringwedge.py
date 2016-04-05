@@ -49,12 +49,16 @@ def kaccie_ring(i,dim=301,n_rings=_N_RINGS):
     return out
     
 @memoize
-def wedge_mask(i,dim=_DIM,n_wedges=_N_WEDGES):
+def kaccie_wedge(i,dim=_DIM,n_wedges=_N_WEDGES):
     # wedge masks are adjacent, equal-sized "pie slices" of the
     # bottom half of the unit circle
     r, th = unit_circle(dim)
-    return (r<1) & (th > i*np.pi/n_wedges) & (th <= (i+1)*np.pi/n_wedges)
-    
+    wedge = (r<=1) & (th > i*np.pi/n_wedges) & (th <= (i+1)*np.pi/n_wedges)
+    # correct vertical strip error on middle wedge
+    if i==(n_wedges//2)-1:
+        wedge = np.logical_xor(wedge, th==np.pi/2)
+    return wedge
+
 @memoize
 def filter_masks(dim=_DIM,radius=0.1):
     # the center mask is a circle a tenth the size of a unit circle;
@@ -95,7 +99,7 @@ def ring_wedge(image,dim=_DIM):
     ring_half = int_trans * half
     # now compute unscaled wedge and ring vectors for all wedges and rings
     # these represent the total power found in each ring / wedge
-    wedge_vector = np.array([np.sum(wedge_mask(i) * wedge_half) for i in range(48)])
+    wedge_vector = np.array([np.sum(kaccie_wedge(i) * wedge_half) for i in range(48)])
     ring_vector = np.array([np.sum(kaccie_ring(i) * ring_half) for i in range(50)])
     # compute power integral over wedge vectors and scale vectors by it
     pwr_integral = np.sum(wedge_vector)
@@ -103,3 +107,4 @@ def ring_wedge(image,dim=_DIM):
     rings = ring_vector / pwr_integral
     # return all features
     return pwr_integral, pwr_ratio, wedges, rings
+    
