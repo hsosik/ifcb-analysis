@@ -99,7 +99,6 @@ class Blob(object):
     @imemoize
     def convex_hull_image(self):
         """convex hull mask"""
-        #return convex_hull_image(self.convex_hull, self.shape)
         return self.regionprops.convex_image
     @property
     @imemoize
