@@ -1,4 +1,5 @@
 import numpy as np
+from skimage import img_as_float
 from skimage.exposure import rescale_intensity, histogram
 from scipy.stats import moment
     
