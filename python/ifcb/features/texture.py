@@ -8,8 +8,8 @@ def masked_pixels(image,mask):
     
 def texture_pixels(image,mask):
     p1, p99 = np.floor(np.percentile(image,(1,99))).astype(np.int)
-    E = rescale_intensity(img_as_float(roi.image), in_range=(p1/255.,p99/255.))
-    P = E[np.where(roi.blobs_image)] * 255.
+    E = rescale_intensity(img_as_float(image), in_range=(p1/255.,p99/255.))
+    P = E[np.where(mask)] * 255.
     return masked_pixels(E,mask)
     
 def statxture(pixels):
