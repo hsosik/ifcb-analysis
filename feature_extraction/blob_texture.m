@@ -5,8 +5,8 @@ function [ target ] = blob_texture( target )
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, Oct 2011
 
 %texture = statxture(target.image(find(target.blob_image)));
-p1 = single(prctile(target.image(:),1));
-p99 = single(prctile(target.image(:),99));
+p1 = prctile(single(target.image(:)),1);
+p99 = prctile(single(target.image(:)),99);
 img_adjusted = imadjust(target.image,[p1/255 p99/255]);
 
 texture = statxture(img_adjusted(find(target.blob_image)));

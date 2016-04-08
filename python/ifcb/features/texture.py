@@ -5,11 +5,40 @@ from scipy.stats import moment
     
 def masked_pixels(image,mask):
     return image[np.where(mask)]
-    
+
+def prctile(arr, ps):
+    """implementation of MATLAB's prctile algorithm"""
+    """note that this algorithm is available in more recent versions
+    of numpy.percentile"""
+    ap = np.asarray(arr).flatten().copy()
+    ap.sort()
+    n = ap.size
+    pcts = 100 * (np.linspace(0.5,n-0.5,n) / n)
+    ps = np.asarray(ps)
+    if ps.ndim==0:
+        ps = ps.reshape(-1)
+    out = np.zeros((ps.size))
+    for p,ix in zip(ps,range(ps.size)):
+        if p < pcts[0]:
+            out[ix] = ap[0]
+        elif p > pcts[-1]:
+            out[ix] = ap[-1]
+        else:
+            d = pcts - p
+            above = np.argmin(d < 0)
+            below = above - 1
+            ap_below = ap[below]
+            ap_above = ap[above]
+            weights = 1. - np.abs(d / (100./n))
+            weights *= weights > 0
+            out[ix] = np.sum(weights * ap)
+    return out
+
 def texture_pixels(image,mask):
-    p1, p99 = np.floor(np.percentile(image,(1,99))).astype(np.int)
-    E = rescale_intensity(img_as_float(image), in_range=(p1/255.,p99/255.))
-    P = E[np.where(mask)] * 255.
+    p1, p99 = prctile(image,(1,99))
+    fE = rescale_intensity(img_as_float(image), in_range=(p1/255.,p99/255.))
+    E = np.round(fE * 255.)
+    P = masked_pixels(E,mask)
     return P
     
 def statxture(pixels):
