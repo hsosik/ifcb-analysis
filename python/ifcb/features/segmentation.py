@@ -1,8 +1,9 @@
 import numpy as np
 
-from scipy.cluster.vq import kmeans2
+from skimage import img_as_float
 from scipy.ndimage.morphology import binary_fill_holes
 from skimage.morphology import binary_closing, binary_dilation, remove_small_objects
+from skimage.filter import threshold_otsu
 
 from ifcb.features.phasecong import phasecong_Mm
 from ifcb.features.morphology import SE2, SE3, hysthresh, bwmorph_thin
@@ -13,12 +14,7 @@ BLOB_MIN = 150
 DARK_THRESHOLD_ADJUSTMENT=0.65
 
 def dark_threshold(roi,adj=DARK_THRESHOLD_ADJUSTMENT):
-    samples = roi.reshape((-1, 1))
-    (means, labels) = kmeans2(samples,k=np.array([[0],[255]]))
-    bg_label = np.argmax(means)
-    bg_mean = means[bg_label][0]
-    bg_min = np.min(samples.reshape((-1))[labels==bg_label])
-    thresh = bg_min * adj
+    thresh = int(round(threshold_otsu(roi) * adj))
     return roi < thresh
 
 def segment_roi(roi):
