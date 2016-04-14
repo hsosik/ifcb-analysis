@@ -13,6 +13,8 @@ end;
 target.blob_props.numBlobs = length(ind);
 geomprops(1).Perimeter = 0; % initialize at zero
 geomprops(1).ConvexPerimeter = 0; %initialize at zero
+geomprops(1).ConvexArea = 0;
+geomprops(1).Solidity = 0;
 geomprops(1).maxFeretDiameter = 0; %initialize at zero
 geomprops(1).minFeretDiameter = 0; %initialize at zero
 target.blob_images = {}; %initialize at empty
@@ -26,11 +28,16 @@ if target.blob_props.numBlobs > 0,
         %d = (geomprops(count).ConvexHull(:,1:2))';
         %dd = dist(d);
         %geomprops(count).ConvexPerimeter = sum(diag(dd,1));
+        % compute convex hull using delaunay triangulation
         [x, y] = find(perimeter_img);
         ch = delaunay_convex_hull(x, y);
-        ch_prime = circshift(ch,1,1);
-        cp = sum(sqrt(sum((ch - ch_prime).^2,2)));
-        geomprops(count).ConvexPerimeter = cp;
+        % compute perim and area of hull
+        [conv_perim, conv_area] = convex_hull_properties(ch);
+        geomprops(count).ConvexPerimeter = conv_perim;
+        geomprops(count).ConvexArea = conv_area;
+        % now we can compute solidity
+        geomprops(count).Solidity = geomprops(count).Area / conv_area;
+        % now compute min/max feret diameter from hull
         fd = hull_feret_diameter(ch,0:359);
         %[fd] = imFeretDiameter(target.blob_images{count},0:359);
         geomprops(count).maxFeretDiameter = max(fd);

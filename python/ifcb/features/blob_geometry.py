@@ -99,12 +99,37 @@ def convex_hull(perimeter_points):
     hull = ConvexHull(P)
     return P[hull.vertices]
 
-def convex_hull_perimeter(hull):
+def convex_hull_properties(hull):
+    """compute perimeter and area of convex hull"""
     ab = hull - np.roll(hull,1,axis=0)
-    ab2 = np.power(ab,2)
-    D = np.sqrt(np.sum(ab2,axis=1))
-    return np.sum(D)
+    # first compute length of each edge
+    C = np.sqrt(np.sum(ab**2,axis=1))
+    # perimeter is sum of these
+    perimeter = np.sum(C)
+    # compute distance from center to each vertex
+    center = np.mean(hull,axis=0)
+    A = np.sqrt(np.sum((hull - center)**2,axis=1))
+    # A, B, C will now be all triangle edges
+    B = np.roll(A,1,axis=0)
+    # heron's forumla requires s = half of each triangle's perimeter
+    S = np.sum(np.vstack((A,B,C)),axis=0) / 2
+    # compute area of each triangle
+    areas = np.sqrt(S * (S-A) * (S-B) * (S-C))
+    # area of convex hull is sum of these
+    area = np.sum(areas)
+    # add half-pixel adjustment for each unit distance along
+    # perimeter to adjust for rasterization
+    area += perimeter / 2
+    return perimeter, area
+    
+def convex_hull_perimeter(hull):
+    perimeter, _ = convex_hull_properties(hull)
+    return perimeter
 
+def convex_hull_area(hull):
+    _, area = convex_hull_properties(hull)
+    return area
+    
 def feret_diameter(hull):
     D = pdist(hull)
     return np.max(D)

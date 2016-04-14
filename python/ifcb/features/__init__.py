@@ -9,7 +9,7 @@ from ifcb.features.utils import imemoize
 from ifcb.features.segmentation import segment_roi
 from ifcb.features.blobs import find_blobs, rotate_blob, blob_shape
 from ifcb.features.blob_geometry import equiv_diameter, ellipse_properties, \
-    invmoments, convex_hull, convex_hull_image, convex_hull_perimeter, \
+    invmoments, convex_hull, convex_hull_image, convex_hull_properties, \
     feret_diameter, binary_symmetry, feret_diameters
 from ifcb.features.morphology import find_perimeter
 from ifcb.features.biovolume import distmap_volume_surface_area, \
@@ -76,9 +76,20 @@ class Blob(object):
         return convex_hull(self.perimeter_points)
     @property
     @imemoize
+    def convex_hull_properties(self):
+        return convex_hull_properties(self.convex_hull)
+    @property
+    @imemoize
     def convex_perimeter(self):
         """perimeter of convex hull"""
-        return convex_hull_perimeter(self.convex_hull)
+        perimeter, _ = self.convex_hull_properties
+        return perimeter
+    @property
+    @imemoize
+    def convex_area(self):
+        """area of convex hull"""
+        _, area = self.convex_hull_properties
+        return area
     @property
     @imemoize
     def feret_diameter(self):
@@ -100,11 +111,6 @@ class Blob(object):
     def convex_hull_image(self):
         """convex hull mask"""
         return self.regionprops.convex_image
-    @property
-    @imemoize
-    def convex_area(self):
-        """area of convex hull (computed from mask)"""
-        return np.sum(self.convex_hull_image)
     @property
     @imemoize
     def major_axis_length(self):

@@ -26,8 +26,8 @@ config.blob_min = 150; % minimum area of blob
 % list of region props to compute for blob; AREA is done no matter what so
 % omit from this list
 % add Area back if blobs are pre-computed
-config.blob_props = {'Area', 'BoundingBox', 'ConvexArea', 'Eccentricity', 'EquivDiameter', 'Extent', 'MajorAxisLength', ...
-    'MinorAxisLength', 'Orientation', 'Solidity' };
+config.blob_props = {'Area', 'BoundingBox', 'Eccentricity', 'EquivDiameter', 'Extent', 'MajorAxisLength', ...
+    'MinorAxisLength', 'Orientation' };
 config.props2sum = {'Area' 'ConvexArea', 'MajorAxisLength', 'MinorAxisLength', 'Perimeter', 'ConvexPerimeter', 'FeretDiameter', 'Biovolume', 'SurfaceArea'};
 
 end
