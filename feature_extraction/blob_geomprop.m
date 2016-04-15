@@ -42,6 +42,13 @@ if target.blob_props.numBlobs > 0,
         %[fd] = imFeretDiameter(target.blob_images{count},0:359);
         geomprops(count).maxFeretDiameter = max(fd);
         geomprops(count).minFeretDiameter = min(fd);
+        % now compute the major and minor axis length, and eccentricity
+        [X, Y] = find(target.blob_images{count});
+        [~, m] = eig(cov(X,Y),'vector');
+        L = 4 * sqrt(m);
+        geomprops(count).MajorAxisLength = max(L);
+        geomprops(count).MinorAxisLength = min(L);
+        geomprops(count).Eccentricity = sqrt(1-(min(L)/max(L))^2);
     end;
 end;
 geomprops = rmfield(geomprops, 'Image');

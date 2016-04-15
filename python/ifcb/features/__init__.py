@@ -113,19 +113,24 @@ class Blob(object):
         return self.regionprops.convex_image
     @property
     @imemoize
+    def ellipse_properties(self):
+        # maj_axis, min_axis, ecc, orientation
+        return ellipse_properties(self.image)
+    @property
+    @imemoize
     def major_axis_length(self):
         """major axis length of blob"""
-        return self.regionprops.major_axis_length
+        return self.ellipse_properties[0]
     @property
     @imemoize
     def minor_axis_length(self):
         """minor axis length of blob"""
-        return self.regionprops.minor_axis_length
+        return self.ellipse_properties[1]
     @property
     @imemoize
     def eccentricity(self):
         """1st eccentricity of blob"""
-        return self.regionprops.eccentricity
+        return self.ellipse_properties[2]
     @property
     @imemoize
     def orientation(self):
