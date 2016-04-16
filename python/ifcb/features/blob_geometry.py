@@ -150,9 +150,12 @@ def feret_diameters(hull):
     """return min and max feret diameters"""
     y, x = hull.astype(np.float64).T
     def do_angles():
-        for theta2 in np.linspace(0,-359) * (np.pi / 180.):
-            x2 = x * np.cos(theta2) - y * np.sin(theta2)
-            yield np.max(x2) - np.min(x2) + 1
+        for theta in np.linspace(0,-359,360) * (np.pi / 180.):
+            cos_theta = np.cos(theta)
+            sin_theta = np.sin(theta)
+            x2 = x * cos_theta - y * sin_theta
+            dl = np.abs(cos_theta) + np.abs(sin_theta)
+            yield np.max(x2) - np.min(x2) + dl
     m = list(do_angles())
     return np.min(m), np.max(m)
     
