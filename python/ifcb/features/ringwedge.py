@@ -81,7 +81,7 @@ def ring_wedge(image,dim=_DIM):
     amp_trans = fftshift(fft2(image))
     int_trans = np.real(amp_trans * np.conj(amp_trans))
     z = (1.*dim/image.shape[0], 1.*dim/image.shape[1])
-    int_trans = zoom(int_trans,z,order=1) # bilinear
+    int_trans = zoom(int_trans,z,order=1,mode='nearest') # linear
     # now compute stats of filtered intensities
     mask, filt = kaccie_filter_masks(dim)
     filter_img = mask * int_trans
