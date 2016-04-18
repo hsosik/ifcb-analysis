@@ -32,23 +32,11 @@ if isempty(filter),
     %calculate the area (circular) needed in the center to obtain 85% of total
     %spectral power
     [x, y] = meshgrid(f,f);
-    [~, mask] = cart2pol(x,y);
-    filter = mask;
+    [~, r] = cart2pol(x,y);
+    filter = r > 15*df;
+    mask = 1 - filter;
     clear x
     clear y
-    for ii = 1:301
-        for jj = 1:301
-            %the 88 percent of energy is contained within 15df
-            if mask(ii,jj) > 15*df %THIS PARAMETER IS CHANGED OFTEN
-                mask(ii,jj) = 0;
-                filter(ii,jj) = 1;
-            else
-                mask(ii,jj) = 1;
-                filter(ii,jj) = 0;
-            end
-        end
-    end
-    clear ii jj
 end
 
 %pixel_pitch = 6.45; %microns  %Heidi 11/29/11 seems unused
