@@ -17,7 +17,7 @@ from ifcb.features.biovolume import distmap_volume_surface_area, \
 from ifcb.features.perimeter import perimeter_stats, hausdorff_symmetry
 from ifcb.features.texture import statxture, masked_pixels, texture_pixels
 from ifcb.features.hog import image_hog
-from ifcb.features.ringwedge import ring_wedge
+from ifcb.features.ringwedge import ring_wedge, _N_RINGS, _N_WEDGES
 
 class Blob(object):
     def __init__(self,blob_image,roi_image):
@@ -325,7 +325,10 @@ class Roi(object):
     def invmoments(self):
         """invariant moments computed using algorithm described in
         Digital Image Processing Using MATLAB, pp. 470-472"""
-        return invmoments(self.blobs_image)
+        if self.num_blobs > 0:
+            return invmoments(self.blobs_image)
+        else:
+            return [0 for _ in range(7)]
     @property
     @imemoize
     def texture_pixels(self):
@@ -342,7 +345,10 @@ class Roi(object):
         see texture_pixels"""
         # average_gray_level, average_contrast, smoothness,
         # third_moment, uniformity, entropy
-        return statxture(self.texture_pixels)
+        if self.num_blobs > 0:
+            return statxture(self.texture_pixels)
+        else:
+            return [0 for _ in range(6)]
     @property
     @imemoize
     def texture_average_gray_level(self):
@@ -381,8 +387,11 @@ class Roi(object):
     @property
     @imemoize
     def ring_wedge(self):
-        pwr_integral, pwr_ratio, wedges, rings = ring_wedge(self.blobs_image)
-        return pwr_integral, pwr_ratio, wedges, rings
+        if self.num_blobs > 0:
+            pwr_integral, pwr_ratio, wedges, rings = ring_wedge(self.blobs_image)
+            return pwr_integral, pwr_ratio, wedges, rings
+        else:
+            return [0, 0, [0 for _ in range(_N_WEDGES)], [0 for _ in range(_N_RINGS)]]
     @property
     @imemoize
     def rw_power_integral(self):
@@ -431,15 +440,25 @@ class Roi(object):
         return self.summed_attr('feret_diameter')
     @property
     def summed_convex_perimeter_over_perimeter(self):
-        return self.summed_convex_perimeter / self.summed_perimeter
+        if self.num_blobs > 0:
+            return self.summed_convex_perimeter / self.summed_perimeter
+        else:
+            return 0
 
 def get_multifeature(fmt,vals):
     return [(fmt % (n+1,), v) for n,v in zip(range(len(vals)),vals)]
 
 N_FEATURES=241
 
+class ZeroMock(object):
+    def __getattr__(self, name):
+        return 0
+
 def get_all_features(r):
-    b = r.blobs[0]
+    if r.num_blobs > 0:
+        b = r.blobs[0]
+    else:
+        b = ZeroMock()
     f = []
     f += [
         ('Area', b.area),
@@ -463,12 +482,11 @@ def get_all_features(r):
         ('Perimeter', b.perimeter),
         ('RWcenter2total_powerratio', r.rw_power_ratio),
         ('RWhalfpowerintegral', r.rw_power_integral),
-        ('RepresentativeWidth', b.representative_width), # unimplemented
-        ('RotatedArea', 0), # will be removed
+        ('RepresentativeWidth', b.representative_width),
         ('RotatedBoundingBox_xwidth', b.rotated_bbox_xwidth),
         ('RotatedBoundingBox_ywidth', b.rotated_bbox_ywidth),
         ('Solidity', b.solidity),
-        ('SurfaceArea', b.surface_area), # unimplemented
+        ('SurfaceArea', b.surface_area),
         ('maxFeretDiameter', b.max_feret_diameter),
         ('minFeretDiameter', b.min_feret_diameter)
     ]
@@ -478,7 +496,6 @@ def get_all_features(r):
         ('shapehist_kurtosis_normEqD', b.perimeter_kurtosis),
         ('shapehist_mean_normEqD', b.perimeter_mean),
         ('shapehist_median_normEqD', b.perimeter_median),
-        ('shapehist_mode_normEqD', 0), # will be removed
         ('shapehist_skewness_normEqD', b.perimeter_skewness),
         ('summedArea', r.summed_area),
         ('summedBiovolume', r.summed_biovolume),
@@ -503,6 +520,7 @@ def get_all_features(r):
         ('Area_over_Perimeter', b.area_over_perimeter),
         ('H90_over_Hflip', b.h90_over_hflip),
         ('H90_over_H180', b.h90_over_h180),
+        ('Hflip_over_H180', b.hflip_over_h180),
         ('summedConvexPerimeter_over_Perimeter', r.summed_convex_perimeter_over_perimeter),
         ('rotated_BoundingBox_solidity', b.rotated_bbox_solidity)
     ]
