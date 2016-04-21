@@ -6,7 +6,6 @@ from skimage.measure import regionprops
 from skimage.transform import rotate
 from skimage.util import pad
 from skimage.morphology import binary_closing, binary_dilation
-from math import ceil, floor
 
 from ifcb.features.morphology import SE2, SE3, EIGHT, bwmorph_thin
 
@@ -34,9 +33,9 @@ def center_blob(B):
     # center
     h, w = B.shape
     s = max(yc,h-yc,xc,w-xc)
-    m = ceil(s*2)
+    m = np.ceil(s*2)
     C = np.zeros((m,m),dtype=np.bool)
-    y0, x0 = floor(s-yc), floor(s-xc)
+    y0, x0 = np.floor(s-yc), np.floor(s-xc)
     C[y0:y0+h,x0:x0+w]=B
     return C
 
