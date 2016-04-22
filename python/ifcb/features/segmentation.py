@@ -39,8 +39,8 @@ def segment_roi(roi):
     B = bwmorph_thin(B,3)
     # step 9. fill holes
     B = binary_fill_holes(B)
-    # step 10. remove blobs smaller than BLOB_MIN
-    B = remove_small_objects(B,BLOB_MIN,connectivity=2)
+    # step 10. remove blobs <= BLOB_MIN
+    B = remove_small_objects(B,BLOB_MIN+1,connectivity=2)
     # done.
     return B
     
