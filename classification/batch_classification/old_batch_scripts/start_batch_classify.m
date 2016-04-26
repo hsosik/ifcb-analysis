@@ -1,9 +1,9 @@
 classifierName = 'MVCO_trees_25Jun2012';
-yr = 2014;
+yr = 2015;
 out_dir = ['\\SosikNAS1\IFCB_products\MVCO\class\class' num2str(yr) '_v1\'];%
 %in_dir = 'http://ifcb-data.whoi.edu/mvco/';
 %for V2 web services, set fea_dir = in_dir;
-fea_dir = '\\SosikNAS1\IFCB_products\MVCO\features\features2014_v2\';
+fea_dir = '\\SosikNAS1\IFCB_products\MVCO\features\features2015_v2\';
 filelist = [];
 %for day = 157:157,
 %    filelist = [filelist list_day(datestr(datenum(yr,0,day),29), in_dir)];

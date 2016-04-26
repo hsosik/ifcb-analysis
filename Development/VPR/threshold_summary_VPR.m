@@ -3,10 +3,10 @@ load('\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_30Oct2015_six_cl
 decimal = filelistTB(:,17:18);
 decimal = str2num(decimal);
 ind = find(decimal ==1);
-class2plot = 'phaeMany';%'squashed' 'phaeMany23' 'whiteout' 'phaeMany'  'phaeIndivAll' 'phaeIndiv'  'phae2all'  'phaeManyMix'
+class2plot = 'phae2all';%'squashed' 'phaeMany23' 'whiteout' 'phaeMany'  'phaeIndivAll' 'phaeIndiv'  'phae2all'  'phaeManyMix'
 
 load(['\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_30Oct2015_six_classes\classpath_div\summary_by_thre\summary_allTB_bythre_' class2plot]);
-m = load('\\SOSIKNAS1\Lab_data\VPR\NBP1201\manual\summary\count_manual_30Oct2015'); 
+m = load('\\SOSIKNAS1\Lab_data\VPR\NBP1201\manual\summary\count_manual_12Nov2015'); 
 
 goodm = 1:length(m.filelist);%find(~isnan(m.ml_analyzed_mat(:,imclass)));
 %[~,im,it] = intersect(m.filelist.(goodm), filelistTB(ind));
@@ -17,15 +17,22 @@ d = 0; %0
 figure(1+d), clf
 
 
+
+% if strmatch(class2plot, 'squashed', 'exact')
+%    imclass = strmatch(class2plot, m.class2use, 'exact'); %'squashed' 'phaeMany23' 'whiteout' 'phaeMany'  'phaeIndivAll'
+%    x = m.classcount(im,imclass);
+% end
+
 if strmatch(class2plot, 'squashed', 'exact')
-   imclass = strmatch(class2plot, m.class2use, 'exact'); %'squashed' 'phaeMany23' 'whiteout' 'phaeMany'  'phaeIndivAll'
-   x = m.classcount(im,imclass);
+       imclass1 = strmatch('squashed', m.class2use, 'exact');
+   imclass2 = strmatch('phaeManyMix_squashed_primary', m.class2use, 'exact'); %'squashed' 'phaeMany23' 'whiteout' 'phaeMany'  'phaeIndivAll'
+   x = m.classcount(im,imclass1) + m.classcount(im,imclass2);
 end
 
 if strmatch(class2plot, 'blurry_marSnow', 'exact')
        imclass1 = strmatch('blurry', m.class2use, 'exact');
    imclass2 = strmatch('marSnow', m.class2use, 'exact'); %'squashed' 'phaeMany23' 'whiteout' 'phaeMany'  'phaeIndivAll'
-   x = m.classcount(im,imclass1) + m.classcount(im,imclass1);
+   x = m.classcount(im,imclass1) + m.classcount(im,imclass2);
 end
 
 if strmatch(class2plot, 'phaeIndiv', 'exact')
@@ -50,8 +57,9 @@ end
 %  
   if strmatch(class2plot, 'phae2all', 'exact')
     imclass1 = strmatch('phaeIndiv2', m.class2use, 'exact');
-   imclass2 = strmatch('phaeMany23', m.class2use, 'exact'); %'squashed' 'phaeMany23' 'whiteout' 'phaeMany'  'phaeIndivAll'
-    x = m.classcount(im,imclass1) + m.classcount(im,imclass2);
+   imclass2 = strmatch('phaeManyMix_phae2_primary', m.class2use, 'exact');
+  imclass3 = strmatch('phaeMany23', m.class2use, 'exact');%'squashed' 'phaeMany23' 'whiteout' 'phaeMany'  'phaeIndivAll'
+    x = m.classcount(im,imclass1) + m.classcount(im,imclass2)+m.classcount(im,imclass3);
   end
 
 

@@ -2,12 +2,12 @@
 % humidity
 clear
 close all
-start = '27 Apr 2015';
+start = '1 Jan 2016';
 % start = '12 Mar 2015';
 stop = now; %'23 Nov 2013';
-instr = 'IFCB1';
+instr = 'IFCB5';
 %dirpath = '\\128.128.108.93\data\D2014\';
-dirpath = '\\sosiknas1\IFCB_data\MVCO\data\2015\';
+dirpath = '\\sosiknas1\IFCB_data\MVCO\data\2016\';
 d = dir([dirpath '\' instr '*']);
 isub = [d(:).isdir]; %# returns logical vector
 d = d(isub); % only folders

@@ -1,9 +1,10 @@
 pngdir = '\\sosiknas1\Lab_data\VPR\NBP1201\VPR8_train_27Oct2015\'; %output from export train - where the training images are located
 savedir = '\\sosiknas1\Lab_data\VPR\NBP1201\classifiers\';
-feapath_base = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\features\'
+%feapath_base = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\features\'
+feapath_base =  '\\sosiknas1\Lab_data\VPR\vpr8\features_v3beta\';
 maxn = 400; %USER select
 minn = 20; %minimum number for inclusion
-outstring = 'NBP1201_train_vpr8_27Oct2015'; %e.g., 'MVCO_train_Aug2015'
+outstring = 'NBP1201_train_vpr8_13Apr2016'; %e.g., 'MVCO_train_Aug2015'
 
 %find the class names from the subdirs
 temp = dir(pngdir);
@@ -30,10 +31,10 @@ for classcount = 1:length(classes)
     flist = [];
     fea_mat = [];
     for filecount = 1:length(unqfilelist)
-        feaname = [unqfilelist{filecount} '_fea_v3.csv']; %changed from fea_V2 to fea_V3 for vpr feature files
+        feaname = [unqfilelist{filecount} '_fea_v3beta.csv']; %changed from fea_V2 to fea_V3 for vpr feature files
         %feapath = regexprep(feapath_base, 'xxxx', feaname(7:10)); %part to adjust for vpr file names
         feapath = feapath_base;
-        [ feadata, featitles ] = get_fea_file([feapath feaname(12:18) '_fea_v3.csv']);
+        [ feadata, featitles ] = get_fea_file([feapath feaname(12:18) '_fea_v3beta.csv']);
         ind = find(ismember(filelist, unqfilelist{filecount}));
         temp = char(target_list{ind});
         roinum = str2num(temp(:,end-9:end)); %%part to adjust for vpr data

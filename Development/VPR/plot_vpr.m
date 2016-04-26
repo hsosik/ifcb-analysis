@@ -2,12 +2,18 @@
 %close all;
 clear all;
 
-load('\\sosiknas1\Lab_data\VPR\NBP1201\manual\summary\count_manual_30Oct2015');
+load('\\sosiknas1\Lab_data\VPR\NBP1201\manual\summary\count_manual_12Nov2015');
 load('\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_30Oct2015_six_classes\classpath_div\summary\summary_allTB');
 %load('\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_24Sep2015_combineAllPheao24Sep2015\classpath_div\summary\summary_allTB');
 decimal = filelistTB(:,17:18);
 decimal = str2num(decimal);
 ind = find(decimal ==1);
+
+for i = 1:length(class2useTB);
+   x = classcount(
+    classcount_optimized = classcountTB_above_optthresh(:,1);
+    Rsq(ii) = lin_fit{ii}.Rsquared.ordinary;
+    
 
 
 
@@ -22,6 +28,8 @@ for i = 1:(length(class2useTB)-1);
     elseif strmatch(class2plot, 'phaeMany', 'exact')
         continue
     elseif strmatch(class2plot, 'phaeAll', 'exact')
+        continue
+    elseif strmatch(class2plot, 'squashed', 'exact')
         continue
     else
 ind_man = strmatch(class2plot, class2use, 'exact');
@@ -62,9 +70,9 @@ end
 figure
 class2plot = 'phaeMany';
 ind_auto = strmatch(class2plot, class2useTB, 'exact');
-        %phaeMany_manual = (classcount(:,5)) %+ classcount(:,13));
-   phae2all_manual = (classcount(:,5));
-        plot(ind, phae2all_manual, 'r.', 'markerSize', 16)
+        phaeMany_manual = (classcount(:,5)+ classcount(:,13));
+   %phaeMany_manual = (classcount(:,5));
+        plot(ind, phaeMany_manual, 'r.', 'markerSize', 16)
         hold on
         plot(classcountTB(:,ind_auto), '.')
         plot(ind, classcountTB(ind,ind_auto), 'mo', 'markerSize', 7)
@@ -76,11 +84,30 @@ ind_auto = strmatch(class2plot, class2useTB, 'exact');
         title(class2plot);
         clear ind_man ind_auto class2plot phaeMany_manual
 ylim([0 2500]);
-        figure
+        
+figure
 class2plot = 'phae2all';
 ind_auto = strmatch(class2plot, class2useTB, 'exact');
         %phaeMany_manual = (classcount(:,5)) %+ classcount(:,13));
-   phae2all_manual = (classcount(:,6) + classcount(:,12));
+   phae2all_manual = (classcount(:,6) + classcount(:,12)+classcount(:,14));
+        plot(ind, phae2all_manual, 'r.', 'markerSize', 16)
+        hold on
+        plot(classcountTB(:,ind_auto), '.')
+        plot(ind, classcountTB(ind,ind_auto), 'mo', 'markerSize', 7)
+        plot(classcountTB_above_optthresh(:,ind_auto), 'g.')
+        plot(ind, classcountTB_above_optthresh(ind ,ind_auto), 'mo', 'markerSize', 7)
+        plot(classcountTB_above_adhocthresh(:,ind_auto), 'k.')
+        plot(ind, classcountTB_above_adhocthresh(ind ,ind_auto), 'mo', 'markerSize', 7)
+        legend('manual', 'auto',  'auto', 'auto thre', 'auto thre');
+        title(class2plot);
+        clear ind_man ind_auto class2plot phaeMany_manual
+        ylim([0 4000]);
+        
+        figure
+class2plot = 'squashed';
+ind_auto = strmatch(class2plot, class2useTB, 'exact');
+        %phaeMany_manual = (classcount(:,5)) %+ classcount(:,13));
+   phae2all_manual = (classcount(:,7) + classcount(:,15));
         plot(ind, phae2all_manual, 'r.', 'markerSize', 16)
         hold on
         plot(classcountTB(:,ind_auto), '.')
