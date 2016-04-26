@@ -1,4 +1,6 @@
 datadir = '\\sosiknas1\Lab_data\MVCO\EnvironmentalData\';
+load([datadir 'other2001'])
+load([datadir 'other2002'])
 load([datadir 'other2003_04'])
 load([datadir 'other2005'])
 load([datadir 'other2006'])
@@ -20,8 +22,8 @@ yd_ocn2004 = [yd_ocn2004; yd_seacat2004];
 Temp2004 = [Temp2004; temp_seacat2004];
 
 yd = (1:366)';
-year = (2003:2016);
-%year = (2006:2011);
+%year = (2003:2016);
+year = (2001:2016);
 Tday = NaN(length(yd),length(year));
 for count = 1:length(year),    
     eval(['yd_ocn = yd_ocn' num2str(year(count)) ';'])

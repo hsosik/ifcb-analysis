@@ -13,8 +13,16 @@ for i = 1:length(sphereVec)
     [rr cc] = meshgrid(1:d+3); %set full image size, make sure 1-pixel border all around
     R=r; cx1=R+2; cy1=R+2; %set radius, center location
     blob_img = sqrt((rr-cx1).^2+(cc-cy1).^2)<=R;
-    %imshow(C), caxis auto
+    imshow(blob_img), caxis auto
+    pause
     [SAalg(i) Valg(i)] = surface_area_revolve_2e(blob_img); 
+       if 1
+           b =  bwboundaries(blob_img,8,'noholes');
+           [M N] = size(blob_img);
+           perim_img = bound2im(b{1},M,N);
+           [Vdm(i) xdm(i) SAdm(i) ] = distmap_volume(perim_img);
+        end
+        
     PAalg(i) = sum(blob_img(:)); %projected area just to test
 end
 
