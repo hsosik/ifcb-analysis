@@ -22,9 +22,9 @@ if target.blob_props.numBlobs > 0,
         p90 = [p(:,2), p(:,1)];
         p180 = -p;
         pfud = [-p(:,1) p(:,2)];
-        hdfud = ModHausdorffDistMex(p,pfud);
-        hd90 = ModHausdorffDistMex(p, p90);
-        hd180 = ModHausdorffDistMex(p,p180);
+        hdfud = ModHausdorffDistKDT(p,pfud);
+        hd90 = ModHausdorffDistKDT(p, p90);
+        hd180 = ModHausdorffDistKDT(p,p180);
         target.blob_props.H180(i) = hd180;
         target.blob_props.H90(i) = hd90;
         target.blob_props.Hflip(i) = hdfud;
