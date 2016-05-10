@@ -1,5 +1,6 @@
 import numpy as np
 
+from scipy.spatial import cKDTree
 from scipy.spatial.distance import pdist, cdist
 from scipy import stats
 
@@ -28,12 +29,17 @@ def perimeter_stats(points, equiv_diameter):
     D = pdist(B) / equiv_diameter
     return hist_stats(D)
 
+def _pairwise_nearest(A,B):
+    # compute distance to nearest neighbor from A to B
+    D1, _ = cKDTree(A).query(B,k=1)
+    # compute distance to nearest neighbor from B to A
+    D2, _ = cKDTree(B).query(A,k=1)
+    return D1, D2
+    
 def hausdorff(A,B):
     """compute the Hausdorff distance between two point sets"""
-    D = cdist(A,B,'sqeuclidean')
-    fhd = np.max(np.min(D,axis=0))
-    rhd = np.max(np.min(D,axis=1))
-    return np.sqrt(max(fhd,rhd))
+    D1, D2 = _pairwise_nearest(A,B)
+    return max(np.max(D1),np.max(D2))
     
 def modified_hausdorff(A,B):
     """compute the 'modified' Hausdorff distance between two
@@ -43,11 +49,9 @@ def modified_hausdorff(A,B):
     1994.
     http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=576361
     """
-    D = cdist(A,B)
-    fhd = np.mean(np.min(D,axis=0))
-    rhd = np.mean(np.min(D,axis=1))
-    return max(fhd,rhd) 
-    
+    D1, D2 = _pairwise_nearest(A,B)
+    return max(np.mean(D1),np.mean(D2))
+
 def hausdorff_symmetry(B):
     """given a binary image, compute modified hausdorff distance between
     its perimeter and its perimeter rotated 180, 90, and mirrored
