@@ -31,7 +31,7 @@ if exist(features_file,'file')
         log(['DEPOSITED ' multiblob_pid]);
     end
 else
-    throw MException('ProductNotFound','bin_features produced no output')
+    throw(MException('ifcb:ProductNotFound','bin_features produced no output'));
 end
 
 end

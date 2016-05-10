@@ -23,7 +23,7 @@ if exist(blob_zip_file,'file')
     w.deposit_product(blob_pid, blob_zip_file);
     log(['DEPOSITED ' blob_pid]);
 else
-    throw MException('ProductNotFound','bin_blobs produced no output')
+    throw(MException('ifcb:ProductNotFound','bin_blobs produced no output'));
 end
 
 r = 1;
