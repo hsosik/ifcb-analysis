@@ -7,6 +7,7 @@ from scipy import stats
 from skimage.measure import regionprops
 
 from ifcb.features.morphology import find_perimeter
+from ifcb.features.random import simple_prng
 
 def hist_stats(arr):
     """returns mean, median, skewness, and kurtosis"""
@@ -16,6 +17,22 @@ def hist_stats(arr):
     skewness = stats.skew(arr)
     kurtosis = stats.kurtosis(arr,fisher=False)
     return mean, median, skewness, kurtosis
+
+def subsample_dist(A,max_n=10000):
+    """subsampling version of pdist"""
+    # take a min of n**2 and max of max_n samples
+    n = A.shape[0]
+    m = min(n**2,max_n)
+    # now determinstically randomly sample pairs of points
+    # sort the points
+    six = np.argsort(np.sum(A * [np.max(A[:,1]),1],axis=1))
+    pp = A[six,:]
+    # sample m pairs with replacement
+    ix = simple_prng(n,shape=(m,2))
+    # compute euclidean distance between pairs
+    spp_a = pp[ix[:,0],:]
+    spp_b = pp[ix[:,1],:]
+    return np.sqrt(np.sum((spp_a - spp_b)**2,axis=1))
     
 def perimeter_stats(points, equiv_diameter):
     """compute stats of pairwise distances
@@ -24,6 +41,7 @@ def perimeter_stats(points, equiv_diameter):
     returns mean, median, skewness, and kurtosis
     """
     B = np.vstack(points).T
+    #D = subsample_dist(B) / equiv_diameter # FIXME use this
     # in H Sosik's v2 the square form is used,
     # use the short form here
     D = pdist(B) / equiv_diameter
