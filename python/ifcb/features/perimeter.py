@@ -44,7 +44,7 @@ def perimeter_stats(points, equiv_diameter):
     #D = subsample_dist(B) / equiv_diameter # FIXME use this
     # in H Sosik's v2 the square form is used,
     # use the short form here
-    D = pdist(B) / equiv_diameter
+    D = subsample_dist(B) / equiv_diameter
     return hist_stats(D)
 
 def _pairwise_nearest(A,B):

@@ -15,10 +15,10 @@ def simple_prng(n,seed=1,shape=1):
         # allow shape to just be an integer
         shape = (shape,)
     size = reduce(lambda a,b:a*b,shape)
-    out = np.arange(size)
+    out = np.zeros(size,dtype=int)
     prev = seed
     for j in range(size):
-        out[j] = ((prev + j) * 1013) % 823
+        out[j] = (prev * 30203) % 29663
         prev = out[j]
     # reshape in Fortran order, like MATLAB
     return (out % n).reshape(*shape,order='F')
