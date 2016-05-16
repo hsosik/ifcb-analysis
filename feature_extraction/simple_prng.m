@@ -15,7 +15,7 @@ prev=seed;
 
 out = zeros(1,size);
 for j=1:size
-    prev = mod((prev + j - 1) * 1013, 823);
+    prev = mod(prev * 30203, 29663);
     out(j)=prev;
 end
 if length(shape)>1

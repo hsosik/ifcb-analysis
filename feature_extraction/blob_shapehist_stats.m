@@ -15,10 +15,8 @@ if isempty(target.blob_images),
     target.blob_props.shapehist_kurtosis_normEqD = 0;
 else
     for idx = 1:length(target.blob_images),
-        [y, x] = find(target.blob_perimeter_images{idx});
-        d = dist(horzcat(y,x)');
-        nz = find(triu(d));
-        d = d(nz); %#ok<FNDSB>
+        [x, y] = find(target.blob_perimeter_images{idx});
+        d = subsample_dist(horzcat(x,y)');
         dnorm = d./target.blob_props.EquivDiameter(idx);
         target.blob_props.shapehist_mean_normEqD(idx) = mean(dnorm);
         target.blob_props.shapehist_median_normEqD(idx) = median(dnorm);
