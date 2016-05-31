@@ -23,7 +23,7 @@ end;
 bins = dir([manual_dir 'I*.mat']);
 bins = regexprep({bins.name}', '.mat', '');
 bins_done = dir([out_dir '*.csv']);
-bins_done = regexprep({bins_done.name}', '_fea_v2.csv', '');
+bins_done = regexprep({bins_done.name}', '_fea_v3test.csv', '');
 [bins,ia] = setdiff(bins, bins_done);
 nfiles = length(bins); 
 disp(['processing ' num2str(nfiles) ' files'])

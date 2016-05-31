@@ -4,7 +4,7 @@ resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
 outputpath = 'C:\work\IFCB\ifcb_data_MVCO_jun06\manual_fromWeb\ciliate_test\'; %USER where to write out pngs
 urlbase = 'http://ifcb-data.whoi.edu/mvco/';
 
-resultfilelist = get_filelist_manual([resultpath 'manual_list'],2,[2006:2012], 'all'); %manual_list, column to use, year to find, Copied here by Emily P. from manual_classify_batch_3_1
+resultfilelist = get_filelist_manual([resultpath 'manual_list'],2,[2006:2016], 'all'); %manual_list, column to use, year to find, Copied here by Emily P. from manual_classify_batch_3_1
 %resultfilelist = [dir([resultpath 'IFCB1_2006_???_00*.mat']); dir([resultpath 'IFCB1_2007_???_00*.mat'])];
 %case 3 for ciliate, big ciliate, diatoms, ditylum ONLY
 %load([resultpath 'manual_list.mat']) %col 2-7: {'all categories','ciliates','ditylum','diatoms','big ciliates','special big only'}
@@ -20,11 +20,12 @@ resultfilelist = cellstr(resultfilelist(:,1:end-4));
 
 unqmonth = unique(month);
 unqyr = unique(yr);
-%category = {'ciliate_mix' 'tintinnid'}; %use this syntax to export ONLY the listed categories
+category = {'Ciliate_mix' 'Tintinnid'}; %use this syntax to export ONLY the listed categories
 %category = {'ciliate_mix'}; %use this syntax to export ONLY the listed categories
-category = {'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
-            'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
-            'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum'};
+%category = {'ciliate_mix' 'tintinnid' 'Myrionecta' 'Laboea' 'S_conicum' 'tiarina' 'strombidium_1'...
+%             'S_caudatum', 'Strobilidium_1' 'Tontonia' 'strombidium_2' 'S_wulffi' 'S_inclinatum' 'Euplotes' 'Didinium'...
+%             'Leegaardiella' 'Sol' 'strawberry' 'S_capitatum' 'Eutintinnus' 'Favella' 'Helicostomella_subulata' 'Stenosemella_sp1'...
+%             'Stenosemella_sp2' 'Tintinnidium'};
 for count = 1:length(category),
     %if ~exist([outputpath char(category(count))], 'dir'),
     %    mkdir([outputpath char(category(count))]);
@@ -57,9 +58,9 @@ for filecount = 1:length(resultfilelist),
     %loop over classes and save pngs to subdirs
     for count2 = 1:length(category);
 %        ind = find(classlist(:,3) == strmatch(category(count2), class2use, 'exact'));
-        classnum = strmatch(category(count2), class2use_sub4, 'exact');
+        classnum = strmatch(category(count2), class2use, 'exact');
      %   ind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum));
-        ind = find(classlist(:,4) == classnum);  %MANUAL ONLY
+        ind = find(classlist(:,2) == classnum);  %MANUAL ONLY
         %for count = 1:length(ind)
         for count = 1:length(ind),
             num = classlist(ind(count),1);
