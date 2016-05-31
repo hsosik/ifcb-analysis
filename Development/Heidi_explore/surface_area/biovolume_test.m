@@ -27,7 +27,7 @@ for ii = 1:length(t.Area),
             theta = -1*t.Orientation(ii);
             blob_rot = imrotate(blob_now, theta, 'bilinear'); % rotates the filled image
             %volume(ii) = volumewalk(blob_rot);
-            [surface_area(ii) volume(ii) xr(ii)] = surface_area_revolve_2e(blob_rot); 
+            [volume(ii) xr(ii) surface_area(ii)] = surface_area_revolve_2e(blob_rot); 
             biovol_method(ii) = 1; %revolve
         else %distance map cases
            b =  bwboundaries(blob_now,8,'noholes');

@@ -17,7 +17,7 @@ for ii = 1:length(roiHvec);
         if split_cylinders
             blob_img(border+1:border+(roiH/2), border+1:border+(roiL/2)) = 0; % half skinnier cylinder
         end
-        %imshow(blob_img), caxis auto
+      %  imshow(blob_img), caxis auto
         %[SAalg(ii,iii) Valg(ii,iii)] = surface_area_revolve_2b(blob_img); %your function here
         [SAalg(ii,iii) Valg(ii,iii)] = surface_area_revolve_2e(blob_img); %your function here
         if 1

@@ -1,5 +1,5 @@
-resultpath = 'C:\work\IFCB\user_training_test_data\manual\'; %USER
-roibasepath = 'C:\work\IFCB\user_training_test_data\data\'; %USER
+resultpath = '\\sosiknas1\IFCB_products\IFCB101_GordonGunterOct2015\Manual_fromClass\'; %USER
+roibasepath = '\\sosiknas1\IFCB_data\IFCB101_GordonGunterOct2015\data\'; %USER
 filelist = dir([resultpath 'D*.mat']);
 
 %calculate date

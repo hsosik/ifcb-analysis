@@ -19,7 +19,6 @@ dist = dist + 1;
 % mask distance map image (all distances outside boundary set to NaN)
 image_fill = imfill(boundary_image,'holes'); 
 dist(image_fill==0) = NaN; 
-
 % find representative transect length
 x = 4*nanmean(dist(:)) - 2;
 
