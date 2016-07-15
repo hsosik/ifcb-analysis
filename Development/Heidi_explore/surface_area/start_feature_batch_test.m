@@ -1,7 +1,7 @@
 function [ ] = start_feature_batch_teset(in_dir, manual_dir , in_dir_blob_base, out_dir, parallel_proc_flag)
 %function [ ] = start_feature_batch_user_training(in_dir_base , in_dir_blob_base, out_dir, parallel_proc_flag)
 %For example:
-%start_feature_batch_test('http://ifcb-data.whoi.edu/mvco', 'C:\work\IFCB\ifcb_data_MVCO_jun06\Manual_fromClass\' , [], 'C:\work\IFCB\ifcb_data_MVCO_jun06\features_test\', false)
+%start_feature_batch_test('http://ifcb-data.whoi.edu/mvco/', 'C:\work\IFCB\ifcb_data_MVCO_jun06\Manual_fromClass\' , [], 'C:\work\IFCB\ifcb_data_MVCO_jun06\features_test\', false)
 %
 %IFCB image processing: configure and initiate batch processing for feature extraction
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, August 2015
@@ -23,7 +23,7 @@ end;
 bins = dir([manual_dir 'I*.mat']);
 bins = regexprep({bins.name}', '.mat', '');
 bins_done = dir([out_dir '*.csv']);
-bins_done = regexprep({bins_done.name}', '_fea_v2.csv', '');
+bins_done = regexprep({bins_done.name}', '_fea_v3test.csv', '');
 [bins,ia] = setdiff(bins, bins_done);
 nfiles = length(bins); 
 disp(['processing ' num2str(nfiles) ' files'])

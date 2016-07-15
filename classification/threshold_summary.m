@@ -1,7 +1,9 @@
 load \\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\summary_allTB_bythre_Laboea
-m = load('\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_manual_current'); 
+m = load('\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_manual_current_day'); 
+matdate_bin = m.matdate_bin; ml_analyzed_mat_bin = m.ml_analyzed_mat_bin;
 imclass = strmatch('Laboea', m.class2use);
-goodm = find(~isnan(m.ml_analyzed_mat(:,imclass)));
+%goodm = find(~isnan(m.ml_analyzed_mat(:,imclass)));
+goodm = find(~isnan(m.ml_analyzed_mat_bin(:,imclass)));
 [~,im,it] = intersect(m.filelist(goodm), filelistTB);
 im = goodm(im);
 d = 0; %0
@@ -9,8 +11,8 @@ figure(1+d), clf
 %x = m.classcount(im,imclass); %all manually sorted time points
 %[ mdate_mat, y_mat, yearlist, yd ] = timeseries2ydmat_sum( m.matdate(im), m.classcount(im,imclass) );
 %x = y_mat(:); %manually sorted time points-daily
-[matdate_bin, classcount_bin, ml_analyzed_mat_bin] = make_hour_bins(m.matdate(im),m.classcount(im,imclass), m.ml_analyzed_mat(im,imclass));
-x=classcount_bin; % manually sorted time points-hourly
+%[matdate_bin, classcount_bin, ml_analyzed_mat_bin] = make_hour_bins(m.matdate(im),m.classcount(im,imclass), m.ml_analyzed_mat(im,imclass));
+%x=classcount_bin; % manually sorted time points-hourly
 for ii = 1:length(threlist),
     
     %all classifier time points

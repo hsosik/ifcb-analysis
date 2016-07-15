@@ -95,7 +95,7 @@ if isequal(pick_mode, 'correct')
         class2use_temp = class2use;
         if ~isempty([strfind(classfilename,'mvco') strfind(classfilename,'MVCO')])
             class2use_temp{strmatch('Ciliate_mix', class2use)} = 'ciliate_mix';
-            class2use_temp{strmatch('Tintinnid', class2use)} = 'tintinnid';
+            class2use_temp{strmatch('Tintinnid', class2use, 'exact')} = 'tintinnid';
             class2use_temp{strmatch('Laboea_strobila', class2use)} = 'Laboea_strobila';
             class2use_temp{strmatch('Mesodinium_sp', class2use)} = 'Myrionecta';
             class2use_temp{strmatch('Guinardia_delicatula', class2use, 'exact')} = 'Guinardia';

@@ -2,7 +2,7 @@ function [ ] = start_classify_batch_user_training(classifierName , in_dir_featur
 %function [ ] = start_classify_batch_user_training(classifierName , in_dir_feature, out_dir_class)
 %For example:
 %   start_classify_batch_user_training('C:\work\IFCB\user_training_test_data\manual\summary\UserExample_Trees_06Aug2015' , 'C:\work\IFCB\user_training_test_data\features\2014\', 'C:\work\IFCB\user_training_test_data\class\class2014_v1\')
-%
+%start_classify_batch_user_training('\\SosikNAS1\IFCB_products\MVCO\classifiers\MVCO_trees_25Jun2012','\\sosiknas1\IFCB_products\IFCB14_Dock\features\features2015_v2\','\\sosiknas1\IFCB_products\IFCB14_Dock\class\class2015_v2\')
 %IFCB image classification: configure and initiate batch classification from extracted features and input classifier
 % run make_TreeBaggerClassifier_user_training.m first to produce random forest classifier stored in file (classiferName)
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, August 2015
