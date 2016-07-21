@@ -1,8 +1,8 @@
-resultpath = '\\sosiknas1\IFCB_products\IFCB101_OkeanosExplorerNov2013\class\summary\';
-classpath_generic = '\\sosiknas1\IFCB_products\IFCB101_OkeanosExplorerNov2013\class\classxxxx_v1\';
-feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_OkeanosExplorerNov2013\features\featuresxxxx_v2\';
+resultpath = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\summary\';
+classpath_generic = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\classxxxx_v1\';
+feapath_generic = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\features\featuresxxxx_v2\';
 %feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_OkeanosExplorerNov2013\features\';
-hdrpath = 'http://ifcb-data.whoi.edu/IFCB101_OkeanosExplorerNov2013/';
+hdrpath = 'http://ifcb-data.whoi.edu/IFCB010_OkeanosExplorerAug2013/';
 
 % resultpath = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\summary\';
 % classpath_generic = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\classxxxx_v1\';

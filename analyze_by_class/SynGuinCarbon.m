@@ -1,5 +1,6 @@
 %load c:\work\mvco\carbon\IFCB_carbon_manual_Jan2014.mat %from summary_size_classes.m
-load \\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\IFCB_carbon_manual_27Jan2016 %IFCB_carbon_manual_12Jun2015 %from summary_size_classes.m
+%load \\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\IFCB_carbon_manual_27Jan2016 %IFCB_carbon_manual_12Jun2015 %from summary_size_classes.m
+load \\sosiknas1\IFCB_products\MVCO\Manual_fromClass\summary\IFCB_carbon_manual_17Feb2016 %IFCB_carbon_manual_12Jun2015 %from summary_size_classes.m
 load c:\work\mvco\carbon\carbon_summary_fcb.mat
 
 c = strmatch('Guinardia_delicatula', classes, 'exact');
