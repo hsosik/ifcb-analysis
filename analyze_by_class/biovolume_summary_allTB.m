@@ -1,15 +1,15 @@
-% resultpath = '\\sosiknas1\IFCB_products\IFCB101_OkeanosExplorerNov2013\class\summary\';
-% classpath_generic = '\\sosiknas1\IFCB_products\IFCB101_OkeanosExplorerNov2013\class\classxxxx_v1\';
-% feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_OkeanosExplorerNov2013\features\featuresxxxx_v2\';
-% %feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_OkeanosExplorerNov2013\features\';
-% hdrpath = 'http://ifcb-data.whoi.edu/IFCB101_OkeanosExplorerNov2013/';
+resultpath = '\\sosiknas1\IFCB_products\IFCB101_OkeanosExplorerNov2013\class\summary\';
+classpath_generic = '\\sosiknas1\IFCB_products\IFCB101_OkeanosExplorerNov2013\class\classxxxx_v1\';
+feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_OkeanosExplorerNov2013\features\featuresxxxx_v2\';
+%feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_OkeanosExplorerNov2013\features\';
+hdrpath = 'http://ifcb-data.whoi.edu/IFCB101_OkeanosExplorerNov2013/';
 
-resultpath = '\\sosiknas1\IFCB_products\IFCB102_PiscesNov2014\class\summary\';
-classpath_generic = '\\sosiknas1\IFCB_products\IFCB102_PiscesNov2014\class\classxxxx_v1\';
-feapath_generic = '\\sosiknas1\IFCB_products\IFCB102_PiscesNov2014\features\';
-hdrpath = 'http://ifcb-data.whoi.edu/IFCB102_PiscesNov2014/';
+% resultpath = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\summary\';
+% classpath_generic = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\classxxxx_v1\';
+% feapath_generic = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\features\';
+% hdrpath = 'http://ifcb-data.whoi.edu/IFCB010_OkeanosExplorerAug2013/';
 
-for yr = 2014:2014, %:2012,
+for yr = 2013:2013, %:2012,
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     feapath = regexprep(feapath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'D*.mat']);
@@ -40,7 +40,8 @@ for yr = 2014:2014, %:2012,
     %
     for filecount = 1:length(classfiles)
         if ~rem(filecount,10), disp(['reading ' num2str(filecount) ' of ' num2dostr]), end;
-        [classcount(filecount,:), classbiovol(filecount,:), class2useTB] = summarize_biovol_TBclassMVCO(classfiles{filecount}, feafiles{filecount});
+      %  [classcount(filecount,:), classbiovol(filecount,:), class2useTB] = summarize_biovol_TBclassMVCO(classfiles{filecount}, feafiles{filecount});
+        [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), class2useTB] = summarize_biovol_TBclassMVCO(classfiles{filecount}, feafiles{filecount});
     end;
     
     classcountTB = classcount;
@@ -51,6 +52,7 @@ for yr = 2014:2014, %:2012,
     if ~exist(resultpath, 'dir')
         mkdir(resultpath)
     end
-    save([resultpath 'summary_biovol_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classbiovolTB', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
-    clear *files* classcount classbiovol 
+    %save([resultpath 'summary_biovol_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classbiovolTB', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
+    save([resultpath 'summary_biovol_allTB'] , 'class2useTB', 'classcountTB*', 'classbiovolTB*', 'classC*', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
+    clear *files* classcount* classbiovol* classC* 
 end

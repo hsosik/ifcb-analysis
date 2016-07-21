@@ -1,4 +1,4 @@
-function [classcount, classbiovol, classC, classcount_above_optthresh, classbiovol_above_optthresh, classC_above_optthresh, class2useTB, optthre, adhocthre] = summarize_TBclassMVCO(classfile, feafile)
+function [classcount, classbiovol, classC, classcount_above_optthresh, classbiovol_above_optthresh, classC_above_optthresh, class2useTB] = summarize_TBclassMVCO(classfile, feafile)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
