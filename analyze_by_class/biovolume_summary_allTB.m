@@ -1,15 +1,15 @@
-resultpath = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\summary\';
-classpath_generic = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\classxxxx_v1\';
-feapath_generic = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\features\featuresxxxx_v2\';
-%feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_OkeanosExplorerNov2013\features\';
-hdrpath = 'http://ifcb-data.whoi.edu/IFCB010_OkeanosExplorerAug2013/';
+resultpath = '\\sosiknas1\IFCB_products\\IFCB102_PiscesNov2014\class\summary\';
+classpath_generic = '\\sosiknas1\IFCB_products\\IFCB102_PiscesNov2014\class\classxxxx_v1\';
+%feapath_generic = '\\sosiknas1\IFCB_products\\IFCB102_PiscesNov2014\features\featuresxxxx_v2\';
+feapath_generic = '\\sosiknas1\IFCB_products\IFCB102_PiscesNov2014\features\';
+hdrpath = 'http://ifcb-data.whoi.edu/\IFCB102_PiscesNov2014/';
 
 % resultpath = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\summary\';
 % classpath_generic = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\classxxxx_v1\';
 % feapath_generic = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\features\';
 % hdrpath = 'http://ifcb-data.whoi.edu/IFCB010_OkeanosExplorerAug2013/';
 
-for yr = 2013:2013, %:2012,
+for yr = 2014:2014, %:2012,
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     feapath = regexprep(feapath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'D*.mat']);
@@ -45,7 +45,12 @@ for yr = 2013:2013, %:2012,
     end;
     
     classcountTB = classcount;
+    classcountTB_above_optthresh = classcount_above_optthresh;
     classbiovolTB = classbiovol;
+    classbiovolTB_above_optthresh = classbiovol_above_optthresh;
+    classC_TB = classC;
+    classC_TB_above_optthresh = classC_above_optthresh;
+    
     ml_analyzedTB = ml_analyzed;
     mdateTB = mdate;
     filelistTB = filelist;
@@ -53,6 +58,6 @@ for yr = 2013:2013, %:2012,
         mkdir(resultpath)
     end
     %save([resultpath 'summary_biovol_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classbiovolTB', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
-    save([resultpath 'summary_biovol_allTB'] , 'class2useTB', 'classcountTB*', 'classbiovolTB*', 'classC*', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
+    save([resultpath 'summary_biovol_allTB'] , 'class2useTB', 'classcountTB*', 'classbiovolTB*', 'classC_TB*', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
     clear *files* classcount* classbiovol* classC* 
 end
