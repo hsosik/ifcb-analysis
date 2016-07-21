@@ -22,7 +22,7 @@ ylim([0 1])
 [Yfit,Sfit,Sstdfit] = oobPredict(b);
 [mSfit, ii] = max(Sfit');
 for count = 1:length(mSfit), mSstdfit(count) = Sstdfit(count,ii(count)); t(count)= Sfit(count,ii(count)); end; 
-if isempty(find(mSfit-t)), clear t, else disp('check for error...'); end;
+if isempty(find(mSfit(:)-t(:))), clear t, else disp('check for error...'); end;
 [c1, gord1] = confusionmat(b.Y,Yfit); %transposed from mine
 clear t
 
