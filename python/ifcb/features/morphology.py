@@ -31,7 +31,7 @@ def hysthresh(img,T1,T2):
     sum = 1
     while sum > 0:
         bd = (binary_dilation(edges,EIGHT) & (img > T2)) - edges
-        edges |= bd
+        edges = np.logical_or(bd, edges)
         sum = np.sum(bd)
     return edges
 
