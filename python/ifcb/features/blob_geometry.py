@@ -66,9 +66,11 @@ def invmoments(B):
     def mu(p,q):
         return np.sum((x - x_)**p * (y - y_)**q * F)
 
+    mu00 = mu(0,0)
+    
     def n(p,q): # eta sorta looks like n
         gamma = (p + q) / 2. + 1.
-        return mu(p,q) / mu(0,0)**gamma
+        return mu(p,q) / mu00**gamma
 
     # assign some variables so the eqns aren't impossible to read
     n20, n02 = n(2,0), n(0,2)
