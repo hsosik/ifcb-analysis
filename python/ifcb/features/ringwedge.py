@@ -39,7 +39,7 @@ def ring_mask(i,dim=_DIM,n_rings=_N_RINGS):
 def kaccie_ring(i,dim=301,n_rings=_N_RINGS):
     c = dim//2
     df = (1./dim)*(1/6.45)
-    f = np.linspace(-0.5/6.45,0.5/6.45,dim+1)
+    f = np.linspace(-0.5/6.45,0.5/6.45,dim+1)[:dim]
     X, Y = np.meshgrid(f,f)
     r = np.sqrt(X**2 + Y**2)
     inner_rad = (i / (n_rings-1.)) * (c-3) * df # 50 rings

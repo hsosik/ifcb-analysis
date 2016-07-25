@@ -33,9 +33,9 @@ def center_blob(B):
     # center
     h, w = B.shape
     s = max(yc,h-yc,xc,w-xc)
-    m = np.ceil(s*2)
+    m = int(np.ceil(s*2))
     C = np.zeros((m,m),dtype=np.bool)
-    y0, x0 = np.floor(s-yc), np.floor(s-xc)
+    y0, x0 = int(np.floor(s-yc)), int(np.floor(s-xc))
     C[y0:y0+h,x0:x0+w]=B
     return C
 
