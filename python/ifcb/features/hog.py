@@ -29,9 +29,10 @@ def image_hog(image):
     # compute orientation vectors
     angles = np.arctan2(grad_yu,grad_xr)
     magnit = np.sqrt(grad_yu**2 + grad_xr**2)
-    
+
     # compute histogram
     cont = 0
+    bin_iter = zip(range(B), np.linspace(0-np.pi+2*np.pi/B, np.pi, B))    
     for n in range(nwin_y):
         for m in range(nwin_x):
             # subset angles and magnitudes
@@ -42,7 +43,7 @@ def image_hog(image):
             K = v_angles.shape[0]
             # assembling the histogram with 9 bins (range of 20 degrees per bin)
             H2 = np.zeros((B))
-            for b, ang_lim in zip(range(B), np.linspace(0-np.pi+2*np.pi/B, np.pi, B)):
+            for b, ang_lim in bin_iter:
                 # for angles in this angle bin, accumulate magnitude
                 H2[b] = H2[b] + np.sum(v_magnit[v_angles < ang_lim])
                 # exclude this angle bin from further iterations
