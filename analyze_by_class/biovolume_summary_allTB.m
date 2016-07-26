@@ -2,7 +2,7 @@ resultpath = '\\sosiknas1\IFCB_products\\IFCB102_PiscesNov2014\class\summary\';
 classpath_generic = '\\sosiknas1\IFCB_products\\IFCB102_PiscesNov2014\class\classxxxx_v1\';
 %feapath_generic = '\\sosiknas1\IFCB_products\\IFCB102_PiscesNov2014\features\featuresxxxx_v2\';
 feapath_generic = '\\sosiknas1\IFCB_products\IFCB102_PiscesNov2014\features\';
-hdrpath = 'http://ifcb-data.whoi.edu/\IFCB102_PiscesNov2014/';
+hdrpath = 'http://ifcb-data.whoi.edu/IFCB102_PiscesNov2014/';
 
 % resultpath = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\summary\';
 % classpath_generic = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\classxxxx_v1\';
@@ -28,8 +28,8 @@ for yr = 2014:2014, %:2012,
     
     pathall = repmat(hdrpath, length(temp),1);
     xall = repmat('.hdr', length(temp),1);
-    filelist = cellstr([pathall temp(:,ind:ind+23) xall]);
-    ml_analyzed = IFCB_volume_analyzed(filelist); 
+    temp = cellstr([pathall temp(:,ind:ind+23) xall]);
+    ml_analyzed = IFCB_volume_analyzed(temp); 
     
     temp = load(classfiles{1}, 'class2useTB');
     class2use = temp.class2useTB; clear temp classfilestr
