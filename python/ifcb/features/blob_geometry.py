@@ -53,26 +53,28 @@ def invmoments(B):
     M, N = B.shape
     x, y = np.meshgrid(np.arange(1,N+1), np.arange(1,M+1))
 
-    x = x.flatten()
-    y = y.flatten()
-    F = B.flatten()
+    x = x.ravel()
+    y = y.ravel()
+    F = B.ravel()
 
     def m(p,q):
-        return np.sum(x**p * y**q * F)
-
-    m00 = m(0,0)
+        xp = 1 if p==0 else x**p
+        yq = 1 if q==0 else y**q
+        return np.sum(xp * yq * F)
     
-    x_ = m(1,0) / m00
-    y_ = m(0,1) / m00
+    m00 = m(0,0)
 
-    mu_x = [(x - x_)**p for p in [0,1,2,3]]
-    mu_y = [(y - y_)**p for p in [0,1,2,3]]
+    x_ = x - (m(1,0) / m00)
+    y_ = y - (m(0,1) / m00)
+    
+    mu_x = [1, x_] + [x_**p for p in [2,3]]
+    mu_y = [1, y_] + [y_**p for p in [2,3]]
     
     def mu(p,q):
         return np.sum(mu_x[p] * mu_y[q] * F)
 
     mu00 = mu(0,0)
-    
+
     def n(p,q): # eta sorta looks like n
         gamma = (p + q) / 2. + 1.
         return mu(p,q) / mu00**gamma
@@ -182,3 +184,4 @@ def binary_symmetry(B):
     # flipped across horizontal (major) axis
     bflip = ss(np.flipud(B))
     return b180, b90, bflip
+
