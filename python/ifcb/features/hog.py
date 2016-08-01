@@ -14,7 +14,7 @@ def image_hog(image):
     m = np.sqrt(L/2)
 
     # convert to float, retain uint8 range
-    Im = img_as_float(image) * 255.
+    Im = image.astype(np.float)
 
     step_x = int(np.floor(C/(nwin_x+1)))
     step_y = int(np.floor(L/(nwin_y+1)))
@@ -29,25 +29,25 @@ def image_hog(image):
     # compute orientation vectors
     angles = np.arctan2(grad_yu,grad_xr)
     magnit = np.sqrt(grad_yu**2 + grad_xr**2)
-
+    
     # compute histogram
     cont = 0
-    bin_iter = zip(range(B), np.linspace(0-np.pi+2*np.pi/B, np.pi, B))    
+    ang_high = np.linspace(0-np.pi+2*np.pi/B, np.pi, B)
+    ang_low = np.roll(ang_high,1)
+    ang_low[0] = np.min(ang_high) - 999.
+    bin_iter = zip(range(B), ang_low, ang_high)
     for n in range(nwin_y):
         for m in range(nwin_x):
             # subset angles and magnitudes
             angles2 = angles[n*step_y:(n+2)*step_y, m*step_x:(m+2)*step_x]
             magnit2 = magnit[n*step_y:(n+2)*step_y, m*step_x:(m+2)*step_x]
-            v_angles = angles2.reshape((-1,1))
-            v_magnit = magnit2.reshape((-1,1))
-            K = v_angles.shape[0]
+            v_angles = angles2.ravel()
+            v_magnit = magnit2.ravel()
             # assembling the histogram with 9 bins (range of 20 degrees per bin)
             H2 = np.zeros((B))
-            for b, ang_lim in bin_iter:
+            for b, low, high in zip(range(B), ang_low, ang_high):
                 # for angles in this angle bin, accumulate magnitude
-                H2[b] = H2[b] + np.sum(v_magnit[v_angles < ang_lim])
-                # exclude this angle bin from further iterations
-                v_angles[v_angles < ang_lim] = 999
+                H2[b] += np.sum(v_magnit[np.logical_and(v_angles >= low, v_angles < high)])
             # normalize
             H2 /= (norm(H2)+0.01)
             H[cont,:] = H2
