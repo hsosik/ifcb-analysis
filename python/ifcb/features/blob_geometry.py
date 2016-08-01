@@ -69,7 +69,7 @@ def invmoments(B):
     mu_y = [(y - y_)**p for p in [0,1,2,3]]
     
     def mu(p,q):
-        return np.sum(mu_x[p] * mu_y[p] * F)
+        return np.sum(mu_x[p] * mu_y[q] * F)
 
     mu00 = mu(0,0)
     
