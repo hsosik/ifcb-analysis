@@ -1,6 +1,6 @@
-resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
+resultpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
-load \\raspberry\d_work\IFCB1\code_mar10_mvco\ml_analyzed_all %load the milliliters analyzed for all sample files
+load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the milliliters analyzed for all sample files
 
 load class2use_MVCOmanual5 %get the master list to start
 [ classes_byfile, classes_bymode ] = get_annotated_classesMVCO( class2use, manual_list);
