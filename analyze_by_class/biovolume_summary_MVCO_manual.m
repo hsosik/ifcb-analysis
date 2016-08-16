@@ -1,6 +1,6 @@
-resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
+resultpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
-load \\RASPBERRY\d_work\IFCB1\code_mar10_mvco\ml_analyzed_all %load the milliliters analyzed for all sample files
+load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the milliliters analyzed for all sample files
 feapath_base = '\\SosikNAS1\IFCB_products\MVCO\features\featuresXXXX_v2\';
 micron_factor = 1/3.4; %microns per pixel
 
