@@ -2,7 +2,7 @@ resultpath = '\\sosiknas1\IFCB_products\MVCO\class\summary\';
 classpath_generic = '\\sosiknas1\IFCB_products\MVCO\class\classxxxx_v1\';
 feapath_generic = '\\sosiknas1\IFCB_products\MVCO\features\featuresxxxx_v2\';
 
-for yr = 2006:2006, %:2012,
+for yr = 2010:2015, %2010 needs redoing
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     feapath = regexprep(feapath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'I*.mat']);
@@ -38,18 +38,30 @@ for yr = 2006:2006, %:2012,
     classbiovol = classcount;
     %classcount_above_optthresh = classcount;
     num2dostr = num2str(length(classfiles));
+    adhocthresh = 0.5.*ones(size(class2use));
+    adhocthresh(strmatch('Ditylum', class2use, 'exact')) = 0.45; %example to change a specific class
     %
-    for filecount = 2:length(classfiles)
+    for filecount = 1:length(classfiles)
         if ~rem(filecount,10), disp(['reading ' num2str(filecount) ' of ' num2dostr]), end;
-        [classcount(filecount,:), classbiovol(filecount,:), class2useTB] = summarize_biovol_TBclassMVCO(classfiles{filecount}, feafiles{filecount});
+        %[classcount(filecount,:), classbiovol(filecount,:), class2useTB] = summarize_biovol_TBclassMVCO(classfiles{filecount}, feafiles{filecount});
+        [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), class2useTB] = summarize_biovol_TBclassMVCO(classfiles{filecount}, feafiles{filecount}, adhocthresh);
     end;
     
     classcountTB = classcount;
+    classcountTB_above_optthresh = classcount_above_optthresh;
     classbiovolTB = classbiovol;
+    classbiovolTB_above_optthresh = classbiovol_above_optthresh;
+    classC_TB = classC;
+    classC_TB_above_optthresh = classC_above_optthresh;
+    
     ml_analyzedTB = ml_analyzed_list;
     mdateTB = mdate;
     filelistTB = filelist;
+    if ~exist(resultpath, 'dir')
+        mkdir(resultpath)
+    end
 
-    save([resultpath 'summary_biovol_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classbiovolTB', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
-    clear *files* classcount classbiovol 
+ %   save([resultpath 'summary_biovol_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classbiovolTB', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
+    save([resultpath 'summary_biovol_allTB' num2str(yr)] , 'class2useTB', 'classcountTB*', 'classbiovolTB*', 'classC_TB*', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic', 'adhocthresh')
+    clear *files* classcount* classbiovol* classC* 
 end;
