@@ -1,12 +1,12 @@
 import numpy as np
 
+from functools32 import lru_cache
+
 from numpy.fft import fft2, fftshift
 
 from scipy.ndimage.interpolation import zoom
 
 from skimage.draw import circle, polygon
-
-from ifcb.features.utils import memoize
 
 # original MATLAB implementation: Kaccie Li, 2005
 # Python port: Joe Futrelle, 2016
@@ -17,7 +17,7 @@ _N_WEDGES=48
 
 _eps = np.finfo(float).eps
 
-@memoize
+@lru_cache()
 def unit_circle(dim=_DIM):
     I = np.linspace(-1,1,dim)
     X, Y = np.meshgrid(I,I)
@@ -25,7 +25,7 @@ def unit_circle(dim=_DIM):
     theta = np.arctan2(Y,X)
     return r, theta
 
-@memoize
+@lru_cache()
 def ring_mask(i,dim=_DIM,n_rings=_N_RINGS):
     # ring masks are a series of adjacent concentric rings
     # around the center of the unit circle
@@ -35,7 +35,7 @@ def ring_mask(i,dim=_DIM,n_rings=_N_RINGS):
     outer_rad = (i+1)*w
     return (r > inner_rad) & (r < outer_rad)
 
-@memoize
+@lru_cache()
 def kaccie_ring(i,dim=301,n_rings=_N_RINGS):
     c = dim//2
     df = (1./dim)*(1/6.45)
@@ -48,7 +48,7 @@ def kaccie_ring(i,dim=301,n_rings=_N_RINGS):
     out[(r > inner_rad) & (r < outer_rad)] = 1
     return out
     
-@memoize
+@lru_cache()
 def kaccie_wedge(i,dim=_DIM,n_wedges=_N_WEDGES):
     # wedge masks are adjacent, equal-sized "pie slices" of the
     # bottom half of the unit circle
@@ -59,7 +59,7 @@ def kaccie_wedge(i,dim=_DIM,n_wedges=_N_WEDGES):
         wedge = np.logical_xor(wedge, th==np.pi/2)
     return wedge
 
-@memoize
+@lru_cache()
 def filter_masks(dim=_DIM,radius=0.1):
     # the center mask is a circle a tenth the size of a unit circle;
     # the filter mask is its inverse
@@ -67,7 +67,7 @@ def filter_masks(dim=_DIM,radius=0.1):
     center_mask = r < radius
     return center_mask, np.invert(center_mask)
 
-@memoize
+@lru_cache()
 def kaccie_filter_masks(dim=_DIM):
     df = (1./(dim-1)) / 6.45
     I = np.linspace(-0.5/6.45,0.5/6.45,dim)
