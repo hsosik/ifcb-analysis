@@ -20,7 +20,7 @@ from .texture import statxture, masked_pixels, texture_pixels
 from .hog import image_hog
 from .ringwedge import ring_wedge, _N_RINGS, _N_WEDGES
 
-class Blob(object):
+class BlobFeatures(object):
     def __init__(self,blob_image,roi_image):
         """roi_image should be the same size as the blob image,
         so a sub-roi"""
@@ -287,7 +287,7 @@ class Blob(object):
     def bflip(self):
         return self.binary_symmetry[2]
         
-class Roi(object):
+class RoiFeatures(object):
     def __init__(self,roi_image):
         self.image = np.array(roi_image).astype(np.uint8)
     @property
@@ -299,11 +299,11 @@ class Roi(object):
     @property
     @lru_cache()
     def blobs(self):
-        """returns the Blob objects representing each of the blobs in
+        """returns the BlobFeatures objects representing each of the blobs in
         the segmented mask, ordered by largest area to smallest area"""
         labeled, bboxes, blobs = find_blobs(self.blobs_image)
         cropped_rois = [self.image[bbox] for bbox in bboxes]
-        Bs = [Blob(b,R) for b,R in zip(blobs,cropped_rois)]
+        Bs = [BlobFeatures(b,R) for b,R in zip(blobs,cropped_rois)]
         return sorted(Bs, key=lambda B: B.area, reverse=True)
     @property
     def num_blobs(self):
@@ -456,7 +456,7 @@ class ZeroMock(object):
         return 0
 
 def compute_features(roi_image):
-    r = Roi(roi_image)
+    r = RoiFeatures(roi_image)
     if r.num_blobs > 0:
         b = r.blobs[0]
     else:
