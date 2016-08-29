@@ -43,7 +43,7 @@ class Blob(object):
     @imemoize
     def regionprops(self):
         """region props of the blob (assumes single connected region)"""
-        return regionprops(self.image)[0]
+        return regionprops(self.image.astype(np.uint8))[0]
     @property
     @imemoize
     def area(self):
