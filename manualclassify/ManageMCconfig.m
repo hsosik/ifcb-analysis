@@ -21,7 +21,7 @@ function varargout = ManageMCconfig(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 % Edit the above text to modify the response to help ManageMCconfig
 
-% Last Modified by GUIDE v2.5 27-May-2015 18:59:00
+% Last Modified by GUIDE v2.5 03-Oct-2016 10:40:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -621,8 +621,9 @@ end
 if ~isempty(temp.filename)
     handles.MCconfig.class2use = temp.class2use;
     handles.filename = temp.filename;
-    set(handles.class2use_listbox, 'string', temp.class2use, 'min', 0, 'max', length(temp.class2use), 'value', []);
+    set(handles.class2use_listbox, 'string', temp.class2use, 'min', 0, 'max', length(temp.class2use), 'value', 1:length(handles.MCconfig.class2use));
     set(handles.class2use_file_text, 'string', temp.filename);
+    set(handles.class2view_all_checkbox, 'value', 1);
     handles = alphabetize_checkbox_Callback(hObject, eventdata, handles);
     guidata(handles.MCconfig_main_figure, handles);
 else
