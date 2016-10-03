@@ -90,6 +90,7 @@ handles.config_map = {...
     'settings.resolver_func_radiobutton' 'resolver_func_radiobutton' '';...
     'settings.pick_mode_checkbox' 'pick_mode_checkbox' '';...
     'settings.all_file_checkbox' 'all_file_checkbox' '';...
+    'settings.class2view_all_checkbox' 'class2view_all_checkbox' '';...
   %  '' '' '';...
     };
 
@@ -238,7 +239,8 @@ update_filelists(handles)
 
 
 function MCconfig = MCconfig_default()
-settings = struct('start_new_radiobutton', 1, 'review_radiobutton', 0, 'simple_paths_radiobutton', 1, 'resolver_func_radiobutton', 0, 'pick_mode_checkbox', 0, 'all_file_checkbox', 0);
+settings = struct('start_new_radiobutton', 1, 'review_radiobutton', 0, 'simple_paths_radiobutton', 1, 'resolver_func_radiobutton', 0, 'pick_mode_checkbox', 0, 'all_file_checkbox', 0, 'class2view_all_checkbox', 1);
+%settings = struct('start_new_radiobutton', 1, 'review_radiobutton', 0, 'simple_paths_radiobutton', 1, 'resolver_func_radiobutton', 0, 'pick_mode_checkbox', 0, 'all_file_checkbox', 0);
 MCconfig = struct(...
     'pick_mode', 'raw_roi',...
     'display_order', 1,...
@@ -535,19 +537,23 @@ function MCconfig_main_figure_CloseRequestFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % Hint: delete(hObject) closes the figure
-handles = Save_menu_Callback([], [], handles) %just save to last.mcconfig.mat
-if ~isfield(handles.MCconfig.settings,'configfile')
-    handles.MCconfig.settings.configfile = [ handles.configpath 'last.mcconfig.mat'];
-end
-guidata(handles.MCconfig_main_figure, handles);
-
-%following to manage uiwait to control no output until user is done (heidi)
-if isequal(get(handles.MCconfig_main_figure, 'waitstatus'), 'waiting')
-%% The GUI is still in UIWAIT, us UIRESUME
-    uiresume(handles.MCconfig_main_figure);
+%if isempty(handles.MCconfig.class2view1)
+if isempty(get(handles.class2use_listbox, 'value'))
+   uiwait(msgbox([handles.msgbox_fontstr 'You must select at least one category to view.'], handles.msgbox_cs))
 else
-%% The GUI is no longer waiting, just close it
-    delete(handles.MCconfig_main_figure);
+    handles = Save_menu_Callback([], [], handles) %just save to last.mcconfig.mat
+    if ~isfield(handles.MCconfig.settings,'configfile')
+        handles.MCconfig.settings.configfile = [ handles.configpath 'last.mcconfig.mat'];
+    end
+    guidata(handles.MCconfig_main_figure, handles);
+    %following to manage uiwait to control no output until user is done (heidi)
+    if isequal(get(handles.MCconfig_main_figure, 'waitstatus'), 'waiting')
+    %% The GUI is still in UIWAIT, us UIRESUME
+        uiresume(handles.MCconfig_main_figure);
+    else
+    %% The GUI is no longer waiting, just close it
+        delete(handles.MCconfig_main_figure);
+    end
 end
 
 
