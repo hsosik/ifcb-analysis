@@ -2,7 +2,7 @@ resultpath = '\\sosiknas1\IFCB_products\MVCO\class\summary\';
 classpath_generic = '\\sosiknas1\IFCB_products\MVCO\class\classxxxx_v1\';
 feapath_generic = '\\sosiknas1\IFCB_products\MVCO\features\featuresxxxx_v2\';
 
-for yr = 2010:2015, %2010 needs redoing
+for yr = 2006, %2010 needs redoing
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     feapath = regexprep(feapath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'I*.mat']);
@@ -38,21 +38,26 @@ for yr = 2010:2015, %2010 needs redoing
     classbiovol = classcount;
     %classcount_above_optthresh = classcount;
     num2dostr = num2str(length(classfiles));
-    adhocthresh = 0.5.*ones(size(class2use));
-    adhocthresh(strmatch('Ditylum', class2use, 'exact')) = 0.45; %example to change a specific class
+    adhocthresh = 0.5.*ones(size(class2use)-1); %leave off 1 for unclassified
+    adhocthresh(strmatch('Laboea', class2use, 'exact')) = 0.7; %example to change a specific class
+    adhocthresh(strmatch('tintinnid', class2use, 'exact')) = 0.5;
+    adhocthresh(strmatch('Myrionecta', class2use, 'exact')) = 0.3;
     %
     for filecount = 1:length(classfiles)
         if ~rem(filecount,10), disp(['reading ' num2str(filecount) ' of ' num2dostr]), end;
         %[classcount(filecount,:), classbiovol(filecount,:), class2useTB] = summarize_biovol_TBclassMVCO(classfiles{filecount}, feafiles{filecount});
-        [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), class2useTB] = summarize_biovol_TBclassMVCO(classfiles{filecount}, feafiles{filecount}, adhocthresh);
+        [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2useTB] = summarize_biovol_TBclassMVCO(classfiles{filecount}, feafiles{filecount}, adhocthresh);
     end;
     
     classcountTB = classcount;
     classcountTB_above_optthresh = classcount_above_optthresh;
+    classcountTB_above_adhocthresh = classcount_above_adhocthresh;
     classbiovolTB = classbiovol;
     classbiovolTB_above_optthresh = classbiovol_above_optthresh;
+    classbiovolTB_above_adhocthresh = classbiovol_above_adhocthresh;
     classC_TB = classC;
     classC_TB_above_optthresh = classC_above_optthresh;
+    classC_TB_above_adhocthresh = classC_above_adhocthresh;
     
     ml_analyzedTB = ml_analyzed_list;
     mdateTB = mdate;
