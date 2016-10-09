@@ -1410,14 +1410,31 @@ if ~isempty(handles.MCconfig.classfiles) && isequal(get(handles.classfiles_listb
     set(handles.classfiles_listbox, 'string', fullf)
 end
 %mark all result files missing if manualpath is missing
-if ~isempty(handles.MCconfig.resultfiles)
-    if ~exist(get(handles.manualpath_text, 'string'), 'dir')
-        fullf = handles.MCconfig.resultfiles;
-        for ii = 1:length(fullf), fullf(ii) = {['<html><font color="red">', fullf{ii}, '</font><html>']}; end
-        %fullf = mark_notfound_inlist(handles.MCconfig.resultfiles, handles);
-        set(handles.resultfiles_listbox, 'string', fullf)
+%if ~isempty(handles.MCconfig.resultfiles)
+%    if ~exist(get(handles.manualpath_text, 'string'), 'dir')
+%        fullf = handles.MCconfig.resultfiles;
+%        for ii = 1:length(fullf), fullf(ii) = {['<html><font color="red">', fullf{ii}, '</font><html>']}; end
+%        set(handles.resultfiles_listbox, 'string', fullf)
+%    end
+%end
+
+%if ~isempty(handles.MCconfig.resultfiles)
+%    if ~exist(get(handles.manualpath_text, 'string'), 'dir')
+%        fullf = handles.MCconfig.resultfiles;
+%check and mark missing manualpath for each result files
+fullf = handles.MCconfig.resultfiles;
+for ii = 1:length(fullf)
+    p = fileparts(fullf{ii});
+    if ~exist(p, 'dir')
+        fullf(ii) = {['<html><font color="red">', fullf{ii}, '</font><html>']};
     end
 end
+set(handles.resultfiles_listbox, 'string', fullf)
+%if ~isempty(handles.MCconfig.resultfiles)
+%    fullf = mark_dir_notfound_inlist(handles.MCconfig.resultfiles, handles);
+%    set(handles.resultfiles_listbox, 'string', fullf)
+%end
+
 %check and mark missing roi files
 if ~isempty(handles.MCconfig.roifiles)
     fullf = mark_notfound_inlist(handles.MCconfig.roifiles, handles);
@@ -1566,8 +1583,7 @@ function fullf = mark_notfound_inlist(fullf, handles)
     if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first pass through when starting up
         uiwait(msgbox({[handles.msgbox_fontstr 'Files shown in red text cannot be found.']; ' ';  'If your data is in multiple folders, ''simple paths'' is not an option.'; ' '; 'Specify a resolver function instead.'}, handles.msgbox_cs))
     end
-    end
-
+    end  
 
 % --------------------------------------------------------------------
 function quit_menu_Callback(hObject, eventdata, handles)
@@ -1578,130 +1594,3 @@ MCconfig_main_figure_CloseRequestFcn(hObject, eventdata, handles)
 
 
 
-% % DISCARD
-% % function update_filelists (handles)
-% % set(handles.status_text, 'string', 'Checking files...')
-% % pause(.001)
-% % m = msgbox('Checking file status...please wait.');
-% % if ~exist(get(handles.manualpath_text, 'string'), 'dir')
-% %     if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first pass through when starting up
-% %         uiwait(msgbox([handles.msgbox_fontstr 'Path not found - select a valid manual result path.'], handles.msgbox_cs))
-% %     end
-% % else %some manual files in listbox
-% %     if isequal(get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag'), 'review_radiobutton')
-% %         f = handles.MCconfig.resultfiles;
-% %         x = '.mat';
-% %         [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
-% %         p = get(handles.manualpath_text, 'string');
-% %         if ~isempty(f{1})
-% %                 f = cellstr([char(f) repmat(x,length(f),1)]);
-% %                 fullf = fullfile(p,f);
-% %                 temp = cellfun(@exist, fullf, 'uniformoutput', true);
-% %             else
-% %                 fullf = [];
-% %                 temp = [];
-% %         end
-% %         handles.MCconfig.resultfiles = fullf;
-% %         set(handles.resultfiles_listbox, 'string', handles.MCconfig.resultfiles)
-% %         h = handles.resultfiles_listbox; %review means manual list is master
-% %         if get(handles.simple_paths_radiobutton, 'value')
-% %             [~, f] = cellfun(@fileparts,cellstr(get(h, 'string')), 'uniformoutput', false);
-% %             p = get(handles.roipath_text, 'string');
-% %             x = '.roi';
-% %             if ~isempty(f{1})
-% %                 f = cellstr([char(f) repmat(x,size(f,1),1)]);
-% %                 fullf = fullfile(p,f);
-% %                 temp = cellfun(@exist, fullf, 'uniformoutput', true);
-% %             else
-% %                 fullf = [];
-% %                 temp = [];
-% %             end
-% %             handles.MCconfig.roifiles = fullf;
-% %         else %resolver case
-% %             if ~isempty(handles.MCconfig.resultfiles),
-% %                 handles = resolve_files(handles, handles.MCconfig.resultfiles);
-% %             end;
-% %         end
-% %         set(handles.roifiles_listbox, 'string', handles.MCconfig.roifiles);
-% %     else  %start new
-% %         fullf = handles.MCconfig.roifiles;
-% %         set(handles.roifiles_listbox, 'string', fullf)
-% %         h = handles.roifiles_listbox; %new means roi list is master
-% %         [~, f] = cellfun(@fileparts,cellstr(get(h, 'string')), 'uniformoutput', false);
-% %         p = get(handles.manualpath_text, 'string');
-% %         p2 = get(handles.roipath_text, 'string');
-% %         x = '.mat';
-% %         x2 = '.roi';
-% %         if ~isempty(f{1})
-% %             fullf = cellstr([char(f) repmat(x,size(f,1),1)]);
-% %             fullf = fullfile(p,fullf);
-% %             fullf2 = cellstr([char(f) repmat(x2,size(f,1),1)]);
-% %             fullf2 = fullfile(p2,fullf2);
-% %         else
-% %             fullf = [];
-% %             fullf2 = [];
-% %         end;
-% %         handles.MCconfig.resultfiles = fullf;
-% %         handles.MCconfig.roifiles = fullf2;
-% %         set(handles.resultfiles_listbox, 'string', handles.MCconfig.resultfiles);
-% %         set(handles.roifiles_listbox, 'string', handles.MCconfig.roifiles);
-% %         if get(handles.pick_mode_checkbox, 'value')  %check for classfiles
-% %             if get(handles.simple_paths_radiobutton, 'value')
-% %                 %f as above
-% %                 p = get(handles.classpath_text, 'string');
-% %                 x = [get(handles.class_filestr_text, 'string') '.mat'];
-% %                 if ~isempty(f{1})
-% %                     f = cellstr([char(f) repmat(x,size(f,1),1)]);
-% %                     fullf = fullfile(p,f);
-% %                 else
-% %                     fullf = [];
-% %                 end
-% %                 handles.MCconfig.classfiles = fullf;
-% %             else
-% %                 if ~isempty(handles.MCconfig.roifiles)
-% %                     handles = resolve_files(handles, handles.MCconfig.roifiles);
-% %                 end
-% %             end
-% %             set(handles.classfiles_listbox, 'string', handles.MCconfig.classfiles);
-% %         else  %don't start from classifier
-% %             handles.MCconfig.classfiles = [];%make sure empty if not starting from class even by resolver function
-% %             %run resolver anyway in case need stitch files for MVCO custom resolver
-% %             if ~isempty(handles.MCconfig.roifiles) && ~get(handles.simple_paths_radiobutton, 'value')
-% %                 handles = resolve_files(handles, handles.MCconfig.roifiles);
-% %             end
-% %         end
-% %     end
-% %     if ~isempty(handles.MCconfig.resultfiles)
-% %         [~,temp] = fileparts(handles.MCconfig.resultfiles{1});
-% %         if isequal(temp(1), 'I')
-% %             set(get(get(handles.IFCB_format1_menu, 'parent'), 'children'),'checked', 'off') %set all in submenu to off
-% %             set(handles.IFCB_format1_menu, 'checked', 'on')
-% %         elseif isequal(temp(1), 'D')
-% %             set(get(get(handles.IFCB_format1_menu, 'parent'), 'children'),'checked', 'off') %set all in submenu to off
-% %             set(handles.IFCB_format2_menu, 'checked', 'on')
-% %         end
-% %         set(handles.start_file_popup, 'string', cellstr(num2str((1:length(handles.MCconfig.resultfiles))')))
-% %     end
-% % end
-% % if ~isempty(handles.MCconfig.classfiles) && isequal(get(handles.classfiles_listbox, 'visible'), 'on')
-% %     fullf = mark_notfound_inlist(handles.MCconfig.classfiles, handles);
-% %     set(handles.classfiles_listbox, 'string', fullf)
-% % end
-% % if ~isempty(handles.MCconfig.resultfiles)
-% %     if ~exist(get(handles.manualpath_text, 'string'), 'dir')
-% %         fullf = handles.MCconfig.resultfiles;
-% %         for ii = 1:length(fullf), fullf(ii) = {['<html><font color="red">', fullf{ii}, '</font><html>']}; end
-% %         %fullf = mark_notfound_inlist(handles.MCconfig.resultfiles, handles);
-% %         set(handles.resultfiles_listbox, 'string', fullf)
-% %     end
-% % end
-% % if ~isempty(handles.MCconfig.roifiles)
-% %     fullf = mark_notfound_inlist(handles.MCconfig.roifiles, handles);
-% %     set(handles.roifiles_listbox, 'string', fullf)
-% % end
-% % 
-% % guidata(handles.MCconfig_main_figure, handles);
-% % set(handles.status_text, 'string', 'Status: Ready')
-% % if ishandle(m)
-% %     delete(m)
-% % end
