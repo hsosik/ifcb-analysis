@@ -154,7 +154,13 @@ function handles = map_MCconfig2GUI (hObject, eventdata, handles)
 for ii = 1:size(handles.config_map,1), 
     map = handles.config_map(ii,:);
     h = handles.(map{2});
-    value_from_MCconfig = eval(['handles.MCconfig.' char(map{1})]); %necessary to handle nested structures
+    if isfield(char(map{1}), handles.MCconfig)
+        value_from_MCconfig = eval(['handles.MCconfig.' char(map{1})]); %necessary to handle nested structures
+    else
+        temp = MCconfig_default();
+        value_from_MCconfig = eval(['temp.' char(map{1})]);
+        clear temp
+    end
     if strcmp(get(h, 'style'), 'checkbox') | strcmp(get(h, 'style'), 'radiobutton')
         if ~isempty(map{3})
             v = strmatch(value_from_MCconfig, map{3});
@@ -240,7 +246,6 @@ update_filelists(handles)
 
 function MCconfig = MCconfig_default()
 settings = struct('start_new_radiobutton', 1, 'review_radiobutton', 0, 'simple_paths_radiobutton', 1, 'resolver_func_radiobutton', 0, 'pick_mode_checkbox', 0, 'all_file_checkbox', 0, 'class2view_all_checkbox', 1);
-%settings = struct('start_new_radiobutton', 1, 'review_radiobutton', 0, 'simple_paths_radiobutton', 1, 'resolver_func_radiobutton', 0, 'pick_mode_checkbox', 0, 'all_file_checkbox', 0);
 MCconfig = struct(...
     'pick_mode', 'raw_roi',...
     'display_order', 1,...
