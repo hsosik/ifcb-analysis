@@ -154,8 +154,10 @@ function handles = map_MCconfig2GUI (hObject, eventdata, handles)
 for ii = 1:size(handles.config_map,1), 
     map = handles.config_map(ii,:);
     h = handles.(map{2});
-    if isfield(char(map{1}), handles.MCconfig)
+    if isfield(handles.MCconfig, char(map{1}))
         value_from_MCconfig = eval(['handles.MCconfig.' char(map{1})]); %necessary to handle nested structures
+    elseif isfield(handles.MCconfig.settings, regexprep(char(map{1}), 'settings.', ''))
+        value_from_MCconfig = eval(['handles.MCconfig.' char(map{1})]); %necessary to handle nested structures    
     else
         temp = MCconfig_default();
         value_from_MCconfig = eval(['temp.' char(map{1})]);

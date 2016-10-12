@@ -22,7 +22,7 @@ function varargout = startMC(varargin)
 
 % Edit the above text to modify the response to help startMC
 
-% Last Modified by GUIDE v2.5 26-Sep-2016 14:45:12
+% Last Modified by GUIDE v2.5 11-Oct-2016 20:45:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -232,5 +232,4 @@ function quit2_menu_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 quit_pushbutton_Callback(hObject, eventdata, handles)
-
 
