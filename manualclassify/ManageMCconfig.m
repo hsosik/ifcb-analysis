@@ -1323,7 +1323,8 @@ else %some manual files may be in listbox
     switch new_or_review
         case 'review_radiobutton'
             f = handles.MCconfig.resultfiles;
-            [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
+            [p, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
+            set(handles.manualpath_text, 'string', p{1}) %new
         case 'start_new_radiobutton'
             f = handles.MCconfig.roifiles; 
             [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
@@ -1412,26 +1413,26 @@ if ~isempty(handles.MCconfig.classfiles) && isequal(get(handles.classfiles_listb
     set(handles.classfiles_listbox, 'string', fullf)
 end
 %mark all result files missing if manualpath is missing
-%if ~isempty(handles.MCconfig.resultfiles)
-%    if ~exist(get(handles.manualpath_text, 'string'), 'dir')
-%        fullf = handles.MCconfig.resultfiles;
-%        for ii = 1:length(fullf), fullf(ii) = {['<html><font color="red">', fullf{ii}, '</font><html>']}; end
-%        set(handles.resultfiles_listbox, 'string', fullf)
-%    end
-%end
+if ~isempty(handles.MCconfig.resultfiles)
+    if ~exist(get(handles.manualpath_text, 'string'), 'dir')
+        fullf = handles.MCconfig.resultfiles;
+        for ii = 1:length(fullf), fullf(ii) = {['<html><font color="red">', fullf{ii}, '</font><html>']}; end
+        set(handles.resultfiles_listbox, 'string', fullf)
+    end
+end
 
 %if ~isempty(handles.MCconfig.resultfiles)
 %    if ~exist(get(handles.manualpath_text, 'string'), 'dir')
 %        fullf = handles.MCconfig.resultfiles;
-%check and mark missing manualpath for each result files
-fullf = handles.MCconfig.resultfiles;
-for ii = 1:length(fullf)
-    p = fileparts(fullf{ii});
-    if ~exist(p, 'dir')
-        fullf(ii) = {['<html><font color="red">', fullf{ii}, '</font><html>']};
-    end
-end
-set(handles.resultfiles_listbox, 'string', fullf)
+%%check and mark missing manualpath for each result files
+%fullf = handles.MCconfig.resultfiles;
+%for ii = 1:length(fullf)
+%    p = fileparts(fullf{ii});
+%    if ~exist(p, 'dir')
+%        fullf(ii) = {['<html><font color="red">', fullf{ii}, '</font><html>']};
+%    end
+%end
+%set(handles.resultfiles_listbox, 'string', fullf)
 %if ~isempty(handles.MCconfig.resultfiles)
 %    fullf = mark_dir_notfound_inlist(handles.MCconfig.resultfiles, handles);
 %    set(handles.resultfiles_listbox, 'string', fullf)
