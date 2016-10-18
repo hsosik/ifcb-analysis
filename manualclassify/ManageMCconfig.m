@@ -1328,11 +1328,14 @@ end;
             set(handles.manualpath_text, 'string', p{1}) %new
         case 'start_new_radiobutton'
             f = handles.MCconfig.roifiles; 
-            [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
+            if ~isempty(f)
+                [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
+            end;
     end
     p = get(handles.manualpath_text, 'string');
     x = '.mat';
-    if ~isempty(f{1}) %set the manual files list
+%    if ~isempty(f{1}) %set the manual files list
+    if ~isempty(f) %set the manual files list
         fullf = cellstr([char(f) repmat(x,length(f),1)]);
         fullf = fullfile(p,fullf);
         temp = cellfun(@exist, fullf, 'uniformoutput', true);
@@ -1348,7 +1351,8 @@ end;
     switch path_method
         case 'simple_paths_radiobutton'
             p = get(handles.roipath_text, 'string');
-            if ~isempty(f{1})
+%            if ~isempty(f{1})
+            if ~isempty(f)
                 if handles.MCconfig.dataformat == 2 %VPR case
                     fullf = cellstr(fullfile(p,filesep)); %make sure has trailing filesep
                 else %other cases
