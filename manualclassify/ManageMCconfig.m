@@ -1318,7 +1318,8 @@ if ~exist(get(handles.manualpath_text, 'string'), 'dir')
     if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first pass through when starting up
         uiwait(msgbox([handles.msgbox_fontstr 'Path not found - select a valid manual result path.'], handles.msgbox_cs))
     end
-else %some manual files may be in listbox
+end;
+%else %some manual files may be in listbox
     new_or_review = get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag');
     switch new_or_review
         case 'review_radiobutton'
@@ -1394,7 +1395,7 @@ else %some manual files may be in listbox
         end
     end
     set(handles.classfiles_listbox, 'string', handles.MCconfig.classfiles);
-end
+%end
 
 if ~isempty(handles.MCconfig.resultfiles)
     [~,temp] = fileparts(handles.MCconfig.resultfiles{1});
