@@ -141,13 +141,16 @@ def infill(b, target_number, raw_stitch):
     s[gaps_mask] = noise[gaps_mask]
     return s, rois_mask
 
-class Infiller(BaseDictlike):
+class InfilledImages(BaseDictlike):
     """
-    A delegate of Bin that performs stitching and infilling.
+    Wraps ``Bin`` to perform infilling of stitched images.
 
     Provides dict-like interface; keys are target numbers,
     each value is a pair of the infilled image and a mask
     indicating which pixels contain real (non-infill) data.
+
+    Images that do not need to be infilled are also returned,
+    but with None as the second (mask) pair of the tuple
     """
     def __init__(self, the_bin):
         """
@@ -165,13 +168,21 @@ class Infiller(BaseDictlike):
 
         This is just each included key + 1.
         """
-        return map(lambda x: x + 1, self.keys())
+        return map(lambda x: x + 1, self.stitcher.keys())
     def iterkeys(self):
-        for k in self.stitcher:
-            yield k
+        for k in self.bin:
+            if k not in self.excluded_targets():
+                yield k
     def has_key(self, target_number):
-        return target_number in self.stitcher
+        in_bin = target_number in self.bin.images
+        excluded = target_number in self.excluded_targets()
+        return in_bin and not excluded
     @lru_cache(maxsize=2)
     def __getitem__(self, target_number):
-        raw_stitch = self.stitcher[target_number]
-        return infill(self.bin, target_number, raw_stitch)
+        if target_number in self.stitcher:
+            raw_stitch = self.stitcher[target_number]
+            im, mask = infill(self.bin, target_number, raw_stitch)
+            return (im, mask)
+        else:
+            im = self.bin.images[target_number]
+            return (im, None)
