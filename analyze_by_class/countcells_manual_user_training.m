@@ -8,7 +8,6 @@ matdate = IFCB_file2date({filelist.name});
 load([resultpath filelist(1).name]) %read first file to get classes
 numclass = length(class2use_manual);
 class2use_manual_first = class2use_manual;
-class2use_here = class2use_manual;
 classcount = NaN(length(filelist),numclass);  %initialize output
 ml_analyzed = NaN(length(filelist),1);
 for filecount = 1:length(filelist),
@@ -28,13 +27,13 @@ for filecount = 1:length(filelist),
         end;
     end;
     for classnum = 1:numclass,
-            %classcount(filecount,classnum) = size(find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum)),1);
-            classcount(filecount,classnum) = size(find(classlist(:,2) == classnum),1); %manual only
+            classcount(filecount,classnum) = size(find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum)),1);
+            %classcount(filecount,classnum) = size(find(classlist(:,2) == classnum),1); %manual only
     end;
     clear class2use_manual class2use_auto class2use_sub* classlist
 end;
 
-class2use = class2use_here;
+class2use = class2use_manual_first;
 if ~exist([resultpath 'summary\'], 'dir')
     mkdir([resultpath 'summary\'])
 end;

@@ -1318,7 +1318,8 @@ if ~exist(get(handles.manualpath_text, 'string'), 'dir')
     if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first pass through when starting up
         uiwait(msgbox([handles.msgbox_fontstr 'Path not found - select a valid manual result path.'], handles.msgbox_cs))
     end
-else %some manual files may be in listbox
+end;
+%else %some manual files may be in listbox
     new_or_review = get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag');
     switch new_or_review
         case 'review_radiobutton'
@@ -1327,11 +1328,14 @@ else %some manual files may be in listbox
             set(handles.manualpath_text, 'string', p{1}) %new
         case 'start_new_radiobutton'
             f = handles.MCconfig.roifiles; 
-            [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
+            if ~isempty(f)
+                [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
+            end;
     end
     p = get(handles.manualpath_text, 'string');
     x = '.mat';
-    if ~isempty(f{1}) %set the manual files list
+%    if ~isempty(f{1}) %set the manual files list
+    if ~isempty(f) %set the manual files list
         fullf = cellstr([char(f) repmat(x,length(f),1)]);
         fullf = fullfile(p,fullf);
         temp = cellfun(@exist, fullf, 'uniformoutput', true);
@@ -1347,7 +1351,8 @@ else %some manual files may be in listbox
     switch path_method
         case 'simple_paths_radiobutton'
             p = get(handles.roipath_text, 'string');
-            if ~isempty(f{1})
+%            if ~isempty(f{1})
+            if ~isempty(f)
                 if handles.MCconfig.dataformat == 2 %VPR case
                     fullf = cellstr(fullfile(p,filesep)); %make sure has trailing filesep
                 else %other cases
@@ -1394,7 +1399,7 @@ else %some manual files may be in listbox
         end
     end
     set(handles.classfiles_listbox, 'string', handles.MCconfig.classfiles);
-end
+%end
 
 if ~isempty(handles.MCconfig.resultfiles)
     [~,temp] = fileparts(handles.MCconfig.resultfiles{1});
