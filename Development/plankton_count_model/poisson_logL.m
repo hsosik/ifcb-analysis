@@ -32,7 +32,10 @@ function neglogL = poisson_logL(theta,counts,volumes,year0)
 %I've constructed theta to be a column vector of first the year effects
 %(beta) and then the season effects (gamma). Year index to sawp out as zero
 %is placed in expecting this structure:
-theta=[theta(1:year0-1); 0; theta(year0:end)]; %force beta1 to be 0 for identifability
+
+%chose a different identifiability constraint: b1 = - sum(b2:b10) (or how many there are!)
+bI=-sum(theta(1:yearnum-1));
+theta=[theta(1:year0-1); bI; theta(year0:end)]; %
 %theta=[theta(1:10); 0; theta(11:end)]; %force gamma1 to be 0 for identifability
 
 if size(theta,1) ~= sum(size(counts)) %should have parameters for both number of years and seasons

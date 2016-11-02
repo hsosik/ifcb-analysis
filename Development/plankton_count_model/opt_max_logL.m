@@ -14,8 +14,13 @@
 % year_lambdas = [1 3 6 0 1 0.2 0.4 0.3 0.2 3];
 
 %Simdata2:
-season_lambdas = [0 0.1:0.05:0.6 1 2 -linspace(0.1,0.6,5) 0 0.2 -0.2 -0.4 -0.6 1 0.3];
-year_lambdas = [1 -0.3 -2 0 1 0.2 -0.4 0.3 -2 3];
+% season_lambdas = [0 0.1:0.05:0.6 1 2 -linspace(0.1,0.6,5) 0 0.2 -0.2 -0.4 -0.6 1 0.3];
+% year_lambdas = [1 -0.3 -2 0 1 0.2 -0.4 0.3 -2 3];
+
+%Simdata 3:
+season_lambdas = [0.6 linspace(0.1,3,5) linspace(3,0.1,5) 0 0.1  0 linspace(0.1,3,5) linspace(3,0.1,5) 0 0.1];
+year_lambdas = [-1 -2 -0.4 -3 -1 -2 6 -0.3 -0.2 -0.1];
+
 test_volumes=25*ones(26,10);
 lambdas=exp(repmat(season_lambdas',1,10)+repmat(year_lambdas,26,1)).*test_volumes; %density * volume to get mean counts
 
@@ -71,17 +76,19 @@ end
 
 %% Now, use fminunc (or another matlab solver) to find the maximum likelihood, assuming a Posisson distribution:
 
+[seasonnum,yearnum]=size(counts);
 %to solve:
 opts = optimoptions('fminunc','MaxFunctionEvaluations',100000,'MaxIterations',1000,'Display','off','Algorithm','quasi-newton');
 x0=-2*rand(sum(size(counts))-1,1); %starting points for solver
-year0=5; %year to set as zero
+year0=4; %year to set as zero
 
-%script is expecting a column vector of parameters that have year effects
+% script is expecting a column vector of parameters that have year effects
 %first, then season effects...
 [x, fval, exitflag] = fminunc(@(theta) poisson_logL(theta,counts,volumes,year0),x0,opts);
 
 maxlogL=-fval;
-xmin=[x(1:year0-1); 0 ; x(year0:end)]; %put back a "0" for year effect - the parameters return relative b's and g's with respect to b1,
+bI=-sum(x(1:yearnum-1));
+xmin=[x(1:year0-1); bI ; x(year0:end)]; %put back a "0" for year effect - the parameters return relative b's and g's with respect to b1,
 %which is set at 0, but it doesn't actually matter, because the mean is a combiantion of both beta and gamma 
 %- all that matters is the absolute difference between them, and it works!
 
@@ -97,11 +104,24 @@ xmin=[x(1:year0-1); 0 ; x(year0:end)]; %put back a "0" for year effect - the par
 [CIs]=poisson_est_CIs(counts,volumes,xmin,maxlogL,opts,year0);
 
 
-
-
 %% PLOTTING...
 
-%a rough plot - do the expected counts match the sample?
+% parameter check!
+est_year=xmin(1:yearnum);
+est_seas=xmin(yearnum+1:end);
+figure, subplot(1,2,1,'replace')
+plot(1:26,est_seas,'s')
+hold on
+plot(1:26,season_lambdas,'r*')
+
+subplot(1,2,2,'replace')
+plot(1:yearnum, year_lambdas,'ro')
+hold on
+plot(1:yearnum, est_year,'s')
+line([1 yearnum],[0 0])
+legend('true year effects','year effects mean 0')
+
+%% a rough plot - do the expected counts match the sample?
 
 est_year=repmat(xmin(1:10)',26,1);
 est_seasons=repmat(xmin(11:end),1,10);

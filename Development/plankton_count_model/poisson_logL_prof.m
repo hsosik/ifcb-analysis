@@ -9,9 +9,9 @@ function neglogL = poisson_logL_prof(theta0,counts,volumes,ind,param_est,year0)
 n=yearnum+seasonnum;
 
 theta=nan(n,1);
-theta(setxor([ind; year0],1:n))=theta0;
-theta(year0)=0;
-theta(ind)=param_est;
+theta(setxor([ind; year0],1:n))=theta0; %fill in theta with parameters used by solver
+theta(ind)=param_est;  %replace parameter with specified value from fzero solver (evaluating likelihood at this parameter value!)
+theta(year0)=-nansum(theta(1:yearnum)); %replace beta with identificability constraint
 
 %to calculate, must put these parameters back in their correct locations:
 % theta=[theta(1:ind0); 0; theta(ind0:end)]; %for identifiability
