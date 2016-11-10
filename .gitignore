@@ -6,3 +6,6 @@
 
 # Compiled Python files
 *.pyc
+
+# emacs autosave
+*~
