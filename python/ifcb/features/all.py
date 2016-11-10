@@ -526,4 +526,4 @@ def compute_features(roi_image):
         ('summedConvexPerimeter_over_Perimeter', r.summed_convex_perimeter_over_perimeter),
         ('rotated_BoundingBox_solidity', b.rotated_bbox_solidity)
     ]
-    return f
+    return (r.blobs_image, f)
