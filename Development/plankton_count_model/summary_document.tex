@@ -48,7 +48,7 @@ L(\mathbf{\beta},\mathbf{\gamma}) =& \prod_{i=1}^{10} \prod_{j=1}^{26} P(Y_{ij})
 \log L(\mathbf{\beta},\mathbf{\gamma}) =& \sum_{i=1}^{10} \sum_{j=1}^{26} \left[ Y_{ij} ( \beta_i + \gamma_j + \log V_{ij}) - \exp(\beta_i + \gamma_j) V_{ij} \right]
 \end{align}
 
-We search over 36 parameters to find the values that maximize this function, given the data. However, there is an additional constraint that must be imposed to be able to find a distinct solution. Because the mean density is an additive combination between two sets of parameters, it is the sum or difference between them that will determine the likelihood value. Because of this, you could have several different sets of parameters that would equally generate the same "difference". For example, $\beta_1 = 2$ and $\gamma_1= -1$ gives $\mu_{1,1} = \exp(1)$, but so does ($\beta_1 = 4$, $\gamma_1= -3$) or ($\beta_1 = -4$, $\gamma_1= 5$). To avoid this problem, we set an `identifiability' constraint. This can take many forms, such as $\beta_1 = - \sum_{i=2}^{10}\beta_i$, but perhaps the easiest is just setting $\beta_1 =0$, which we will do here. The maximum likelihood estimates of parameters are therefore interpreted relative to a yearly effect of 0 for the first year. This is okay, as it is the difference between parameters that effectively determine the mean density, and for reproducing a seasonal climatology, the seasonal parameters are the same in all the years irrespective of the annual mean.
+We search over 36 parameters to find the values that maximize this function, given the data. However, there is an additional constraint that must be imposed to be able to find a distinct solution. Because the mean density is an additive combination between two sets of parameters, it is the sum or difference between them that will determine the likelihood value. Because of this, you could have several different sets of parameters that would equally generate the same "difference". For example, $\beta_1 = 2$ and $\gamma_1= -1$ gives $\mu_{1,1} = \exp(1)$, but so does ($\beta_1 = 4$, $\gamma_1= -3$) or ($\beta_1 = -4$, $\gamma_1= 5$). To avoid this problem, we set an `identifiability' constraint. This can take a few forms, such as $\beta_1 = - \sum_{i=2}^{10}\beta_i$, or just setting $\beta_1 =0$. Each choice has consequences for interpretations of the maximum likelihood estimates of the parameters. For the first option, parameters are with respect to an average year affect of 0, but for the second option they are with respect to year 1. The former offers a clearer interpretation (more on that later). 
 
 With maximum likelihood estimators in hand, we can then construct confidence intervals for each parameter. We do this with use of the standard likelihood ratio test with profile log likelihoods for each parameter:
 \[
@@ -109,7 +109,7 @@ The matlab scripts to fit this model and construct confidence intervals are list
 \end{itemize}
 
 
-\section{seasonal climatology and year affect} 
+\section{interpretation of seasonal and year effects} 
 
 One of the main goals of this approach is to be able to produce a seasonal climatology without the influence of interannual variation. According to Andy, under the above model, the seasonal effect (which is the same in all years) multiplies the annual mean by a factor $\exp(\gamma_j)$. Calculating expected densities with only the seasonal parameters gives this type of climatology (which also corresponds to the expected density of year 1, as we have set $\beta_1=0$). The expected seasonal mean density effect for \textit{Laboea strobila} is in Figure 1. The actual densities for each timepoint appear in grey and the expected seasonal effect ($\exp(\gamma_j)$) appears as a black line. To get expected densities for each year, this would be multiplied by $\exp(\beta_i)$. Notice that averaging aggregate seasonal densities across the years gives a different pattern to the one achieved with this method.
 
@@ -143,6 +143,6 @@ depends on volume sampled for each replicate ($K$ is total number of replicates 
 \frac{\chi^2}{(K-1)}
 \]
 
-\noindent If this quantity is greater than 1, then the data is likely overdispersed. This is especially useful for getting a feel for how overdispersion varies over the timeseries, although Andy cautioned not to get too excited by a few peaks. The matlab script that performs these calculations is \textbf{test\_poisson\_overdisp.m}
+\noindent If this quantity is systematically greater than 1, or much greater than 1, then the data is likely overdispersed. This is especially useful for getting a feel for how overdispersion varies over the timeseries, although Andy cautioned not to get too excited by a few peaks. The matlab script that performs these calculations is \textbf{test\_poisson\_overdisp.m}
 
 \end{document}  
