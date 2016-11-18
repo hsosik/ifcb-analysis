@@ -1,7 +1,8 @@
 
 function [ ind_out, class_label ] = get_centric_ind( class2use, class_label)
-%function [ ind_out, class_label ] = get_ciliate_ind( class2use, class_label )
-% MVCO class list specific to return of indices that correspond to all variants of ciliates
+%function [ ind_out, class_label ] = get_centric_ind( class2use, class_label )
+% MVCO class list specific to return of indices that correspond to all
+% variants of centric diatoms
 %  Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2013
 
 class2get = {'Chaetoceros' 'Corethron' 'DactFragCerataul' 'Dactyliosolen' 'Ditylum' 'Eucampia' 'Guinardia_delicatula'...
