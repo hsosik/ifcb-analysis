@@ -26,7 +26,7 @@ theta(ind)=param_est;
 % end
 
 betas=repmat(theta(1:yearnum)',seasonnum,1); %year effects (26 x 10)
-gammas=repmat(theta(yearnum+1:n),1,10); %season effects (26 x 10)
+gammas=repmat(theta(yearnum+1:n),1,yearnum); %season effects (26 x 10)
 
 %matrix is season x year; 26 x 10
 matlogL = counts.*(betas+gammas + log(volumes)) - exp(betas+gammas).*volumes;
