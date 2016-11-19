@@ -25,7 +25,7 @@ for count = 1:length(mode_list),
             [~, class_cat] = intersect(class2use_here, {'Ditylum' 'Ditylum_parasite'});
         case 'diatoms'
             %all except mix and detritus
-            [~, class_cat] = setdiff(class2use_here, {'mix' 'detritus'});
+            [~, class_cat] = setdiff(class2use_here, {'mix' 'detritus' 'unclassified'});
         case 'big ciliates'
             [~, class_cat] = intersect(class2use_here, {'Tintinnid' 'Laboea_strobila'});
         case 'special big only'
