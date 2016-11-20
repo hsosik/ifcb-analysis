@@ -10,16 +10,16 @@
 %% if want to first simulate data to check that everything is working:
 
 %Simdata1:
-% season_lambdas = [0.6 linspace(0.1,3,5) linspace(3,0.1,5) 0 0.1  0 linspace(0.1,3,5) linspace(3,0.1,5) 0 0.1];
-% year_lambdas = [1 3 6 0 1 0.2 0.4 0.3 0.2 3];
+season_lambdas = [0.6 linspace(0.1,3,5) linspace(3,0.1,5) 0 0.1  0 0.5*linspace(0.1,3,5) 0.5*linspace(3,0.1,5) 0 0.1];
+year_lambdas = [1 -2 3 0 1 -0.2 -0.8 1 -0.2 2.5];
 
 %Simdata2:
 % season_lambdas = [0 0.1:0.05:0.6 1 2 -linspace(0.1,0.6,5) 0 0.2 -0.2 -0.4 -0.6 1 0.3];
 % year_lambdas = [1 -0.3 -2 0 1 0.2 -0.4 0.3 -2 3];
 
 %Simdata 3:
-season_lambdas = [0.6 linspace(0.1,3,5) linspace(3,0.1,5) 0 0.1  0 linspace(0.1,3,5) linspace(3,0.1,5) 0 0.1];
-year_lambdas = [-1 -2 -0.4 -3 -1 -2 6 -0.3 -0.2 -0.1];
+% season_lambdas = [0.6 linspace(0.1,3,5) linspace(3,0.1,5) 0 0.1  0 linspace(0.1,3,5) linspace(3,0.1,5) 0 0.1];
+% year_lambdas = [-1 -2 -0.4 -3 -1 -2 6 -0.3 -0.2 -0.1];
 
 test_volumes=25*ones(26,10);
 lambdas=exp(repmat(season_lambdas',1,10)+repmat(year_lambdas,26,1)).*test_volumes; %density * volume to get mean counts
@@ -47,6 +47,19 @@ iclass = strmatch('Laboea_strobila', class2use, 'exact');
 %iclass = strmatch('Odontella', class2use, 'exact');
 %iclass = strmatch('Chaetoceros_pennate', class2use, 'exact');
 
+%%
+
+% load /Volumes/IFCB_products/MVCO/class/summary/summary_allTB_bythre_Laboea
+% [matdate_bin, classcount_bin, ml_analyzed_mat_bin] = make_day_bins(mdateTB,classcountTB_above_thre(:,6), ml_analyzedTB);
+% [ mdate_mat, ml_yd_mat, yearlist, yd ] = timeseries2ydmat(matdate_bin,ml_analyzed_mat_bin);
+% [ mdate_mat, classcount_yd_mat, yearlist, yd ] = timeseries2ydmat(matdate_bin,classcount_bin);
+% [Laboea_wk_mat, mdate_wkmat, yd_wk ] = ydmat2weeklymat(classcount_yd_mat, yearlist);
+% [ml_wk_mat, mdate_wkmat, yd_wk ] = ydmat2weeklymat(ml_yd_mat, yearlist);
+% 
+% counts=Laboea_wk_mat; %/0.7994;
+% iclass=1;
+% matdate=mdate_wkmat;
+% volumes=ml_wk_mat;
 %% set up the data matrices:
 
 wk2yrdy = [7*(0:51)+1 366];
@@ -54,7 +67,7 @@ wk2yrdy = [7*(0:51)+1 366];
 counts=nan(26,10);
 volumes=nan(26,10);
 time=nan(26,10);
-yearlist=2006:2015;
+yearlist=2007:2016;
 
 for Q=1:length(yearlist) %year
     for w=1:2:51 %two week chunks
@@ -80,7 +93,7 @@ end
 %to solve:
 opts = optimoptions('fminunc','MaxFunctionEvaluations',100000,'MaxIterations',1000,'Display','off','Algorithm','quasi-newton');
 x0=-2*rand(sum(size(counts))-1,1); %starting points for solver
-year0=4; %year to set as zero
+year0=1; %year to set as zero
 
 % script is expecting a column vector of parameters that have year effects
 %first, then season effects...
@@ -107,27 +120,66 @@ xmin=[x(1:year0-1); bI ; x(year0:end)]; %put back a "0" for year effect - the pa
 %% PLOTTING...
 
 % parameter check!
-est_year=xmin(1:yearnum);
-est_seas=xmin(yearnum+1:end);
-figure, subplot(1,2,1,'replace')
-plot(1:26,est_seas,'s')
+clf 
+
+est_year=xmin1(1:yearnum);
+est_seas=xmin1(yearnum+1:end);
+
+subplot(1,2,1,'replace')
 hold on
 plot(1:26,season_lambdas,'r*')
+plot(1:26,est_seas,'s')
+%plot(1:26,est_seas+bI,'bo')
+hleg1=legend('seasonal parameters for simulation','estimated parameters','location','NorthOutside');
+set(hleg1,'box','off')
+xlim([1 26])
+ylabel('Season parameters','fontsize',14)
+xlabel('Season','fontsize',14)
+set(gca,'box','on','fontsize',14)
 
 subplot(1,2,2,'replace')
-plot(1:yearnum, year_lambdas,'ro')
 hold on
+plot(1:yearnum, year_lambdas,'r*')
 plot(1:yearnum, est_year,'s')
+%plot(1:yearnum, est_year-bI,'bo')
 line([1 yearnum],[0 0])
-legend('true year effects','year effects mean 0')
+xlim([1 10])
+hleg2=legend('year parameters for simulation','estimated parameters','location','NorthOutside');
+set(hleg2,'box','off')
+ylabel('Year parameters','fontsize',14)
+set(gca,'box','on','fontsize',14)
+xlabel('Year','fontsize',14)
+
+set(gcf,'color','w')
+export_fig /Users/kristenhunter-cevera/Desktop/simdata1.pdf
+
 
 %% a rough plot - do the expected counts match the sample?
 
-est_year=repmat(xmin(1:10)',26,1);
-est_seasons=repmat(xmin(11:end),1,10);
+est_year=repmat(xmin(1:yearnum)',seasonnum,1);
+est_seasons=repmat(xmin(yearnum+1:end),1,yearnum);
 exp_dens=exp(est_year + est_seasons);
 exp_counts=exp_dens.*volumes;
 
+figure
+plot(counts(:)./volumes(:),'.-'), hold on
+plot(exp_dens(:),'.-')
+
+%% and just the expected seasonal density:
+
+figure, hold on
+h1=plot(counts./volumes,'.-','color',[0.5 0.5 0.5]);
+h2=plot(exp(est_seasons),'k.-','linewidth',3);
+hleg2=legend([h1(1); h2(1)],'yearly simulated densities','estimated seasonal density (with respect to mean year effect)','location','NorthOutside');
+set(hleg2,'box','off')
+xlim([1 26])
+ylabel('Density','fontsize',14)
+set(gca,'box','on','fontsize',14)
+xlabel('Season','fontsize',14)
+
+%%
+set(gcf,'color','w')
+export_fig /Users/kristenhunter-cevera/Desktop/simdata2.pdf
 
 %% 
 clf
