@@ -48,7 +48,7 @@ L(\mathbf{\beta},\mathbf{\gamma}) =& \prod_{i=1}^{10} \prod_{j=1}^{26} P(Y_{ij})
 \log L(\mathbf{\beta},\mathbf{\gamma}) =& \sum_{i=1}^{10} \sum_{j=1}^{26} \left[ Y_{ij} ( \beta_i + \gamma_j + \log V_{ij}) - \exp(\beta_i + \gamma_j) V_{ij} \right]
 \end{align}
 
-We search over 36 parameters to find the values that maximize this function, given the data. However, there is an additional constraint that must be imposed to be able to find a distinct solution. Because the mean density is an additive combination between two sets of parameters, it is the sum or difference between them that will determine the likelihood value. Because of this, you could have several different sets of parameters that would equally generate the same "difference". For example, $\beta_1 = 2$ and $\gamma_1= -1$ gives $\mu_{1,1} = \exp(1)$, but so does ($\beta_1 = 4$, $\gamma_1= -3$) or ($\beta_1 = -4$, $\gamma_1= 5$). To avoid this problem, we set an `identifiability' constraint. This can take a few forms, such as $\beta_1 = - \sum_{i=2}^{10}\beta_i$, or just setting $\beta_1 =0$. Each choice has consequences for interpretations of the maximum likelihood estimates of the parameters. For the first option, parameters are with respect to an average year affect of 0, but for the second option they are with respect to year 1. The former offers a clearer interpretation (more on that later). 
+We search over 36 parameters to find the values that maximize this function, given the data. However, there is an additional constraint that must be imposed to be able to find a distinct solution. Because the mean density is an additive combination between two sets of parameters, it is the sum or difference between them that will determine the likelihood value. Because of this, you could have several different sets of parameters that would equally generate the same "difference". For example, $\beta_1 = 2$ and $\gamma_1= -1$ gives $\mu_{1,1} = \exp(1)$, but so does ($\beta_1 = 4$, $\gamma_1= -3$) or ($\beta_1 = -4$, $\gamma_1= 5$). To avoid this problem, we set an `identifiability' constraint. This can take a few forms, such as $\beta_1 = - \sum_{i=2}^{10}\beta_i$, or $\beta_1 =0$. The maximum likelihood estimates of parameters are therefore interpreted relative to this constriant (i.e. parameters are relative to a mean year effect or relative to the first year). We will set $\beta_1 = - \sum_{i=2}^{10}\beta_i$ as this is a bit easier to interpret (more on that later).
 
 With maximum likelihood estimators in hand, we can then construct confidence intervals for each parameter. We do this with use of the standard likelihood ratio test with profile log likelihoods for each parameter:
 \[
@@ -111,7 +111,47 @@ The matlab scripts to fit this model and construct confidence intervals are list
 
 \section{interpretation of seasonal and year effects} 
 
-One of the main goals of this approach is to be able to produce a seasonal climatology without the influence of interannual variation. According to Andy, under the above model, the seasonal effect (which is the same in all years) multiplies the annual mean by a factor $\exp(\gamma_j)$. Calculating expected densities with only the seasonal parameters gives this type of climatology (which also corresponds to the expected density of year 1, as we have set $\beta_1=0$). The expected seasonal mean density effect for \textit{Laboea strobila} is in Figure 1. The actual densities for each timepoint appear in grey and the expected seasonal effect ($\exp(\gamma_j)$) appears as a black line. To get expected densities for each year, this would be multiplied by $\exp(\beta_i)$. Notice that averaging aggregate seasonal densities across the years gives a different pattern to the one achieved with this method.
+One of the main goals of this approach is to be able to produce a seasonal climatology without the influence of interannual variation. If we fit with the model with the identifiability constraint of $\beta_1 = - \sum_{i=2}^{10}\beta_i$ (or another year of choice), a climatology is retrieved from the exponential of the fitted seasonal parameters ($\exp(\gamma_j)$).  Because the fitted year parameters are fit such that they average zero, the value of the fitted seasonal parameters are relative to a `zero' year affect, exactly what we would like for the climatology.  For example, with simulated dat, we see that the estimated year effects are equally distributed around zero (as required by the identifiability constraint) and shifted by some amount from the true year parameters used to simulated the data. The seasonal parameters are also shifted by this same amount, only in the opposite direction.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{simdata1.pdf}
+\caption{True and estimated parameters of simulated data. A. Seasonal parameters. B. Year parameters.}
+\end{figure}
+
+We can write this as:
+\begin{align}
+\beta_i &= \hat{\beta_i} - \bar{\beta}\label{eqn1} \\
+\gamma_j &= \hat{\gamma_j} + \bar{\beta} \label{eqn2}
+\end{align}
+
+\noindent where $\beta_i$ and $\gamma_j$ are the true parameters, $\hat{\beta_i}$ and $\hat{\gamma_j}$ are the parameter estimates fitted with the identifiability constraint, and $\bar{\beta}$ is the mean of the true year parameters. These relationships also show that it is only the absolute distance between the year and seasonal parameters that matter:
+\begin{align}
+\beta_i + \gamma_j &= \hat{\beta_i} - \bar{\beta} + \hat{\gamma_j} + \bar{\beta} \\
+\beta_i + \gamma_j &= \hat{\beta_i} + \hat{\gamma_j} \label{eqn4}
+\end{align}
+
+\subsection{units}
+ The parameters are linear in the log space, such that both $\beta_i$ and $\gamma_j$ should be in units of log(cells mL$^{-1}$). This ends up being a rather tricky interpretation if the exponential is re-arragned:
+
+\begin{align}
+\mu_{ij} &= \exp(\beta_i +\gamma_j) = \exp( \log (\frac{\text{cells}}{\text{mL}}) + \log(\frac{\text{cells}}{\text{mL}}) \\
+\mu_{ij} &= \exp(\beta_i)\exp(\gamma_j) = \exp(\log(\frac{\text{cells}}{\text{mL}}))\exp(\log(\frac{\text{cells}}{\text{mL}}) \\
+\mu_{ij} &= \left( \frac{\text{cells}}{\text{mL}}\right)^{2} \text{  ???}
+\end{align}
+
+Alternatively, one could just simply do the addition before taking the exponential. However, the relationship in Eqn.~\ref{eqn4} can help with an alternative unit interpretation, where the units are attached to the fitted seasonal parameters and the year parameters are interpreted as `scale' factors. For simply an estimated seasonal climatology we have:
+
+\begin{align}
+\mu_{j} &= \exp(\hat{\gamma_j}) \\
+\mu_{ij} & = \exp\left(\gamma_j - \bar{\beta} \right) \\
+\mu_{ij} & = \exp(\gamma_j + \hat{\beta_i} - \beta_i) \\
+\mu_{ij} & = \frac{\exp(\hat{\beta_i})}{\exp(\bar{\beta})}\exp(\hat{\gamma_j} + \bar{\beta}) = \frac{\text{cells/mL}}{\text{cells/mL}} \left(\frac{\text{cells}}{\text{mL}}\right)
+\end{align}
+
+Hence the s
+
+The expected seasonal mean density effect for \textit{Laboea strobila} is in Figure 1. The actual densities for each timepoint appear in grey and the expected seasonal effect ($\exp(\gamma_j)$) appears as a black line. To get expected densities for each year, this would be multiplied by $\exp(\beta_i)$. Notice that averaging aggregate seasonal densities across the years gives a different pattern to the one achieved with this method.
 
 \begin{figure}[h]
 \centering
@@ -143,6 +183,6 @@ depends on volume sampled for each replicate ($K$ is total number of replicates 
 \frac{\chi^2}{(K-1)}
 \]
 
-\noindent If this quantity is systematically greater than 1, or much greater than 1, then the data is likely overdispersed. This is especially useful for getting a feel for how overdispersion varies over the timeseries, although Andy cautioned not to get too excited by a few peaks. The matlab script that performs these calculations is \textbf{test\_poisson\_overdisp.m}
+\noindent If this quantity is systematically or much greater than 1, then the data is likely overdispersed. This is especially useful for getting a feel for how overdispersion varies over the timeseries, although Andy cautioned not to get too excited by a few peaks. The matlab script that performs these calculations is \textbf{test\_poisson\_overdisp.m}
 
 \end{document}  

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  16 NOV 2016 10:57
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  20 NOV 2016 16:46
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -291,36 +291,38 @@ File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 94.
  [4]
-<Laboea_summary.pdf, id=94, 482.80376pt x 417.56pt>
+<simdata1.pdf, id=94, 800.9925pt x 415.5525pt>
+File: simdata1.pdf Graphic file (type pdf)
+ <use simdata1.pdf>
+Package pdftex.def Info: simdata1.pdf used on input line 118.
+(pdftex.def)             Requested size: 301.00192pt x 156.16151pt.
+ [5 <./simdata1.pdf>] <Laboea_summary.pdf, id=103, 482.80376pt x 417.56pt>
 File: Laboea_summary.pdf Graphic file (type pdf)
- <use Laboea_summary.pdf>
-Package pdftex.def Info: Laboea_summary.pdf used on input line 118.
+
+<use Laboea_summary.pdf>
+Package pdftex.def Info: Laboea_summary.pdf used on input line 158.
 (pdftex.def)             Requested size: 301.00192pt x 260.3372pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[5] [6 <./Laboea_summary.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 127--128
+ [6] [7 <./Laboea_summary.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 167--168
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 139--140
+Underfull \hbox (badness 10000) in paragraph at lines 179--180
 
  []
 
-[7
+[8
 
 ] (./summary_document.aux) ) 
 Here is how much of TeX's memory you used:
- 2897 strings out of 493014
- 39448 string characters out of 6133351
- 109415 words of memory out of 5000000
- 6395 multiletter control sequences out of 15000+600000
- 12012 words of font info for 45 fonts, out of 8000000 for 9000
+ 2906 strings out of 493014
+ 39560 string characters out of 6133351
+ 111439 words of memory out of 5000000
+ 6403 multiletter control sequences out of 15000+600000
+ 12319 words of font info for 46 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 42i,9n,26p,1147b,257s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,12n,26p,1117b,257s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2016/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/publ
 ic/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/publi
@@ -337,10 +339,10 @@ cmr6.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
 fb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pf
 b></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on summary_document.pdf (7 pages, 277374 bytes).
+Output written on summary_document.pdf (8 pages, 286485 bytes).
 PDF statistics:
- 160 PDF objects out of 1000 (max. 8388607)
- 122 compressed objects within 2 object streams
+ 169 PDF objects out of 1000 (max. 8388607)
+ 128 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
- 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 16 words of extra memory for PDF output out of 10000 (max. 10000000)
 
