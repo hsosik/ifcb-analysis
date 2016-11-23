@@ -27,7 +27,8 @@ def bin_features(the_bin, out_dir=None, log_callback=None):
                 roi_lid = '%s_%05d' % (bin_lid, roi_number)
                 blobs_image, features = compute_features(image)
                 # emit log message
-                log_msg('PROCESSED %05d (%d of %d)' % (roi_number, n, n_rois))
+                if n % 500 == 0:
+                    log_msg('PROCESSED %05d (%d of %d)' % (roi_number, n, n_rois))
                 n += 1
                 # write blob
                 blob_entry_name = '%s.png' % roi_lid
