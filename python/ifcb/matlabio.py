@@ -28,6 +28,8 @@ class Matlab:
         self.output_callback = output_callback
         self.log_callback = lambda x: log_callback(message(x))
     def run(self,command):
+        # allow multiline commands
+        command = re.sub(r'\n',', ',command)
         pathcmds = '; '.join(['path(\'%s\',path)' % d for d in self.matlab_path])
         p = None
         try:
