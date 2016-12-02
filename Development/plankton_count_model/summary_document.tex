@@ -111,7 +111,9 @@ The matlab scripts to fit this model and construct confidence intervals are list
 
 \section{interpretation of seasonal and year effects} 
 
-One of the main goals of this approach is to be able to produce a seasonal climatology without the influence of interannual variation. If we fit with the model with the identifiability constraint of $\beta_1 = - \sum_{i=2}^{10}\beta_i$ (or another year of choice), a climatology is retrieved from the exponential of the fitted seasonal parameters ($\exp(\gamma_j)$).  Because the fitted year parameters are fit such that they average zero, the value of the fitted seasonal parameters are relative to a `zero' year affect, exactly what we would like for the climatology.  For example, with simulated dat, we see that the estimated year effects are equally distributed around zero (as required by the identifiability constraint) and shifted by some amount from the true year parameters used to simulated the data. The seasonal parameters are also shifted by this same amount, only in the opposite direction.
+One of the main goals of this approach is to be able to produce a seasonal climatology without the influence of interannual variation. If we fit with the model with an identifiability constraint of $\beta_1 = - \sum_{i=2}^{10}\beta_i$ (or another year of choice), a climatology is retrieved from the exponential of the fitted seasonal parameters ($\exp(\gamma_j)$).  Because the year parameters are fit such that their average is zero, the value of the fitted seasonal parameters are relative to a `zero' year affect, which is exactly what we would like for a climatology.  
+
+With simulated data, for example, we see that the estimated year effects are equally distributed around zero (as required by the identifiability constraint) and shifted by some amount from the true year parameters used to simulated the data (shifted by the mean of the true year parameters). The seasonal parameters are also shifted by this amount, only in the opposite direction. With this identifiability constraint, no matter which year is `left out', the resulting seasonal and year parameter estimates are the same (which is not true in the case of an identifiability constraint of $\beta_i=0$).
 
 \begin{figure}[h]
 \centering
@@ -119,7 +121,9 @@ One of the main goals of this approach is to be able to produce a seasonal clima
 \caption{True and estimated parameters of simulated data. A. Seasonal parameters. B. Year parameters.}
 \end{figure}
 
-We can write this as:
+\clearpage
+
+We can write these relationships as follows:
 \begin{align}
 \beta_i &= \hat{\beta_i} - \bar{\beta}\label{eqn1} \\
 \gamma_j &= \hat{\gamma_j} + \bar{\beta} \label{eqn2}
@@ -131,8 +135,18 @@ We can write this as:
 \beta_i + \gamma_j &= \hat{\beta_i} + \hat{\gamma_j} \label{eqn4}
 \end{align}
 
+
+A plot of density of simulated data and the estimated density from maximum likelihood parameters (those in Figure 2) illustrates this concept:
+ 
+ \begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{simdata2.pdf}
+\caption{Density of simulated data (blue line) and estimated density from fitted parameters (orange squares).}
+\end{figure}
+
+
 \subsection{units}
- The parameters are linear in the log space, such that both $\beta_i$ and $\gamma_j$ should be in units of log(cells mL$^{-1}$). This ends up being a rather tricky interpretation if the exponential is re-arragned:
+ In the model formulation above, the parameters are linear in the log space, such that both $\beta_i$ and $\gamma_j$ should be in units of ln(cells mL$^{-1}$). This ends up being a rather tricky interpretation if the exponential is re-arranged:
 
 \begin{align}
 \mu_{ij} &= \exp(\beta_i +\gamma_j) = \exp( \log (\frac{\text{cells}}{\text{mL}}) + \log(\frac{\text{cells}}{\text{mL}}) \\
@@ -140,26 +154,48 @@ We can write this as:
 \mu_{ij} &= \left( \frac{\text{cells}}{\text{mL}}\right)^{2} \text{  ???}
 \end{align}
 
-Alternatively, one could just simply do the addition before taking the exponential. However, the relationship in Eqn.~\ref{eqn4} can help with an alternative unit interpretation, where the units are attached to the fitted seasonal parameters and the year parameters are interpreted as `scale' factors. For simply an estimated seasonal climatology we have:
+To avoid this we could present the model as such:
+\[
+\mu_{ij} = \alpha_i\exp(\gamma_j), \text{ where } \alpha_i > 0,
+\]
 
-\begin{align}
-\mu_{j} &= \exp(\hat{\gamma_j}) \\
-\mu_{ij} & = \exp\left(\gamma_j - \bar{\beta} \right) \\
-\mu_{ij} & = \exp(\gamma_j + \hat{\beta_i} - \beta_i) \\
-\mu_{ij} & = \frac{\exp(\hat{\beta_i})}{\exp(\bar{\beta})}\exp(\hat{\gamma_j} + \bar{\beta}) = \frac{\text{cells/mL}}{\text{cells/mL}} \left(\frac{\text{cells}}{\text{mL}}\right)
-\end{align}
+\noindent where $\alpha_i$ is to be interpreted as a scale factor and is unitless. To ensure $\alpha_i$ is always positive, we could set $\alpha_i =\exp(\beta_i)$ and the construction and fitting is the same as described above. To avoid interpretation issues, we will go with this presentation.
 
-Hence the s
 
-The expected seasonal mean density effect for \textit{Laboea strobila} is in Figure 1. The actual densities for each timepoint appear in grey and the expected seasonal effect ($\exp(\gamma_j)$) appears as a black line. To get expected densities for each year, this would be multiplied by $\exp(\beta_i)$. Notice that averaging aggregate seasonal densities across the years gives a different pattern to the one achieved with this method.
+%Doesn't really make much sense below....
+%Alternatively, one could just simply do the addition before taking the exponential. However, the relationship in Eqn.~\ref{eqn4} can help with an alternative unit interpretation, where the units are attached to the fitted seasonal parameters and the year parameters are interpreted as `scale' factors. For simply an estimated seasonal climatology we have:
+%
+
+%\begin{align}
+%\mu_{j} &= \exp(\hat{\gamma_j}) \\
+%\mu_{ij} & = \exp\left(\gamma_j - \bar{\beta} \right) \\
+%\mu_{ij} & = \exp(\gamma_j + \hat{\beta_i} - \beta_i) \\
+%\mu_{ij} & = \frac{\exp(\hat{\beta_i})}{\exp(\bar{\beta})}\exp(\hat{\gamma_j} + \bar{\beta}) = \frac{\text{cells/mL}}{\text{cells/mL}} \left(\frac{\text{cells}}{\text{mL}}\right)
+%\end{align}
+
+\subsection{real data}
+
+Here we apply the model to observed counts of \textit{Laboea strobila} at MVCO from 2007-2016. 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.7\textwidth]{Laboea_summary.pdf}
-\caption{Cell densities of observed \textit{Laboea strobila} from 2007-2016 (gray lines), expected seasonal effect on cell density from maximum likelihood estimates of seasonal parameters assuming Poisson model (black line), and mean cell density of season across all years (blue line).}
+\includegraphics[width=0.7\textwidth]{Laboea1.pdf}
+\caption{A. Observed cell densities of \textit{Laboea strobila} from 2007-2016 (gray lines, aggregated density for each manually classified sample (total cells observed in two-week time window divided by total volume analyzed in same time window)), estimated seasonal density pattern from maximum likelihood estimates of seasonal parameters (($\exp(\hat{\gamma}_i)$), blue line) with 95\% confidence intervals (light blue lines), and mean cell density of season across all years (red line). B. Year multiplier effect for each year $(\exp(\beta_i))$, with confidence intervals.}
 \end{figure}
 
-One could also investigate the year affects and if these parameters show any patterns among the years or any relationship to environmental variables. 
+For reference, the mean density (calculated by taking the average of densities for each time window across all years) is presented (red line). Note that this does not exactly match the expected seasonal densities from the model due to year affects being intrinsically incorporated into the calculation.
+
+The observed cell density and estimated density (calculated from $\exp(\beta_i+\gamma_j)$) is shown in Figure 5. For this data, the default MATLAB solver tolerances did not always allow convergence to the global minimum. Setting the optimality tolerance (minimum gradient change) lower seemed to resolve this. It would good though to simply run the solver with each year left out (for the idenitifiability constraint) and check whether or not the maximum likelihood values are indeed the same (they should be). If there is a discrepancy, setting the start-point for the solver as the end solution for another year may  help. Parameters that truly tend towards zero also may not come back as the exact value (i.e -13, -14.5, -16 equate to simply a very small number when the exponential is taken). 
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{Laboea2.pdf}
+\caption{Observed cell densities of \textit{Laboea strobila} from 2007-2016 (gray line) with estimated density from maximum likelihood estimates parameters (blue line).}
+\end{figure}
+
+The year affects, while a bulk multiplier, could be investigated with regard to relationships with environmental variables. 
+
 \clearpage
 
 \section{test for overdispersion}        
