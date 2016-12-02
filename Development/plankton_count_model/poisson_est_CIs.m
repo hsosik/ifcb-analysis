@@ -65,14 +65,16 @@ logL_bnd=maxlogL - 0.5*chi2inv(0.95,1)*c; %chi2inv(0.95,1) = 3.84
 %%
 
 CIs=nan(n,2);
-
+%%
 for ind=setxor(year0,1:n) %2:36 %don't attempt a confidence interval for param set as 0
     
     zeroflag=0; %current param is not zero
     
     %first we help fzero out by finding where the bounds might be for the lower and then upper CI:
     
-    %for the lower bound: decrease param until find a negative:    
+    %for the lower bound: decrease param until find a negative: 
+    %This can be quite tricky as some low values may or may not have a
+    %real lower bound...
     %keyboard 
     test_param=xmin(ind)-1; %an abs number as could be neg or pos...
     x0=xmin(setxor([ind; year0],1:n)); %for starting point for solver, need to remove ind of param for CI as well as param that is set to 0
@@ -81,14 +83,25 @@ for ind=setxor(year0,1:n) %2:36 %don't attempt a confidence interval for param s
     [bnd_test, x_test]=eval_param_for_CI(counts,volumes,ind,test_param,x0,logL_bnd,opts,year0);
     
     k=0;
-    while bnd_test > 0  && k<200 %keep going!
+    while bnd_test > 0  && k< 100 %keep going!
         k=k+1;
+        %test_param=-2*abs(test_param); 
         test_param=test_param-1; %an abs number as could be neg or pos...
-        bnd_test=eval_param_for_CI(counts,volumes,ind,test_param,x_test,logL_bnd,opts,year0); %use the previous solver param returns as start points for the next point
+        [bnd_test, x_test]=eval_param_for_CI(counts,volumes,ind,test_param,x_test,logL_bnd,opts,year0); %use the previous solver param returns as start points for the next point
     end
     
+    %for special cases, where parameter is a bit above zero, but CI wants
+    %to be zero...
+    k2=0;
+    if k==100        
+        while bnd_test > 0  && k2<20 %keep going!
+        k2=k2+1;
+        test_param=-2*abs(test_param); %really scale those numbers!
+        [bnd_test, x_test]=eval_param_for_CI(counts,volumes,ind,test_param,x_test,logL_bnd,opts,year0); %use the previous solver param returns as start points for the next point
+        end
+    end
     
-    if exp(xmin(ind)) < 1e-6 && k==200  %Special case where the parameter wants to go to zero
+    if k2==20 && bnd_test>0 %Special case where the parameter wants to go to zero
         %(cases where 0 counts were observed for a particular season or year). In these cases,
         %skip the lower bound, but estimate the upper bound.
         lower_CI=-Inf;

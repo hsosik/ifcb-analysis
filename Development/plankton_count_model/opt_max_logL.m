@@ -55,7 +55,7 @@ iclass = strmatch('Laboea_strobila', class2use, 'exact');
 % [ mdate_mat, classcount_yd_mat, yearlist, yd ] = timeseries2ydmat(matdate_bin,classcount_bin);
 % [Laboea_wk_mat, mdate_wkmat, yd_wk ] = ydmat2weeklymat(classcount_yd_mat, yearlist);
 % [ml_wk_mat, mdate_wkmat, yd_wk ] = ydmat2weeklymat(ml_yd_mat, yearlist);
-% 
+%
 % counts=Laboea_wk_mat; %/0.7994;
 % iclass=1;
 % matdate=mdate_wkmat;
@@ -82,28 +82,56 @@ for Q=1:length(yearlist) %year
             
             counts((w+1)/2,Q)=sum(classcount(qq,iclass)); %total count of all ciliates
             volumes((w+1)/2,Q)=nansum(ml_analyzed_mat(qq,iclass)); %total volume analyzed for these counts
+            
             time((w+1)/2,Q)=matdate(jj(1));
+            
+        else
+            time((w+1)/2,Q)=wk2yrdy(w)+datenum(['1-0-' num2str(yearlist(Q))]);
         end
     end
 end
 
 %% Now, use fminunc (or another matlab solver) to find the maximum likelihood, assuming a Posisson distribution:
 
+%Hmmm, with real data, solver does not always seem to converge - seemed to
+%be aleviated by decreasing optimality tolerances (gradient, I believe)
+
 [seasonnum,yearnum]=size(counts);
 %to solve:
-opts = optimoptions('fminunc','MaxFunctionEvaluations',100000,'MaxIterations',1000,'Display','off','Algorithm','quasi-newton');
+opts = optimoptions('fminunc','MaxFunctionEvaluations',100000,'MaxIterations',1000,'Display','off','Algorithm','quasi-newton','OptimalityTolerance',1e-8);
 x0=-2*rand(sum(size(counts))-1,1); %starting points for solver
-year0=1; %year to set as zero
 
-% script is expecting a column vector of parameters that have year effects
-%first, then season effects...
-[x, fval, exitflag] = fminunc(@(theta) poisson_logL(theta,counts,volumes,year0),x0,opts);
+%
+%x0=x1;
+brec=[]; fval_rec=[]; ef=[];
+for year0=1:10; %year to set as zero
+    
+    % script is expecting a column vector of parameters that have year effects
+    %first, then season effects...
+    [x, fval, exitflag] = fminunc(@(theta) poisson_logL(theta,counts,volumes,year0),x0,opts);
+    
+    maxlogL=-fval; fval_rec=[fval_rec; -fval];
+    bI=-sum(x(1:yearnum-1)); brec=[brec; bI];
+    ef=[ef; exitflag];
+    xmin=[x(1:year0-1); bI ; x(year0:end)]; %put back a "0" for year effect - the parameters return relative b's and g's with respect to b1,
+    eval(['xmin' num2str(year0) '=xmin;'])
+    eval(['x' num2str(year0) '=x;'])
+end
 
-maxlogL=-fval;
-bI=-sum(x(1:yearnum-1));
-xmin=[x(1:year0-1); bI ; x(year0:end)]; %put back a "0" for year effect - the parameters return relative b's and g's with respect to b1,
-%which is set at 0, but it doesn't actually matter, because the mean is a combiantion of both beta and gamma 
+%which is set at 0, but it doesn't actually matter, because the mean is a combiantion of both beta and gamma
 %- all that matters is the absolute difference between them, and it works!
+
+%and a quick plot:
+clf, cc=jet(10);
+for j=1:10 %[1 6 10]
+    
+    eval(['xmin=xmin' num2str(j) ';'])
+    subplot(1,2,1), hold on
+    plot(xmin(1:10),'o-','color',cc(j,:))
+    subplot(1,2,2), hold on
+    plot(xmin(11:end),'o-','color',cc(j,:))
+    pause
+end
 
 %% Compare the results if have simulated data:
 % [xmin [year_lambdas'; season_lambdas']] %these won't match, but if offset
@@ -116,152 +144,125 @@ xmin=[x(1:year0-1); bI ; x(year0:end)]; %put back a "0" for year effect - the pa
 
 [CIs]=poisson_est_CIs(counts,volumes,xmin,maxlogL,opts,year0);
 
+% grid search for checking CIs:
+
+% ind=19;
+% x0=xmin(setxor([ind; year0],1:n)); %for starting point for solver, need to remove ind of param for CI as well as param that is set to 0
+% x_test=x0;
+% rec=[]; rec_fval=[];
+% for k=-10:0.5:10
+%     [bnd_test, x_test, fval]=eval_param_for_CI(counts,volumes,ind,xmin(ind)+k,x_test,logL_bnd,opts,year0); %use the previous solver param returns as start points for the next point
+%     rec=[rec; bnd_test];
+%     rec_fval=[rec_fval; fval];
+% end
 
 %% PLOTTING...
 
-% parameter check!
-clf 
+% FRONT MATTER PARAMTER VALUE:
 
-est_year=xmin1(1:yearnum);
-est_seas=xmin1(yearnum+1:end);
+est_year=xmin(1:yearnum);
+est_seas=xmin(yearnum+1:end);
 
+est_year=repmat(xmin(1:yearnum)',seasonnum,1);
+est_seasons=repmat(xmin(yearnum+1:end),1,yearnum);
+
+exp_dens=exp(est_year + est_seasons);
+exp_counts=exp_dens.*volumes;
+
+%% IF HAVE SIMULATED DATA:
 subplot(1,2,1,'replace')
 hold on
 plot(1:26,season_lambdas,'r*')
 plot(1:26,est_seas,'s')
-%plot(1:26,est_seas+bI,'bo')
 hleg1=legend('seasonal parameters for simulation','estimated parameters','location','NorthOutside');
 set(hleg1,'box','off')
 xlim([1 26])
-ylabel('Season parameters','fontsize',14)
-xlabel('Season','fontsize',14)
-set(gca,'box','on','fontsize',14)
+ylabel('Season parameters','fontsize',16)
+xlabel('Season','fontsize',16)
+set(gca,'box','on','fontsize',16)
 
 subplot(1,2,2,'replace')
 hold on
 plot(1:yearnum, year_lambdas,'r*')
 plot(1:yearnum, est_year,'s')
-%plot(1:yearnum, est_year-bI,'bo')
 line([1 yearnum],[0 0])
 xlim([1 10])
 hleg2=legend('year parameters for simulation','estimated parameters','location','NorthOutside');
 set(hleg2,'box','off')
-ylabel('Year parameters','fontsize',14)
-set(gca,'box','on','fontsize',14)
-xlabel('Year','fontsize',14)
+ylabel('Year parameters','fontsize',16)
+set(gca,'box','on','fontsize',16)
+xlabel('Year','fontsize',16)
 
 set(gcf,'color','w')
 export_fig /Users/kristenhunter-cevera/Desktop/simdata1.pdf
 
-
-%% a rough plot - do the expected counts match the sample?
-
-est_year=repmat(xmin(1:yearnum)',seasonnum,1);
-est_seasons=repmat(xmin(yearnum+1:end),1,yearnum);
-exp_dens=exp(est_year + est_seasons);
-exp_counts=exp_dens.*volumes;
-
-figure
+%ALSO FOR SIMDATA:
+clf
 plot(counts(:)./volumes(:),'.-'), hold on
-plot(exp_dens(:),'.-')
+plot(exp_dens(:),'s')
 
-%% and just the expected seasonal density:
+ylabel('Density (counts/volume)','fontsize',16)
+xlabel('Time','fontsize',16)
+set(gca,'fontsize',16,'xtick',0:25:275)
+xlim([1 260])
+legend('Simulated data','Model fit')
 
-figure, hold on
-h1=plot(counts./volumes,'.-','color',[0.5 0.5 0.5]);
-h2=plot(exp(est_seasons),'k.-','linewidth',3);
-hleg2=legend([h1(1); h2(1)],'yearly simulated densities','estimated seasonal density (with respect to mean year effect)','location','NorthOutside');
-set(hleg2,'box','off')
-xlim([1 26])
-ylabel('Density','fontsize',14)
-set(gca,'box','on','fontsize',14)
-xlabel('Season','fontsize',14)
-
-%%
 set(gcf,'color','w')
 export_fig /Users/kristenhunter-cevera/Desktop/simdata2.pdf
 
-%% 
-clf
-plot(counts,'.-','markersize',16), hold on
-plot(exp_counts,'s--','color',[0.5 0.5 0.5])
 
-%% or plots over time:
-clf
-plot(time(:),counts(:),'.:'), hold on
-plot(time(:),exp_counts(:),'s--','color',[1 0 0])
+%% OBS AND EXPECTED DENSITY:
+%do the expected counts match the sample?
 
+%COMPOSITE DENSITY AND YEAR AFFECTS:
 
-%% CLIMATOLOGY
+subplot(1,2,1,'replace'), hold on
+dens=counts./volumes;
+avgdens=nanmean(dens,2);
+ptime=1:26;
+for j=1:yearnum
+    h1=plot(ptime(~isnan(dens(:,j))),dens(~isnan(dens(:,j)),j),'o-','color',[0.5 0.5 0.5]);
+end
+h2=plot(exp(xmin(yearnum+1:end)),'b.-','linewidth',3);
+h3=plot(exp(CIs(yearnum+1:end,1)),'-','color',[0 0.5 1]);
+h4=plot(exp(CIs(yearnum+1:end,2)),'-','color',[0 0.5 1]);
+h5=plot(ptime,avgdens,'r-','linewidth',2);
+hleg2=legend([h1(1); h2(1);h3(1);h5(1)],'Observed density','Estimated seasonal density','95% CI','Avg. density','location','NorthEast');
+set(hleg2,'box','off')
+xlim([1 26])
+ylabel('Density (cells/mL)','fontsize',16)
+set(gca,'box','on','fontsize',16)
+xlabel('Season','fontsize',16)
+text(2.5,2.3,'A','fontsize',16)
 
-% Andy had said that the seasonal effect (which is the same in all years) 
-%multiplies the annual mean by a factor exp(gamma_j) irrespective of the annual mean. 
-
-%So, maybe it makes more sense to look at average year means first and then
-%look seperately at the climatology?
-
-% separate density affects for season and year:
-
-clf
-subplot(2,2,1)
-plot(2007:2016,xmin(1:10),'*')
-line(xlim,[0 0])
-ylabel('Yearly parameter values relative to \beta_1')
-subplot(2,2,2)
-plot(2007:2016,exp(xmin(1:10)),'*')
-ylabel('Expected year density effect (cells/vol)')
-
-subplot(2,2,3)
-plot(1:26,xmin(11:end),'*-','color',[0.4 0.4 0.4],'markeredgecolor',[0 0.4470 0.7410])
-%line(xlim,[0 0])
-ylabel('Seasonal parameter values relative to \beta_1')
-subplot(2,2,4)
-plot(1:26,exp(xmin(11:end)),'*-','color',[0.4 0.4 0.4],'markeredgecolor',[0 0.4470 0.7410])
-ylabel('Expected year density effect (cells/vol)')
-
-%% so, then the seasonal climatological density is just the exp(gammas) ??
-
-% with CIs:
-figure
-plot(wk2yrdy(1:2:end-1),exp(xmin(11:end)),'.-','linewidth',2,'color','k','markersize',15)
-hold on
-plot(wk2yrdy(1:2:end-1),exp(CIs(11:end,1)),'-','color',[0.5 0.5 0.5])
-plot(wk2yrdy(1:2:end-1),exp(CIs(11:end,2)),'-','color',[0.5 0.5 0.5])
-
-%% desnities for each year, overlaid with seasonal densities:
-%expected counts:
-% seas_volumes=nansum(volumes,2);
-% exp_seas_counts=exp(xmin(11:end)).*seas_volumes;
-
-clf
-h1=plot(wk2yrdy(1:2:end-1),counts./volumes,'o-','color',[0.6 0.6 0.6]); hold on
-% plot(exp(xmin(11:end)-xmin(2)),'.--','linewidth',2,'color',[0.5 0.5 0.5])
-% plot(exp(xmin(11:end)+0.74866),'.--','linewidth',2,'color','k')
-h2=plot(wk2yrdy(1:2:end-1),exp(xmin(11:end)),'b.-','linewidth',2,'color','b');
-h4=plot(wk2yrdy(1:2:end-1),exp(CIs(11:end,1)),'--','color',[0 0 1]);
-plot(wk2yrdy(1:2:end-1),exp(CIs(11:end,2)),'--','color',[0 0 1])
-
-%and compare to what you'd get if you were just to average:
-h3=plot(wk2yrdy(1:2:end-1),nanmean(counts./volumes,2),'r.-','linewidth',2);
-%plot(wk2yrdy(1:2:end-1),nanmedian(counts./volumes,2),'b.-','linewidth',2)
-
-ylabel('Cell density or expected seasonal density effect (cells/mL)')
-xlabel('Year day')
-
-legend([h1(1); h2;h4;h3;],'Observed density','Expected seasonal density effect','95% CI','Mean density')
+subplot(1,2,2,'replace'), hold on
+plot(2007:2016,exp(xmin(1:yearnum)),'*')
+h3=plot(2007:2016,exp(CIs(1:yearnum,1)),'-','color',[0 0.5 1]);
+h4=plot(2007:2016,exp(CIs(1:yearnum,2)),'-','color',[0 0.5 1]);
+line([2006.5 2016.5],[1 1],'color','k')
+set(gca,'box','on','fontsize',16)
+xlim([2006.5 2016.5])
+ylabel('Year Multiplier','fontsize',16)
+text(2007,6.5,'B','fontsize',16)
 
 %%
-set(gca,'fontsize',14)
-title('Laboea_strobila','Interpreter','none')
-xlim([1 358])
 set(gcf,'color','w')
-export_fig /Users/kristenhunter-cevera/Desktop/Laboea_summary.pdf
+export_fig /Users/kristenhunter-cevera/Desktop/Laboea1.pdf
 
-%% trying to recreate each year effect:
+%% TIME SERIES OF OBSERVED AND EXPECTED DENSITIES:
 
-% clf, hold on
-% cc=parula(10);
-% for q=1:10 
-%     plot(exp(xmin(11:end)-xmin(q)),'.--','linewidth',2,'color',cc(q,:))
-% end
+clf, hold on
+h2=plot(time,exp_dens,'b.-','linewidth',3);
+for j=1:yearnum
+    h1=plot(time(~isnan(dens(:,j)),j),dens(~isnan(dens(:,j)),j),'o-','color',[0.5 0.5 0.5]);
+end
 
+xlim([datenum('1-0-2007') datenum('1-0-2017')])
+set(gca,'fontsize',16,'box','on')
+ylabel('Density (cells/mL)','fontsize',16)
+datetick('x','yyyy','keeplimits','keepticks')
+legend([h1(1); h2(1)],'Observed density','model fit')
+
+%%
+set(gcf,'color','w')
+export_fig /Users/kristenhunter-cevera/Desktop/Laboea2.pdf

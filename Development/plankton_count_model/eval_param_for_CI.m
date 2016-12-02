@@ -1,4 +1,4 @@
-function [bnd_test, x]=eval_param_for_CI(counts,volumes,ind,param_value,x0,logL_bnd,opts,year0)
+function [bnd_test, x, fval]=eval_param_for_CI(counts,volumes,ind,param_value,x0,logL_bnd,opts,year0)
 %each 'point' is a re-optimization to find the max likelihood, given the
 %specified parameter:
 
@@ -23,4 +23,4 @@ while flag && k <=5 %only try 5 times...
     end  
 end
 
-bnd_test=-fval-logL_bnd;
+bnd_test=-fval-logL_bnd; %want this to be negative to find the window for the root solver
