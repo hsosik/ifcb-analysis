@@ -13,6 +13,7 @@
 season_lambdas = [0.6 linspace(0.1,3,5) linspace(3,0.1,5) 0 0.1  0 0.5*linspace(0.1,3,5) 0.5*linspace(3,0.1,5) 0 0.1];
 year_lambdas = [1 -2 3 0 1 -0.2 -0.8 1 -0.2 2.5];
 
+
 %Simdata2:
 % season_lambdas = [0 0.1:0.05:0.6 1 2 -linspace(0.1,0.6,5) 0 0.2 -0.2 -0.4 -0.6 1 0.3];
 % year_lambdas = [1 -0.3 -2 0 1 0.2 -0.4 0.3 -2 3];
@@ -35,7 +36,9 @@ end
 counts=poisson_sample;
 volumes=test_volumes;
 
-
+dens=counts./volumes;
+alpha=mean(counts(:)./volumes(:));
+dens_sc=dens./alpha;
 %% FOR REAL DATA:
 
 load('/Volumes/IFCB_products/MVCO/Manual_fromClass/summary/count_manual_current.mat')
@@ -91,25 +94,31 @@ for Q=1:length(yearlist) %year
     end
 end
 
-%% Now, use fminunc (or another matlab solver) to find the maximum likelihood, assuming a Posisson distribution:
+%% Now, use fmincon (or another matlab solver) to find the maximum likelihood, assuming a Posisson distribution:
 
+%must constrant alpha > 0 (as is exp(beta))
 %Hmmm, with real data, solver does not always seem to converge - seemed to
 %be aleviated by decreasing optimality tolerances (gradient, I believe)
 
 [seasonnum,yearnum]=size(counts);
 %to solve:
-opts = optimoptions('fminunc','MaxFunctionEvaluations',100000,'MaxIterations',1000,'Display','off','Algorithm','quasi-newton','OptimalityTolerance',1e-8);
+opts = optimoptions('fmincon','MaxFunctionEvaluations',100000,'MaxIterations',1000,'Display','off','OptimalityTolerance',1e-8);
+
+
 x0=-2*rand(sum(size(counts))-1,1); %starting points for solver
 
-%
+%%
 %x0=x1;
 brec=[]; fval_rec=[]; ef=[];
 for year0=1:10; %year to set as zero
     
-    % script is expecting a column vector of parameters that have year effects
+    %% script is expecting a column vector of parameters that have year effects
     %first, then season effects...
-    [x, fval, exitflag] = fminunc(@(theta) poisson_logL(theta,counts,volumes,year0),x0,opts);
     
+    year0=1;
+    [x, fval, exitflag] = fminunc(@(theta) poisson_logL(theta,counts,volumes,year0,alpha),x0,opts);
+    
+    %%
     maxlogL=-fval; fval_rec=[fval_rec; -fval];
     bI=-sum(x(1:yearnum-1)); brec=[brec; bI];
     ef=[ef; exitflag];
@@ -166,7 +175,7 @@ est_seas=xmin(yearnum+1:end);
 est_year=repmat(xmin(1:yearnum)',seasonnum,1);
 est_seasons=repmat(xmin(yearnum+1:end),1,yearnum);
 
-exp_dens=exp(est_year + est_seasons);
+exp_dens=alpha.*exp(est_year + est_seasons);
 exp_counts=exp_dens.*volumes;
 
 %% IF HAVE SIMULATED DATA:
@@ -193,10 +202,11 @@ ylabel('Year parameters','fontsize',16)
 set(gca,'box','on','fontsize',16)
 xlabel('Year','fontsize',16)
 
+%%
 set(gcf,'color','w')
-export_fig /Users/kristenhunter-cevera/Desktop/simdata1.pdf
+export_fig /Users/kristenhunter-cevera/Desktop/simdata_alphascale.pdf
 
-%ALSO FOR SIMDATA:
+%% ALSO FOR SIMDATA:
 clf
 plot(counts(:)./volumes(:),'.-'), hold on
 plot(exp_dens(:),'s')
@@ -206,9 +216,10 @@ xlabel('Time','fontsize',16)
 set(gca,'fontsize',16,'xtick',0:25:275)
 xlim([1 260])
 legend('Simulated data','Model fit')
-
+title('with \alpha scale factor')
+%%
 set(gcf,'color','w')
-export_fig /Users/kristenhunter-cevera/Desktop/simdata2.pdf
+export_fig /Users/kristenhunter-cevera/Desktop/simdata2_alphascale.pdf
 
 
 %% OBS AND EXPECTED DENSITY:

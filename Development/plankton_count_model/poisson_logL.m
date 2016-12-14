@@ -1,4 +1,4 @@
-function neglogL = poisson_logL(theta,counts,volumes,year0)
+function neglogL = poisson_logL(theta,counts,volumes,year0,alpha)
 % log likelihhod function for poisson model of time series plankton counts
 
 %the model:
@@ -46,7 +46,7 @@ betas=repmat(theta(1:yearnum)',seasonnum,1); %year effects (26 x 10)
 gammas=repmat(theta(yearnum+1:seasonnum+yearnum),1,yearnum); %season effects (26 x 10)
 
 %matrix is season x year; 26 x 10
-matlogL = counts.*(betas+gammas + log(volumes)) - exp(betas+gammas).*volumes;
+matlogL = counts.*(log(alpha)+betas+gammas + log(volumes)) - alpha.*exp(betas+gammas).*volumes;
 logL=nansum(nansum(matlogL));
 neglogL=-logL;
 
