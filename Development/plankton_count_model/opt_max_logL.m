@@ -104,7 +104,6 @@ end
 %to solve:
 opts = optimoptions('fmincon','MaxFunctionEvaluations',100000,'MaxIterations',1000,'Display','off','OptimalityTolerance',1e-8);
 
-
 x0=-2*rand(sum(size(counts))-1,1); %starting points for solver
 
 %%
