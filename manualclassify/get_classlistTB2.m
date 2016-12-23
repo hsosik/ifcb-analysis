@@ -93,7 +93,8 @@ if isequal(pick_mode, 'correct')
         load(classfilename) %load classifier results
         %make a temporary class2use that maps back to old names in MVCO classes
         class2use_temp = class2use;
-        if ~isempty([strfind(classfilename,'mvco') strfind(classfilename,'MVCO')])
+        %if ~isempty([strfind(classfilename,'mvco') strfind(classfilename,'MVCO')])
+        if ~isempty([strfind(classifierName,'mvco') strfind(classifierName,'MVCO')])
             class2use_temp{strmatch('Ciliate_mix', class2use)} = 'ciliate_mix';
             class2use_temp{strmatch('Tintinnid', class2use, 'exact')} = 'tintinnid';
             class2use_temp{strmatch('Laboea_strobila', class2use)} = 'Laboea_strobila';
