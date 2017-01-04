@@ -139,7 +139,7 @@ for classcount = 1:length(class2skip),
         fea_all(ii,:) = [];
         files_all(ii) = [];
         roinum(ii) = [];
-        n(classcount) = 0;
+        n(ind) = 0;
     end
 end;
 
