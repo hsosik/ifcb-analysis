@@ -25,7 +25,7 @@ function [ class_cat, list_col, mode_ind, manual_only ] = config_annotate_mode( 
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)) & ~cell2mat(manual_list(2:end,strmatch('diatoms', mode_list)+1)));
         case 'diatoms'
             %all except mix, mix_elongated, and detritus
-            [~, class_cat] = setdiff(class2use_here, {'mix' 'detritus'});
+            [~, class_cat] = setdiff(class2use_here, {'mix' 'detritus' 'unclassified'});
             manual_only = 0;
             list_col = strmatch(annotate_mode, manual_list(1,:));
             mode_ind = find(cell2mat(manual_list(2:end,list_col)) & ~cell2mat(manual_list(2:end,2)));
