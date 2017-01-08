@@ -19,7 +19,11 @@ ind = strmatch('Biovolume', feastruct.colheaders);
 targets.Biovolume = feastruct.data(:,ind)*micron_factor.^3;
 
 %% get the TBclass labels with application of adhocthresh
-t = repmat(adhocthresh,length(TBclass),1);
+if length(adhocthresh) == 1
+    t = ones(size(TBscores))*adhocthresh;
+else
+    t = repmat(adhocthresh,length(TBclass),1);
+end
 win = (TBscores > t);
 [i,j] = find(win);
 TBclass_above_adhocthresh = cell(size(TBclass));
