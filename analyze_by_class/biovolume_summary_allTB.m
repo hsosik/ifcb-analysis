@@ -1,8 +1,8 @@
-resultpath = '\\sosiknas1\IFCB_products\\IFCB101_BigelowNov2015\class\summary\';
-classpath_generic = '\\sosiknas1\IFCB_products\\IFCB101_BigelowNov2015\class\classxxxx_v1\';
+resultpath = '\\sosiknas1\IFCB_products\\IFCB101_PiscesOct2016\class\summary\';
+classpath_generic = '\\sosiknas1\IFCB_products\\IFCB101_PiscesOct2016\class\classxxxx_v1\';
 %feapath_generic = '\\sosiknas1\IFCB_products\\IFCB102_PiscesNov2014\features\featuresxxxx_v2\';
-feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_BigelowNov2015\features\';
-hdrpath = 'http://ifcb-data.whoi.edu/bigelowNov2015/';
+feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_PiscesOct2016\features\';
+hdrpath = 'http://ifcb-data.whoi.edu/IFCB101_PiscesOct2016/';
 adhocthresh = 0.5;
 
 % resultpath = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\summary\';
@@ -10,7 +10,7 @@ adhocthresh = 0.5;
 % feapath_generic = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\features\';
 % hdrpath = 'http://ifcb-data.whoi.edu/IFCB010_OkeanosExplorerAug2013/';
 
-for yr = 2015:2015, %:2012,
+for yr = 2016:2016, %:2012,
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     feapath = regexprep(feapath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'D*.mat']);
@@ -27,8 +27,8 @@ for yr = 2015:2015, %:2012,
     filelist = cellstr(temp(:,ind:ind+23));
     mdate = IFCB_file2date(filelist);
     
-    pathall = repmat(hdrpath, length(temp),1);
-    xall = repmat('.hdr', length(temp),1);
+    pathall = repmat(hdrpath, size(temp,1),1);
+    xall = repmat('.hdr', size(temp,1),1);
     temp = cellstr([pathall temp(:,ind:ind+23) xall]);
     ml_analyzed = IFCB_volume_analyzed(temp); 
     
