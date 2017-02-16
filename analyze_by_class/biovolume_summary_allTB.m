@@ -1,8 +1,8 @@
-resultpath = '\\sosiknas1\IFCB_products\\IFCB101_PiscesOct2016\class\summary\';
-classpath_generic = '\\sosiknas1\IFCB_products\\IFCB101_PiscesOct2016\class\classxxxx_v1\';
+resultpath = '\\sosiknas1\IFCB_products\\IFCB101_BigelowMay2015\class\summary\';
+classpath_generic = '\\sosiknas1\IFCB_products\\IFCB101_BigelowMay2015\class\classxxxx_v1\';
 %feapath_generic = '\\sosiknas1\IFCB_products\\IFCB102_PiscesNov2014\features\featuresxxxx_v2\';
-feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_PiscesOct2016\features\';
-hdrpath = 'http://ifcb-data.whoi.edu/IFCB101_PiscesOct2016/';
+feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_BigelowMay2015\features\featuresxxxx_v2\';
+hdrpath = 'http://ifcb-data.whoi.edu/IFCB101_BigelowMay2015/';
 adhocthresh = 0.5;
 
 % resultpath = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\summary\';
@@ -10,7 +10,7 @@ adhocthresh = 0.5;
 % feapath_generic = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\features\';
 % hdrpath = 'http://ifcb-data.whoi.edu/IFCB010_OkeanosExplorerAug2013/';
 
-for yr = 2016:2016, %:2012,
+for yr = 2015:2015, %:2012,
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     feapath = regexprep(feapath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'D*.mat']);

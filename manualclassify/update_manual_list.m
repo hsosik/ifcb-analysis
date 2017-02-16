@@ -1,4 +1,4 @@
-resultpath = 'd:\work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
+resultpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\';
 load([resultpath 'manual_list.mat'])
 
 %re-sort based on file name to update any previous entries
@@ -18,4 +18,4 @@ if ~isempty(newfiles),
 end;
 
 clear resultpath newfiles filelist*
-save d:\work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\manual_list manual_list
+save \\sosiknas1\IFCB_products\MVCO\Manual_fromClass\manual_list manual_list

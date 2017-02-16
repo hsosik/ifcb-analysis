@@ -1,10 +1,10 @@
 classifierName = 'MVCO_trees_25Jun2012';
 
-yr = 2016;
+yr = 2017;
 out_dir = ['\\SosikNAS1\IFCB_products\MVCO\class\class' num2str(yr) '_v1\'];%
 %in_dir = 'http://ifcb-data.whoi.edu/mvco/';
 %for V2 web services, set fea_dir = in_dir;
-fea_dir = '\\SosikNAS1\IFCB_products\MVCO\features\features2016_v2\';
+fea_dir = '\\SosikNAS1\IFCB_products\MVCO\features\features2017_v2\';
 
 
 
