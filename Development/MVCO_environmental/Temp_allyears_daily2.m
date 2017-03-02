@@ -14,6 +14,7 @@ load([datadir 'other2013'])
 load([datadir 'other2014'])
 load([datadir 'other2015'])
 load([datadir 'other2016'])
+load([datadir 'other2017'])
 
 %this will lead to averaging of seacat and node temps for overlap days
 yd_ocn2003 = [yd_ocn2003; yd_seacat2003];
