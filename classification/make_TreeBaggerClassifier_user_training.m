@@ -55,7 +55,7 @@ end;
 clear count fpr tpr thr iaccu accu
 datestring = datestr(now, 'ddmmmyyyy');
 
-save([result_path result_str datestring],'b', 'targets', 'featitles', 'classes', 'maxthre')
+save([result_path result_str datestring],'b', 'targets', 'featitles', 'classes', 'maxthre', '-v7.3')
 
 disp('Classifier file stored here:')
 disp([result_path result_str datestring])
