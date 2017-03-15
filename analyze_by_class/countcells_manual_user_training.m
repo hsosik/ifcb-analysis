@@ -1,5 +1,29 @@
-resultpath = 'C:\work\IFCB\user_training_test_data\manual_temp\'; %USER
-roibasepath = 'C:\work\IFCB\user_training_test_data\data\'; %USER
+function [ ] = countcells_manual_user_training( resultpath, in_dir )
+%function [ ] = countcells_manual_user_training( resultpath, in_dir )
+%For example:
+%countcells_manual_user_training('C:\work\IFCB\user_training_test_data\manual\' , 'C:\work\IFCB\user_training_test_data\data\')
+% Heidi M. Sosik, Woods Hole Oceanographic Institution, September 2012 / August 2015
+%
+%Example inputs:
+%   resultpath = 'C:\work\IFCB\user_training_test_data\class\classxxxx_v1\'; %USER manual file location
+%   in_dir = 'C:\work\IFCB\user_training_test_data\data\'; %USER where to access data (hdr files) (url for web services, full path for local)
+%
+% configured for IFCB007 and higher (except IFCB008)
+% summarizes class results for a series of manual annotation files (as saved by startMC)
+% summary file will be located in subdir \summary\ at the top level of the
+% location of the manual result files
+
+%resultpath = 'C:\work\IFCB\user_training_test_data\manual_temp\'; %USER
+%in_dir = 'C:\work\IFCB\user_training_test_data\data\'; %USER
+
+%make sure input paths end with filesep
+if ~isequal(resultpath(end), filesep)
+    resultpath = [resultpath filesep];
+end
+if ~isequal(in_dir(end), filesep)
+    in_dir = [in_dir filesep];
+end
+
 filelist = dir([resultpath 'D*.mat']);
 
 %calculate date
@@ -13,7 +37,7 @@ ml_analyzed = NaN(length(filelist),1);
 for filecount = 1:length(filelist),
     filename = filelist(filecount).name;
     disp(filename)
-    hdrname = [roibasepath filesep filename(2:5) filesep filename(1:9) filesep regexprep(filename, 'mat', 'hdr')]; 
+    hdrname = [in_dir filesep filename(2:5) filesep filename(1:9) filesep regexprep(filename, 'mat', 'hdr')]; 
     ml_analyzed(filecount) = IFCB_volume_analyzed(hdrname);
      
     load([resultpath filename])
@@ -39,6 +63,9 @@ if ~exist([resultpath 'summary\'], 'dir')
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
 save([resultpath 'summary\count_manual_' datestr], 'matdate', 'ml_analyzed', 'classcount', 'filelist', 'class2use')
+
+disp('Summary cell count file stored here:')
+disp([resultpath 'summary\count_manual_' datestr])
 
 return
 

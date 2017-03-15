@@ -13,9 +13,13 @@ else
     imclass = strmatch(class2do_string, m.class2use);
 end
 
-%goodm = find(~isnan(m.ml_analyzed(:,imclass)));
-goodm = find(~isnan(m.ml_analyzed));
-m.filelist = regexprep({m.filelist.name},'.mat', '')';
+if isfield(m, 'ml_analyzed_mat')
+    goodm = find(~isnan(m.ml_analyzed_mat(:,imclass(1))));
+    m.filelist = regexprep(m.filelist,'.mat', '')';
+else
+    goodm = find(~isnan(m.ml_analyzed(imclass)));
+    m.filelist = regexprep({m.filelist.name},'.mat', '')';
+end
 [~,im,it] = intersect(m.filelist(goodm), filelistTB);
 im = goodm(im);
 figure(1), clf
@@ -112,6 +116,7 @@ text(0.1,0.5,' C','fontsize',20, 'fontname', 'Times New Roman')
 handle_4=subplot(2,2,4); plot(threlist, Coeffs(:,2), '.-'), xlabel('threshold score','fontsize',20,'fontname','Times New Roman'), ylabel('slope','fontsize',20,'fontname','Times New Roman'), line([.7 .7], ylim, 'color', 'r')
 set(handle_4,'fontsize',20,'fontname','timesnewroman')
 text(0.1,0.2,' D','fontsize',20, 'fontname', 'Times New Roman')
+
 
 
 
