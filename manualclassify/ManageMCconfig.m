@@ -1051,6 +1051,9 @@ else %otherwise start_new_radiobutton is selected
     path2start = get(handles.roipath_text, 'string');
     disp_str = 'Select new ROI files';
     filespec = '*.roi';
+    if handles.MCconfig.dataformat == 2
+        filespec = '*.tif';
+    end
 end
 [ f p ] = uigetfile([path2start filesep filespec], disp_str, 'multiselect', 'on');
 if ~isequal(f,0)
@@ -1331,6 +1334,9 @@ end;
             if ~isempty(f)
                 [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
             end;
+            if handles.MCconfig.dataformat == 2 %VPR case
+                f = makeVPRmanual_filename( fileparts(char(handles.MCconfig.roifiles(end))) ); % presumes just one at a time for this case
+            end
     end
     p = get(handles.manualpath_text, 'string');
     x = '.mat';
@@ -1600,5 +1606,14 @@ function quit_menu_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 MCconfig_main_figure_CloseRequestFcn(hObject, eventdata, handles)
 
+function f = makeVPRmanual_filename(roibase_path)
+%construct the manual file name frmo the roibase_path
+    temp2 = [filesep 'rois' filesep];
+    pos = strfind(roibase_path, temp2);
+    slashpos = strfind(roibase_path(1:pos-1), filesep);
+    project_str = roibase_path(slashpos(end)+1:pos-1);
+    add_str = regexprep(roibase_path(pos+6:end), filesep, '');
+    f = cellstr([project_str add_str]);
+    
 
 
