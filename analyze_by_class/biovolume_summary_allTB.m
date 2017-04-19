@@ -1,7 +1,6 @@
 resultpath = '\\sosiknas1\IFCB_products\\IFCB101_BigelowMay2015\class\summary\';
 classpath_generic = '\\sosiknas1\IFCB_products\\IFCB101_BigelowMay2015\class\classxxxx_v1\';
-%feapath_generic = '\\sosiknas1\IFCB_products\\IFCB102_PiscesNov2014\features\featuresxxxx_v2\';
-feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_BigelowMay2015\features\';
+feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_BigelowMay2015\features\featuresxxxx_v2\';
 hdrpath = 'http://ifcb-data.whoi.edu/IFCB101_BigelowMay2015/';
 adhocthresh = 0.5;
 
@@ -27,8 +26,8 @@ for yr = 2015:2015, %:2012,
     filelist = cellstr(temp(:,ind:ind+23));
     mdate = IFCB_file2date(filelist);
     
-    pathall = repmat(hdrpath, length(temp),1);
-    xall = repmat('.hdr', length(temp),1);
+    pathall = repmat(hdrpath, size(temp,1),1);
+    xall = repmat('.hdr', size(temp,1),1);
     temp = cellstr([pathall temp(:,ind:ind+23) xall]);
     ml_analyzed = IFCB_volume_analyzed(temp); 
     
