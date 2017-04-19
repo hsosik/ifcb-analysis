@@ -1,10 +1,10 @@
-resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
+resultpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
-load \\raspberry\d_work\IFCB1\code_mar10_mvco\ml_analyzed_all %load the milliliters analyzed for all sample files
+load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the milliliters analyzed for all sample files
 feapath_base = '\\sosiknas1\IFCB_products\MVCO\features\featuresXXXX_v2\';
 micron_factor = 1/3.4; %microns per pixel
 
-load class2use_MVCOmanual5 %get the master list to start
+load class2use_MVCOmanual6 %get the master list to start
 [ classes_byfile, classes_bymode ] = get_annotated_classesMVCO( class2use, manual_list);
 
 filelist = classes_byfile.filelist;%find ml_analyzed matching each manual file
