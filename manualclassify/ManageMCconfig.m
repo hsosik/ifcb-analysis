@@ -1386,7 +1386,12 @@ end;
                 p = get(handles.classpath_text, 'string');
                 x = [get(handles.class_filestr_text, 'string') '.mat'];
                 if ~isempty(f{1})
-                    f = cellstr([char(f) repmat(x,size(f,1),1)]);
+                    if handles.MCconfig.dataformat == 2; %VPR case
+                        f = char(f{end}); 
+                        f = cellstr([f(end-6:end) repmat(x,size(f,1),1)]);
+                    else
+                        f = cellstr([char(f) repmat(x,size(f,1),1)]);
+                    end
                     fullf = fullfile(p,f);
                 else
                     fullf = [];
