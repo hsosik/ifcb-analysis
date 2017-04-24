@@ -27,7 +27,7 @@ def bin_features(the_bin, out_dir=None, log_callback=None):
                 roi_lid = '%s_%05d' % (bin_lid, roi_number)
                 blobs_image, features = compute_features(image)
                 # emit log message
-                if n % 500 == 0:
+                if n % 2 == 0: # FIXME too chatty
                     log_msg('PROCESSED %05d (%d of %d)' % (roi_number, n, n_rois))
                 n += 1
                 # write blob

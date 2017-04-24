@@ -2,7 +2,7 @@ import numpy as np
 
 from scipy.ndimage.morphology import distance_transform_edt
 
-from ifcb.features.morphology import find_perimeter
+from .morphology import find_perimeter
 
 def bottom_top_area(X,Y,Z,ignore_ground=False):
     """computes top quad and bottom quad areas for distmap

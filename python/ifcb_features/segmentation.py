@@ -9,8 +9,8 @@ try:
 except ImportError:
     import skimage.filter as imfilters
 
-from ifcb.features.phasecong import phasecong_Mm
-from ifcb.features.morphology import SE2, SE3, hysthresh, bwmorph_thin
+from .phasecong import phasecong_Mm
+from .morphology import SE2, SE3, hysthresh, bwmorph_thin
 
 # parameters
 HT_T1, HT_T2 = 0.2, 0.1
