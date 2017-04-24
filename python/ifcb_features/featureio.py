@@ -16,13 +16,14 @@ def bin_features(the_bin, out_dir=None, log_callback=None, log_freq=500):
     blobs_path_basename = bin_lid + '_blobs_v3.zip'
     features_path_basename = bin_lid + '_features_v3.csv'
     blobs_path = os.path.join(out_dir, blobs_path_basename)
+    blobs_tmp_path = ''.join((blobs_path,'.part'))
     features_path = os.path.join(out_dir, features_path_basename)
     n_rois = len(the_bin.images)
     features_dataframe = None
     n = 1
     log_msg('STARTING')
     try:
-        with ZipFile(blobs_path,'w') as bout:
+        with ZipFile(blobs_tmp_path,'w') as bout:
             for roi_number, image in the_bin.images.iteritems():
                 # compute features
                 roi_lid = bin_pid.with_target(roi_number)
@@ -48,12 +49,14 @@ def bin_features(the_bin, out_dir=None, log_callback=None, log_freq=500):
                     features_dataframe = row_df
                 else:
                     features_dataframe = features_dataframe.append(row_df)
-            log_msg('closing %s' % blobs_path)
+            log_msg('closing %s' % blobs_tmp_path)
+        os.rename(blobs_tmp_path, blobs_path)
+        log_msg('saved %s' % blobs_path)
     except:
         # clean up incomplete blobs file
-        if os.path.exists(blobs_path):
-            log_msg('deleting %s' % blobs_path)
-            os.remove(blobs_path)
+        if os.path.exists(blobs_tmp_path):
+            log_msg('deleting %s' % blobs_tmp_path)
+            os.remove(blobs_tmp_path)
         log_msg('FAILED')
         raise
     log_msg('writing %s' % features_path)
