@@ -1,0 +1,6 @@
+pandas
+scipy
+scikit-image
+functools32
+phasepack
+pyfftw

@@ -6,8 +6,9 @@ import pandas as pd
 from . import compute_features
 from ifcb.data.imageio import format_image
 
-def bin_features(the_bin, out_dir=None, log_callback=None):
-    bin_lid = the_bin.lid
+def bin_features(the_bin, out_dir=None, log_callback=None, log_freq=500):
+    bin_pid = the_bin.pid
+    bin_lid = bin_pid.lid
     def log_msg(msg):
         msg = '[%s features] %s' % (bin_lid, msg)
         if log_callback is not None:
@@ -15,19 +16,21 @@ def bin_features(the_bin, out_dir=None, log_callback=None):
     blobs_path_basename = bin_lid + '_blobs_v3.zip'
     features_path_basename = bin_lid + '_features_v3.csv'
     blobs_path = os.path.join(out_dir, blobs_path_basename)
+    blobs_tmp_path = ''.join((blobs_path,'.part'))
     features_path = os.path.join(out_dir, features_path_basename)
     n_rois = len(the_bin.images)
     features_dataframe = None
     n = 1
     log_msg('STARTING')
     try:
-        with ZipFile(blobs_path,'w') as bout:
+        with ZipFile(blobs_tmp_path,'w') as bout:
             for roi_number, image in the_bin.images.iteritems():
                 # compute features
-                roi_lid = '%s_%05d' % (bin_lid, roi_number)
+                roi_lid = bin_pid.with_target(roi_number)
                 blobs_image, features = compute_features(image)
                 # emit log message
-                log_msg('PROCESSED %05d (%d of %d)' % (roi_number, n, n_rois))
+                if n % log_freq == 0:
+                    log_msg('PROCESSED %05d (%d of %d)' % (roi_number, n, n_rois))
                 n += 1
                 # write blob
                 blob_entry_name = '%s.png' % roi_lid
@@ -46,12 +49,14 @@ def bin_features(the_bin, out_dir=None, log_callback=None):
                     features_dataframe = row_df
                 else:
                     features_dataframe = features_dataframe.append(row_df)
-            log_msg('closing %s' % blobs_path)
+            log_msg('closing %s' % blobs_tmp_path)
+        os.rename(blobs_tmp_path, blobs_path)
+        log_msg('saved %s' % blobs_path)
     except:
         # clean up incomplete blobs file
-        if os.path.exists(blobs_path):
-            log_msg('deleting %s' % blobs_path)
-            os.remove(blobs_path)
+        if os.path.exists(blobs_tmp_path):
+            log_msg('deleting %s' % blobs_tmp_path)
+            os.remove(blobs_tmp_path)
         log_msg('FAILED')
         raise
     log_msg('writing %s' % features_path)

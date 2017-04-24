@@ -288,14 +288,18 @@ class BlobFeatures(object):
         return self.binary_symmetry[2]
         
 class RoiFeatures(object):
-    def __init__(self,roi_image):
+    def __init__(self,roi_image,blobs_image=None):
         self.image = np.array(roi_image).astype(np.uint8)
+        self._blobs_image = None
+        if blobs_image is not None:
+            self._blobs_image = blobs_image
     @property
-    @lru_cache()
     def blobs_image(self):
         """return the mask resulting from segmenting the image using
         the algorithm in ifcb.features.segmentation.segment_roi"""
-        return segment_roi(self.image)
+        if self._blobs_image is None:
+            self._blobs_image = segment_roi(self.image)
+        return self._blobs_image
     @property
     @lru_cache()
     def blobs(self):
@@ -455,8 +459,8 @@ class ZeroMock(object):
     def __getattr__(self, name):
         return 0
 
-def compute_features(roi_image):
-    r = RoiFeatures(roi_image)
+def compute_features(roi_image,blobs_image=None):
+    r = RoiFeatures(roi_image,blobs_image)
     if r.num_blobs > 0:
         b = r.blobs[0]
     else:
