@@ -7,7 +7,8 @@ from . import compute_features
 from ifcb.data.imageio import format_image
 
 def bin_features(the_bin, out_dir=None, log_callback=None, log_freq=500):
-    bin_lid = the_bin.lid
+    bin_pid = the_bin.pid
+    bin_lid = bin_pid.lid
     def log_msg(msg):
         msg = '[%s features] %s' % (bin_lid, msg)
         if log_callback is not None:
@@ -24,7 +25,7 @@ def bin_features(the_bin, out_dir=None, log_callback=None, log_freq=500):
         with ZipFile(blobs_path,'w') as bout:
             for roi_number, image in the_bin.images.iteritems():
                 # compute features
-                roi_lid = '%s_%05d' % (bin_lid, roi_number)
+                roi_lid = bin_pid.with_target(roi_number)
                 blobs_image, features = compute_features(image)
                 # emit log message
                 if n % log_freq == 0:
