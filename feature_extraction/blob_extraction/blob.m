@@ -17,7 +17,11 @@ config = target.config;
 img = target.image;
 pc3 = config.pc3; %get phase congruency parameters
 [M, m] = phasecong3_Mm(img, pc3.nscale, pc3.norient, pc3.minWaveLength, pc3.mult, pc3.sigmaOnf, pc3.k, pc3.cutOff, pc3.g, pc3.noiseMethod);
-img_blob = hysthresh(M+m, config.hysthresh.high, config.hysthresh.low);
+Mm = M + m;
+if isfield(target,'chop')
+    Mm(target.chop==1)=0;
+end
+img_blob = hysthresh(Mm, config.hysthresh.high, config.hysthresh.low);
 % omit spurious edges along margins
 img_blob(1,img_blob(2,:)==0)=0;
 img_blob(end,img_blob(end-1,:)==0)=0;
@@ -27,6 +31,7 @@ img_edge = img_blob; %keep this to plot?
 % now use Otsu's method to make sure dark areas are included
 otsu_thresh = round((graythresh(img)*255)*0.65); % use integer threshold
 img_blob(img < otsu_thresh)=1;
+img_dark = img_blob;
 % morphological processing 
 img_blob = imclose(img_blob, se3);
 img_blob = imdilate(img_blob, se2);
