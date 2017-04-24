@@ -7,7 +7,7 @@ from skimage.transform import rotate
 from skimage.util import pad
 from skimage.morphology import binary_closing, binary_dilation
 
-from ifcb.features.morphology import SE2, SE3, EIGHT, bwmorph_thin
+from .morphology import SE2, SE3, EIGHT, bwmorph_thin
 
 def label_blobs(B):
     B = np.array(B).astype(np.bool)
