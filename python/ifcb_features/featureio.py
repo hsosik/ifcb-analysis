@@ -6,7 +6,7 @@ import pandas as pd
 from . import compute_features
 from ifcb.data.imageio import format_image
 
-def bin_features(the_bin, out_dir=None, log_callback=None):
+def bin_features(the_bin, out_dir=None, log_callback=None, log_freq=500):
     bin_lid = the_bin.lid
     def log_msg(msg):
         msg = '[%s features] %s' % (bin_lid, msg)
@@ -27,7 +27,7 @@ def bin_features(the_bin, out_dir=None, log_callback=None):
                 roi_lid = '%s_%05d' % (bin_lid, roi_number)
                 blobs_image, features = compute_features(image)
                 # emit log message
-                if n % 2 == 0: # FIXME too chatty
+                if n % log_freq == 0:
                     log_msg('PROCESSED %05d (%d of %d)' % (roi_number, n, n_rois))
                 n += 1
                 # write blob
