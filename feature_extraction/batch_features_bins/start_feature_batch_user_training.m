@@ -7,9 +7,9 @@ function [ ] = start_feature_batch_user_training(in_dir_base , in_dir_blob_base,
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, August 2015
 %
 %example input variables:
-%   out_dir = 'C:\work\IFCB\user_training_test_data\features\2014\'; %USER where to output features
 %   in_dir_base = 'C:\work\IFCB\user_training_test_data\data\2014\'; %USER where to access roi data
 %   in_dir_blob_base = 'C:\work\IFCB\user_training_test_data\blobs\2014\'; %USER where to access blobs
+%   out_dir = 'C:\work\IFCB\user_training_test_data\features\2014\'; %USER where to output features
 %   parallel_proc_flag = false; %USER true for parallel processing
 
 if ~exist('parallel_proc_flag', 'var')

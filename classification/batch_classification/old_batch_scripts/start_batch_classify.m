@@ -1,4 +1,4 @@
-classifierName = 'MVCO_trees_25Jun2012';
+classifierName = '\\sosiknas1\IFCB_products\MVCO\classifiers\MVCO_trees_25Jun2012';
 
 yr = 2017;
 out_dir = ['\\SosikNAS1\IFCB_products\MVCO\class\class' num2str(yr) '_v1\'];%

@@ -4,7 +4,7 @@ load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the millil
 feapath_base = '\\SosikNAS1\IFCB_products\MVCO\features\featuresXXXX_v2\';
 micron_factor = 1/3.4; %microns per pixel
 
-load class2use_MVCOmanual5 %get the master list to start
+load class2use_MVCOmanual6 %get the master list to start
 [ classes_byfile, classes_bymode ] = get_annotated_classesMVCO( class2use, manual_list);
 
 filelist = classes_byfile.filelist;

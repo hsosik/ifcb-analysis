@@ -143,18 +143,18 @@ for classcount = 1:length(class2skip),
     end
 end;
 
-for classcount = 1:length(class2group)
-    num2group = length(class2group{classcount});
+for classcount = 1:length(class2group{1})
+    num2group = length(class2group{1}{classcount});
     if num2group > 1
-        [~, ~, indc] = intersect(class2group{classcount},class2use);   
-        if length(indc) ~= length(class2group{classcount})
+        [~, ~, indc] = intersect(class2group{1}{classcount},class2use);   
+        if length(indc) ~= length(class2group{1}{classcount})
             [class_missing] = setdiff(class2group{classcount}, class2use);
             disp('grouping aborted; Missing:')
             disp(class_missing)
         else
-            newclass = char(class2group{classcount}(1));
-            for ii = 2:length(class2group{classcount})
-                newclass = [newclass ',' char(class2group{classcount}(ii))];
+            newclass = char(class2group{1}{classcount}(1));
+            for ii = 2:length(class2group{1}{classcount})
+                newclass = [newclass ',' char(class2group{1}{classcount}(ii))];
             end;
             class2use = [class2use newclass]; %add new class label to end of list
             ind2group = ismember(class_all,indc, 'rows');

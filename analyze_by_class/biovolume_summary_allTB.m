@@ -1,6 +1,5 @@
 resultpath = '\\sosiknas1\IFCB_products\\IFCB101_BigelowMay2015\class\summary\';
 classpath_generic = '\\sosiknas1\IFCB_products\\IFCB101_BigelowMay2015\class\classxxxx_v1\';
-%feapath_generic = '\\sosiknas1\IFCB_products\\IFCB102_PiscesNov2014\features\featuresxxxx_v2\';
 feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_BigelowMay2015\features\featuresxxxx_v2\';
 hdrpath = 'http://ifcb-data.whoi.edu/IFCB101_BigelowMay2015/';
 adhocthresh = 0.5;

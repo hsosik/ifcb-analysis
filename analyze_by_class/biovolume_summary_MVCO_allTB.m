@@ -2,7 +2,7 @@ resultpath = '\\sosiknas1\IFCB_products\MVCO\class\summary\';
 classpath_generic = '\\sosiknas1\IFCB_products\MVCO\class\classxxxx_v1\';
 feapath_generic = '\\sosiknas1\IFCB_products\MVCO\features\featuresxxxx_v2\';
 
-for yr = 2006, %2010 needs redoing
+for yr = 2016, %2009,2010,2012 needs redoing
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     feapath = regexprep(feapath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'I*.mat']);
