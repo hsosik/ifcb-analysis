@@ -37,7 +37,6 @@ end
 temp = dir(exported_img_base_path);
 temp = temp([temp.isdir]);
 class2use = setdiff({temp([temp.isdir]).name}, {'.' '..'}); 
-class2use = class2use(1:3);
 
 projects = url_bases(:,1);
 project_urls = url_bases(:,2);
