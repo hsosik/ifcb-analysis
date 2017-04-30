@@ -108,7 +108,7 @@ classind = 2;
 plot(mdateTB, classcountTB(:,classind)./ml_analyzedTB, '.-')
 hold on
 plot(mdateTB, classcountTB_above_optthresh(:,classind)./ml_analyzedTB, 'g.-')
-plot(mdateTB, classcountTB_above_adhocthresh(:,classind)./ml_analyzedTB, 'g.-')
+plot(mdateTB, classcountTB_above_adhocthresh(:,classind)./ml_analyzedTB, 'r.-')
 legend('All wins', 'Wins above optimal threshold', 'Wins above adhoc threshold')
 ylabel([class2useTB{classind} ', mL^{ -1}'])
 datetick('x')
