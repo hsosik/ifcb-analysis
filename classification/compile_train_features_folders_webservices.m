@@ -67,7 +67,7 @@ targets = varargout{1};
 [~, featitles] = roi_features(targets{1}); %assume all have same fea_titles
 [fea2use] = setdiff(featitles, {'FilledArea' 'summedFilledArea' 'summedBiovolume' 'Area' 'ConvexArea' 'MajorAxisLength' 'MinorAxisLength' 'Perimeter', 'roi_number', 'FeretDiameter'}');
 
-[ train ] = get_features_roilist_webservices( targets, fea2use )
+[ train ] = get_features_roilist_webservices( targets, fea2use );
 
 featitles = fea2use;
 
