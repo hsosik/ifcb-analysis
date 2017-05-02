@@ -24,7 +24,8 @@ def bin_features(the_bin, out_dir=None, log_callback=None, log_freq=500):
     log_msg('STARTING')
     try:
         with ZipFile(blobs_tmp_path,'w') as bout:
-            for roi_number, image in the_bin.images.iteritems():
+            for roi_number in the_bin.images.keys():
+                image = the_bin.images[roi_number]
                 # compute features
                 roi_lid = bin_pid.with_target(roi_number)
                 blobs_image, features = compute_features(image)

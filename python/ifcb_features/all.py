@@ -4,7 +4,7 @@ from scipy.ndimage.measurements import find_objects
 
 from skimage.measure import regionprops
 
-from functools32 import lru_cache
+from functools import lru_cache
 
 from .segmentation import segment_roi
 from .blobs import find_blobs, rotate_blob, blob_shape

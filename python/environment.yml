@@ -1,0 +1,9 @@
+name: ifcb-analysis
+dependencies:
+- python>=3.5
+- pandas
+- scipy
+- scikit-image
+- pip:
+  - phasepack
+  - pyfftw
