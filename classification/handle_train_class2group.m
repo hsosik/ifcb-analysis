@@ -3,10 +3,10 @@ function [ n, class_all, class2use, varargin ] = handle_train_class2group( class
 % ifcb-analysis; function called by compile_train_features*; subsample a training set to group specified classes
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, April 2017
 
-
 for classcount = 1:length(class2group{1})
     num2group = length(class2group{1}{classcount});
     if num2group > 1
+        class2group{1}{classcount} = sort(class2group{1}{classcount}); %alphabetize
         [~, ~, indc] = intersect(class2group{1}{classcount},class2use);   
         if length(indc) ~= length(class2group{1}{classcount})
             [class_missing] = setdiff(class2group{classcount}, class2use);
