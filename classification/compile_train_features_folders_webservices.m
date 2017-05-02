@@ -2,8 +2,7 @@ function [  ] = compile_train_features_folders_webservices( exported_img_base_pa
 % function [  ] = compile_train_features_folders_webservices( exported_img_base_path , url_bases, maxn, minn, class2skip, class2group)
 % class2skip and class2merge are optional inputs
 %For example:
-% compile_train_features_folders_webservices( '\\sosiknas1\IFCB_products\MVCO\MVCO_train_Aug2015_tempset_forGobler\' , {'MVCO' 'http://ifcb-data.whoi.edu/mvco/'}, 100 , 10, {'bubble'}, {'crypto' 'flagellate'} )
-
+% compile_train_features_folders_webservices( '\\sosiknas1\IFCB_products\MVCO\MVCO_train_Aug2015_tempset_forGobler\' , {'MVCO' 'http://ifcb-data.whoi.edu/mvco/'}, 100 , 30, {'spore' 'bad'}, {'mix' 'crypto' 'flagellate'})
 %Example inputs:
     %base path location for the example images (under this should be folders by class, then project)
 %exported_img_base_path = '\\sosiknas1\IFCB_products\MVCO\MVCO_train_Aug2015_tempset_forGobler\'; 
