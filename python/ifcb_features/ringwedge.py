@@ -1,6 +1,6 @@
 import numpy as np
 
-from functools32 import lru_cache
+from functools import lru_cache
 
 from numpy.fft import fft2, fftshift
 

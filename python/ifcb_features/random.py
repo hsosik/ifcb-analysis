@@ -1,5 +1,7 @@
 import numpy as np
 
+from functools import reduce
+
 def simple_prng(n,seed=1,shape=1):
     """This is a simple pseudo random number generator that is adequate
     for some purposes but is inferior to the algorithms provided
