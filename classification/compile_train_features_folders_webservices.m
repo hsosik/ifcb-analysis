@@ -6,7 +6,8 @@ function [  ] = compile_train_features_folders_webservices( exported_img_base_pa
 %Example inputs:
     %base path location for the example images (under this should be folders by class, then project)
 %exported_img_base_path = '\\sosiknas1\IFCB_products\MVCO\MVCO_train_Aug2015_tempset_forGobler\'; 
-    % pairs of project folder names and associated IFCB Dashboard URLs, include
+    % pairs of project folder names and associated IFCB Dashboard URLs,
+    % include {} around pairs of strings AND include semi-colon between as in example:
 %url_bases = [{'MVCO' 'http://ifcb-data.whoi.edu/mvco/'}; {'IFCB101_BigelowFeb2017' 'http://ifcb-data.whoi.edu/IFCB101_BigelowFeb2017'}] 
 %maxn = 100; %maximum number of images per class to include
 %minn = 30; %minimum number for inclusion
@@ -36,6 +37,7 @@ end
 temp = dir(exported_img_base_path);
 temp = temp([temp.isdir]);
 class2use = setdiff({temp([temp.isdir]).name}, {'.' '..'}); 
+if isempty(class2use), disp('No classes found. Check input path'), return, end
 
 projects = url_bases(:,1);
 project_urls = url_bases(:,2);
