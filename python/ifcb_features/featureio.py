@@ -4,6 +4,7 @@ from zipfile import ZipFile
 import pandas as pd
 
 from . import compute_features
+from ifcb.data.stitching import InfilledImages
 from ifcb.data.imageio import format_image
 
 def bin_features(the_bin, out_dir=None, log_callback=None, log_freq=500):
@@ -18,17 +19,22 @@ def bin_features(the_bin, out_dir=None, log_callback=None, log_freq=500):
     blobs_path = os.path.join(out_dir, blobs_path_basename)
     blobs_tmp_path = ''.join((blobs_path,'.part'))
     features_path = os.path.join(out_dir, features_path_basename)
-    n_rois = len(the_bin.images)
+    ii = InfilledImages(the_bin) # handle stitching
+    n_rois = len(ii) # don't count stitched rois twice
     features_dataframe = None
     n = 1
     log_msg('STARTING')
     try:
         with ZipFile(blobs_tmp_path,'w') as bout:
-            for roi_number in the_bin.images.keys():
-                image = the_bin.images[roi_number]
+            for roi_number in ii.keys(): # handle stitching
+                image = ii[roi_number]
+                if roi_number in ii.stitcher:
+                    raw_stitch = ii.stitcher[roi_number]
+                else:
+                    raw_stitch = None
                 # compute features
                 roi_lid = bin_pid.with_target(roi_number)
-                blobs_image, features = compute_features(image)
+                blobs_image, features = compute_features(image, raw_stitch=raw_stitch)
                 # emit log message
                 if n % log_freq == 0:
                     log_msg('PROCESSED %05d (%d of %d)' % (roi_number, n, n_rois))
