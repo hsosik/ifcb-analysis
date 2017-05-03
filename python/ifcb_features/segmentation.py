@@ -21,9 +21,14 @@ def dark_threshold(roi,adj=DARK_THRESHOLD_ADJUSTMENT):
     thresh = int(round(imfilters.threshold_otsu(roi) * adj))
     return roi < thresh
 
-def segment_roi(roi):
+def segment_roi(roi, raw_stitch=None):
     # step 1. phase congruency (edge detection)
     Mm = phasecong_Mm(roi)
+    # step 1a: for stitched images, chop the raw stitch mask
+    # after growing it one pixel
+    if raw_stitch is not None:
+        mask = binary_dilation(raw_stitch.mask)
+        Mm[mask] = 0
     # step 2. hysteresis thresholding (of edges)
     B = hysthresh(Mm,HT_T1,HT_T2)
     # step 3. trim pixels off border
