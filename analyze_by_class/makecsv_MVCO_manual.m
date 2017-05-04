@@ -38,13 +38,15 @@ for filecount = 1:length(filelist),
   %      roinumtemp = [roinumtemp; ind];
   %      labeltemp = [labeltemp; repmat(class2use_manual(classnum), length(ind),1);];
         roinumtemp = ind;
-        labeltemp = class2use_manual{classnum};
+      %  labeltemp = class2use_manual{classnum};
+      if ~isempty(roinumtemp) 
         fid = fopen([outpath class2use_manual{classnum} '.csv'], 'a');
         for ii = 1:length(roinumtemp),
              %fprintf(fid, '%s,%s%05.0f\r\n', labeltemp, [urlstr filename '_'], roinumtemp(ii));
              fprintf(fid, '%s%05.0f\r\n', [urlstr filename '_'], roinumtemp(ii));
         end;
         fclose(fid);
+      end
     end;
  %   %persontemp = repmat({'EPeacock'}, length(roinumtemp),1);
  %   fid = fopen([outpath filename '.csv'], 'w');
