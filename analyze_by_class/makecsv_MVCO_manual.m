@@ -1,9 +1,9 @@
-resultpath = '\\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\';
+resultpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 
 urlstr = 'http://ifcb-data.whoi.edu/mvco/'
 
-outpath = [resultpath 'annotations_csv_June2015\'];
+outpath = [resultpath 'annotations_csv_May2017\'];
 if ~exist(outpath, 'dir')
     mkdir(outpath)
 end;
@@ -11,7 +11,7 @@ end;
 %mode_list = manual_list(1,2:end-1); mode_list = [mode_list 'ciliate_ditylum' 'big_ciliate_ditylum'];
 %filelist_all = char(manual_list(2:end,1)); filelist_all = cellstr(filelist_all(:,1:end-4));
 
-load class2use_MVCOmanual4 %get the master list to start
+load class2use_MVCOmanual6 %get the master list to start
 [ classes_byfile, classes_bymode ] = get_annotated_classesMVCO( class2use, manual_list);
 
 class2use_manual_first = class2use;
@@ -41,7 +41,8 @@ for filecount = 1:length(filelist),
         labeltemp = class2use_manual{classnum};
         fid = fopen([outpath class2use_manual{classnum} '.csv'], 'a');
         for ii = 1:length(roinumtemp),
-             fprintf(fid, '%s,%s%05.0f\r\n', labeltemp, [urlstr filename '_'], roinumtemp(ii));
+             %fprintf(fid, '%s,%s%05.0f\r\n', labeltemp, [urlstr filename '_'], roinumtemp(ii));
+             fprintf(fid, '%s%05.0f\r\n', [urlstr filename '_'], roinumtemp(ii));
         end;
         fclose(fid);
     end;
