@@ -43,7 +43,7 @@ FDhist = NaN(ndays,length(FDbins));
 SAhist = NaN(ndays,length(SAbins));
 BVhist = NaN(ndays,length(BVbins));
 SA_BVhist = NaN(ndays,length(SA_BVbins));
-EDstats = NaN(ndays,4);
+EDstats = NaN(ndays,3);
 FDstats = EDstats;
 SAstats = EDstats;
 BVstats = EDstats;
@@ -66,25 +66,25 @@ for count = 1:length(unqday)
         feadata = [feadata; fea.data(ind,:)]; %just the phyto rows
     end
     summedED = sqrt(feadata(:,iPA)/pi)*2;
-    ind = find(summedED*micron_factor>=7);
+    ind = find(summedED*micron_factor>=8);
     feadata = feadata(ind,:); %just the cases with equiv diameter >= 7 microns
     N(count) = length(ind);
     x = summedED(ind).*micron_factor;
     xbins = EDbins;
-    EDstats(count,:) = [mean(x) 10.^(mean(log10(x))) mode(x) median(x)];
+    EDstats(count,:) = [mean(x) mode(x) median(x)]; %10.^(mean(log10(x)))
     EDhist(count,:) = hist(x, xbins);
     x = feadata(:,imaxF).*micron_factor;
     xbins = FDbins;
-    FDstats(count,:) = [mean(x) 10.^(mean(log10(x))) mode(x) median(x)];
+    FDstats(count,:) = [mean(x) mode(x) median(x)];
     FDhist(count,:) = hist(x, xbins);
     x = feadata(:,iSA).*micron_factor^2; xbins = SAbins;
-    SAstats(count,:) = [mean(x) 10.^(mean(log10(x))) mode(x) median(x)];
+    SAstats(count,:) = [mean(x) mode(x) median(x)];
     SAhist(count,:) = hist(x, xbins);
     x = feadata(:,iBV).*micron_factor^3; xbins = BVbins;
-    BVstats(count,:) = [mean(x) 10.^(mean(log10(x))) mode(x) median(x)];
+    BVstats(count,:) = [mean(x) mode(x) median(x)];
     BVhist(count,:) = hist(x, xbins);
     x = feadata(:,iSA)./feadata(:,iBV)./micron_factor; xbins = SA_BVbins;
-    SA_BVstats(count,:) = [mean(x) 10.^(mean(log10(x))) mode(x) median(x)];
+    SA_BVstats(count,:) = [mean(x) mode(x) median(x)];
     SA_BVhist(count,:) = hist(x, xbins);
     if 0
         figure(1), loglog(SA_BVbins, SA_BVhist(count,:), '.-'), xlim(SA_BVbins([1,end])), ylim([.9 inf])
@@ -100,7 +100,8 @@ end
 
 mdate = unqday;
 clear count* x* i*
-save('compiled_results', 'filelist_man', '*hist', '*bins', 'N', 'mdate', '*stats')
+stat_titles = {'Mean', 'Mode', 'Median'};
+save('compiled_results', 'filelist_man', '*hist', '*bins', 'N', 'mdate', '*stats', 'stat_titles')
 
 return
 plot(fea.data(ind,imaxF), (fea.data(ind,iSA)./fea.data(ind,iBV)), '.')

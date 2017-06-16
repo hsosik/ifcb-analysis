@@ -30,4 +30,5 @@ config.blob_props = {'Area', 'BoundingBox', 'Eccentricity', 'EquivDiameter', 'Ex
     'MinorAxisLength', 'Orientation' };
 config.props2sum = {'Area' 'ConvexArea', 'MajorAxisLength', 'MinorAxisLength', 'Perimeter', 'ConvexPerimeter', 'FeretDiameter', 'Biovolume', 'SurfaceArea'};
 
+
 end

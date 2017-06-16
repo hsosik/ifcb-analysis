@@ -6,8 +6,12 @@ function [ classes_byfile, classes_bymode ] = get_annotated_classesMVCO( class2u
 
 mode_list = manual_list(1,2:end-1);
 manual_list_col = 1:length(mode_list);
+
+%filelist = char(manual_list(2:end-4,1)); filelist = cellstr(filelist(:,1:end-4));
 filelist = char(manual_list(2:end,1)); filelist = cellstr(filelist(:,1:end-4));
-mode_flags_byfile = cell2mat(manual_list(2:end,2:end-1));
+
+mode_flags_byfile = cell2mat(manual_list(2:end-4,2:end-1));
+
 
 for count = 1:length(mode_list),
 
@@ -20,17 +24,21 @@ for count = 1:length(mode_list),
         case 'ciliates'
             [~, class_cat] = intersect(class2use_here, {'Ciliate_mix' 'Didinium_sp' 'Euplotes_sp' 'Laboea_strobila' 'Leegaardiella_ovalis' 'Mesodinium_sp' 'Pleuronema_sp' 'Strobilidium_morphotype1'...
                 'Strombidium_capitatum' 'Strombidium_conicum' 'Strombidium_inclinatum' 'Strombidium_morphotype1' 'Strombidium_morphotype2' 'Strombidium_oculatum'...
-                'Strombidium_wulffi' 'Tiarina_fusus' 'Tintinnid' 'Tontonia_appendiculariformis' 'Tontonia_gracillima'});
+                'Strombidium_wulffi' 'Tiarina_fusus' 'Tintinnid' 'Tontonia_appendiculariformis' 'Tontonia_gracillima'...
+                'Eutintinnus' 'Favella' 'Helicostomella_subulata' 'Stenosemella_sp1' 'Stenosemella_sp2' 'Tintinnidium'...
+                'Tintinnopsis' 'Balanion_sp'});
         case 'ditylum'
             [~, class_cat] = intersect(class2use_here, {'Ditylum' 'Ditylum_parasite'});
         case 'diatoms'
             %all except mix and detritus
-            [~, class_cat] = setdiff(class2use_here, {'mix' 'detritus'});
+            [~, class_cat] = setdiff(class2use_here, {'mix' 'detritus' 'unclassified'});
         case 'big ciliates'
-            [~, class_cat] = intersect(class2use_here, {'Tintinnid' 'Laboea_strobila'});
+            [~, class_cat] = intersect(class2use_here, {'Tintinnid' 'Laboea_strobila' 'Eutintinnus' 'Favella' 'Helicostomella_subulata' 'Stenosemella_sp1' 'Stenosemella_sp2' 'Tintinnidium'...
+                'Tintinnopsis'});
         case 'special big only'
             [~, class_cat] = intersect(class2use_here, {'Ceratium' 'Eucampia' 'Ephemera' 'bad' 'Dinophysis' 'Lauderia' 'Licmophora' 'Phaeocystis' 'Stephanopyxis' ...
-                'Coscinodiscus' 'Odontella' 'Guinardia_striata' 'Tintinnid' 'Laboea_strobila' 'Hemiaulus' 'Paralia' 'Guinardia_flaccida' 'Corethron' 'Dactyliosolen' 'Dictyocha'...
+                'Coscinodiscus' 'Odontella' 'Guinardia_striata' 'Tintinnid' 'Laboea_strobila' 'Eutintinnus' 'Favella' 'Helicostomella_subulata' 'Stenosemella_sp1' 'Stenosemella_sp2' 'Tintinnidium'...
+                'Tintinnopsis' 'Hemiaulus' 'Paralia' 'Guinardia_flaccida' 'Corethron' 'Dactyliosolen' 'Dictyocha'...
                 'Dinobryon' 'Ditylum' 'Pleurosigma' 'Prorocentrum' 'Rhizosolenia' 'Thalassionema' 'clusterflagellate' 'kiteflagellates' 'Pyramimonas'});
         case 'parasites'
             [~, class_cat] = intersect(class2use_here, {'Chaetoceros_flagellate' 'Chaetoceros_pennate' 'Cerataulina_flagellate' 'G_delicatula_parasite' ...

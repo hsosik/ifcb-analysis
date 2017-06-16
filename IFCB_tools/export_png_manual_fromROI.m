@@ -14,10 +14,10 @@ for filecount = 1:length(resultfilelist),
     load([resultpath resultfile])
 
     %USER CHOOSE A LINE AND EDIT FOR YOUR CASE
-    %category = class2use_manual; %use this syntax to export ALL categories
+    category = class2use_manual; %use this syntax to export ALL categories
     %category = {'Ceratium', 'Ditylum'}; %use this syntax to export ONLY the listed categories
     %category = setdiff(class2use_manual, {'bad' 'ciliate' 'detritus'});  %use this syntax to export all EXCEPT the listed categories
-    category = setdiff(class2use_manual, {'other' 'misc_nano'});  %use this syntax to export all EXCEPT the listed categories
+    %category = setdiff(class2use_manual, {'other' 'misc_nano'});  %use this syntax to export all EXCEPT the listed categories
 
     disp(resultfile)
     %make subdirs for tiffs

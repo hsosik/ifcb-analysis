@@ -18,6 +18,7 @@ if ~exist(out_dir_blob_base, 'dir'),
     mkdir(out_dir_blob_base)
 end;
 daydir = dir([in_dir_base 'D*']);
+%daydir = dir([in_dir_base 'I*']);
 daydir = daydir([daydir.isdir]); 
 bins = [];
 in_dir = [];
@@ -27,12 +28,14 @@ for ii = 1:length(daydir),
     bins_temp = dir([in_dir_temp '*.adc']);
     bins_temp = regexprep({bins_temp.name}', '.adc', '');
     daystr = char(bins_temp(1)); daystr = daystr(1:9);
+    %daystr = char(bins_temp(1)); daystr = daystr(1:14);
     out_dir_blob_temp = [out_dir_blob_base daystr filesep];
     bins_done = dir([out_dir_blob_temp '*.zip']);
     bins_done = regexprep({bins_done.name}', '_blobs_v2.zip', '');
     [bins_temp,ia] = setdiff(bins_temp, bins_done);
     if ~isempty(bins_temp)
         daystr = char(bins_temp); daystr = daystr(:,1:9);
+        %daystr = char(bins_temp); daystr = daystr(:,1:14);
         in_dir = [in_dir; repmat(cellstr(in_dir_temp),length(bins_temp),1)];
         out_dir_blob_temp = cellstr([repmat(out_dir_blob_temp,length(bins_temp),1)]);
         out_dir_blob = [out_dir_blob; out_dir_blob_temp];

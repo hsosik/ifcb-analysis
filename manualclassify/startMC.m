@@ -22,7 +22,7 @@ function varargout = startMC(varargin)
 
 % Edit the above text to modify the response to help startMC
 
-% Last Modified by GUIDE v2.5 22-Apr-2015 09:36:45
+% Last Modified by GUIDE v2.5 11-Oct-2016 20:45:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -32,7 +32,7 @@ gui_State = struct('gui_Name',       mfilename, ...
                    'gui_OutputFcn',  @startMC_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
-if nargin && ischar(varargin{1})
+if nargin > 1 && ischar(varargin{1}) %case for nargin = 1 is initial when varargin is not a function name
     gui_State.gui_Callback = str2func(varargin{1});
 end
 
@@ -75,20 +75,28 @@ else
 end
 if length(varargin) > 0 %handle the input config file
     f = varargin{1};
+    if ~isequal(f, 'default') %make sure a file name is formatted correctly
+        f = regexprep(f, '.mcconfig.mat', '');
+        f = regexprep(f, '.mcconfig', '');
+        f = [f '.mcconfig.mat'];
+    end
     if isequal(f, 'default')
         set(handles.configfile_text, 'string', {'default'});
-    elseif exist(f, 'dir') %full path with input
+    elseif exist(f, 'file') %full path with input   
         set(handles.configfile_text, 'string', f);
-    elseif exist(fullfile(last_path,[f '.mcconfig.mat']), 'file')
-        set(handles.configfile_text, 'string', fullfile(last_path,[f '.mcconfig.mat']));
+    elseif exist(fullfile(last_path,f), 'file')
+        set(handles.configfile_text, 'string', fullfile(last_path,f));
+    elseif exist(fullfile(handles.configpath,'last.mcconfig.mat'), 'file')
+        set(handles.configfile_text, 'string', fullfile(handles.configpath,'last.mcconfig.mat'));
     else
         msgbox({[handles.msgbox_fontstr 'Input config file not found in last known location. Starting from last known.'];' ';'Restart including path or load from the file menu in Edit Configuration to locate your file.'}, handles.msgbox_cs)
         set(handles.configfile_text, 'string', []);
     end
 else %otherwise use the last config file if it exists
-    f = [handles.configpath 'last.mcconfig.mat'];
-    if exist(f, 'dir')
-        set(handles.configfile_text, 'string', [handles.configpath 'last.mcconfig.mat']);
+    %f = [handles.configpath 'last.mcconfig.mat'];
+    f = fullfile(handles.configpath, 'last.mcconfig.mat');
+    if exist(f, 'file')
+        set(handles.configfile_text, 'string', fullfile(handles.configpath, 'last.mcconfig.mat'));
     else
         set(handles.configfile_text, 'string', []);
     end
@@ -224,3 +232,4 @@ function quit2_menu_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 quit_pushbutton_Callback(hObject, eventdata, handles)
+

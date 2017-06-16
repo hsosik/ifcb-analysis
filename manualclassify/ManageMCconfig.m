@@ -21,7 +21,7 @@ function varargout = ManageMCconfig(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 % Edit the above text to modify the response to help ManageMCconfig
 
-% Last Modified by GUIDE v2.5 27-May-2015 18:59:00
+% Last Modified by GUIDE v2.5 03-Oct-2016 10:40:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -90,6 +90,7 @@ handles.config_map = {...
     'settings.resolver_func_radiobutton' 'resolver_func_radiobutton' '';...
     'settings.pick_mode_checkbox' 'pick_mode_checkbox' '';...
     'settings.all_file_checkbox' 'all_file_checkbox' '';...
+    'settings.class2view_all_checkbox' 'class2view_all_checkbox' '';...
   %  '' '' '';...
     };
 
@@ -153,7 +154,15 @@ function handles = map_MCconfig2GUI (hObject, eventdata, handles)
 for ii = 1:size(handles.config_map,1), 
     map = handles.config_map(ii,:);
     h = handles.(map{2});
-    value_from_MCconfig = eval(['handles.MCconfig.' char(map{1})]); %necessary to handle nested structures
+    if isfield(handles.MCconfig, char(map{1}))
+        value_from_MCconfig = eval(['handles.MCconfig.' char(map{1})]); %necessary to handle nested structures
+    elseif isfield(handles.MCconfig.settings, regexprep(char(map{1}), 'settings.', ''))
+        value_from_MCconfig = eval(['handles.MCconfig.' char(map{1})]); %necessary to handle nested structures    
+    else
+        temp = MCconfig_default();
+        value_from_MCconfig = eval(['temp.' char(map{1})]);
+        clear temp
+    end
     if strcmp(get(h, 'style'), 'checkbox') | strcmp(get(h, 'style'), 'radiobutton')
         if ~isempty(map{3})
             v = strmatch(value_from_MCconfig, map{3});
@@ -238,7 +247,7 @@ update_filelists(handles)
 
 
 function MCconfig = MCconfig_default()
-settings = struct('start_new_radiobutton', 1, 'review_radiobutton', 0, 'simple_paths_radiobutton', 1, 'resolver_func_radiobutton', 0, 'pick_mode_checkbox', 0, 'all_file_checkbox', 0);
+settings = struct('start_new_radiobutton', 1, 'review_radiobutton', 0, 'simple_paths_radiobutton', 1, 'resolver_func_radiobutton', 0, 'pick_mode_checkbox', 0, 'all_file_checkbox', 0, 'class2view_all_checkbox', 1);
 MCconfig = struct(...
     'pick_mode', 'raw_roi',...
     'display_order', 1,...
@@ -535,19 +544,23 @@ function MCconfig_main_figure_CloseRequestFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % Hint: delete(hObject) closes the figure
-handles = Save_menu_Callback([], [], handles) %just save to last.mcconfig.mat
-if ~isfield(handles.MCconfig.settings,'configfile')
-    handles.MCconfig.settings.configfile = [ handles.configpath 'last.mcconfig.mat'];
-end
-guidata(handles.MCconfig_main_figure, handles);
-
-%following to manage uiwait to control no output until user is done (heidi)
-if isequal(get(handles.MCconfig_main_figure, 'waitstatus'), 'waiting')
-%% The GUI is still in UIWAIT, us UIRESUME
-    uiresume(handles.MCconfig_main_figure);
+%if isempty(handles.MCconfig.class2view1)
+if isempty(get(handles.class2use_listbox, 'value'))
+   uiwait(msgbox([handles.msgbox_fontstr 'You must select at least one category to view.'], handles.msgbox_cs))
 else
-%% The GUI is no longer waiting, just close it
-    delete(handles.MCconfig_main_figure);
+    handles = Save_menu_Callback([], [], handles) %just save to last.mcconfig.mat
+    if ~isfield(handles.MCconfig.settings,'configfile')
+        handles.MCconfig.settings.configfile = [ handles.configpath 'last.mcconfig.mat'];
+    end
+    guidata(handles.MCconfig_main_figure, handles);
+    %following to manage uiwait to control no output until user is done (heidi)
+    if isequal(get(handles.MCconfig_main_figure, 'waitstatus'), 'waiting')
+    %% The GUI is still in UIWAIT, us UIRESUME
+        uiresume(handles.MCconfig_main_figure);
+    else
+    %% The GUI is no longer waiting, just close it
+        delete(handles.MCconfig_main_figure);
+    end
 end
 
 
@@ -621,8 +634,9 @@ end
 if ~isempty(temp.filename)
     handles.MCconfig.class2use = temp.class2use;
     handles.filename = temp.filename;
-    set(handles.class2use_listbox, 'string', temp.class2use, 'min', 0, 'max', length(temp.class2use), 'value', []);
+    set(handles.class2use_listbox, 'string', temp.class2use, 'min', 0, 'max', length(temp.class2use), 'value', 1:length(handles.MCconfig.class2use));
     set(handles.class2use_file_text, 'string', temp.filename);
+    set(handles.class2view_all_checkbox, 'value', 1);
     handles = alphabetize_checkbox_Callback(hObject, eventdata, handles);
     guidata(handles.MCconfig_main_figure, handles);
 else
@@ -1037,6 +1051,9 @@ else %otherwise start_new_radiobutton is selected
     path2start = get(handles.roipath_text, 'string');
     disp_str = 'Select new ROI files';
     filespec = '*.roi';
+    if handles.MCconfig.dataformat == 2
+        filespec = '*.tif';
+    end
 end
 [ f p ] = uigetfile([path2start filesep filespec], disp_str, 'multiselect', 'on');
 if ~isequal(f,0)
@@ -1304,19 +1321,27 @@ if ~exist(get(handles.manualpath_text, 'string'), 'dir')
     if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first pass through when starting up
         uiwait(msgbox([handles.msgbox_fontstr 'Path not found - select a valid manual result path.'], handles.msgbox_cs))
     end
-else %some manual files may be in listbox
+end;
+%else %some manual files may be in listbox
     new_or_review = get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag');
     switch new_or_review
         case 'review_radiobutton'
             f = handles.MCconfig.resultfiles;
-            [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
+            [p, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
+            set(handles.manualpath_text, 'string', p{1}) %new
         case 'start_new_radiobutton'
             f = handles.MCconfig.roifiles; 
-            [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
+            if ~isempty(f)
+                [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
+            end;
+            if handles.MCconfig.dataformat == 2 %VPR case
+                f = makeVPRmanual_filename( fileparts(char(handles.MCconfig.roifiles(end))) ); % presumes just one at a time for this case
+            end
     end
     p = get(handles.manualpath_text, 'string');
     x = '.mat';
-    if ~isempty(f{1}) %set the manual files list
+%    if ~isempty(f{1}) %set the manual files list
+    if ~isempty(f) %set the manual files list
         fullf = cellstr([char(f) repmat(x,length(f),1)]);
         fullf = fullfile(p,fullf);
         temp = cellfun(@exist, fullf, 'uniformoutput', true);
@@ -1332,7 +1357,8 @@ else %some manual files may be in listbox
     switch path_method
         case 'simple_paths_radiobutton'
             p = get(handles.roipath_text, 'string');
-            if ~isempty(f{1})
+%            if ~isempty(f{1})
+            if ~isempty(f)
                 if handles.MCconfig.dataformat == 2 %VPR case
                     fullf = cellstr(fullfile(p,filesep)); %make sure has trailing filesep
                 else %other cases
@@ -1360,7 +1386,12 @@ else %some manual files may be in listbox
                 p = get(handles.classpath_text, 'string');
                 x = [get(handles.class_filestr_text, 'string') '.mat'];
                 if ~isempty(f{1})
-                    f = cellstr([char(f) repmat(x,size(f,1),1)]);
+                    if handles.MCconfig.dataformat == 2; %VPR case
+                        f = char(f{end}); 
+                        f = cellstr([f(end-6:end) repmat(x,size(f,1),1)]);
+                    else
+                        f = cellstr([char(f) repmat(x,size(f,1),1)]);
+                    end
                     fullf = fullfile(p,f);
                 else
                     fullf = [];
@@ -1379,7 +1410,7 @@ else %some manual files may be in listbox
         end
     end
     set(handles.classfiles_listbox, 'string', handles.MCconfig.classfiles);
-end
+%end
 
 if ~isempty(handles.MCconfig.resultfiles)
     [~,temp] = fileparts(handles.MCconfig.resultfiles{1});
@@ -1402,10 +1433,27 @@ if ~isempty(handles.MCconfig.resultfiles)
     if ~exist(get(handles.manualpath_text, 'string'), 'dir')
         fullf = handles.MCconfig.resultfiles;
         for ii = 1:length(fullf), fullf(ii) = {['<html><font color="red">', fullf{ii}, '</font><html>']}; end
-        %fullf = mark_notfound_inlist(handles.MCconfig.resultfiles, handles);
         set(handles.resultfiles_listbox, 'string', fullf)
     end
 end
+
+%if ~isempty(handles.MCconfig.resultfiles)
+%    if ~exist(get(handles.manualpath_text, 'string'), 'dir')
+%        fullf = handles.MCconfig.resultfiles;
+%%check and mark missing manualpath for each result files
+%fullf = handles.MCconfig.resultfiles;
+%for ii = 1:length(fullf)
+%    p = fileparts(fullf{ii});
+%    if ~exist(p, 'dir')
+%        fullf(ii) = {['<html><font color="red">', fullf{ii}, '</font><html>']};
+%    end
+%end
+%set(handles.resultfiles_listbox, 'string', fullf)
+%if ~isempty(handles.MCconfig.resultfiles)
+%    fullf = mark_dir_notfound_inlist(handles.MCconfig.resultfiles, handles);
+%    set(handles.resultfiles_listbox, 'string', fullf)
+%end
+
 %check and mark missing roi files
 if ~isempty(handles.MCconfig.roifiles)
     fullf = mark_notfound_inlist(handles.MCconfig.roifiles, handles);
@@ -1554,8 +1602,7 @@ function fullf = mark_notfound_inlist(fullf, handles)
     if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first pass through when starting up
         uiwait(msgbox({[handles.msgbox_fontstr 'Files shown in red text cannot be found.']; ' ';  'If your data is in multiple folders, ''simple paths'' is not an option.'; ' '; 'Specify a resolver function instead.'}, handles.msgbox_cs))
     end
-    end
-
+    end  
 
 % --------------------------------------------------------------------
 function quit_menu_Callback(hObject, eventdata, handles)
@@ -1564,132 +1611,14 @@ function quit_menu_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 MCconfig_main_figure_CloseRequestFcn(hObject, eventdata, handles)
 
+function f = makeVPRmanual_filename(roibase_path)
+%construct the manual file name frmo the roibase_path
+    temp2 = [filesep 'rois' filesep];
+    pos = strfind(roibase_path, temp2);
+    slashpos = strfind(roibase_path(1:pos-1), filesep);
+    project_str = roibase_path(slashpos(end)+1:pos-1);
+    add_str = regexprep(roibase_path(pos+6:end), filesep, '');
+    f = cellstr([project_str add_str]);
+    
 
 
-% % DISCARD
-% % function update_filelists (handles)
-% % set(handles.status_text, 'string', 'Checking files...')
-% % pause(.001)
-% % m = msgbox('Checking file status...please wait.');
-% % if ~exist(get(handles.manualpath_text, 'string'), 'dir')
-% %     if isequal(get(handles.MCconfig_main_figure, 'visible'), 'on') %skip the first pass through when starting up
-% %         uiwait(msgbox([handles.msgbox_fontstr 'Path not found - select a valid manual result path.'], handles.msgbox_cs))
-% %     end
-% % else %some manual files in listbox
-% %     if isequal(get(get(handles.new_review_buttongroup, 'selectedobject'), 'tag'), 'review_radiobutton')
-% %         f = handles.MCconfig.resultfiles;
-% %         x = '.mat';
-% %         [~, f] = cellfun(@fileparts,f, 'uniformoutput', false); %bin only
-% %         p = get(handles.manualpath_text, 'string');
-% %         if ~isempty(f{1})
-% %                 f = cellstr([char(f) repmat(x,length(f),1)]);
-% %                 fullf = fullfile(p,f);
-% %                 temp = cellfun(@exist, fullf, 'uniformoutput', true);
-% %             else
-% %                 fullf = [];
-% %                 temp = [];
-% %         end
-% %         handles.MCconfig.resultfiles = fullf;
-% %         set(handles.resultfiles_listbox, 'string', handles.MCconfig.resultfiles)
-% %         h = handles.resultfiles_listbox; %review means manual list is master
-% %         if get(handles.simple_paths_radiobutton, 'value')
-% %             [~, f] = cellfun(@fileparts,cellstr(get(h, 'string')), 'uniformoutput', false);
-% %             p = get(handles.roipath_text, 'string');
-% %             x = '.roi';
-% %             if ~isempty(f{1})
-% %                 f = cellstr([char(f) repmat(x,size(f,1),1)]);
-% %                 fullf = fullfile(p,f);
-% %                 temp = cellfun(@exist, fullf, 'uniformoutput', true);
-% %             else
-% %                 fullf = [];
-% %                 temp = [];
-% %             end
-% %             handles.MCconfig.roifiles = fullf;
-% %         else %resolver case
-% %             if ~isempty(handles.MCconfig.resultfiles),
-% %                 handles = resolve_files(handles, handles.MCconfig.resultfiles);
-% %             end;
-% %         end
-% %         set(handles.roifiles_listbox, 'string', handles.MCconfig.roifiles);
-% %     else  %start new
-% %         fullf = handles.MCconfig.roifiles;
-% %         set(handles.roifiles_listbox, 'string', fullf)
-% %         h = handles.roifiles_listbox; %new means roi list is master
-% %         [~, f] = cellfun(@fileparts,cellstr(get(h, 'string')), 'uniformoutput', false);
-% %         p = get(handles.manualpath_text, 'string');
-% %         p2 = get(handles.roipath_text, 'string');
-% %         x = '.mat';
-% %         x2 = '.roi';
-% %         if ~isempty(f{1})
-% %             fullf = cellstr([char(f) repmat(x,size(f,1),1)]);
-% %             fullf = fullfile(p,fullf);
-% %             fullf2 = cellstr([char(f) repmat(x2,size(f,1),1)]);
-% %             fullf2 = fullfile(p2,fullf2);
-% %         else
-% %             fullf = [];
-% %             fullf2 = [];
-% %         end;
-% %         handles.MCconfig.resultfiles = fullf;
-% %         handles.MCconfig.roifiles = fullf2;
-% %         set(handles.resultfiles_listbox, 'string', handles.MCconfig.resultfiles);
-% %         set(handles.roifiles_listbox, 'string', handles.MCconfig.roifiles);
-% %         if get(handles.pick_mode_checkbox, 'value')  %check for classfiles
-% %             if get(handles.simple_paths_radiobutton, 'value')
-% %                 %f as above
-% %                 p = get(handles.classpath_text, 'string');
-% %                 x = [get(handles.class_filestr_text, 'string') '.mat'];
-% %                 if ~isempty(f{1})
-% %                     f = cellstr([char(f) repmat(x,size(f,1),1)]);
-% %                     fullf = fullfile(p,f);
-% %                 else
-% %                     fullf = [];
-% %                 end
-% %                 handles.MCconfig.classfiles = fullf;
-% %             else
-% %                 if ~isempty(handles.MCconfig.roifiles)
-% %                     handles = resolve_files(handles, handles.MCconfig.roifiles);
-% %                 end
-% %             end
-% %             set(handles.classfiles_listbox, 'string', handles.MCconfig.classfiles);
-% %         else  %don't start from classifier
-% %             handles.MCconfig.classfiles = [];%make sure empty if not starting from class even by resolver function
-% %             %run resolver anyway in case need stitch files for MVCO custom resolver
-% %             if ~isempty(handles.MCconfig.roifiles) && ~get(handles.simple_paths_radiobutton, 'value')
-% %                 handles = resolve_files(handles, handles.MCconfig.roifiles);
-% %             end
-% %         end
-% %     end
-% %     if ~isempty(handles.MCconfig.resultfiles)
-% %         [~,temp] = fileparts(handles.MCconfig.resultfiles{1});
-% %         if isequal(temp(1), 'I')
-% %             set(get(get(handles.IFCB_format1_menu, 'parent'), 'children'),'checked', 'off') %set all in submenu to off
-% %             set(handles.IFCB_format1_menu, 'checked', 'on')
-% %         elseif isequal(temp(1), 'D')
-% %             set(get(get(handles.IFCB_format1_menu, 'parent'), 'children'),'checked', 'off') %set all in submenu to off
-% %             set(handles.IFCB_format2_menu, 'checked', 'on')
-% %         end
-% %         set(handles.start_file_popup, 'string', cellstr(num2str((1:length(handles.MCconfig.resultfiles))')))
-% %     end
-% % end
-% % if ~isempty(handles.MCconfig.classfiles) && isequal(get(handles.classfiles_listbox, 'visible'), 'on')
-% %     fullf = mark_notfound_inlist(handles.MCconfig.classfiles, handles);
-% %     set(handles.classfiles_listbox, 'string', fullf)
-% % end
-% % if ~isempty(handles.MCconfig.resultfiles)
-% %     if ~exist(get(handles.manualpath_text, 'string'), 'dir')
-% %         fullf = handles.MCconfig.resultfiles;
-% %         for ii = 1:length(fullf), fullf(ii) = {['<html><font color="red">', fullf{ii}, '</font><html>']}; end
-% %         %fullf = mark_notfound_inlist(handles.MCconfig.resultfiles, handles);
-% %         set(handles.resultfiles_listbox, 'string', fullf)
-% %     end
-% % end
-% % if ~isempty(handles.MCconfig.roifiles)
-% %     fullf = mark_notfound_inlist(handles.MCconfig.roifiles, handles);
-% %     set(handles.roifiles_listbox, 'string', fullf)
-% % end
-% % 
-% % guidata(handles.MCconfig_main_figure, handles);
-% % set(handles.status_text, 'string', 'Status: Ready')
-% % if ishandle(m)
-% %     delete(m)
-% % end
