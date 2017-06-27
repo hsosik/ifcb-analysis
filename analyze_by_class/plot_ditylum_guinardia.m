@@ -5,7 +5,7 @@ ml_analyzedTB = [];
 mdateTB = [];
 filelistTB = [];
 
-for yr = 2006:2016,
+for yr = 2006:2016
     temp = load(['\\sosiknas1\IFCB_products\MVCO\class\summary\' 'summary_allTB' num2str(yr)]);
     %temp = load(['C:\work\IFCB\class\summary\' 'summary_allTB' num2str(yr)]);
     classcountTB = [ classcountTB; temp.classcountTB];
@@ -20,10 +20,11 @@ end;
 
 clear yr
 
-%load \\raspberry\d_work\IFCB1\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_manual_current_day
-load C:\work\IFCB\Manual_fromClass\summary\count_manual_current_day
+load \\sosiknas1\IFCB_products\MVCO\Manual_fromClass\summary\count_manual_current_day
+%load C:\work\IFCB\Manual_fromClass\summary\count_manual_current_day
 figure, set(gcf, 'paperposition', [.25 2.5 11.5 2.45], 'units', 'inches')
-set(gcf, 'position', [5 4 11.5 2.45])
+%set(gcf, 'position', [5 4 11.5 2.45])
+set(gcf, 'position', [5 4 11.5 2])
 
 ind = strmatch('Guinardia', class2useTB, 'exact');
 %[xmat, ymat ] = timeseries2ydmat(mdateTB, classcountTB_above_adhocthresh(:,ind)./ml_analyzedTB);
@@ -32,12 +33,12 @@ hold on,
 gind = get_G_delicatula_ind(class2use);
 ii = find(~isnan(ml_analyzed_mat_bin(:,gind(1)))); %cases with main Guinardia delicatula annotated
 plot(matdate_bin(ii), nansum(classcount_bin(ii,gind)./ml_analyzed_mat_bin(ii,gind),2), 'r*')
-plot(xmat(:), ymat(:), 'linewidth', 1.5)
+plot(xmat(:), ymat(:), 'b', 'linewidth', 1.5)
 datetick, %set(gca, 'xgrid', 'on', 'box', 'on')
-ylim([0 100])
+ylim([0 120])
 legend('manual', 'automated')
 ylabel('Chains mL^{-1}', 'fontsize', 14)
-set(gca, 'xlim', datenum([2006,6,1; 2016,10,1]), 'fontsize', 14, 'xgrid', 'on', 'box', 'on')
+set(gca, 'xlim', datenum([2006,6,1; 2017,1,1]), 'fontsize', 14, 'xgrid', 'on', 'box', 'on')
 
 img = imread('http://ifcb-data.whoi.edu/mvco/IFCB5_2012_030_223923_03472.png'); %Guinardia
 t = size(img,1)/1000*1.0; s = size(img,2)/1000*1.0;
@@ -47,7 +48,8 @@ imshow(img)
 title('\itGuinardia delicatula', 'fontsize', 12)
 
 figure, set(gcf, 'paperposition', [.25 2.5 11.5 2.45], 'units', 'inches')
-set(gcf, 'position', [5 4 11.5 2.45])
+%set(gcf, 'position', [5 4 11.5 2.45])
+set(gcf, 'position', [5 4 11.5 2])
 
 ind = strmatch('Ditylum', class2useTB);
 [xmat, ymat ] = timeseries2ydmat(mdateTB, classcountTB_above_adhocthresh(:,ind)./ml_analyzedTB);
@@ -55,12 +57,12 @@ ind = strmatch('Ditylum', class2useTB);
 hold on, 
 ind2 = strmatch('Ditylum', class2use);
 plot(matdate_bin, nansum(classcount_bin(:,ind2)./ml_analyzed_mat_bin(:,ind2),2), 'r*')
-plot(xmat(:), ymat(:), 'linewidth', 1.5)
+plot(xmat(:), ymat(:), 'b', 'linewidth', 1.5)
 datetick, %set(gca, 'xgrid', 'on', 'box', 'on')
 ylim([0 15])
 legend('manual', 'automated')
 ylabel('Cells mL^{-1}', 'fontsize', 14)
-set(gca, 'xlim', datenum([2006,6,1; 2016,10,1]), 'fontsize', 14, 'xgrid', 'on', 'box', 'on')
+set(gca, 'xlim', datenum([2006,6,1; 2017,1,1]), 'fontsize', 14, 'xgrid', 'on', 'box', 'on')
 
 img = imread('http://ifcb-data.whoi.edu/mvco/IFCB5_2011_017_134444_01637.png'); %Ditylum
 t = size(img,1)/1000*1.0; s = size(img,2)/1000*1.0;
@@ -70,7 +72,8 @@ title('\itDitylum brightwellii', 'fontsize', 12)
 
 
 figure, set(gcf, 'paperposition', [.25 2.5 11.5 2.45], 'units', 'inches')
-set(gcf, 'position', [5 4 11.5 2.45])
+%set(gcf, 'position', [5 4 11.5 2.45])
+set(gcf, 'position', [5 4 11.5 2])
 
 ind = strmatch('Corethron', class2useTB, 'exact');
 %[xmat, ymat ] = timeseries2ydmat(mdateTB, classcountTB_above_adhocthresh(:,ind)./ml_analyzedTB);
