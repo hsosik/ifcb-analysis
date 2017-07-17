@@ -30,9 +30,11 @@ roibase = repmat(char(baseroipath),n,1);
 classbase = repmat(char(baseclasspath),n,1);
 roiext = repmat('.roi',n,1);
 classext = repmat([class_filestr '.mat'],n,1);
+cstr = repmat('class',n,1);
+vstr = repmat('_v1',n,1);
 if files(1,1) == 'D',
     roipath = [roibase files(:,2:5) sep files(:,1:9) sep]; %edit and use this line in case of different structure for class and roi locations
-    classpath = [classbase files(:,2:5) sep files(:,1:9) sep]; %edit and use this line in case of different structure for class and roi locations
+    classpath = [classbase cstr files(:,2:5) vstr sep];; %edit and use this line in case of different structure for class and roi locations
 else  %case for original 'I*' style IFCB data (only for IFCB7 and earlier)    
     roipath = [roibase sep files(:,7:10) sep files(:,1:14) sep];
     classpath = [classbase sep files(:,7:10) sep files(:,1:14) sep]; 
@@ -44,4 +46,3 @@ files_struct.classfiles = classfiles;
 files_struct.roifiles = roifiles;
 
 end
-
