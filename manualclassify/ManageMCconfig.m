@@ -21,7 +21,7 @@ function varargout = ManageMCconfig(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 % Edit the above text to modify the response to help ManageMCconfig
 
-% Last Modified by GUIDE v2.5 03-Oct-2016 10:40:57
+% Last Modified by GUIDE v2.5 17-Jul-2017 16:00:17
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1579,9 +1579,11 @@ roibase = repmat(char(baseroipath),n,1);
 classbase = repmat(char(baseclasspath),n,1);
 roiext = repmat('.roi',n,1);
 classext = repmat([class_filestr '.mat'],n,1);
+cstr = repmat('class',n,1);
+vstr = repmat('_v1',n,1);
 if files(1,1) == 'D',
     roipath = [roibase files(:,2:5) sep files(:,1:9) sep];
-    classpath = [classbase files(:,2:5) sep files(:,1:9) sep]; 
+    classpath = [classbase cstr files(:,2:5) vstr sep];
 else      
     roipath = [roibase sep files(:,7:10) sep files(:,1:14) sep];
     classpath = [classbase sep files(:,7:10) sep files(:,1:14) sep]; 
@@ -1622,3 +1624,10 @@ function f = makeVPRmanual_filename(roibase_path)
     
 
 
+% --- Executes on button press in standard_resolver_radiobutton.
+function standard_resolver_radiobutton_Callback(hObject, eventdata, handles)
+% hObject    handle to standard_resolver_radiobutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of standard_resolver_radiobutton
