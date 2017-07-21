@@ -3,7 +3,7 @@ load([resultpath 'manual_list']) %load the manual list detailing annotate mode f
 
 urlstr = 'http://ifcb-data.whoi.edu/mvco/'
 
-outpath = [resultpath 'annotations_csv_May2017\'];
+outpath = [resultpath 'annotations_csv_Jul2017\'];
 if ~exist(outpath, 'dir')
     mkdir(outpath)
 end;
@@ -32,8 +32,8 @@ for filecount = 1:length(filelist),
         ind = [];
         if analyzed_flag(filecount,classnum),
             ind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum));
-%        else %export only the manual instances for classes that are not fully analyzed according to manual_list
-%            ind = find(classlist(:,2) == classnum);
+        else %export only the manual instances for classes that are not fully analyzed according to manual_list
+            ind = find(classlist(:,2) == classnum);
         end;
   %      roinumtemp = [roinumtemp; ind];
   %      labeltemp = [labeltemp; repmat(class2use_manual(classnum), length(ind),1);];
