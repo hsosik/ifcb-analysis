@@ -1,14 +1,17 @@
+%to start a new VPR segment, change VPR number at line 6 and line 13
+%also need to change the days/hrs to look for in line 14
+
 savedir = '\\sosiknas1\Lab_data\VPR\NBP1201\classifiers\';
-classifierName = 'RossSea_Trees_30Oct2015_seven_classes';
-out_dir = ['\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_' classifierName '\'];
+classifierName = 'RossSea_Trees_test26May2017';
+out_dir = ['\\sosiknas1\Lab_data\VPR\NBP1201\class_' classifierName '\'];
 if ~exist(out_dir, 'dir')
     mkdir(out_dir)
 end;
 classifierName = [savedir classifierName];
 %in_dir = 'http://mellon.whoi.edu/lab/';
 %for V2 web services, set fea_dir = in_dir;
-fea_dir = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\features\';
-filelist = dir([fea_dir 'd018h1*.csv']);
+fea_dir = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr15\features\';
+filelist = dir([fea_dir 'd0*.csv']);
 filelist = {filelist.name}';
 %filelist = [];
 %for day = 282:319,

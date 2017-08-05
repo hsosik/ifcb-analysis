@@ -44,7 +44,7 @@ exp_dens=exp(est_year + est_seasons);
 exp_counts=exp_dens.*volumes;
 
 %to estimate overdisperion, only include nonzero estimates:
-zeroind=find(exp(xmin) < 1e-7); %pretty much zero - may need to adjust this cutoff
+zeroind=find(exp(xmin) < 1e-5); %pretty much zero - may need to adjust this cutoff
 nonzero=setxor(zeroind,1:(seasonnum+yearnum));
 jj=find(nonzero <= yearnum);  %year parameter - matches to column
 ii=find(nonzero > yearnum); %should be a season parameter, matches to a row
@@ -66,7 +66,8 @@ logL_bnd=maxlogL - 0.5*chi2inv(0.95,1)*c; %chi2inv(0.95,1) = 3.84
 
 CIs=nan(n,2);
 
-for ind=setxor(year0,1:n) %2:36 %don't attempt a confidence interval for param set as 0
+for ind=setxor(year0,1:n)
+   % for ind=7%2:36 %don't attempt a confidence interval for param set as 0
     
     zeroflag=0; %current param is not zero
     
@@ -81,14 +82,14 @@ for ind=setxor(year0,1:n) %2:36 %don't attempt a confidence interval for param s
     [bnd_test, x_test]=eval_param_for_CI(counts,volumes,ind,test_param,x0,logL_bnd,opts,year0);
     
     k=0;
-    while bnd_test > 0  && k<200 %keep going!
+    while bnd_test > 0  && k<10 %keep going!
         k=k+1;
-        test_param=test_param-1; %an abs number as could be neg or pos...
+        test_param=-10*abs(test_param); %an abs number as could be neg or pos...
         bnd_test=eval_param_for_CI(counts,volumes,ind,test_param,x_test,logL_bnd,opts,year0); %use the previous solver param returns as start points for the next point
     end
     
     
-    if exp(xmin(ind)) < 1e-6 && k==200  %Special case where the parameter wants to go to zero
+     if exp(xmin(ind)) < 1e-5 && k==10  %Special case where the parameter wants to go to zero
         %(cases where 0 counts were observed for a particular season or year). In these cases,
         %skip the lower bound, but estimate the upper bound.
         lower_CI=-Inf;
@@ -107,10 +108,16 @@ for ind=setxor(year0,1:n) %2:36 %don't attempt a confidence interval for param s
     [bnd_test, x_test]=eval_param_for_CI(counts,volumes,ind,test_param,x0,logL_bnd,opts,year0); %calculate regular
 
     k=0;
-    while bnd_test > 0 && k<200 %keep going!
+    while bnd_test > 0 && k< 300 %keep going!
         k=k+1;
         test_param=test_param+1; %an abs number as could be neg or pos...
+%        test_param=10*abs(test_param); %an abs number as could be neg or pos...
         [bnd_test, x_test]=eval_param_for_CI(counts,volumes,ind,test_param,x_test,logL_bnd,opts,year0); %use the previous solver param returns as start points for the next point
+    end
+    
+    if abs(bnd_test) > 1e25
+        disp('Oooo - have a very large number, make sure machine is handling it well!')
+        keyboard
     end
     
     upper_CI=fzero(@(param_value) eval_param_for_CI(counts,volumes,ind,param_value,x_test,logL_bnd,opts,year0),[xmin(ind) test_param], fzero_opts);

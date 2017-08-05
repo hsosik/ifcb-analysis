@@ -20,8 +20,8 @@ if ~exist(out_dir, 'dir'),
     mkdir(out_dir)
 end;
 
-daydir = dir([in_dir_base 'D*']);
-%daydir = dir([in_dir_base 'I*']);
+%daydir = dir([in_dir_base 'D*']);
+daydir = dir([in_dir_base 'I*']);
 daydir = daydir([daydir.isdir]); 
 bins = [];
 in_dir = [];
@@ -30,8 +30,8 @@ for ii = 1:length(daydir),
     in_dir_temp = [in_dir_base daydir(ii).name filesep];
     bins_temp = dir([in_dir_temp '*.adc']);
     bins_temp = regexprep({bins_temp.name}', '.adc', '');
-    daystr = char(bins_temp); daystr = daystr(:,1:9);
-    % daystr = char(bins_temp); daystr = daystr(:,1:14);
+    %daystr = char(bins_temp); daystr = daystr(:,1:9);
+     daystr = char(bins_temp); daystr = daystr(:,1:14);
     in_dir_blob_temp = cellstr([repmat(in_dir_blob_base,length(bins_temp),1) daystr repmat(filesep, length(bins_temp),1)]);
     in_dir = [in_dir; repmat(cellstr(in_dir_temp),length(bins_temp),1)];
     in_dir_blob = [in_dir_blob; in_dir_blob_temp];

@@ -15,7 +15,7 @@ ind = length(classpath_generic)+1;
 filelist = cellstr(temp(:,ind:ind+20));
 mdate = IFCB_file2date(filelist);
 
-load('\\sosiknas1\IFCB_products\MVCO\class\summary\ml_analyzed_all', 'ml_analyzed', 'filelist_all');
+load('\\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all', 'ml_analyzed', 'filelist_all');
 [~,ia, ib] = intersect(filelist, filelist_all);
 if length(ia) ~= length(filelist),
     disp('missing some ml_analyzed values; need to make updated ml_analyzed all.mat?')
