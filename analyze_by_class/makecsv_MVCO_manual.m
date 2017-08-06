@@ -3,7 +3,7 @@ load([resultpath 'manual_list']) %load the manual list detailing annotate mode f
 
 urlstr = 'http://ifcb-data.whoi.edu/mvco/'
 
-outpath = [resultpath 'annotations_csv_Jul2017\'];
+outpath = [resultpath 'annotations_csv_Aug2017\'];
 if ~exist(outpath, 'dir')
     mkdir(outpath)
 end;
@@ -19,7 +19,7 @@ numclass = length(class2use_manual_first);
 filelist = classes_byfile.filelist;
 analyzed_flag = classes_byfile.classes_checked;
 
-for filecount = 1:length(filelist),
+for filecount = 1:length(filelist)
     filename = filelist{filecount};
     disp(filename)
     load([resultpath filename])
@@ -28,9 +28,9 @@ for filecount = 1:length(filelist),
    %     keyboard
     end;
     filetemp = []; roinumtemp = filetemp; labeltemp = filetemp; persontemp = filetemp;
-    for classnum = 1:numclass,
+    for classnum = 1:numclass
         ind = [];
-        if analyzed_flag(filecount,classnum),
+        if analyzed_flag(filecount,classnum)
             ind = find(classlist(:,2) == classnum | (isnan(classlist(:,2)) & classlist(:,3) == classnum));
         else %export only the manual instances for classes that are not fully analyzed according to manual_list
             ind = find(classlist(:,2) == classnum);
@@ -41,7 +41,7 @@ for filecount = 1:length(filelist),
       %  labeltemp = class2use_manual{classnum};
       if ~isempty(roinumtemp) 
         fid = fopen([outpath class2use_manual{classnum} '.csv'], 'a');
-        for ii = 1:length(roinumtemp),
+        for ii = 1:length(roinumtemp)
              %fprintf(fid, '%s,%s%05.0f\r\n', labeltemp, [urlstr filename '_'], roinumtemp(ii));
              fprintf(fid, '%s%05.0f\r\n', [urlstr filename '_'], roinumtemp(ii));
         end;

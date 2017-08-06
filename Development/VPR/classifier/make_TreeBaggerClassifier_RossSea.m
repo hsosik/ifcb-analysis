@@ -2,7 +2,8 @@
 %run compile_train_features_RossSea.m to generate train and class_vector
 clear all
 outputpath = '\\sosiknas1\Lab_data\VPR\NBP1201\classifiers\';
-load([outputpath 'NBP1201_train_vpr8_13Apr201614Apr2016']);
+%load([outputpath 'NBP1201_train_vpr8_27Oct201530Oct2015']);%old names
+load([outputpath 'NBP1201_train_vpr8_27Oct201520Apr2017']);%new names
 %load fea2use
 [~,fea2use] = setdiff(featitles, {'FilledArea' 'summedFilledArea' 'Area' 'ConvexArea' 'MajorAxisLength' 'MinorAxisLength' 'Perimeter', 'roi_number'}');
 %fea2use = 1:length(featitles);
@@ -22,14 +23,13 @@ for n = 1:num_classes;
     temp =  [temp;(ind)];
     ind(:) = n;
     temp2= [temp2; ind];
-   
 end
-
 class_vector = temp2;
+train = train(temp,:);
+targets = targets(temp);
 
-
+%sort training set
 [class_vec_str,sort_ind] = sort(classes(class_vector));
-sort_ind = temp;
 train = train(sort_ind,:);
 targets = targets(sort_ind);
 
@@ -72,6 +72,6 @@ clear count fpr tpr thr iaccu accu
 datestring = datestr(now, 'ddmmmyyyy');
 
 %save([outputpath 'RossSea_Trees_wother' datestring],'b', 'targets', 'featitles', 'classes', 'maxthre')
-save([outputpath 'RossSea_Trees_' datestring],'b', 'targets', 'featitles', 'classes', 'maxthre')
+save([outputpath 'RossSea_Trees_test' datestring],'b', 'targets', 'featitles', 'classes', 'maxthre')
 
 classifier_obb_analysis( [outputpath 'RossSea_Trees_' datestring] )

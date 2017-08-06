@@ -3,10 +3,10 @@ out_path = 'C:\work\IFCB\user_training_test_data\class2\summary\'; %USER where t
 in_dir = 'C:\work\IFCB\user_training_test_data\data\'; %USER where is your raw data (e.g., hdr files); URL for web services if desired 
 
 %'Guinardia_striata' 'Karenia,pennate_diatom,misc_nano'
-class2do_string = 'misc_nano'; %USER 
+class2do_string = 'tintinnid'; %USER 
 
 classfiles = [];
-for yr = 2014 %2014:2015 %USER
+for yr = 2016 %2014:2015 %USER
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'D*.mat']);
     pathall = repmat(classpath, length(temp),1);
