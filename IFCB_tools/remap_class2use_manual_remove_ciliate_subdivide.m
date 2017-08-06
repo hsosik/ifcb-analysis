@@ -11,13 +11,13 @@ disp(config.class2use)
 flag = input('Are you sure you want to do this? Type ''yes'' to proceed. ', 's');
 if strcmp('yes', flag),
     disp('Remapping: ')
-    filelist = dir([config.remappath 'IFCB*.mat']);
+    filelist = dir([config.remappath 'D*.mat']);
     config.type2map = 'manual'; %'manual', 'auto', etc. from list_titles
     for filecount = 1:length(filelist),
         fname = filelist(filecount).name;
         disp(fname)
-        %file_struct = load([config.remappath fname]);
-        file_struct = load(['\\raspberry\d_work\IFCB1\ifcb_data_MVCO_jun06\Manual_fromClass_backup_20Aug2014\' fname]);
+        file_struct = load([config.remappath fname]);
+        %file_struct = load(['\\raspberry\d_work\IFCB1\ifcb_data_MVCO_jun06\Manual_fromClass_backup_20Aug2014\' fname]);
         file_struct_remapped = remapfile_remove_ciliate_subdivide(config, file_struct); 
         save([config.remappath fname], '-struct', 'file_struct_remapped')
     end;
