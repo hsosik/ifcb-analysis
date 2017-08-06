@@ -1,4 +1,4 @@
-resultpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\';
+%resultpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the milliliters analyzed for all sample files
 
