@@ -18,7 +18,7 @@ numclass = length(class2use_manual_first);
 ciliate_ind = get_ciliate_ind(class2use, class2use);
 [~,rawROIskip] = intersect(class2use, {'other' 'unclassified'});
 
-for filecount = 11:length(filelist)
+for filecount = 1:length(filelist)
     filename = filelist{filecount};
     disp(filename)
     load([resultpath filename])

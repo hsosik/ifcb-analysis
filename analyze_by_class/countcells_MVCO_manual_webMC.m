@@ -1,4 +1,11 @@
 resultpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\';
+outpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\summary_webMC\';
+load([outpath 'summaryOne_results.mat']); dbsumtable = results; clear results
+load([outpath 'class_table_mvco']);
+
+dbcount = cell2mat(dbsumtable(2:end,2:end));
+dbclasses = dbsumtable(1,2:end);
+
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the milliliters analyzed for all sample files
 
@@ -8,6 +15,11 @@ load class2use_MVCOmanual6 %get the master list to start
 [ classes_byfile, classes_bymode ] = get_annotated_classesMVCO( class2use, manual_list);
 
 filelist = classes_byfile.filelist;
+
+for ii = 1:length(dbclasses)
+    ind = strmatch(dbclasses(ii),class_table_mvco{1:end,3});
+    
+end
 
 [~,ia, ib] = intersect(filelist, filelist_all);
 if length(ia) ~= length(filelist),
@@ -29,7 +41,7 @@ ml_analyzed(ia) = temp;
 analyzed_flag = classes_byfile.classes_checked; analyzed_flag(analyzed_flag == 0) = NaN;
 ml_analyzed_mat = repmat(ml_analyzed,1,length(class2use)).*analyzed_flag;
 
-load('\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\summary_webMC\summaryOne_results.mat')
+
 
 %calculate date
 matdate = IFCB_file2date(filelist);;
