@@ -11,7 +11,7 @@ manual_list_col = 1:length(mode_list);
 %filelist = char(manual_list(2:end,1)); filelist = cellstr(filelist(:,1:end-4));
 filelist = manual_list(2:end,1); filelist = regexprep(filelist, '.mat', '');
 
-mode_flags_byfile = cell2mat(manual_list(2:end-4,2:end-1));
+mode_flags_byfile = cell2mat(manual_list(2:end,2:end-1));
 
 
 for count = 1:length(mode_list),
