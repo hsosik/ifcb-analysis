@@ -308,7 +308,9 @@ class RoiFeatures(object):
         the segmented mask, ordered by largest area to smallest area"""
         labeled, bboxes, blobs = find_blobs(self.blobs_image)
         cropped_rois = [self.image[bbox] for bbox in bboxes]
-        Bs = [BlobFeatures(b,R) for b,R in zip(blobs,cropped_rois)]
+        # ignore 1-pixel wide/high blobs
+        Bs = [BlobFeatures(b,R) for b,R in zip(blobs,cropped_rois) if min(R.shape) > 1]
+        # sort by area, largest first
         return sorted(Bs, key=lambda B: B.area, reverse=True)
     @property
     def num_blobs(self):
