@@ -1,4 +1,4 @@
-function [  ] = remap_class2use_manual( config )
+    function [  ] = remap_class2use_manual( config )
 %function  [  ] = remap_class2use_manual( config )
 %   Detailed explanation goes here
 %   Heidi M. Sosik, Woods Hole Oceanographic Institution, March 2013
