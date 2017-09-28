@@ -11,7 +11,7 @@ manual_list_col = 1:length(mode_list);
 %filelist = char(manual_list(2:end,1)); filelist = cellstr(filelist(:,1:end-4));
 filelist = manual_list(2:end,1); filelist = regexprep(filelist, '.mat', '');
 
-mode_flags_byfile = cell2mat(manual_list(2:end-4,2:end-1));
+mode_flags_byfile = cell2mat(manual_list(2:end,2:end-1));
 
 
 for count = 1:length(mode_list),
@@ -50,6 +50,8 @@ for count = 1:length(mode_list),
        case 'guinardia'
             [~, class_cat] = intersect(class2use_here, {'Guinardia_delicatula' 'Guinardia_flaccida' 'Guinardia_striata' 'G_delicatula_parasite' 'G_delicatula_external_parasite' 'other_interaction' 'pennates_on_diatoms' 'diatom_flagellate' ...
                 'G_delicatula_detritus'});
+       case 'gyrodenoids'
+            [~, class_cat] = intersect(class2use_here, {'Gyrodinium'});
     end;
     classes_bymode.classes_manual_check{count} = class_cat;
     
