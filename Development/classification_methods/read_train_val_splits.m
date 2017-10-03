@@ -13,7 +13,7 @@ validation_class_vector = train;
 train_targets = train;
 validation_targets = train;
 missing = [];
-for count = 1:length(l)
+for count = 2:length(l)
     disp(l(count))
     [~, t] = xlsread([p l{count}], 1, 'A2');
     [~, v] = xlsread([p l{count}], 1, 'B2');
@@ -28,7 +28,8 @@ for count = 1:length(l)
     %get the list of all example rois
     tr = dir([p2 class2use{count} '\*.png']);
     tr = regexprep({tr.name}', '.png', '');
-    trtargets = setdiff(tr, [ttargets; vtargets]);
+    %just the ones not in test or validation
+    [trtargets,ia] = setdiff(tr, [ttargets; vtargets]);
     trclass_vector = repmat(class2use(count), length(trtargets),1);
     
     ttemp = char(t); ii = find(ttemp(:,1) == 'D');
@@ -45,7 +46,7 @@ for count = 1:length(l)
         vroinum(ii) = cellstr(vtemp(ii,26:30));
         v1(ii) = cellstr(vtemp(ii,1:24));
     end
-    ttemp = char(tr); ii = find(ttemp(:,1) == 'D');
+    ttemp = char(trtargets); ii = find(ttemp(:,1) == 'D');
     trroinum = cellstr(ttemp(:,23:27));
     tr1 = cellstr(ttemp(:,1:21));
     if ~isempty(ii)
@@ -56,35 +57,35 @@ for count = 1:length(l)
     unqfiles = unique([t1; v1; tr1]);
     vfea = nan(length(v1),241);
     tfea = nan(length(t1),241);
-    trfea = nan(length(tr),241);
+    trfea = nan(length(tr1),241);
     for c2 = 1:length(unqfiles)
         filename = [pfea unqfiles{c2} '_fea_v3.csv'];
         if ~exist(filename, 'file')
             disp(filename)
             missing = [missing; unqfiles(c2)];
         end
-%         fea = importdata([pfea unqfiles{c2} '_fea_v3.csv']);
-%         ii = strmatch(unqfiles(c2), t1);
-%         if ~isempty(ii)
-%             [~,iit,iia] = intersect(fea.data(:,1), str2num(char((troinum(ii)))));
-%             tfea(ii(iia),:) = fea.data(iit,:);
-%         end
-%         ii = strmatch(unqfiles(c2), v1);
-%         if ~isempty(ii)
-%             [~,iiv, iia] = intersect(fea.data(:,1), str2num(char((vroinum(ii)))));
-%             vfea(ii(iia),:) = fea.data(iiv,:);
-%         end
-%         ii = strmatch(unqfiles(c2), tr1);
-%         if ~isempty(ii)
-%             [~,iiv, iia] = intersect(fea.data(:,1), str2num(char((trroinum(ii)))));
-%             trfea(ii(iia),:) = fea.data(iiv,:);
-%         end
+        fea = importdata([pfea unqfiles{c2} '_fea_v3.csv']);
+        ii = strmatch(unqfiles(c2), t1);
+        if ~isempty(ii)
+            [~,iit,iia] = intersect(fea.data(:,1), str2num(char((troinum(ii)))));
+            tfea(ii(iia),:) = fea.data(iit,:);
+        end
+        ii = strmatch(unqfiles(c2), v1);
+        if ~isempty(ii)
+            [~,iiv, iia] = intersect(fea.data(:,1), str2num(char((vroinum(ii)))));
+            vfea(ii(iia),:) = fea.data(iiv,:);
+        end
+        ii = strmatch(unqfiles(c2), tr1);
+        if ~isempty(ii)
+            [~,iiv, iia] = intersect(fea.data(:,1), str2num(char((trroinum(ii)))));
+            trfea(ii(iia),:) = fea.data(iiv,:);
+        end
     end
-%    testing = tfea;
-%    validation = vfea; 
-%    train = trfea;
-%    featitles = fea.colheaders;
-%    save([p regexprep(l{count},'.csv','') '_train'], 'validation', 'train', 'vtargets', 'ttargets', 'trtargets', 'vclass_vector', 'tclass_vector', 'trclass_vector', 'featitles')
+   testing = tfea;
+   validation = vfea; 
+   train = trfea;
+   featitles = fea.colheaders;
+   save([p regexprep(l{count},'.csv','') '_train'], 'validation', 'testing', 'train', 'vtargets', 'ttargets', 'trtargets', 'vclass_vector', 'tclass_vector', 'trclass_vector', 'featitles')
 end
  
 %dlmwrite('v3_bins_missing', char(missing), 'delimiter', '')

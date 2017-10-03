@@ -1,4 +1,5 @@
-p = 'C:\work\IFCB\Manual_fromClass\train_fromcsv_Sep2017\train_validation_split\';
+%p = 'C:\work\IFCB\Manual_fromClass\train_fromcsv_Sep2017\train_validation_split\';
+p = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\train_fromcsv_Sep2017\test_validation_split\';
 
 l = dir([p '*_train.mat']);
 l = {l.name};
@@ -10,17 +11,24 @@ class_vector = [];
 validation = [];
 vtargets = [];
 vclass_vector = [];
+testing = [];
+ttargets = [];
+tclass_vector = [];
 
 for count = 1:length(l)
     t = load([p l{count}]);
     train = [train; t.train];
-    targets = [targets; t.ttargets];
-    class_vector = [class_vector; repmat(count,length(t.ttargets),1)];
+    targets = [targets; t.trtargets];
+    class_vector = [class_vector; repmat(count,length(t.trtargets),1)];
     validation = [validation; t.validation];
     vtargets = [vtargets; t.vtargets];
-    vclass_vector = [vclass_vector; repmat(count,length(t.vtargets),1)];  
-    nclass(count) = length(t.ttargets);
+    vclass_vector = [vclass_vector; repmat(count,length(t.vtargets),1)]; 
+    %testing = [testing; t.testing];
+    ttargets = [ttargets; t.ttargets];
+    tclass_vector = [tclass_vector; repmat(count,length(t.ttargets),1)];  
+    nclass(count) = length(t.trtargets);
     vnclass(count) = length(t.vtargets);
+    tnclass(count) = length(t.ttargets);
 end
 featitles = t.featitles;
 clear l count t
@@ -40,7 +48,7 @@ save([p 'train_split'])
 
 return
 
-result_path = 'C:\work\IFCB\Manual_fromClass\train_fromcsv_Sep2017\train_validation_split\';
+result_path = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\train_fromcsv_Sep2017\test_validation_split\';
 train_filename = 'train_split';
 result_str = 'train_splitTrees'
 nTrees = 100;
@@ -48,7 +56,7 @@ nTrees = 100;
 make_TreeBaggerClassifier_user_training( result_path, train_filename, result_str, nTrees)
 
 load([result_path 'train_split']);
-trees = load([result_path 'train_splitTrees26Sep2017']);
+trees = load([result_path 'train_splitTrees29Sep2017']);
 classes = trees.classes;
 [ TBclass, TBscores] = predict(trees.b, validation);
 [c1, gord1] = confusionmat(class2use(vclass_vector),TBclass); %transposed from mine

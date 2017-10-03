@@ -43,7 +43,7 @@ for filecount = 1:length(filelist)
         fid = fopen([outpath class2use_manual{classnum} '.csv'], 'a');
         for ii = 1:length(roinumtemp)
              %fprintf(fid, '%s,%s%05.0f\r\n', labeltemp, [urlstr filename '_'], roinumtemp(ii));
-             fprintf(fid, '%s%05.0f\r\n', [urlstr filename '_'], roinumtemp(ii));
+             fprintf(fid, '%s%05.0f\r\n', [urlstr filename ','], roinumtemp(ii));
         end;
         fclose(fid);
       end
