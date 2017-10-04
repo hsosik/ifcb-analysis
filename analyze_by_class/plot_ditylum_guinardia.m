@@ -5,7 +5,7 @@ ml_analyzedTB = [];
 mdateTB = [];
 filelistTB = [];
 
-for yr = 2006:2016
+for yr = 2006:2017
     temp = load(['\\sosiknas1\IFCB_products\MVCO\class\summary\' 'summary_allTB' num2str(yr)]);
     %temp = load(['C:\work\IFCB\class\summary\' 'summary_allTB' num2str(yr)]);
     classcountTB = [ classcountTB; temp.classcountTB];
@@ -25,6 +25,7 @@ load \\sosiknas1\IFCB_products\MVCO\Manual_fromClass\summary\count_manual_curren
 figure, set(gcf, 'paperposition', [.25 2.5 11.5 2.45], 'units', 'inches')
 %set(gcf, 'position', [5 4 11.5 2.45])
 set(gcf, 'position', [5 4 11.5 2])
+set(gcf, 'position', [5 4 11.5 1.5])
 
 ind = strmatch('Guinardia', class2useTB, 'exact');
 %[xmat, ymat ] = timeseries2ydmat(mdateTB, classcountTB_above_adhocthresh(:,ind)./ml_analyzedTB);
@@ -35,10 +36,10 @@ ii = find(~isnan(ml_analyzed_mat_bin(:,gind(1)))); %cases with main Guinardia de
 plot(matdate_bin(ii), nansum(classcount_bin(ii,gind)./ml_analyzed_mat_bin(ii,gind),2), 'r*')
 plot(xmat(:), ymat(:), 'b', 'linewidth', 1.5)
 datetick, %set(gca, 'xgrid', 'on', 'box', 'on')
-ylim([0 120])
+ylim([0 150])
 legend('manual', 'automated')
 ylabel('Chains mL^{-1}', 'fontsize', 14)
-set(gca, 'xlim', datenum([2006,6,1; 2017,1,1]), 'fontsize', 14, 'xgrid', 'on', 'box', 'on')
+set(gca, 'xlim', datenum([2006,6,1; 2018,1,1]), 'fontsize', 14, 'xgrid', 'on', 'box', 'on')
 
 img = imread('http://ifcb-data.whoi.edu/mvco/IFCB5_2012_030_223923_03472.png'); %Guinardia
 t = size(img,1)/1000*1.0; s = size(img,2)/1000*1.0;
@@ -62,11 +63,11 @@ datetick, %set(gca, 'xgrid', 'on', 'box', 'on')
 ylim([0 15])
 legend('manual', 'automated')
 ylabel('Cells mL^{-1}', 'fontsize', 14)
-set(gca, 'xlim', datenum([2006,6,1; 2017,1,1]), 'fontsize', 14, 'xgrid', 'on', 'box', 'on')
+set(gca, 'xlim', datenum([2006,6,1; 2018,1,1]), 'fontsize', 14, 'xgrid', 'on', 'box', 'on')
 
 img = imread('http://ifcb-data.whoi.edu/mvco/IFCB5_2011_017_134444_01637.png'); %Ditylum
 t = size(img,1)/1000*1.0; s = size(img,2)/1000*1.0;
-i3 = axes('position', [-.1 .68 s t]);
+i3 = axes('position', [-.13 .68 s t]);
 imshow(img)
 title('\itDitylum brightwellii', 'fontsize', 12)
 

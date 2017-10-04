@@ -1,10 +1,12 @@
 %MVCO case
 classpath_generic = '\\SOSIKNAS1\IFCB_products\MVCO\class\classxxxx_v1\';
+urlstr = 'http://ifcb-data.whoi.edu/mvco/';
 
 classfiles = [];
-for yr = 2016, %:2012,
+for yr = 2017 %:2012,
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'I*.mat']);
+    temp = [temp; dir([classpath 'D*.mat'])];
     pathall = repmat(classpath, length(temp),1);
     classfiles = [classfiles; cellstr([pathall char(temp.name)])];
     clear temp pathall classpath
@@ -12,7 +14,9 @@ end;
 
 temp = char(classfiles);
 ind = length(classpath_generic)+1;
-filelist = cellstr(temp(:,ind:ind+20));
+%filelist = cellstr(temp(:,ind:ind+20));
+filelist = cellstr(temp(:,ind:end));
+filelist = regexprep(filelist, '_class_v1.mat', '');
 mdate = IFCB_file2date(filelist);
 
 load('\\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all', 'ml_analyzed', 'filelist_all');
@@ -25,6 +29,11 @@ temp = NaN(size(filelist));
 temp(ia) = ml_analyzed(ib);
 ml_analyzed_list = temp;
 clear ml_analyzed filelist_all temp ia ib 
+
+ia = find(isnan(ml_analyzed_list));
+files_missing_ml = filelist(ia); %assume these are the D files
+temp = IFCB_volume_analyzed([repmat(urlstr,length(ia),1) char(filelist(ia)) repmat('.hdr', length(ia),1)]);
+ml_analyzed_list(ia) = temp;
 
 temp = load(classfiles{1}, 'class2useTB');
 class2use = temp.class2useTB; clear temp classfilestr
