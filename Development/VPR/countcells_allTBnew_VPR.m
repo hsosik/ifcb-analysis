@@ -15,7 +15,7 @@
 % summary file will be located in subdir \summary\ at the top level
 % location of classifier output files
 %classpath = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_22Sep2015_200trees_allCat\classpath_div\';
-classpath = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_30Oct2015_six_classes\classpath_div\';
+classpath = '\\sosiknas1\Lab_data\VPR\NBP1201\class_RossSea_Trees_test26May2017\classpath_div\';
 %classpath = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_24Sep2015_combineAllPheao24Sep2015\';
 %classpath = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_24Sep2015_combineAllPheao24Sep2015\classpath_div\';
 %path_out = [regexprep(classpath_generic, 'classxxxx_v1\', ''), 'summary' filesep];
@@ -54,10 +54,10 @@ num2dostr = num2str(length(classfiles));
 %ml_analyzed = NaN(size(classfiles));
 adhocthresh = 0.5.*ones(size(class2use)); %assign all classes the same adhoc decision threshold between 0 and 1
 adhocthresh(strmatch('whiteout', class2use, 'exact')) = 0.8; %reassign value for specific class
-adhocthresh(strmatch('phae2all', class2use, 'exact')) = 0.5; %reassign value for specific class
+adhocthresh(strmatch('phaeIndiv2,phaeMany23', class2use, 'exact')) = 0.5; %reassign value for specific class
 adhocthresh(strmatch('phaeMany', class2use, 'exact')) = 0.6; %reassign value for specific class
 adhocthresh(strmatch('squashed', class2use, 'exact')) = 0.5; %reassign value for specific class
-adhocthresh(strmatch('blurry_marSnow', class2use, 'exact')) = 0.5; %reassign value for specific class
+adhocthresh(strmatch('blurry,marSnow', class2use, 'exact')) = 0.5; %reassign value for specific class
 adhocthresh(strmatch('phaeIndiv', class2use, 'exact')) = 0.4; %reassign value for specific class
 for filecount = 1:length(classfiles)
      if ~rem(filecount,10), disp(['reading ' num2str(filecount) ' of ' num2dostr]), end;

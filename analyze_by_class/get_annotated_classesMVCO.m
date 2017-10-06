@@ -52,6 +52,8 @@ for count = 1:length(mode_list),
                 'G_delicatula_detritus'});
        case 'gyrodenoids'
             [~, class_cat] = intersect(class2use_here, {'Gyrodinium'});
+       case 'dinoflagellates'
+            
     end;
     classes_bymode.classes_manual_check{count} = class_cat;
     

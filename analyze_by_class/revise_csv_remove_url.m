@@ -1,7 +1,7 @@
-csv_path1 = '\\sosiknas1\IFCB_products\IFCB014_PiscesNov2014\Manual_fromClass\annotations_csv_Aug2017\';
+csv_path1 = '\\sosiknas1\IFCB_products\IFCB2_C211A_SEA2007\Manual_fromClass\annotations_csv_Aug2017\';
 csvs = dir([csv_path1 '*.csv']);
 csvs = {csvs.name};
-csv_path2 = '\\sosiknas1\IFCB_products\IFCB014_PiscesNov2014\Manual_fromClass\annotations_csv_Aug2017_new\';
+csv_path2 = '\\sosiknas1\IFCB_products\IFCB2_C211A_SEA2007\Manual_fromClass\annotations_csv_Aug2017_new\';
 mkdir(csv_path2)
 
 for ii = 1:length(csvs)

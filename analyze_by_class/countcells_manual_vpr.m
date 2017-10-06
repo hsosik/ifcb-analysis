@@ -1,7 +1,7 @@
 resultpath = '\\sosiknas1\Lab_data\VPR\NBP1201\manual\'; %USER
-roibasepath = '\\sosiknas1\Lab_data\VPR\NBP1201\rois\vpr8\d018\'; %USER
+roibasepath = '\\sosiknas1\Lab_data\VPR\NBP1201\rois\vpr4\d013\'; %USER
 
-filelist = dir([resultpath 'N*.mat']);
+filelist = dir([resultpath 'NBP1201vpr4*.mat']);
 
 %calculate date
 %matdate = IFCB_file2date({filelist.name});

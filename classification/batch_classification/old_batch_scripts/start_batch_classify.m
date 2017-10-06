@@ -21,7 +21,11 @@ filelist = regexprep(filelist, '_fea_v2.csv', '')';
 files_done = dir([out_dir 'IFCB*class_v1.mat']);
 files_done = char(files_done.name);
 files_done = cellstr(files_done(:,1:end-13));
-filelist2 = setdiff(filelist, files_done);
+filelist_temp = setdiff(filelist, files_done);
+files_done = dir([out_dir 'D*class_v1.mat']);
+files_done = char(files_done.name);
+files_done = cellstr(files_done(:,1:end-13));
+filelist2 = setdiff(filelist_temp, files_done);
 %filelist2 = filelist2(27:end);
 %if isequal(in_dir, fea_dir),
 %    filelist2 = strcat(filelist2,'_features.csv');
