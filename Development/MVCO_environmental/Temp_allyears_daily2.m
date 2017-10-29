@@ -24,7 +24,7 @@ Temp2004 = [Temp2004; temp_seacat2004];
 
 yd = (1:366)';
 %year = (2003:2016);
-year = (2001:2016);
+year = (2001:2017);
 Tday = NaN(length(yd),length(year));
 for count = 1:length(year),    
     eval(['yd_ocn = yd_ocn' num2str(year(count)) ';'])
