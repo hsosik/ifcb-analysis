@@ -27,7 +27,7 @@ for ii = 1:length(daydir)
     in_dir_temp = [in_dir_base daydir(ii).name filesep];
     bins_temp = dir([in_dir_temp '*.adc']);
     bins_temp = regexprep({bins_temp.name}', '.adc', '');
-   daystr = char(bins_temp(1)); daystr = daystr(1:9);
+    daystr = char(bins_temp(1)); daystr = daystr(1:9);
   %   daystr = char(bins_temp(1)); daystr = daystr(1:14);
     out_dir_blob_temp = [out_dir_blob_base daystr filesep];
     bins_done = dir([out_dir_blob_temp '*.zip']);
