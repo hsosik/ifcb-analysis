@@ -1,5 +1,6 @@
-p = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\train_fromcsv_Sep2017\pngs\';
+p = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\train_fromcsv_Sep2017_new\pngs\';
 pfea = '\\sosiknas1\IFCB_dev\features_v3_test\features\';
+pfeaout = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\train_fromcsv_Sep2017_new\features_v3\';
 
 l = dir([p]);
 l = {l.name};
@@ -14,13 +15,13 @@ for count = 1:length(class2use)
     targets{count} = temp;
     ttemp = char(temp); ii = find(ttemp(:,1) == 'D');
     tbin = cellstr(ttemp(:,1:21));
-    troinum = str2num(ttemp(:,23:27)); %roi numbers
+    troinum = cellstr(ttemp(:,23:27)); %roi numbers
     if ~isempty(ii)
-        troinum(ii) = str2num(ttemp(ii,26:30));
+        troinum(ii) = cellstr(ttemp(ii,26:30));
         tbin(ii) = cellstr(ttemp(ii,1:24));
     end
     bin{count} = tbin;
-    roinum{count} = troinum;
+    roinum{count} = str2num(char(troinum));
     c(count) = length(temp); %how many in each class
     feacell{count} = NaN(length(temp),241);
 end
@@ -46,4 +47,11 @@ for count = 1:length(unqbin)
                  feacell{class}(ii(iia),:) = fea.data(iit,:);
              end
          end
+end
+featitles3 = fea.textdata;
+    
+for count = 1:length(class2use)
+    fea = feacell{count};
+    pid = targets{count};
+    save([pfeaout class2use{count}], 'fea', 'featitles3', 'pid')
 end
