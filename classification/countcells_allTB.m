@@ -30,11 +30,6 @@ temp(ia) = ml_analyzed(ib);
 ml_analyzed_list = temp;
 clear ml_analyzed filelist_all temp ia ib 
 
-ia = find(isnan(ml_analyzed_list));
-files_missing_ml = filelist(ia); %assume these are the D files
-temp = IFCB_volume_analyzed([repmat(urlstr,length(ia),1) char(filelist(ia)) repmat('.hdr', length(ia),1)]);
-ml_analyzed_list(ia) = temp;
-
 temp = load(classfiles{1}, 'class2useTB');
 class2use = temp.class2useTB; clear temp classfilestr
 classcount = NaN(length(classfiles),length(class2use));
