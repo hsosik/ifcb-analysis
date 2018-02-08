@@ -1,5 +1,5 @@
 result_path = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\train_fromcsv_Sep2017\splits\';
-result_path = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\train_fromcsv_Sep2017_new\splits\';
+result_path2 = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\train_fromcsv_Sep2017_new\splits\';
 %result_path = 'C:\work\IFCB\Manual_fromClass\train_fromcsv_Sep2017\splits\';
 %result_path2 = 'C:\work\IFCB\\Manual_fromClass\train_fromcsv_Sep2017_new\splits\';
 
@@ -46,7 +46,7 @@ xlabel('Number of Grown Trees');
 ylabel('Out-of-Bag Classification Error');
 datestring = datestr(now, 'ddmmmyyyy');
 
-classes = class2use;
+classes = class2use(ic);
 
 save([result_path result_str datestring],'b', 'targets', 'featitles', 'classes', '-v7.3')
 
