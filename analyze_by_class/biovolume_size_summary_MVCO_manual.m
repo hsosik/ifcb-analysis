@@ -45,9 +45,13 @@ for filecount = 1:length(filelist),
     disp(filename)
     
     load([resultpath filename])
-    yr = str2num(filename(7:10));
+    %yr = str2num(filename(7:10));
     clear targets
-    feapath = regexprep(feapath_base, 'XXXX', filename(7:10));
+    if filename(1) =='I'
+        feapath = regexprep(feapath_base, 'XXXX', filename(7:10));
+    else
+        feapath = regexprep(feapath_base, 'XXXX', filename(2:5));
+    end
     [~,file] = fileparts(filename);
     feastruct = importdata([feapath file '_fea_v2.csv'], ',');
     ind = strmatch('Biovolume', feastruct.colheaders);
