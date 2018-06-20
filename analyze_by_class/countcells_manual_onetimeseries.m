@@ -1,7 +1,7 @@
 function [ classcount, binlist, class2use ] = countcells_manual_onetimeseries( timeseries )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
-%[ classcount, binlist, class2use ] = countcells_manual_oneclass_onetimeseries('Ceratium', 'mvco')
+%[ classcount, binlist, class2use ] = countcells_manual_onetimeseries('mvco')
      conn = getDBConnection_readonly();
 
     if ~isopen(conn)
@@ -9,8 +9,8 @@ function [ classcount, binlist, class2use ] = countcells_manual_onetimeseries( t
         return;
     end
     
-    query = fileread('query_classcount_timeseries.sql');
-    query = sprintf(query, class, timeseries);
+    query = fileread('query_timeseries_counts.sql');
+    query = sprintf(query, timeseries);
     
     cursor = exec(conn, query);
     cursor = fetch(cursor);
