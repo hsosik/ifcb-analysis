@@ -1,4 +1,4 @@
-function [ classcount, binlist, class2use ] = countcells_manual_onetimeseries( timeseries )
+function [ classcount, bins, class2use ] = countcells_manual_onetimeseries( timeseries )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 %[ classcount, binlist, class2use ] = countcells_manual_onetimeseries('mvco')
@@ -15,8 +15,20 @@ function [ classcount, binlist, class2use ] = countcells_manual_onetimeseries( t
     cursor = exec(conn, query);
     cursor = fetch(cursor);
     data = cursor.Data;
-    filelist_short = data(:,1);
-    count = data(:,2);
+    bins_all = data(:,2);
+    count_all = cell2mat(data(:,4));
+    classnum_all = cell2mat(data(:,3));
+    
+    [classnum, ii] = unique(classnum_all);
+    class2use = data(ii,5)';
+    bins = unique(bins_all);
+    
+    count = zeros(length(bins), length(class2use));
+    for jj = 1:length(bins)
+        kk = strmatch(bins(jj), bins_all);
+        [~,a,b] = intersect(classnum, classnum_all(kk));
+        count(jj,a) = count_all(kk(b));
+    end
     
    %get the complete list of bins
     query = fileread('queryBinList_onetimeseries.sql');
@@ -25,20 +37,11 @@ function [ classcount, binlist, class2use ] = countcells_manual_onetimeseries( t
     cursor = fetch(cursor);
     binlist = cursor.Data;
     
-    classcount = zeros(length(binlist),1);
-    [~,ia,ib] = intersect(binlist, filelist_short);
-    classcount(ia) = cell2mat(count(ib));
-      
-    %matdate = IFCB_file2date(filelist);
-    class2use = class;
-    %[matdate, ii] = sort(matdate);
-    %filelist = filelist(ii);
-    %classcount = classcount(ii);
-    %ml_analyzed = ml_analyzed(ii);
-        
-    %filename = ['\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\summary_webMC\count_manual_current_' class];
-    %save(filename, 'classcount', 'matdate', 'filelist', 'ml_analyzed', 'class2use');
-    
+    classcount = zeros(length(binlist),length(class2use));
+    [~,ia,ib] = intersect(binlist, bins);
+    classcount(ia,:) = count(ib,:);
+    bins = bins(ib);  
+   
    %fprintf('Query complete, results are available in %s\n', filename);
     disp('WARNING: These results to not yet reflect manual_list task completeness information!!')
 

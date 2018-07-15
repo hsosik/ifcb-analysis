@@ -15,6 +15,7 @@ load([datadir 'other2014'])
 load([datadir 'other2015'])
 load([datadir 'other2016'])
 load([datadir 'other2017'])
+load([datadir 'other2018'])
 
 %this will lead to averaging of seacat and node temps for overlap days
 yd_ocn2003 = [yd_ocn2003; yd_seacat2003];
@@ -24,7 +25,7 @@ Temp2004 = [Temp2004; temp_seacat2004];
 
 yd = (1:366)';
 %year = (2003:2016);
-year = (2001:2017);
+year = (2001:2018);
 Tday = NaN(length(yd),length(year));
 for count = 1:length(year),    
     eval(['yd_ocn = yd_ocn' num2str(year(count)) ';'])
