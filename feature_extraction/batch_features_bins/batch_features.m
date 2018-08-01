@@ -43,7 +43,7 @@ if not(debug),
             try
             	bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
             catch ME
-                disp('error');
+                disp(getReport(ME,'extended'));
             end
         end
     else
@@ -51,7 +51,7 @@ if not(debug),
             try
                 bin_features(in_dir, [char(filelist(filecount)) '.zip'], out_dir, []);
             catch ME
-                disp('error')
+                disp(getReport(ME,'extended'));
             end
         end;
     end
@@ -61,13 +61,13 @@ else
             try
                 bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
             catch ME
-                disp('error')
+                disp(getReport(ME,'extended'));
             end
         else
             try
                 bin_features(in_dir, [char(filelist(filecount)) '.zip'], out_dir, []);
             catch ME
-                disp('error')
+                disp(getReport(ME,'extended'));
             end
         end;
     end

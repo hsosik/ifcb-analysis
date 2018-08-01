@@ -1,9 +1,9 @@
 %MVCO case
 classpath_generic = '\\SOSIKNAS1\IFCB_products\MVCO\class\classxxxx_v1\';
-urlstr = 'http://ifcb-data.whoi.edu/mvco/';
+urlstr = 'https://ifcb-data.whoi.edu/mvco/';
 
 classfiles = [];
-for yr = 2017 %:2012,
+for yr = 2018 %:2012,
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'I*.mat']);
     temp = [temp; dir([classpath 'D*.mat'])];
