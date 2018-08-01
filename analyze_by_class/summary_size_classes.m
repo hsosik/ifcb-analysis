@@ -47,6 +47,7 @@ clear classcount biovol daycount eqdiam filelist ii matdate ml ml_analyzed_struc
 [ind_diatom] = get_diatom_ind(classes,classes);
 diatom_flag = zeros(size(classes));
 diatom_flag(ind_diatom) = 1;
+[ind_ciliate] = get_ciliate_ind(classes,classes);
 
 for daycount = 1:length(unqday),
     disp(datestr(unqday(daycount)))
@@ -116,6 +117,7 @@ clear daycount classcount iii cellC
 ml_day_mat = squeeze(cell2mat(struct2cell(ml_day)))'; 
 C_day_mat = squeeze(cell2mat(struct2cell(C_day)))'./ml_day_mat/1000; %microgC per L
 C_diatom = sum(C_day_mat(:,ind_diatom),2); %sum to skip the ones that are incomplete for all diatoms
+C_ciliate = sum(C_day_mat(:,ind_ciliate),2);
 
 C0_10_mat = squeeze(cell2mat(struct2cell(C0_10)))'./ml_day_mat/1000; C0_10sum = sum(C0_10_mat,2);
 C10_20_mat = squeeze(cell2mat(struct2cell(C10_20)))'./ml_day_mat/1000; C10_20sum = sum(C10_20_mat,2);
@@ -131,11 +133,13 @@ C20_infphyto = sum(C20_inf_mat(:,ind_phyto),2);
 [ Cmdate_mat, C10_20phyto_mat, yearlist, yd ] = timeseries2ydmat( unqday, C10_20phyto );
 [ Cmdate_mat, C20_infphyto_mat, Cyearlist, yd ] = timeseries2ydmat( unqday, C20_infphyto );
 [ Cmdate_mat, C20_diatom_mat, Cyearlist, yd ] = timeseries2ydmat( unqday, C_diatom );
+[ Cmdate_mat, C_ciliate_mat, Cyearlist, yd ] = timeseries2ydmat( unqday, C_ciliate );
+
 
 Notes1 = 'Output from summary_size_classes.m';
 Notes2 = 'Carbon values in micrograms per L';
 Cmdate_day = unqday;
 %save c:\work\mvco\carbon\IFCB_carbon_manual_Jan2014 Cmdate_mat C0_10phyto_mat C10_20phyto_mat C20_infphyto_mat C_diatom C_day_mat classes Cyearlist yd ind_diatom ind_phyto Notes1 Notes2 Cmdate_day
 datestr = date; datestr = regexprep(datestr,'-','');
-save(['\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\summary\IFCB_carbon_manual_' datestr], 'Cmdate_mat', 'C0_10phyto_mat', 'C10_20phyto_mat', 'C20_infphyto_mat', 'C_diatom', 'C_day_mat', 'classes', 'Cyearlist', 'yd', 'ind_diatom', 'ind_phyto', 'Notes1', 'Notes2', 'Cmdate_day')
+save(['\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\summary\IFCB_carbon_manual_' datestr], 'Cmdate_mat', 'C0_10phyto_mat', 'C10_20phyto_mat', 'C20_infphyto_mat', 'C_ciliate_mat', 'C_diatom', 'C_day_mat', 'classes', 'Cyearlist', 'yd', 'ind_diatom', 'ind_phyto', 'ind_ciliate', 'Notes1', 'Notes2', 'Cmdate_day')
 

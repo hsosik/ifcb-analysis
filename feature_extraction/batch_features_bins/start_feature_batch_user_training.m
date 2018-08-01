@@ -43,6 +43,10 @@ bins_done = regexprep({bins_done.name}', '_fea_v2.csv', '');
 in_dir = in_dir(ia);
 in_dir_blob = in_dir_blob(ia);
 
+bins = fliplr(bins);
+in_dir = fliplr(in_dir);
+in_dir_blob = fliplr(in_dir_blob);
+
 nfiles = length(bins); 
 disp(['processing ' num2str(nfiles) ' files'])
 if nfiles > 0
