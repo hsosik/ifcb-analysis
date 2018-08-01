@@ -40,7 +40,8 @@ function [ classcount, bins, class2use ] = countcells_manual_onetimeseries( time
     classcount = zeros(length(binlist),length(class2use));
     [~,ia,ib] = intersect(binlist, bins);
     classcount(ia,:) = count(ib,:);
-    bins = bins(ib);  
+%    bins = bins(ib);  
+    bins = binlist;
    
    %fprintf('Query complete, results are available in %s\n', filename);
     disp('WARNING: These results to not yet reflect manual_list task completeness information!!')
