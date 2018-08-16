@@ -1,20 +1,18 @@
 function [ ] = biovolume_size_summary_manual_webMC( timeseries_name, dashboard_url, feapath, resultpath)
-%function [ ] = countcells_manual_webMC( timeseries_name, dashboard_url )
+%function [ ] = biovolume_size_summary_manual_webMC( timeseries_name, dashboard_url, feapath, resultpath)
+%
 %For example:
-%countcells_manual_user_training('C:\work\IFCB\user_training_test_data\manual\' , 'C:\work\IFCB\user_training_test_data\data\')
-% Heidi M. Sosik, Woods Hole Oceanographic Institution, September 2012 / August 2015
+%biovolume_size_summary_manual_webMC( 'NESLTER_transect', 'https://ifcb-data.whoi.edu/NESLTER_transect', '\\sosiknas1\IFCB_products\NESLTER_transect\features\featuresXXXX_v2\', '\\sosiknas1\IFCB_products\NESLTER_transect\')
+% Heidi M. Sosik, Woods Hole Oceanographic Institution, August 2018
 %
 %Example inputs:
-%   resultpath = 'C:\work\IFCB\user_training_test_data\class\classxxxx_v1\'; %USER manual file location
-%   dashboard_url = 'C:\work\IFCB\user_training_test_data\data\'; %USER where to access data (hdr files) (url for web services, full path for local)
+%   timeseries_name = 'NESLTER_transect'; %USER time series name on IFCB Dashboard
+%   dashboard_url = 'https://ifcb-data.whoi.edu/NESLTER_transect'; %USER url on IFCB Dashboard
+%   feapath = '\\sosiknas1\IFCB_products\NESLTER_transect\features\featuresXXXX_v2\'; %USER where are your feature files
+%   resultpath = '\\sosiknas1\IFCB_products\NESLTER_transect\'; USER where to save results
 %
-% configured for IFCB007 and higher (except IFCB008)
-% summarizes class results for a series of manual annotation files (as saved by startMC)
-% summary file will be located in subdir \summary\ at the top level of the
-% location of the manual result files
-
-%resultpath = 'C:\work\IFCB\user_training_test_data\manual_temp\'; %USER
-%in_dir = 'C:\work\IFCB\user_training_test_data\data\'; %USER
+% summarizes class results for a series of manual annotation results (as queried from the Manual Annotate database)
+% summary file will be located in subdir \summary\ at the top level of the location of the result path
 
 [ filelist, summary ] = biovolume_size_manual_onetimeseries(timeseries_name, feapath);
 
@@ -43,11 +41,4 @@ save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_an
 disp('Summary count_biovolume_size file stored here:')
 disp([resultpath 'summary\count_biovol_size_manual_' datestr])
 
-return
-
-figure %example
-classnum = 3;
-plot(matdate, classcount(:,classnum)./ml_analyzed, '.-')
-datetick('x')
-ylabel([class2use{classnum} ' (mL^{-1})'])
 
