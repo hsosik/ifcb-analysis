@@ -1,6 +1,6 @@
 %load 'c:\work\IFCB\ifcb_data_mvco_jun06\Manual_fromClass\summary\count_biovol_size_manual_24Jan2014.mat'
 resultpath = '\\sosiknas1\IFCB_products\NESLTER_transect\summary\';
-load([resultpath 'count_biovol_size_manual_03Aug2018'])
+load([resultpath 'count_biovol_size_manual_14Aug2018'])
 micron_factor = 1/3.4; %microns per pixel
 
 classes_fields = fields(summary.count);
@@ -18,7 +18,7 @@ for filecount = 1:length(filelist),
         iii = find(summary.eqdiam.(classes_fields{classcount}){filecount} < 10/micron_factor);
         if ~isempty(iii),
             N0_10.(classes_fields{classcount})(filecount) = length(iii);
-            biovol0_10.(classes_fields{classcount})(filecount) = nansum(summary.biovol.(classes_fields{classcount}){filecount}(iii)/micron_factor^3);
+            biovol0_10.(classes_fields{classcount})(filecount) = nansum(summary.biovol.(classes_fields{classcount}){filecount}(iii)*micron_factor^3);
         else
             N0_10.(classes_fields{classcount})(filecount) = 0;
             biovol0_10.(classes_fields{classcount})(filecount) = 0;
@@ -26,15 +26,15 @@ for filecount = 1:length(filelist),
         iii = find(summary.eqdiam.(classes_fields{classcount}){filecount} >= 10/micron_factor & summary.eqdiam.(classes_fields{classcount}){filecount} < 20/micron_factor);
         if ~isempty(iii),
             N10_20.(classes_fields{classcount})(filecount) = length(iii);
-            biovol10_20.(classes_fields{classcount})(filecount) = nansum(summary.biovol.(classes_fields{classcount}){filecount}(iii)/micron_factor^3);
+            biovol10_20.(classes_fields{classcount})(filecount) = nansum(summary.biovol.(classes_fields{classcount}){filecount}(iii)*micron_factor^3);
         else
             N10_20.(classes_fields{classcount})(filecount) = 0;
             biovol10_20.(classes_fields{classcount})(filecount) = 0;    
         end;
-        iii = find(summary.eqdiam.(classes_fields{classcount}){filecount} >= 20);
+        iii = find(summary.eqdiam.(classes_fields{classcount}){filecount} >= 20/micron_factor);
         if ~isempty(iii),
             N20_inf.(classes_fields{classcount})(filecount) = length(iii);
-            biovol20_inf.(classes_fields{classcount})(filecount) = nansum(summary.biovol.(classes_fields{classcount}){filecount}(iii)/micron_factor^3);
+            biovol20_inf.(classes_fields{classcount})(filecount) = nansum(summary.biovol.(classes_fields{classcount}){filecount}(iii)*micron_factor^3);
         else
             N20_inf.(classes_fields{classcount})(filecount) = 0;, 
             biovol20_inf.(classes_fields{classcount})(filecount) = 0;    
