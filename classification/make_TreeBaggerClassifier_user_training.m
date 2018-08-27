@@ -9,6 +9,7 @@ function [ ] = make_TreeBaggerClassifier_user_training( result_path, train_filen
 %Example inputs:
 %result_path = 'C:\work\IFCB\user_training_test_data\manual\summary\'; %USER location of training file and classifier output
 %train_filename = 'UserExample_Train_06Aug2015'; %USER what file contains your training features
+%result_str = 'UserExample_Trees_';
 %nTrees = 100; %USER how many trees in your forest; choose enough to reach asymptotic error rate in "out-of-bag" classifications
 
 load([result_path train_filename]); 
