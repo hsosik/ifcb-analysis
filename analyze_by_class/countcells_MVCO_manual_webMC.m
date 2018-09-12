@@ -1,25 +1,17 @@
 resultpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\';
 outpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\summary_webMC\';
-load([outpath 'summaryOne_results.mat']); dbsumtable = results; clear results
-load([outpath 'class_table_mvco']);
+load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the milliliters analyzed for all sample files
 
-dbcount = cell2mat(dbsumtable(2:end,2:end));
-dbclasses = dbsumtable(1,2:end);
+[ classcount_sql, filelist_sql, class2use ] = countcells_manual_onetimeseries('mvco');
 
+%%
+%get metadata according to filelist in manual_list
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the milliliters analyzed for all sample files
 
-urlstr = 'http://ifcb-data.whoi.edu/mvco/';
-
-load class2use_MVCOmanual6 %get the master list to start
-[ classes_byfile, classes_bymode ] = get_annotated_classesMVCO( class2use, manual_list);
+[ classes_byfile, classes_bymode ] = get_annotated_classesMVCO_sql( class2use, manual_list);
 
 filelist = classes_byfile.filelist;
-
-for ii = 1:length(dbclasses)
-    ind = strmatch(dbclasses(ii),class_table_mvco{1:end,3});
-    
-end
 
 [~,ia, ib] = intersect(filelist, filelist_all);
 if length(ia) ~= length(filelist),
@@ -32,16 +24,26 @@ ml_analyzed = temp;
 %clean up from ml_analyzed_all
 clear filelist_all looktime matdate minproctime runtime ia ib
 
-ia = find(isnan(ml_analyzed));
-files_missing_ml = filelist(ia); %assume these are the D files
-temp = IFCB_volume_analyzed([repmat(urlstr,length(ia),1) char(filelist(ia)) repmat('.hdr', length(ia),1)]);
-ml_analyzed(ia) = temp;
-
 %mark NaNs in ml_analyzed for classify not complete in manual annotation
 analyzed_flag = classes_byfile.classes_checked; analyzed_flag(analyzed_flag == 0) = NaN;
 ml_analyzed_mat = repmat(ml_analyzed,1,length(class2use)).*analyzed_flag;
-
-
+%%
+%now make sure the count info from the sql query has the same filelist order
+[~,ia, ib] = intersect(filelist, filelist_sql);
+classcount = nan(length(filelist), length(class2use));
+classcount(ia,:) = classcount_sql(ib,:); 
 
 %calculate date
-matdate = IFCB_file2date(filelist);;
+matdate = IFCB_file2date(filelist);
+
+if ~exist([resultpath 'summary\'], 'dir')
+    mkdir([resultpath 'summary\'])
+end;
+datestr = date; datestr = regexprep(datestr,'-','');
+save([outpath 'count_manual_' datestr], 'matdate', 'ml_analyzed_mat', 'classcount', 'filelist', 'class2use')
+save([outpath 'count_manual_current'], 'matdate', 'ml_analyzed_mat', 'classcount', 'filelist', 'class2use')
+
+%create and save daily binned results
+[matdate_bin, classcount_bin, ml_analyzed_mat_bin] = make_day_bins(matdate,classcount, ml_analyzed_mat);
+save([outpath 'count_manual_' datestr '_day'], 'matdate_bin', 'classcount_bin', 'ml_analyzed_mat_bin', 'class2use')
+save([outpath 'count_manual_current_day'], 'matdate_bin', 'classcount_bin', 'ml_analyzed_mat_bin', 'class2use')

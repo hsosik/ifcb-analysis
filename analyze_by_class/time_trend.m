@@ -50,6 +50,6 @@ xlim(datenum([yearlist(1) next_year],1,1))
 set(gca, 'xtick', datenum([yearlist next_year],1,1))
 datetick('x', 'keeplimits', 'keepticks')
 %[s,b,r,p]=fit_line(mdate_mat(:), yanom(:));
-fplot(['x*' num2str(s) '+' num2str(b)], xlim,'k')
+fplot(['x*' num2str(s) '+' num2str(b)], xlim,'k--', 'linewidth', 2)
 title(['r = ' num2str(r(1), '%.2f') '; \tau = '  num2str(r(2), '%.2f') '; y = ' num2str(s) '*x+' num2str(b) '; p = ' num2str(p, '%.3f ')])
 ylabel([labelstr ', anom'])

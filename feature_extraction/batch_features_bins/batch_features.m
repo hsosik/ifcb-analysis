@@ -40,19 +40,35 @@ end
 if not(debug),
     if exist('in_dir_blob', 'var')
         parfor filecount = 1:length(filelist)
-             bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
+            try
+            	bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
+            catch ME
+                disp(getReport(ME,'extended'));
+            end
         end
     else
         parfor filecount = 1:length(filelist)
-           bin_features(in_dir, [char(filelist(filecount)) '.zip'], out_dir, []);
+            try
+                bin_features(in_dir, [char(filelist(filecount)) '.zip'], out_dir, []);
+            catch ME
+                disp(getReport(ME,'extended'));
+            end
         end;
     end
 else
     for filecount = 1:length(filelist)
         if exist('in_dir_blob', 'var')
-            bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
+            try
+                bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
+            catch ME
+                disp(getReport(ME,'extended'));
+            end
         else
-            bin_features(in_dir, [char(filelist(filecount)) '.zip'], out_dir, []);
+            try
+                bin_features(in_dir, [char(filelist(filecount)) '.zip'], out_dir, []);
+            catch ME
+                disp(getReport(ME,'extended'));
+            end
         end;
     end
 end
