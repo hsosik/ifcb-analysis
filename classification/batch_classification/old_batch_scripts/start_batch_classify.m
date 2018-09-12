@@ -1,10 +1,10 @@
 classifierName = '\\sosiknas1\IFCB_products\MVCO\classifiers\MVCO_trees_25Jun2012';
 
-yr = 2017;
+yr = 2018;
 out_dir = ['\\SosikNAS1\IFCB_products\MVCO\class\class' num2str(yr) '_v1\'];%
 %in_dir = 'http://ifcb-data.whoi.edu/mvco/';
 %for V2 web services, set fea_dir = in_dir;
-fea_dir = '\\SosikNAS1\IFCB_products\MVCO\features\features2017_v2\';
+fea_dir = '\\SosikNAS1\IFCB_products\MVCO\features\features2018_v2\';
 
 
 
@@ -26,7 +26,9 @@ files_done = dir([out_dir 'D*class_v1.mat']);
 files_done = char(files_done.name);
 files_done = cellstr(files_done(:,1:end-13));
 filelist2 = setdiff(filelist_temp, files_done);
-%filelist2 = filelist2(27:end);
+%filelist2 = filelist2(1:2000);
+%filelist2 = filelist2(2001:4000);
+%filelist2 = filelist2(2000:10:end);
 %if isequal(in_dir, fea_dir),
 %    filelist2 = strcat(filelist2,'_features.csv');
 %else
