@@ -99,7 +99,7 @@ figure
 for i = 1:length(beads)
     t = ((beads(i).size)./2.7243)-0.4905;
     subplot(4,5,i); 
-    histogram(abs(t), 'BinWidth', 1, 'BinLimits',[0,50])
-    line([bead_label(i),bead_label(i)], [0, 500], 'LineWidth', 1.5, 'LineStyle', '-', 'Color', 'r')
+    histogram(abs(t), 'BinWidth', 1, 'BinLimits',[0,50],  'Normalization', 'probability')
+    line([bead_label(i),bead_label(i)], [0, 1], 'LineWidth', 1.5, 'LineStyle', '-', 'Color', 'r')
     legend(num2str(bead_label(i)))
 end
