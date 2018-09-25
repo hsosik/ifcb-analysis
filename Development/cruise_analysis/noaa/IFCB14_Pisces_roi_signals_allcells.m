@@ -1,7 +1,7 @@
 
-load '/Volumes/IFCB_products/IFCB014_PiscesNov2014/Manual_fromClass/summary/count_manual_24Jul2017.mat' % to get filelist we are interested in plotting
-basepath='/Volumes/IFCB_data/IFCB014_PiscesNov2014/data/2014/';
-resultpath='/Volumes/IFCB_products/IFCB014_PiscesNov2014/Manual_fromClass/';
+load '\\sosiknas1\IFCB_products\IFCB014_PiscesNov2014\Manual_fromClass\summary\count_manual_24Jul2017.mat' % to get filelist we are interested in plotting
+basepath='\\sosiknas1\IFCB_data\IFCB014_PiscesNov2014\data\2014\';
+resultpath='\\sosiknas1\IFCB_products\IFCB014_PiscesNov2014\Manual_fromClass\';
 folders=dir([basepath 'D*']);
 
 %for i=2:length(filelist) %where is D20141103 folder? There is a file in
@@ -31,7 +31,7 @@ for i=2:length(filelist);
 end
 
 save ('Pisces_IFCB014_roisignals',  'Green*', 'Chl*', 'filelist')
-%%
+%after the file of signals is saved you can just run the part below here:
 load 'Pisces_IFCB014_roisignals.mat'
 
 figure1 = figure;

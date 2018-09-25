@@ -2,7 +2,7 @@ resultpath = '\\sosiknas1\IFCB_products\IFCB14_Dock\Manual_fromClass\';
 
 urlstr = 'http://ifcb-data.whoi.edu/IFCB14_Dock/'
 
-outpath = [resultpath 'annotations_csv_Aug2017\'];
+outpath = [resultpath 'annotations_csv_Oct2017\'];
 if ~exist(outpath, 'dir')
     mkdir(outpath)
 end;
@@ -39,7 +39,8 @@ for filecount = 1:length(filelist)
         fid = fopen([outpath class2use_manual{classnum} '.csv'], 'a');
         for ii = 1:length(roinumtemp)
              %fprintf(fid, '%s,%s%05.0f\r\n', labeltemp, [urlstr filename '_'], roinumtemp(ii));
-             fprintf(fid, '%s%05.0f\r\n', [urlstr filename '_'], roinumtemp(ii));
+             %fprintf(fid, '%s%05.0f\r\n', [urlstr filename '_'], roinumtemp(ii));
+             fprintf(fid, '%s%05.0f\r\n', [filename ','], roinumtemp(ii));
         end;
         fclose(fid);
       end
