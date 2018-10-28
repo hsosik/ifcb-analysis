@@ -49,7 +49,7 @@ lon = deg+min;
 latitude = lat;
 longitude = lon;
 matlab_date = date;
-save \\sosiknas1\IFCB_data\IFCB101_PiscesAug2016\metadata\metadata_raw matlab_date latitude longitude hour minute second day month year;
+save \\sosiknas1\IFCB_data\NESLTER_broadscale\metadata\Bigelow_May2018\metadata_raw matlab_date latitude longitude hour minute second day month year;
 
 %to combine 3 metadatafiles.
 % load('\\sosiknas1\IFCB_data\IFCB101_GordonGunterMay2016\metadata\metadata1.mat')

@@ -83,7 +83,9 @@ end
 
 
 figure
-plot(bead_label, bead_mode, '.', 'MarkerSize', 10)
+plot(bead_label, bead_mode, 'x', 'MarkerSize', 10)
+xlabel('bead size as advertized (um)')
+ylabel('measured pixel size')
 
 figure
 for i = 1:length(beads)
