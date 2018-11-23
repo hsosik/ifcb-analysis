@@ -23,9 +23,10 @@ matdate = IFCB_file2date(filelist);
 if ~isequal(resultpath(end), filesep)
     resultpath = [resultpath filesep];
 end
-%if ~isequal(dashboard_url(end), filesep)
-%    dashboard_url = [in_dir filesep];
-%end
+if ~isequal(dashboard_url(end), '/')
+   dashboard_url = [in_dir '/'];
+end
+
 if strmatch(timeseries_name, 'mvco')
     temp = load('\\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all'); %load the milliliters analyzed for all sample files
     ml_analyzed = NaN(size(filelist));
@@ -35,8 +36,10 @@ if strmatch(timeseries_name, 'mvco')
     end
     ml_analyzed(ia) = temp.ml_analyzed(ib); 
 else
-    ml_analyzed = IFCB_volume_analyzed(strcat(repmat([dashboard_url '/'],length(filelist),1), filelist, repmat('.hdr', length(filelist),1)));
+    ml_analyzed = IFCB_volume_analyzed(strcat(repmat([dashboard_url],length(filelist),1), filelist, repmat('.hdr', length(filelist),1)));
 end
+
+ml_analyzed = IFCB_volume_analyzed([repmat([dashboard_url],length(filelist),1) char(filelist) repmat('.hdr', length(filelist),1)]);
 classes = fields(summary.count);
 
 if ~exist([resultpath 'summary\'], 'dir')
