@@ -15,7 +15,7 @@ function [ ] = biovolume_size_summary_TB( classpath, feapath, dashboard_url ) %,
 
 micron_factor = 1/3.4; %USER PUT YOUR OWN microns per pixel conversion
 classfilelist = dir([classpath '*.mat']);
-classfilelist = {classfilelist(1:20).name}';
+classfilelist = {classfilelist.name}';
 filelist = regexprep(classfilelist, '_class_v1.mat', '');
 feafilelist = regexprep(classfilelist, '_class_v1.mat', '_fea_v2.csv');
 
