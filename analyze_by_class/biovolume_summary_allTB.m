@@ -1,7 +1,7 @@
-resultpath = '\\sosiknas1\IFCB_products\\IFCB101_BigelowMay2015\class\summary\';
-classpath_generic = '\\sosiknas1\IFCB_products\\IFCB101_BigelowMay2015\class\classxxxx_v1\';
-feapath_generic = '\\sosiknas1\IFCB_products\IFCB101_BigelowMay2015\features\featuresxxxx_v2\';
-hdrpath = 'http://ifcb-data.whoi.edu/IFCB101_BigelowMay2015/';
+resultpath = '\\sosiknas1\IFCB_products\SPIROPA\class\summary\';
+classpath_generic = '\\sosiknas1\IFCB_products\SPIROPA\class\classxxxx_v1\';
+feapath_generic = '\\sosiknas1\IFCB_products\SPIROPA\features\featuresxxxx_v2\';
+hdrpath = 'http://ifcb-data.whoi.edu/SPIROPA/';
 adhocthresh = 0.5;
 
 % resultpath = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\summary\';

@@ -14,6 +14,7 @@ function [ ] = biovolume_size_summary_TB( classpath, feapath, dashboard_url ) %,
 % summary file will be located in subdir \summary\ at the top level of the location of the result path
 
 micron_factor = 1/3.4; %USER PUT YOUR OWN microns per pixel conversion
+disp('getting list of files...')
 classfilelist = dir([classpath '*.mat']);
 classfilelist = {classfilelist.name}';
 filelist = regexprep(classfilelist, '_class_v1.mat', '');
@@ -30,14 +31,16 @@ if ~isequal(dashboard_url(end), '/')
     dashboard_url = [in_dir '/'];
 end
 
+disp('getting ml_analyzed...')
 ml_analyzed = IFCB_volume_analyzed(strcat(dashboard_url, char(filelist), '.hdr'));
 
 load([classpath classfilelist{1}], 'class2useTB');
 
-diam_edges = (0:300);
+diam_edges = [(0:300) inf]';
 classbiovoldist = zeros(length(filelist), length(class2useTB), length(diam_edges)-1);
-classcountdist = NaN.*classbiovoldist;
+classcountdist = classbiovoldist;
 for fcount = 1:length(filelist)
+    disp(filelist{fcount})
     c = load([classpath classfilelist{fcount}]);
     f = get_bin_features([feapath feafilelist{fcount}], {'Biovolume', 'EquivDiameter'});
     for classcount = 1:length(class2useTB)

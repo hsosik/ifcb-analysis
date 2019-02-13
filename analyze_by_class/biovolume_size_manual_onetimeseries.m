@@ -19,6 +19,7 @@ binlist = cursor.Data;
 
 for filecount = 1:length(binlist)
     filename = binlist{filecount};
+    disp(filename)
     if filename(1) =='I'
         feapath = regexprep(feapath_base, 'XXXX', filename(7:10));
     else
