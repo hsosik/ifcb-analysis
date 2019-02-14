@@ -40,7 +40,7 @@ nt = length(targets.pid);
 if nt > 0,
     log(['LOAD blobs ' file]);
     if roi_flag
-        targets_blob = get_blob_bin_file([in_dir_blob regexprep(file, '.roi', '_blobs_v2.zip')]);
+        targets_blob = get_blob_bin_file([in_dir_blob regexprep(file, '.roi', '_blobs_v4.zip')]);
     else
         targets_blob = get_blob_bin_file([in_dir regexprep(file, '.zip', '_blob.zip')]);
     end;
@@ -52,13 +52,14 @@ target.config = config;
 output.config = config;
 empty_target = target;
 
-for i = 1:nt,
+for i = 860:nt
+    disp(i)
     target = empty_target;
     % get the image
     target.image = cell2mat(targets.image(i));
     target.blob_image = cell2mat(targets_blob.image(i));
     target = blob_geomprop(target); 
-    %target = blob_rotate(target);
+    target = blob_rotate(target);
     %target = blob_texture(target);
     %target = blob_invmoments(target);
     %target = blob_shapehist_stats(target);
@@ -69,7 +70,8 @@ for i = 1:nt,
     %target = blob_binary_symmetry(target);
     %target = image_HOG(target);
     %target = blob_rotated_geomprop(target);
-    temp.features(i) = merge_structs(target.blob_props, target.image_props);
+    %temp.features(i) = merge_structs(target.blob_props, target.image_props);
+    temp.features(i) = target.blob_props;
     if chatty && rem(i,100) == 0,
       log(['PROCESSED ' char(targets.pid(i)) ' (' num2str(i) ' of ' num2str(nt) ')']);
     end;

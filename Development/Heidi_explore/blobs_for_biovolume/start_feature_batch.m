@@ -38,7 +38,7 @@ for ii = 1:length(daydir),
     bins = [bins; bins_temp];
 end;
 bins_done = dir([out_dir '*.csv']);
-bins_done = regexprep({bins_done.name}', '_fea_v2.csv', '');
+bins_done = regexprep({bins_done.name}', '_fea_v4.csv', '');
 [bins,ia] = setdiff(bins, bins_done);
 in_dir = in_dir(ia);
 in_dir_blob = in_dir_blob(ia);
