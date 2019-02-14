@@ -23,23 +23,11 @@ matdate = IFCB_file2date(filelist);
 if ~isequal(resultpath(end), filesep)
     resultpath = [resultpath filesep];
 end
-if ~isequal(dashboard_url(end), '/')
-   dashboard_url = [in_dir '/'];
-end
+%if ~isequal(dashboard_url(end), filesep)
+%    dashboard_url = [in_dir filesep];
+%end
 
-if strmatch(timeseries_name, 'mvco')
-    temp = load('\\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all'); %load the milliliters analyzed for all sample files
-    ml_analyzed = NaN(size(filelist));
-    [~,ia,ib] = intersect(filelist, temp.filelist_all);
-    if length(ia) ~= length(filelist)
-        disp('some ml_analyzed are missing')
-    end
-    ml_analyzed(ia) = temp.ml_analyzed(ib); 
-else
-    ml_analyzed = IFCB_volume_analyzed(strcat(repmat([dashboard_url],length(filelist),1), filelist, repmat('.hdr', length(filelist),1)));
-end
-
-ml_analyzed = IFCB_volume_analyzed([repmat([dashboard_url],length(filelist),1) char(filelist) repmat('.hdr', length(filelist),1)]);
+ml_analyzed = IFCB_volume_analyzed([repmat([dashboard_url '/'],length(filelist),1) char(filelist) repmat('.hdr', length(filelist),1)]);
 classes = fields(summary.count);
 
 if ~exist([resultpath 'summary\'], 'dir')
@@ -48,7 +36,7 @@ end;
 
 datestr = date; datestr = regexprep(datestr,'-','');
 %save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed', 'classcount', 'biovol', 'filelist', 'eqdiam', 'perim', 'roiID')
-save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed', 'filelist', 'summary', 'classes', '-v7.3')
+save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed', 'filelist', 'summary', 'classes')
 
 disp('Summary count_biovolume_size file stored here:')
 disp([resultpath 'summary\count_biovol_size_manual_' datestr])
