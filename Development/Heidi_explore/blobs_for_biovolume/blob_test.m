@@ -35,6 +35,8 @@ img_blob(1,img_blob(2,:)==0)=0;
 img_blob(end,img_blob(end-1,:)==0)=0;
 img_blob(img_blob(:,2)==0,1)=0;
 img_blob(img_blob(:,end-1)==0,end)=0;
+img_blob = imclose(img_blob, se3);
+%img_blob = imdilate(img_blob, se2);
 img_blob = bwmorph(img_blob, 'thin', 2); %tar20 oct 2011, Heidi thinks 3 times here might be better than previous 1
 img_edge = img_blob; %keep this to plot?
 
@@ -48,7 +50,7 @@ img_blob(img_dark==1)=1;
 img_blob = imfill(img_blob, 'holes');
 
 img_blob = imerode(img_blob,seD);
-%img_blob = imerode(img_blob,seD);
+img_blob = imerode(img_blob,seD);
 %img_blob = bwmorph(img_blob, 'thin', 1); %20 oct 2011, Heidi thinks 3 times here might be better than previous 1
 
 target.blob_image = img_blob;

@@ -11,8 +11,11 @@
     
 file = 'D20180417T132207_IFCB127';
 file = 'D20180422T012412_IFCB014';
+file = 'D20180418T210919_IFCB014';
     %bin_blobs_heidi_test('C:\work\SPIROPA\IFCB_data\', [file '.roi'], 'C:\work\SPIROPA\IFCB_data\products\');
     %batch_features( {'C:\work\SPIROPA\IFCB_data\'}, {file} , 'C:\work\SPIROPA\IFCB_data\products\', {'C:\work\SPIROPA\IFCB_data\products\'} , 0);    
+    '\\sosiknas1\IFCB_data\SPIROPA\data\2018\', '\\sosiknas1\IFCB_products\SPIROPA\blobs_v4\2018\'
+    bin_blobs_heidi_test(['\\sosiknas1\IFCB_data\SPIROPA\data\2018\' file(1:9) filesep], [file '.roi'], 'C:\work\SPIROPA\IFCB_data\products\')
     
 f = importdata(['C:\work\SPIROPA\IFCB_data\products\features_std\' file '_fea_v2.csv']);
 f2 = importdata(['C:\work\SPIROPA\IFCB_data\products\' file '_fea_v2.csv']);
