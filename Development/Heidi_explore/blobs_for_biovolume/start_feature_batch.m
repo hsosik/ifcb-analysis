@@ -28,8 +28,11 @@ in_dir = [];
 in_dir_blob = [];
 for ii = 1:length(daydir),
     in_dir_temp = [in_dir_base daydir(ii).name filesep];
-    bins_temp = dir([in_dir_temp '*.adc']);
-    bins_temp = regexprep({bins_temp.name}', '.adc', '');
+    %bins_temp = dir([in_dir_temp '*.adc']);
+    %bins_temp = regexprep({bins_temp.name}', '.adc', '');
+    in_dir_temp2 = [in_dir_blob_base daydir(ii).name filesep];
+    bins_temp = dir([in_dir_temp2 '*.zip']);
+    bins_temp = regexprep({bins_temp.name}', '_blobs_v4.zip', '');
     daystr = char(bins_temp); daystr = daystr(:,1:9);
     % daystr = char(bins_temp); daystr = daystr(:,1:14);
     in_dir_blob_temp = cellstr([repmat(in_dir_blob_base,length(bins_temp),1) daystr repmat(filesep, length(bins_temp),1)]);

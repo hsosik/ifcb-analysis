@@ -52,8 +52,8 @@ target.config = config;
 output.config = config;
 empty_target = target;
 
-for i = 860:nt
-    disp(i)
+for i = 1:nt
+    %disp(i)
     target = empty_target;
     % get the image
     target.image = cell2mat(targets.image(i));

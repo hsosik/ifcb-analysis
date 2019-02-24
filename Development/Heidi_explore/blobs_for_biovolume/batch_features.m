@@ -39,16 +39,16 @@ end
 
 if not(debug),
     if exist('in_dir_blob', 'var')
-        parfor filecount = 1:100:length(filelist)
+        parfor filecount = 1:length(filelist)
              bin_features_slim(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
         end
     else
-        parfor filecount = 1:100:length(filelist)
+        parfor filecount = 1:length(filelist)
            bin_features_slim(in_dir, [char(filelist(filecount)) '.zip'], out_dir, []);
         end;
     end
 else
-    for filecount = 1:100:length(filelist)
+    for filecount = 1:length(filelist)
         if exist('in_dir_blob', 'var')
             bin_features_slim(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
         else

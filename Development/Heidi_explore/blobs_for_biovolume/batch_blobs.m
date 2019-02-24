@@ -33,7 +33,7 @@ end
 
 disp(['processing ' num2str(length(bins)) ' files'])
 if not(debug),
-    parfor bincount = 1:100:length(bins)
+    parfor bincount = 1:length(bins)
         try
             %bin_blobs_heidi(in_dir, daydir(daycount).name, out_dir);
             if length(in_dir) > 1
@@ -46,7 +46,7 @@ if not(debug),
         end
     end
 else
-    for bincount = 1:100:length(bins)
+    for bincount = 1:length(bins)
         %bin_blobs_heidi(in_dir, daydir(daycount).name, out_dir);
         if length(in_dir) >= length(bins) && ~isequal('http', in_dir{bincount}(1:4))
             bin_blobs_heidi_test(in_dir{bincount}, [char(bins(bincount)) '.roi'], out_dir{bincount});

@@ -16,9 +16,20 @@ file = 'D20180418T210919_IFCB014';
     %batch_features( {'C:\work\SPIROPA\IFCB_data\'}, {file} , 'C:\work\SPIROPA\IFCB_data\products\', {'C:\work\SPIROPA\IFCB_data\products\'} , 0);    
     '\\sosiknas1\IFCB_data\SPIROPA\data\2018\', '\\sosiknas1\IFCB_products\SPIROPA\blobs_v4\2018\'
     bin_blobs_heidi_test(['\\sosiknas1\IFCB_data\SPIROPA\data\2018\' file(1:9) filesep], [file '.roi'], 'C:\work\SPIROPA\IFCB_data\products\')
+
+    start_blob_batch('\\sosiknas1\IFCB_data\Attune_size_calibration_July2018\data\2018\', '\\sosiknas1\IFCB_products\Attune_size_calibration_July2018\blobs_v4\', true)
+    start_feature_batch('\\sosiknas1\IFCB_data\Attune_size_calibration_July2018\data\2018\', '\\sosiknas1\IFCB_products\Attune_size_calibration_July2018\blobs_v4\', '\\sosiknas1\IFCB_products\Attune_size_calibration_July2018\features_v4\', 'true')
     
-f = importdata(['C:\work\SPIROPA\IFCB_data\products\features_std\' file '_fea_v2.csv']);
+    start_blob_batch('\\sosiknas1\IFCB_data\SPIROPA\data\2018\', '\\sosiknas1\IFCB_products\SPIROPA\blobs_v4\2018\', true)
+    start_feature_batch('\\sosiknas1\IFCB_data\SPIROPA\data\2018\', '\\sosiknas1\IFCB_products\SPIROPA\blobs_v4\2018\', '\\sosiknas1\IFCB_products\SPIROPA\features_v4\', true)
+    
+    
+f = importdata(['\features_std\' file '_fea_v2.csv']);
 f2 = importdata(['C:\work\SPIROPA\IFCB_data\products\' file '_fea_v2.csv']);
+
+f = importdata(['\\sosiknas1\IFCB_products\SPIROPA\features\2018\' file '_fea_v2.csv']);
+f2 = importdata(['\\sosiknas1\IFCB_products\SPIROPA\features_v4\2018\' file '_fea_v4.csv']);
+
 
 figure
 plot(f.data(:,9), f2.data(:,9), '.'), line(xlim, xlim-7)

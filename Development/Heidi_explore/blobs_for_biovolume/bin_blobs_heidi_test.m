@@ -35,7 +35,7 @@ log(['PROCESSING ' num2str(nt) ' target(s) from ' file]);
 
 png_paths = {};
 % for each target
-for i = 1:nt,
+for i = 1:nt
     target = {};
     % configure feature extraction
     target.config = configure_test();
