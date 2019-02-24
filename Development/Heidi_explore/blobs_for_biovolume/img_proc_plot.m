@@ -16,10 +16,15 @@ subplot(2,3,1), imshow(img); title('original')
         plot(perimeter{count}(:,2), perimeter{count}(:,1), 'r')
     end;
     %plot(target.blob_prop
-subplot(2,3,2), imshow(img_pc); title('phase cong'), caxis([.1 .5]), colorbar
+subplot(2,3,2), imshow(img_pc); title('phase cong'), caxis([.1 .5])% colorbar
 subplot(2,3,3), imshow(img_edge); title('edges')
 subplot(2,3,4), imshow(img_dark); title('dark areas')
 subplot(2,3,5), imshow(img_blob); title('blob')
+se3 = strel('disk',3);
+iii = imbinarize(img_pc,graythresh(img_pc));
+iii = imclose(iii, se3);
+img_iii = bwmorph(iii, 'thin', 2); %tar20 oct 2011, Heidi thinks 3 times here might be better than previous 1
+subplot(2,3,6), imshow(iii); title('Gray threshold') 
 pause
 end
 
