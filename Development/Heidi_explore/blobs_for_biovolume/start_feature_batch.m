@@ -13,14 +13,14 @@ function [ ] = start_feature_batch_user_training(in_dir_base , in_dir_blob_base,
 %   parallel_proc_flag = false; %USER true for parallel processing
 
 if ~exist('parallel_proc_flag', 'var')
-    parallel_proc_flag = false; %default
+    parallel_proc_flag = false; % 
 end
 
 if ~exist(out_dir, 'dir'),
     mkdir(out_dir)
 end;
 
-daydir = dir([in_dir_base 'D*']);
+daydir = dir([in_dir_base 'D201809*']);
 %daydir = dir([in_dir_base 'I*']);
 daydir = daydir([daydir.isdir]); 
 bins = [];
