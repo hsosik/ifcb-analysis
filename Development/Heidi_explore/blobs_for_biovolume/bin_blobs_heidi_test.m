@@ -42,7 +42,7 @@ for i = 1:nt
     % get the image
     target.image = cell2mat(targets.image(i));
     % compute the blob mask (result in target.blob_image)
-    target = blob_test(target);
+    target = blob_test4e(target);
     % now output the blob image as a 1-bit png
     if roi_flag
         png_path = [png_dir filesep regexprep(file,'.roi',sprintf('_%05d.png',targets.targetNumber(i)))];
