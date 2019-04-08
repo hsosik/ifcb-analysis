@@ -37,9 +37,9 @@ if not(debug),
         try
             %bin_blobs_heidi(in_dir, daydir(daycount).name, out_dir);
             if length(in_dir) > 1
-                bin_blobs_heidi_test(in_dir{bincount}, [char(bins(bincount)) '.roi'], out_dir{bincount});
+                bin_blobs_heidi_v4(in_dir{bincount}, [char(bins(bincount)) '.roi'], out_dir{bincount});
             else
-                bin_blobs_heidi_test(in_dir, [char(bins(bincount)) '.zip'], out_dir);
+                bin_blobs_heidi_v4(in_dir, [char(bins(bincount)) '.zip'], out_dir);
             end;
         catch e
    	    logmsg(['day_blobs FAIL ' bins(bincount).name],debug);
@@ -49,9 +49,9 @@ else
     for bincount = 1:length(bins)
         %bin_blobs_heidi(in_dir, daydir(daycount).name, out_dir);
         if length(in_dir) >= length(bins) && ~isequal('http', in_dir{bincount}(1:4))
-            bin_blobs_heidi_test(in_dir{bincount}, [char(bins(bincount)) '.roi'], out_dir{bincount});
+            bin_blobs_heidi_v4(in_dir{bincount}, [char(bins(bincount)) '.roi'], out_dir{bincount});
         else
-            bin_blobs_heidi_test(in_dir, [char(bins(bincount)) '.zip'], out_dir);
+            bin_blobs_heidi_b4(in_dir, [char(bins(bincount)) '.zip'], out_dir);
         end;
     end
 end
