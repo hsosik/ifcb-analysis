@@ -52,7 +52,9 @@ for i = 1:nt
     imwrite(target.blob_image,png_path,'bitdepth',1);
     png_paths = [png_paths; {png_path}];
 end
-
+%writematrix([4],[png_dir filesep 'version.'], 'FileType', 'text')
+csvwrite([png_dir filesep 'version'], [4])
+png_paths = [png_paths; 'version'];
 
 if nt > 0,
     zip(archive, png_paths, png_dir);
