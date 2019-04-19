@@ -21,13 +21,13 @@ if ~exist(out_dir, 'dir'),
 end;
 
 daydir = dir([in_dir_base 'D*']);
-daydir = dir([in_dir_base 'D201809*']);
+%daydir = dir([in_dir_base 'D201809*']);
 %daydir = dir([in_dir_base 'I*']);
 daydir = daydir([daydir.isdir]); 
 bins = [];
 in_dir = [];
 in_dir_blob = [];
-for ii = 1:length(daydir),
+for ii = 1:length(daydir)
     in_dir_temp = [in_dir_base daydir(ii).name filesep];
     %bins_temp = dir([in_dir_temp '*.adc']);
     %bins_temp = regexprep({bins_temp.name}', '.adc', '');
