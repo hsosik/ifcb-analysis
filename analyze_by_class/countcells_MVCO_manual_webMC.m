@@ -36,8 +36,8 @@ classcount(ia,:) = classcount_sql(ib,:);
 %calculate date
 matdate = IFCB_file2date(filelist);
 
-if ~exist([resultpath 'summary\'], 'dir')
-    mkdir([resultpath 'summary\'])
+if ~exist(outpath, 'dir')
+    mkdir(outpath)
 end;
 datestr = date; datestr = regexprep(datestr,'-','');
 save([outpath 'count_manual_' datestr], 'matdate', 'ml_analyzed_mat', 'classcount', 'filelist', 'class2use')
