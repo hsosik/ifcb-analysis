@@ -33,12 +33,17 @@ end
 
 disp('getting ml_analyzed...')
 ml_analyzed = IFCB_volume_analyzed(strcat(dashboard_url, char(filelist), '.hdr'));
+save('ml_analyzd', 'ml_analyzed')
 
 load([classpath classfilelist{1}], 'class2useTB');
+temp = get_diatom_ind(class2useTB, class2useTB);
+diatom_flag = zeros(size(class2useTB));
+diatom_flag(temp) = 1;
 
 diam_edges = [(0:300) inf]';
 classbiovoldist = zeros(length(filelist), length(class2useTB), length(diam_edges)-1);
 classcountdist = classbiovoldist;
+classcarbondist = classbiovoldist;
 for fcount = 1:length(filelist)
     disp(filelist{fcount})
     c = load([classpath classfilelist{fcount}]);
@@ -46,13 +51,15 @@ for fcount = 1:length(filelist)
     for classcount = 1:length(class2useTB)
         ind = strmatch( class2useTB{classcount}, c.TBclass_above_threshold);
         if ~isempty(ind)
-            diamlist = f.EquivDiameter(ind).*micron_factor;
+            diamlist = (f.EquivDiameter(ind)).*micron_factor;
             bvlist = f.Biovolume(ind).*(micron_factor^3);
+            Clist = biovol2carbon(bvlist, diatom_flag(classcount));
             classcountdist(fcount,classcount,:) = histcounts(diamlist,diam_edges);
             diam_bin_ind = discretize(diamlist,diam_edges);
             unqbin = unique(diam_bin_ind);
             for bincount = 1:length(unqbin) %compute the biovol sums for diam bins with entries
                 classbiovoldist(fcount,classcount,unqbin(bincount)) = sum(bvlist(diam_bin_ind==unqbin(bincount)));
+                classcarbondist(fcount,classcount,unqbin(bincount)) = sum(Clist(diam_bin_ind==unqbin(bincount)));
             end
         end
     end
@@ -64,7 +71,7 @@ end;
 
 datestr = date; datestr = regexprep(datestr,'-','');
 %save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed', 'classcount', 'biovol', 'filelist', 'eqdiam', 'perim', 'roiID')
-save([classpath 'summary\count_biovol_size_TB_' datestr], 'matdate', 'ml_analyzed', 'filelist', 'classbiovoldist', 'classcountdist', 'class2useTB', 'diam_edges')
+save([classpath 'summary\count_biovol_size_TB_' datestr], 'matdate', 'ml_analyzed', 'filelist', 'classcarbondist', 'classbiovoldist', 'classcountdist', 'class2useTB', 'diam_edges')
 
 disp('Summary count_biovolume_size file stored here:')
 disp([classpath 'summary\count_biovol_size_TB_' datestr])

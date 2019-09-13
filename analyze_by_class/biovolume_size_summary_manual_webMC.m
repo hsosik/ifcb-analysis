@@ -36,7 +36,7 @@ end;
 
 datestr = date; datestr = regexprep(datestr,'-','');
 %save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed', 'classcount', 'biovol', 'filelist', 'eqdiam', 'perim', 'roiID')
-save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed', 'filelist', 'summary', 'classes')
+save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed', 'filelist', 'summary', 'classes','-v7.3')
 
 disp('Summary count_biovolume_size file stored here:')
 disp([resultpath 'summary\count_biovol_size_manual_' datestr])
