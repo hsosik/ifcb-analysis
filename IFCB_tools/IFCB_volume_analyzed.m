@@ -18,7 +18,7 @@ for count = 1:length(hdrfilename),
         if looktime ~= 0
             ml_analyzed(count) = flowrate.*looktime/60;
         else
-            ml_analyzed(count) = IFCB_volume_analyzed_fromADC (regexprep(hdrfilename, '.hdr', '.adc'));           
+            ml_analyzed(count) = IFCB_volume_analyzed_fromADC (regexprep(hdrfilename{count}, '.hdr', '.adc'));           
         end
     end
 end
