@@ -23,6 +23,12 @@ for count = 1:length(adcfilename),
         inhibittime = adc.Var24(end);
         looktime = runtime - inhibittime; %seconds
         ml_analyzed(count) = flowrate.*looktime/60;
+        if ml_analyzed(count) <= 0 %minor case for some files with bad last adc line
+            runtime = adc.Var23(end-1);
+            inhibittime = adc.Var24(end-1);
+            looktime = runtime - inhibittime; %seconds
+            ml_analyzed(count) = flowrate.*looktime/60;
+        end
     end;
 end;
 
