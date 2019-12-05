@@ -1,11 +1,12 @@
 function [IFCB_match] =  IFCB_match_uw(IFCB_files, uw)
-% function IFCB_match = IFCB_match_uw(IFCB_mdate, uw);
+% function IFCB_match = IFCB_match_uw(IFCB_files, uw);
 % input a list of IFCB filenames and a table of underway ship's info
 % (mdate, lat, lon)
 % output a table of closest match lat/lon for the IFCB files (interpolate
 % if larger than 5 minute gap in the underway data)
 % Heidi M. Sosik, Woods Hole Oceanographic Instition, Decemeber 2020
 %
+IFCB_match.pid = IFCB_files;
 IFCB_mdate = IFCB_file2date(cellstr(IFCB_files));
 for count = 1:length(IFCB_mdate)
     [m,ia] = min(abs(IFCB_mdate(count)-uw_mdate));
