@@ -11,13 +11,18 @@ function [ ml_analyzed ] = IFCB_volume_analyzed( hdrfilename )
 flowrate = 0.25; %milliliters per minute for syringe pump
 if ischar(hdrfilename), hdrfilename = cellstr(hdrfilename); end;
 ml_analyzed = NaN(size(hdrfilename));
-for count = 1:length(hdrfilename),
+for count = 1:length(hdrfilename)
     hdr = IFCBxxx_readhdr(hdrfilename{count});
-    if ~isempty(hdr),
+    if ~isempty(hdr)
         looktime = hdr.runtime - hdr.inhibittime; %seconds
-        ml_analyzed(count) = flowrate.*looktime/60;
-    end;
-end;
+        if looktime ~= 0
+            ml_analyzed(count) = flowrate.*looktime/60;
+        else
+            ml_analyzed(count) = IFCB_volume_analyzed_fromADC (regexprep(hdrfilename{count}, '.hdr', '.adc'));           
+        end
+    end
+end
+
 
 end
 
