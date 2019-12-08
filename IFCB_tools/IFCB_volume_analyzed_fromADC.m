@@ -32,7 +32,7 @@ for count = 1:length(adcfilename),
         if ml_analyzed(count) <= 0 %minor case for some files with 0 runtime and inhibit time in numerous rows at file end
            runtime = adc.Var2(end-1); %next best info after runtime
            ii = find(adc.Var23);
-           modeinhibittime = mode(diff(adc.VarName24(ii)));
+           modeinhibittime = mode(diff(adc.Var24(ii)));
            inhibittime = adc.Var23(ii) + size(adc,1)-ii * modeinhibittime;
         end
     end
