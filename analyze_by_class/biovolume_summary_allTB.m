@@ -1,7 +1,7 @@
-resultpath = '\\sosiknas1\IFCB_products\SPIROPA\class\summary\';
-classpath_generic = '\\sosiknas1\IFCB_products\SPIROPA\class\classxxxx_v1\';
-feapath_generic = '\\sosiknas1\IFCB_products\SPIROPA\features\featuresxxxx_v2\';
-hdrpath = 'http://ifcb-data.whoi.edu/SPIROPA/';
+resultpath = '\\sosiknas1\IFCB_products\NESLTER_transect\summary\';
+classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\class\classxxxx_v1\';
+feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\features\featuresxxxx_v4\';
+hdrpath = 'https://ifcb-data.whoi.edu/NESLTER_transect/';
 adhocthresh = 0.5;
 
 % resultpath = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\class\summary\';
@@ -9,7 +9,7 @@ adhocthresh = 0.5;
 % feapath_generic = '\\sosiknas1\IFCB_products\IFCB010_OkeanosExplorerAug2013\features\';
 % hdrpath = 'http://ifcb-data.whoi.edu/IFCB010_OkeanosExplorerAug2013/';
 
-for yr = 2015:2015, %:2012,
+for yr = 2019:2019 %:2012,
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     feapath = regexprep(feapath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'D*.mat']);
@@ -17,7 +17,7 @@ for yr = 2015:2015, %:2012,
     names = char(temp.name);
     classfiles = cellstr([pathall names]);
     pathall = repmat(feapath, length(temp),1);
-    xall = repmat('_fea_v2.csv', length(temp),1);
+    xall = repmat('_fea_v4.csv', length(temp),1);
     feafiles = cellstr([pathall names(:,1:24) xall]);
     clear temp pathall classpath xall
 
@@ -29,7 +29,8 @@ for yr = 2015:2015, %:2012,
     pathall = repmat(hdrpath, size(temp,1),1);
     xall = repmat('.hdr', size(temp,1),1);
     temp = cellstr([pathall temp(:,ind:ind+23) xall]);
-    ml_analyzed = IFCB_volume_analyzed(temp); 
+  %  ml_analyzed = IFCB_volume_analyzed(temp); 
+  ml_analyzed = NaN;
     
     temp = load(classfiles{1}, 'class2useTB');
     class2use = temp.class2useTB; clear temp classfilestr
@@ -39,10 +40,10 @@ for yr = 2015:2015, %:2012,
     num2dostr = num2str(length(classfiles));
     %
     for filecount = 1:length(classfiles)
-        if ~rem(filecount,10), disp(['reading ' num2str(filecount) ' of ' num2dostr]), end;
+        if ~rem(filecount,10), disp(['reading ' num2str(filecount) ' of ' num2dostr]), end
       %  [classcount(filecount,:), classbiovol(filecount,:), class2useTB] = summarize_biovol_TBclassMVCO(classfiles{filecount}, feafiles{filecount});
         [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2useTB] = summarize_biovol_TBclassMVCO(classfiles{filecount}, feafiles{filecount}, adhocthresh);
-    end;
+    end
     
     classcountTB = classcount;
     classcountTB_above_optthresh = classcount_above_optthresh;
@@ -61,6 +62,6 @@ for yr = 2015:2015, %:2012,
         mkdir(resultpath)
     end
     %save([resultpath 'summary_biovol_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classbiovolTB', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
-    save([resultpath 'summary_biovol_allTB'] , 'class2useTB', 'classcountTB*', 'classbiovolTB*', 'classC_TB*', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
+    save([resultpath 'summary_biovol_allTB2' num2str(yr)] , 'class2useTB', 'classcountTB*', 'classbiovolTB*', 'classC_TB*', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
     clear *files* classcount* classbiovol* classC* 
 end
