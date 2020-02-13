@@ -6,8 +6,8 @@
 %Write the directory name below under metadata_loc
 
 clear all; close all;
-metadata_loc = '\\sosiknas1\IFCB_data\NESLTER_transect\metadata\AR24_October2017\';
-filelist = dir([metadata_loc, '*.csv']);
+metadata_loc = '\\sosiknas1\IFCB_data\NESLTER_transect\metadata\AR31_Oct2018\';
+filelist = dir([metadata_loc, '*00.csv']);
 Date = [];
 Time = [];
 lat =[];
@@ -70,19 +70,8 @@ temp2= temp2(:,1:9);
 %data in second elg file of GGMAy2016 data.
 %temp2= char(Time([2:21232 21234:46442 46444:end]));
 
-yr = cellstr(temp(:, 1:4));
-year = str2num(char(yr));
-month = cellstr(temp(:, 6:7));
-month = str2num(char(month));
-day = cellstr(temp(:, 9:10));
-day = str2num(char(day));
-
-hr= cellstr(temp2(:,1:2));
-hour = str2num(char(hr));
-min = cellstr(temp2(:,4:5));
-minute = str2num(char(min));
-sec = cellstr(temp2(:, 7:8));
-second = str2num(char(sec));
+[year month day] = datevec(temp);
+[a b c hour minute second] = datevec(temp2);
 
 date = datenum(year, month, day, hour, minute, second);
 
@@ -92,4 +81,4 @@ cruise_end = datevec(date(end))
 latitude = lat;
 longitude = lon;
 matlab_date = date;
-%save \\sosiknas1\IFCB_data\NESLTER_transect\metadata\EN617_July2017\metadata_raw matlab_date latitude longitude hour minute second day month year;
+%save \\sosiknas1\IFCB_data\NESLTER_transect\metadata\AR31_Oct2018\metadata_raw matlab_date latitude longitude hour minute second day month year;
