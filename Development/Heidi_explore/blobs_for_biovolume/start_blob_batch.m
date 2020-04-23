@@ -18,7 +18,7 @@ if ~exist(out_dir_blob_base, 'dir'),
     mkdir(out_dir_blob_base)
 end;
 daydir = dir([in_dir_base 'D*']);
-%daydir = dir([in_dir_base 'D201809*']);
+daydir = dir([in_dir_base 'D20190708*']);
 % daydir = dir([in_dir_base 'I*']);
 daydir = daydir([daydir.isdir]); 
 bins = [];
