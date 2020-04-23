@@ -26,6 +26,10 @@ elseif opt1 == 'chatty',
   chatty = true;
 end
 
+if ~exist(out_dir, 'dir')
+    mkdir(out_dir)
+end
+
 % load the zip file
 log(['LOAD targets ' file]);
 %http://ifcb-data.whoi.edu/mvco/IFCB1_2009_174_055621_blob.zip
