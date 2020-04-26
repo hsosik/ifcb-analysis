@@ -5,9 +5,9 @@ classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULT
 
 adhocthresh = 0.5;
 
-metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SPIROPA');
+metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS');
 
-for yr = 2019:2019 %:2012,
+for yr = 2018:2018 %:2012,
     classpath = classpath_generic;
     temp = dir([classpath 'D' num2str(yr) '*.h5']);
     pathall = repmat(classpath, length(temp),1);
@@ -54,7 +54,7 @@ for yr = 2019:2019 %:2012,
         c = setdiff(filelist, metaT.pid)
         %keyboard
     end
-    save([resultpath 'summary_count_allHDF' num2str(yr)] , 'class2use', 'classcount*', 'meta_data', 'mdate', 'filelist', 'classpath_generic', 'pid_list', 'score_list', 'adhocthreshold')
+    save([resultpath 'summary_count_allHDF' num2str(yr)] , 'class2use', 'classcount*', 'meta_data', 'mdate', 'filelist', 'classpath_generic', 'pid_list', 'score_list', 'adhocthresh')
     disp(['results saved: ' [resultpath 'summary_count_allHDF' num2str(yr)]])
     clear *file* classcount* pid_list score_list names temp mdate meta_data
 end
