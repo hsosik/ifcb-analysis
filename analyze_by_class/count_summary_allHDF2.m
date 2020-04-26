@@ -5,7 +5,7 @@ classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULT
 
 adhocthresh = 0.5;
 
-metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SPIROPA');
+metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS');
 
 for yr = 2019:2019 %:2012,
     classpath = classpath_generic;
