@@ -4,21 +4,18 @@ function [ hdr ] = IFCBxxx_readhdr( fullfilename )
 %Heidi M. Sosik, Woods Hole Oceanographic Institution, April 2012
 %
 %Sept 2012, modified to accept URL file locations from web services
+%April 2020, modified to use webread for URL files and to inclede runType
+%entry in output
 
-if isequal(fullfilename(1:4), 'http'), 
-    [filestr,status] = urlwrite(fullfilename, 'temp.hdr');
-    if status,
-        fullfilename = filestr;
-    else
-        disp(['Error reading ' fullfilename]);
-        hdr = '';
-        return
-    end;
-end;
+if isequal(fullfilename(1:4), 'http')
+    t = webread(fullfilename, weboptions('timeout', 15));
+    t = splitlines(t);
+else
+    t = importdata(fullfilename,'', 150);
+end
 
 t = importdata(fullfilename,'', 150);
-%remove temporary file if read from URL
-if exist('status', 'var'), delete(filestr); end;
+
 ii = strmatch('runTime:', t);
     
 if ~isempty(ii),
@@ -36,11 +33,14 @@ else
     spos = findstr('s', linestr);
     hdr.runtime = str2num(linestr(eqpos(1)+1:spos(1)-1));
     hdr.inhibittime = str2num(linestr(eqpos(2)+1:spos(2)-1));
-end;
+end
+
 ii=strmatch('runType:',t);
 if ~isempty(ii),
-    linestr = char(t(ii)); 
-    hdr.runtype=regexprep(linestr,'runType: ','');
+    ii = ii(end); %fudge for 2018 IFCB109 cases with two runType entries
+    linestr = char(t(ii));  
+    colonpos = findstr(':', linestr);
+    hdr.runType = linestr(colonpos(1)+2:end);
 end
 end
 

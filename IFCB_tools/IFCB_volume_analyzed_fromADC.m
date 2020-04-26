@@ -11,7 +11,7 @@ function [ ml_analyzed ] = IFCB_volume_analyzed_fromADC( adcfilename )
 flowrate = 0.25; %milliliters per minute for syringe pump
 if ischar(adcfilename), adcfilename = cellstr(adcfilename); end;
 ml_analyzed = NaN(size(adcfilename));
-for count = 1:length(adcfilename),
+for count = 1:length(adcfilename)
     %hdr = IFCBxxx_readhdr(hdrfilename{count});
     if startsWith(adcfilename{count}, 'http')
         adc = webread(adcfilename{count}, 'FileType', 'csv');
@@ -19,11 +19,13 @@ for count = 1:length(adcfilename),
         adc = readtable(adcfilename{count}, 'FileType', 'text');       
     end
     if ~isempty(adc)
-        runtime = adc.Var23(end);
-        inhibittime = adc.Var24(end);
-        looktime = runtime - inhibittime; %seconds
-        ml_analyzed(count) = flowrate.*looktime/60;
-        if ml_analyzed(count) <= 0 %minor case for some files with bad last adc line
+        if abs(adc.Var23(end)-adc.Var2(end)) < 0.3 
+            runtime = adc.Var23(end);
+            inhibittime = adc.Var24(end);
+            looktime = runtime - inhibittime; %seconds
+            ml_analyzed(count) = flowrate.*looktime/60;
+            %if ml_analyzed(count) <= 0 %minor case for some files with bad last adc line
+        else %minor case for some files with bad last adc line
             runtime = adc.Var23(end-1);
             inhibittime = adc.Var24(end-1);
             looktime = runtime - inhibittime; %seconds
