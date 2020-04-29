@@ -1,29 +1,30 @@
 resultpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\';
 outpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\summary_webMC\';
-load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the milliliters analyzed for all sample files
+%load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the milliliters analyzed for all sample files
+metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/mvco', weboptions('TimeOut', 30));
 
 [ classcount_sql, filelist_sql, class2use ] = countcells_manual_onetimeseries('mvco');
 
 %%
 %get metadata according to filelist in manual_list
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
-load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the milliliters analyzed for all sample files
+%load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the milliliters analyzed for all sample files
 
 [ classes_byfile, classes_bymode ] = get_annotated_classesMVCO_sql( class2use, manual_list);
 
 filelist = classes_byfile.filelist;
 
-[~,ia, ib] = intersect(filelist, filelist_all);
+[~,ia, ib] = intersect(filelist, metaT.pid);
 if length(ia) ~= length(filelist),
     disp('missing some ml_analyzed values; need to make updated ml_analyzed all.mat?')
     pause
 end;
 temp = NaN(size(filelist));
-temp(ia) = ml_analyzed(ib);
+temp(ia) = metaT.ml_analyzed(ib);
 ml_analyzed = temp;
 %clean up from ml_analyzed_all
-clear filelist_all looktime matdate minproctime runtime ia ib
-
+%clear filelist_all looktime matdate minproctime runtime ia ib
+clear metaT ia ib
 %mark NaNs in ml_analyzed for classify not complete in manual annotation
 analyzed_flag = classes_byfile.classes_checked; analyzed_flag(analyzed_flag == 0) = NaN;
 ml_analyzed_mat = repmat(ml_analyzed,1,length(class2use)).*analyzed_flag;
