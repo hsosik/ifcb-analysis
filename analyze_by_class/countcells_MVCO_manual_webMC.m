@@ -28,6 +28,7 @@ clear metaT ia ib
 %mark NaNs in ml_analyzed for classify not complete in manual annotation
 analyzed_flag = classes_byfile.classes_checked; analyzed_flag(analyzed_flag == 0) = NaN;
 ml_analyzed_mat = repmat(ml_analyzed,1,length(class2use)).*analyzed_flag;
+disp(['UPDATE: ml_analyzed_mat now adjusted according to ' resultpath 'manual_list'])
 %%
 %now make sure the count info from the sql query has the same filelist order
 [~,ia, ib] = intersect(filelist, filelist_sql);
@@ -40,11 +41,14 @@ matdate = IFCB_file2date(filelist);
 if ~exist(outpath, 'dir')
     mkdir(outpath)
 end;
-datestr = date; datestr = regexprep(datestr,'-','');
-save([outpath 'count_manual_' datestr], 'matdate', 'ml_analyzed_mat', 'classcount', 'filelist', 'class2use')
+datestr2 = date; datestr = regexprep(datestr2,'-','');
+save([outpath 'count_manual_' datestr2], 'matdate', 'ml_analyzed_mat', 'classcount', 'filelist', 'class2use')
 save([outpath 'count_manual_current'], 'matdate', 'ml_analyzed_mat', 'classcount', 'filelist', 'class2use')
 
 %create and save daily binned results
 [matdate_bin, classcount_bin, ml_analyzed_mat_bin] = make_day_bins(matdate,classcount, ml_analyzed_mat);
-save([outpath 'count_manual_' datestr '_day'], 'matdate_bin', 'classcount_bin', 'ml_analyzed_mat_bin', 'class2use')
+save([outpath 'count_manual_' datestr2 '_day'], 'matdate_bin', 'classcount_bin', 'ml_analyzed_mat_bin', 'class2use')
 save([outpath 'count_manual_current_day'], 'matdate_bin', 'classcount_bin', 'ml_analyzed_mat_bin', 'class2use')
+
+disp(['Results saved: '  outpath 'count_manual_' datestr2])
+disp(['Results saved: '  outpath 'count_manual_current'])
