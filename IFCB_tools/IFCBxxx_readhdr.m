@@ -14,8 +14,6 @@ else
     t = importdata(fullfilename,'', 150);
 end
 
-t = importdata(fullfilename,'', 150);
-
 ii = strmatch('runTime:', t);
     
 if ~isempty(ii),
