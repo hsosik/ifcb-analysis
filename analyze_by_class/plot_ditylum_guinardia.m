@@ -20,8 +20,8 @@ end;
 
 clear yr
 
-%load \\sosiknas1\IFCB_products\MVCO\Manual_fromClass\summary_webMC\count_manual_current_day
-load C:\work\IFCB\Manual_fromClass\summary_webMC\count_manual_current_day
+load \\sosiknas1\IFCB_products\MVCO\Manual_fromClass\summary_webMC\count_manual_current_day
+%load C:\work\IFCB\Manual_fromClass\summary_webMC\count_manual_current_day
 
 %%
 figure, set(gcf, 'paperposition', [.25 2.5 11.5 2.45], 'units', 'inches')
@@ -139,6 +139,24 @@ datetick, %set(gca, 'xgrid', 'on', 'box', 'on')
 ylim([0 5])
 legend('manual', 'automated')
 ylabel('Cells mL^{-1}', 'fontsize', 14)
-set(gca, 'xlim', datenum([2006,6,1; 2014,1,1]), 'fontsize', 14, 'xgrid', 'on', 'box', 'on')
+set(gca, 'xlim', datenum([2001,6,1; 2014,1,1]), 'fontsize', 14, 'xgrid', 'on', 'box', 'on')
 
 
+%%
+%%
+figure, set(gcf, 'paperposition', [.25 2.5 11.5 2.45], 'units', 'inches')
+set(gcf, 'position', [5 4 11.5 2])
+
+ind = strmatch('Phaeocystis', class2useTB);
+[xmat, ymat ] = timeseries2ydmat(mdateTB, classcountTB_above_adhocthresh(:,ind)./ml_analyzedTB);
+%[xmat, ymat ] = timeseries2ydmat(mdateTB, classcountTB(:,ind)./ml_analyzedTB);
+hold on
+ind2 = strmatch('Phaeocystis', class2use);
+plot(matdate_bin, nansum(classcount_bin(:,ind2)./ml_analyzed_mat_bin(:,ind2),2), 'r*', 'markersize', 4)
+plot(xmat(:), ymat(:), 'b', 'linewidth', 1)
+datetick, %set(gca, 'xgrid', 'on', 'box', 'on')
+ylim([0 15])
+legend('manual', 'automated')
+ylabel('Colonies mL^{-1}', 'fontsize', 14)
+set(gca, 'xlim', datenum([2006,1,1; 2020,1,1]), 'fontsize', 11, 'xgrid', 'on', 'box', 'on')
+title('\itPhaeocystis sp.', 'fontsize', 12)
