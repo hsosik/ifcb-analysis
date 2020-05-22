@@ -35,7 +35,9 @@ for count = 1:length(adcfilename)
            runtime = adc.Var2(end-1); %next best info after runtime
            ii = find(adc.Var23);
            modeinhibittime = mode(diff(adc.Var24(ii)));
-           inhibittime = adc.Var23(ii) + size(adc,1)-ii * modeinhibittime;
+           inhibittime = adc.Var24(ii(end)) + (size(adc,1)-length(ii)) * modeinhibittime;
+           looktime = runtime - inhibittime;
+           ml_analyzed(count) = flowrate.*looktime/60;
         end
     end
 end
