@@ -1,13 +1,14 @@
 
-resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
+resultpath = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\summary\';
 %classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\class\classxxxx_v1\';
-classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_EXPORTS__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
+%classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\train_May2019_jmf\RUN-RESULTS\RUN_EXPORTS__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
+classpath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\class_v2\';
 
 adhocthresh = 0.5;
 
-metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS');
+metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SIO_Delmar_mooring');
 
-for yr = 2018:2018 %:2012,
+for yr = 2020:2020 %:2012,
     classpath = classpath_generic;
     temp = dir([classpath 'D' num2str(yr) '*.h5']);
     pathall = repmat(classpath, length(temp),1);
