@@ -25,12 +25,13 @@ url_metadata = ['https://ifcb-data.whoi.edu/api/export_metadata/' datasetName];
 
 %get total class2use
 disp('checking for full class list...')
-[ ~, ~, class2use ] = countcells_manual_onetimeseries(datasetName);
+[ ~, ~, classes ] = countcells_manual_onetimeseries(datasetName);
+classes = [classes {'unclassified'}];
 
 disp('checking all samples...')
-[ filelist, summary ] = biovolume_size_manual_onetimeseries(datasetName, feapath, class2use);
+[ filelist, summary ] = biovolume_size_manual_onetimeseries(datasetName, feapath, classes);
 disp('getting metadata...')
-metaT = webread(url_metadata, weboptions('TimeOut', 30));
+metaT = webread(url_metadata, weboptions('Timeout', 60));
 
 disp('saving results...')
 [~,a,b] = intersect(filelist, metaT.pid);
@@ -39,7 +40,7 @@ ml_analyzed = meta_data.ml_analyzed;
 iso8601format = 'yyyy-mm-dd hh:MM:ss+00:00';
 matdate = datenum(meta_data.sample_time, iso8601format);
 
-classes = fields(summary.count);
+%classes = fields(summary.count);
 
 if ~exist([resultpath 'summary\'], 'dir')
     mkdir([resultpath 'summary\'])
