@@ -12,6 +12,7 @@ function [ target ] = get_bin_features( feafilename, fea2get)
     tind = feastruct.data(:,ind);
     [~,f] = fileparts(feafilename);
     f = regexprep(f,'_fea_v2', ' ');
+    f = regexprep(f,'_fea_v4', ' ');
     target.pid = cellstr(strcat(f,'_', num2str(tind, '%05.0f')));
 end
 

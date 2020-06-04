@@ -1,8 +1,9 @@
-function [ ] = biovolume_size_summary_manual_webMC( timeseries_name, dashboard_url, feapath, resultpath)
-%function [ ] = biovolume_size_summary_manual_webMC( timeseries_name, dashboard_url, feapath, resultpath)
+function [ ] = biovolume_size_summary_manual_webMC( datasetName, feapath)
+%function [ ] = biovolume_size_summary_manual_webMC( datasetName, feapath)
 %
 %For example:
 %biovolume_size_summary_manual_webMC( 'NESLTER_transect', 'https://ifcb-data.whoi.edu/NESLTER_transect', '\\sosiknas1\IFCB_products\NESLTER_transect\features\featuresXXXX_v2\', '\\sosiknas1\IFCB_products\NESLTER_transect\')
+%biovolume_size_summary_manual_webMC( 'SPIROPA', '\\sosiknas1\IFCB_products\SPIROPA\features\')
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, August 2018
 %
 %Example inputs:
@@ -14,21 +15,32 @@ function [ ] = biovolume_size_summary_manual_webMC( timeseries_name, dashboard_u
 % summarizes class results for a series of manual annotation results (as queried from the Manual Annotate database)
 % summary file will be located in subdir \summary\ at the top level of the location of the result path
 
-[ filelist, summary ] = biovolume_size_manual_onetimeseries(timeseries_name, feapath);
+disp('Note: This function only runs on oneeyedjack.')
 
-%calculate date
-matdate = IFCB_file2date(filelist);
-
-%make sure input paths end with filesep
-if ~isequal(resultpath(end), filesep)
-    resultpath = [resultpath filesep];
+resultpath = ['\\sosiknas1\IFCB_products\' datasetName '\summary\'];
+if ~exist(resultpath)
+    mkdir(resultpath)
 end
-%if ~isequal(dashboard_url(end), filesep)
-%    dashboard_url = [in_dir filesep];
-%end
+url_metadata = ['https://ifcb-data.whoi.edu/api/export_metadata/' datasetName];
 
-ml_analyzed = IFCB_volume_analyzed([repmat([dashboard_url '/'],length(filelist),1) char(filelist) repmat('.hdr', length(filelist),1)]);
-classes = fields(summary.count);
+%get total class2use
+disp('checking for full class list...')
+[ ~, ~, classes ] = countcells_manual_onetimeseries(datasetName);
+classes = [classes {'unclassified'}];
+
+disp('checking all samples...')
+[ filelist, summary ] = biovolume_size_manual_onetimeseries(datasetName, feapath, classes);
+disp('getting metadata...')
+metaT = webread(url_metadata, weboptions('Timeout', 60));
+
+disp('saving results...')
+[~,a,b] = intersect(filelist, metaT.pid);
+meta_data(a,:) = metaT(b,:);
+ml_analyzed = meta_data.ml_analyzed;
+iso8601format = 'yyyy-mm-dd hh:MM:ss+00:00';
+matdate = datenum(meta_data.sample_time, iso8601format);
+
+%classes = fields(summary.count);
 
 if ~exist([resultpath 'summary\'], 'dir')
     mkdir([resultpath 'summary\'])
@@ -36,9 +48,9 @@ end;
 
 datestr = date; datestr = regexprep(datestr,'-','');
 %save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed', 'classcount', 'biovol', 'filelist', 'eqdiam', 'perim', 'roiID')
-save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed', 'filelist', 'summary', 'classes','-v7.3')
+save([resultpath '\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed', 'filelist', 'summary', 'classes', 'meta_data', '-v7.3')
 
 disp('Summary count_biovolume_size file stored here:')
-disp([resultpath 'summary\count_biovol_size_manual_' datestr])
+disp([resultpath 'count_biovol_size_manual_' datestr])
 
 
