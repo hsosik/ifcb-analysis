@@ -19,18 +19,19 @@ for count = 1:length(adcfilename)
         adc = readtable(adcfilename{count}, 'FileType', 'text');       
     end
     if ~isempty(adc)
-        if abs(adc.Var23(end)-adc.Var2(end)) < 0.3 
-            runtime = adc.Var23(end);
-            inhibittime = adc.Var24(end);
-            looktime = runtime - inhibittime; %seconds
-            ml_analyzed(count) = flowrate.*looktime/60;
-            %if ml_analyzed(count) <= 0 %minor case for some files with bad last adc line
-        else %minor case for some files with bad last adc line
+        % try using the info in adc file columns 23 and 24 for run and inhibit time
+        runtime = adc.Var23(end);
+        inhibittime = adc.Var24(end);
+        looktime = runtime - inhibittime; %seconds
+        ml_analyzed(count) = flowrate.*looktime/60;
+        %if that doesn't work (e.g., 0 or negative ml_analyzed), trying skipping the last line
+        if ml_analyzed(count) <= 0 %minor case for some files with bad last adc line
             runtime = adc.Var23(end-1);
             inhibittime = adc.Var24(end-1);
             looktime = runtime - inhibittime; %seconds
             ml_analyzed(count) = flowrate.*looktime/60;
         end
+        %if that still doesn't work use the inhibit time stats to estimate best quess value
         if ml_analyzed(count) <= 0 %minor case for some files with 0 runtime and inhibit time in numerous rows at file end
            runtime = adc.Var2(end-1); %next best info after runtime
            ii = find(adc.Var23);
