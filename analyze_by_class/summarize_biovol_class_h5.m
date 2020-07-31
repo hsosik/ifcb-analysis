@@ -1,4 +1,4 @@
-function [classcount, classbiovol, classC, classcount_above_optthresh, classbiovol_above_optthresh, classC_above_optthresh, classcount_above_adhocthresh, classbiovol_above_adhocthresh, classC_above_adhocthresh, class_labels, classESDlist] = summarize_biovol_class_h5(classfile, feafile, adhocthresh)
+function [classcount, classbiovol, classC, classcount_above_optthresh, classbiovol_above_optthresh, classC_above_optthresh, classcount_above_adhocthresh, classbiovol_above_adhocthresh, classC_above_adhocthresh, class_labels, classFeaList, classPidList] = summarize_biovol_class_h5(classfile, feafile, adhocthresh)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -19,9 +19,23 @@ classC_above_optthresh = classcount;
 classC_above_adhocthresh = classcount;
 feastruct = importdata(feafile);
 %ind = strmatch('Biovolume', feastruct.colheaders);
-ind = strmatch('Biovolume', feastruct.textdata);
+ind = strmatch('summedBiovolume', feastruct.textdata);
 targets.Biovolume = feastruct.data(:,ind)*micron_factor.^3;
-targets.esd = (targets.Biovolume*3/4/pi).^(1/3)*2; 
+%targets.esd = (targets.Biovolume*3/4/pi).^(1/3)*2; 
+targets.esd = biovol2esd(targets.Biovolume);
+ind = strmatch('maxFeretDiameter', feastruct.textdata);
+targets.maxFeretDiameter = feastruct.data(:,ind)*micron_factor;
+ind = strmatch('summedMajorAxisLength', feastruct.textdata);
+targets.summedMajorAxisLength = feastruct.data(:,ind)*micron_factor;
+targets.pid = cellstr(strcat(bin_id, '_', num2str(roi_numbers, '%05.0f')));
+%%
+adcfile = regexprep(feafile, '_fea_v4.csv', '.adc');
+adcfile = regexprep(adcfile, 'IFCB_products', 'IFCB_data');
+adcfile = regexprep(adcfile, 'IFCB_products', 'IFCB_data');
+adcfile = regexprep(adcfile, 'features\\D', 'data\');
+
+adc = readtable(adcfile, 'FileType', 'text');
+targets.adc = adc{roi_numbers, 3:11};
 
 %% get the TBclass labels with application of adhocthresh
 if length(adhocthresh) == 1
@@ -31,10 +45,11 @@ else
 end
 win = (scores > t);
 [i,j] = find(win);
-if ~exist('TBclass', 'var')
-    [~,TBclass] = max(scores');
+%if ~exist('TBclass', 'var')
+    %[~,TBclass] = max(scores');
+    [targets.maxscore, TBclass] = max(scores');
     TBclass = class_labels(TBclass)';
-end
+%end
 TBclass_above_adhocthresh = cell(size(TBclass));
 TBclass_above_adhocthresh = cell(size(TBclass));
 TBclass_above_adhocthresh(:) = deal(repmat({'unclassified'},1,length(TBclass)));
@@ -61,7 +76,9 @@ for ii = 1:length(class_labels)
     classcount(ii) = size(ind,1);
     classbiovol(ii) = sum(targets.Biovolume(ind));
     classC(ii) = sum(cellC(ind));
-    classESDlist{ii} = targets.esd(ind);
+    classFeaList{ii} = [targets.esd(ind) targets.maxFeretDiameter(ind) targets.summedMajorAxisLength(ind) targets.adc(ind,:) targets.maxscore(ind)'];
+    classPidList{ii} = targets.pid(ind);
+
     if exist('TBclass_above_threshold', 'var')
         ind = strmatch(class_labels(ii), TBclass_above_threshold, 'exact');
         classcount_above_optthresh(ii) = size(ind,1);
