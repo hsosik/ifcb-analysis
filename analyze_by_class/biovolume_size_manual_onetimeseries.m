@@ -35,7 +35,7 @@ for filecount = 1:length(binlist)
     %get the annotations from SQL query
     [ data ] = bin_classifications( filename );
     %get the features
-    target = get_bin_features([feapath filename '_fea_v4.csv'], {'Biovolume' 'EquivDiameter' 'Perimeter' 'summedBiovolume'});
+    target = get_bin_features([feapath filename '_fea_v4.csv'], {'Biovolume' 'EquivDiameter' 'Perimeter' 'summedBiovolume' 'maxFeretDiameter' 'minFeretDiameter'});
     %match up the annotations and the features
     [~,ia, ib] = intersect(target.pid, data(:,1));
     
@@ -52,6 +52,8 @@ for filecount = 1:length(binlist)
         summary.esd{filecount,ccol} = biovol2esd(summary.biovol{filecount,ccol});
         summary.ecd{filecount,ccol} = target.EquivDiameter(cind)*micron_factor;
         summary.perim{filecount,ccol} = target.Perimeter(cind)*micron_factor;
+        summary.maxFd{filecount,ccol} = target.maxFeretDiameter(cind)*micron_factor;
+        summary.minFd{filecount,ccol} = target.minFeretDiameter(cind)*micron_factor;
         summary.count(filecount,ccol) = length(cind);
         summary.count_gt10(filecount,ccol) = sum(summary.esd{filecount,ccol}>10);
     end;
