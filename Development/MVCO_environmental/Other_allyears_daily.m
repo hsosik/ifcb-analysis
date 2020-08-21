@@ -3,15 +3,15 @@ yearlist = (2003:2014);
 
 Temp = []; Saln = []; Wspd = []; Wdir = []; waveh_swell = []; wavep_swell = [];  waveh_windwave = []; wavep_windwave = [];
 vE = []; vN = []; DailySolar = []; ocnmdate = []; metmdate = []; adcpmdate = []; dailymdate = [];
-for ii = 2003:2014, 
+for ii = 2003:2016, 
     ystr = num2str(ii);
     if ii == 2003 | ii == 2004, %end up with average of node and seacat where overlap
-        other = load('c:\work\mvco\otherData\other03_04');
+        other = load('\\sosiknas1\Lab_data\MVCO\EnvironmentalData\other2003_04');
         eval(['other.Temp' ystr '= [other.Temp' ystr '; other.temp_seacat' ystr '];'])
         eval(['other.Saln' ystr '= [other.Saln' ystr '; other.saln_seacat' ystr '];'])
         eval(['other.yd_ocn' ystr '= [other.yd_ocn' ystr '; other.yd_seacat' ystr '];'])
     else
-        other = load(['c:\work\mvco\otherData\other' ystr(3:4)]);
+        other = load(['\\sosiknas1\Lab_data\MVCO\EnvironmentalData\other' ystr]);
     end;
     eval(['Temp = [Temp;  other.Temp' ystr '];'])
     eval(['Saln = [Saln;  other.Saln' ystr '];'])
@@ -77,7 +77,7 @@ notes = {'Temp, temperature in degrees C' 'Saln, salinity' 'Wspd, wind speed in 
     'vE, eastward water velocity in cm per second' 'vN, northward water velocity in cm per second' 'wavep, wave period in seconds' 'waveh, wave height in cm'}';
 clear ii y* adcpmdate dailymdate metmdate ocnmdate mdate_mat
 
-save Other_day mdate notes Temp Saln Wspd Wdir vE vN wavep_swell waveh_swell wavep_windwave waveh_windwave DailySolar
+save \\sosiknas1\Lab_data\MVCO\EnvironmentalData\Other_day mdate notes Temp Saln Wspd Wdir vE vN wavep_swell waveh_swell wavep_windwave waveh_windwave DailySolar
 
 
 return

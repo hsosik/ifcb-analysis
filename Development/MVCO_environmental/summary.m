@@ -1,6 +1,8 @@
+function [  ] = summary( y )
 datadir = '\\sosiknas1\Lab_data\MVCO\EnvironmentalData\';
 %datadir = 'C:\work\mvco\OtherData\';
-ystr = '2017';
+%ystr = '2017';
+ystr = num2str(y);
 
 X=load ([datadir ystr '_OcnDat_s.C99'],'ascii');
 loadOcnDat
@@ -38,3 +40,4 @@ save([datadir 'other' ystr ], ['*' ystr]')
 clear all
 %load([datadir 'other' ystr])
 
+end

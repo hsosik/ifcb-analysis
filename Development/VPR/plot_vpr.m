@@ -2,26 +2,44 @@
 %close all;
 clear all;
 
-load('\\sosiknas1\Lab_data\VPR\NBP1201\manual\summary\count_manual_12Nov2015');
-load('\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_30Oct2015_six_classes\classpath_div\summary\summary_allTB');
+load('\\sosiknas1\Lab_data\VPR\NBP1201\manual\summary\count_manual_13Sep2017');
+%load('\\sosiknas1\Lab_data\VPR\NBP1201\manual\summary\count_manual_12Nov2015');
+load('\\sosiknas1\Lab_data\VPR\NBP1201\class_RossSea_Trees_test26May2017\classpath_div\summary\summary_allTB');
+%load('\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_30Oct2015_six_classes\classpath_div\summary\summary_allTB');
 %load('\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_24Sep2015_combineAllPheao24Sep2015\classpath_div\summary\summary_allTB');
+%adhocing here to accomodate a different scenario where not all of the
+%files in the class directory have results. The only problem is you have to
+%list each hour to include and list it in the concatenation as well. 
+temp = cellstr(filelistTB);
+hours = [{'d013h04', 'd013h05', 'd013h06', 'd013h07', 'd013h08', 'd013h09',...
+    'd013h10', 'd013h11', 'd013h12', 'd013h13','d014h00', 'd014h01'}]; 
+for i = 1:length(hours);
+    list= strmatch(hours(i), temp);
+    if ~exist('included_files')
+        included_files = list;
+    else
+        included_files = [included_files;list];
+    end
+end
+
 decimal = filelistTB(:,17:18);
 decimal = str2num(decimal);
-ind = find(decimal ==1);
+ind = find(decimal(included_files) ==1);
+main_ind = included_files(ind); ind= main_ind;
 
-for i = 1:length(class2useTB);
-   x = classcount(
-    classcount_optimized = classcountTB_above_optthresh(:,1);
-    Rsq(ii) = lin_fit{ii}.Rsquared.ordinary;
-    
+% for i = 1:length(class2useTB);
+%    x = classcount;
+%    classcount_optimized = classcountTB_above_optthresh(:,1);
+%     Rsq(ii) = lin_fit{ii}.Rsquared.ordinary;
+%     
+% 
+% 
 
-
-
-for i = 1:(length(class2useTB)-1);
+for i = 6%1:(length(class2useTB)-1);
     class2plot = class2useTB(i);
-    if strmatch(class2plot, 'blurry_marSnow', 'exact')
+    if strmatch(class2plot, 'blurry,marSnow', 'exact')
         continue
-    elseif strmatch(class2plot, 'phae2all', 'exact')
+    elseif strmatch(class2plot, 'phaeIndiv2,phaeMany23', 'exact')
         continue
     elseif strmatch(class2plot, 'phaeIndivAll', 'exact')
         continue

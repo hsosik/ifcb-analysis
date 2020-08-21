@@ -42,6 +42,8 @@ function [  ] = manual_classify_5_0( MCconfig_input )
 
 global figure_handle listbox_handle1 instructions_handle listbox_handle3 new_classcount new_setcount MCflags MCconfig new_filecount filecount filelist category select_remaining_button_handle
 
+numrois = NaN; %initialize
+
 %close all
 MCconfig = MCconfig_input; clear MCconfig_input %use this so MCconfig can now be global with callback functions
 MCflags = struct('class_jump', 0, 'class_step', 0, 'file_jump', 0, 'changed_selectrois', 0, 'select_remaining', 0,...
@@ -138,9 +140,9 @@ while filecount <= length(filelist),
 %         end
 %     end
     %special case to segregate dirt spots in Healy1101 data
-    if isequal(MCconfig.resultfiles{filecount}(1:10), 'IFCB8_2011') && MCflags.newclasslist,
-        classlist((adcdata(:,10) == 1118 & adcdata(:,11) == 290),2) = strmatch('bad', class2use_manual);
-    end;
+    %if isequal(MCconfig.resultfiles{filecount}(1:10), 'IFCB8_2011') && MCflags.newclasslist,
+    %    classlist((adcdata(:,10) == 1118 & adcdata(:,11) == 290),2) = strmatch('bad', class2use_manual);
+    %end;
     if isempty(classlist), %indicates bad class2use match
         return
     end;

@@ -9,20 +9,19 @@ function [ ml_analyzed ] = IFCB_volume_analyzed( hdrfilename )
 % Heidi M. Sosik, Woods Hole Oceanographic Institution, September 2012
 
 flowrate = 0.25; %milliliters per minute for syringe pump
-if ischar(hdrfilename), hdrfilename = cellstr(hdrfilename); end;
+if ischar(hdrfilename), hdrfilename = cellstr(hdrfilename); end
 ml_analyzed = NaN(size(hdrfilename));
 for count = 1:length(hdrfilename)
     hdr = IFCBxxx_readhdr(hdrfilename{count});
     if ~isempty(hdr)
         looktime = hdr.runtime - hdr.inhibittime; %seconds
-        if looktime ~= 0
+        if looktime > 0
             ml_analyzed(count) = flowrate.*looktime/60;
         else
             ml_analyzed(count) = IFCB_volume_analyzed_fromADC (regexprep(hdrfilename{count}, '.hdr', '.adc'));           
         end
     end
 end
-
 
 end
 
