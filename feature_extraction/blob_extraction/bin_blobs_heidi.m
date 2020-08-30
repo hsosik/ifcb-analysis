@@ -12,11 +12,11 @@ roi_flag = strmatch('.roi',x);
 if roi_flag
     targets = get_images_fromROI([in_dir file]);
     png_dir = [out_dir filesep regexprep(file,'.roi','')];
-    archive = [out_dir filesep regexprep(file,'.roi','_blobs_v2.zip')];
+    archive = [out_dir filesep regexprep(file,'.roi','_blobs_v4.zip')];
 else %assume zip
     targets = get_bin_file([in_dir file]);
     png_dir = [out_dir filesep regexprep(file,'.zip','')];
-    archive = [out_dir filesep regexprep(file,'.zip','_blobs_v2.zip')];
+    archive = [out_dir filesep regexprep(file,'.zip','_blobs_v4.zip')];
 end;
 
 if exist(archive,'file'),
