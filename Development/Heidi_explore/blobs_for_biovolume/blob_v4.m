@@ -16,9 +16,9 @@ end
 config = target.config;
 img = target.image;
 pc3 = config.pc3; %get phase congruency parameters
-[M m , ~, ~, ~, ~, ~] = phasecong3(img, pc3.nscale, pc3.norient, pc3.minWaveLength, pc3.mult, pc3.sigmaOnf, pc3.k, pc3.cutOff, pc3.g, pc3.noiseMethod);
-img_blob = hysthresh(M+m, config.hysthresh.high, config.hysthresh.low);
-%img_blob = hysthresh(M+m, .2, config.hysthresh.low);
+[M, m] = phasecong3_Mm(img, pc3.nscale, pc3.norient, pc3.minWaveLength, pc3.mult, pc3.sigmaOnf, pc3.k, pc3.cutOff, pc3.g, pc3.noiseMethod);
+Mm = M+m;
+img_blob = hysthresh(Mm, config.hysthresh.high, config.hysthresh.low);
 
 % omit spurious edges along margins
 img_blob(1,img_blob(2,:)==0)=0;
