@@ -49,7 +49,7 @@ lon = deg+min;
 latitude = lat;
 longitude = lon;
 matlab_date = date;
-save \\sosiknas1\IFCB_data\IFCB101_PiscesAug2016\metadata\metadata_raw matlab_date latitude longitude hour minute second day month year;
+save \\sosiknas1\IFCB_data\NESLTER_broadscale\metadata\Bigelow_May2018\metadata_raw matlab_date latitude longitude hour minute second day month year;
 
 %to combine 3 metadatafiles.
 % load('\\sosiknas1\IFCB_data\IFCB101_GordonGunterMay2016\metadata\metadata1.mat')
@@ -66,3 +66,21 @@ save \\sosiknas1\IFCB_data\IFCB101_PiscesAug2016\metadata\metadata_raw matlab_da
      b(i,1:5)= sscanf(LOG_DATE{i}, '%d/%d/%d %d:%d');
  end
  
+ 
+ % Code from Taylor that worked well on date/time from ARMSTRONG data
+ % output 
+ 
+ matdate = cell2mat(Date(3:end));
+ mattime = cell2mat(Time(3:end));
+ matlab_date = datenum([matdate mattime]);
+ 
+ full_date = datevec(matlab_date);
+ 
+ year = full_date(:,1);
+ month = full_date(:,2);
+ day = full_date(:,3);
+ hour = full_date(:,4);
+ minute = full_date(:,5);
+ second = full_date(:,6);
+ 
+save \\sosiknas1\IFCB_data\IFCB109_ArmstrongSep2017\metadata\metadata_raw matlab_date latitude longitude hour minute second day month year;

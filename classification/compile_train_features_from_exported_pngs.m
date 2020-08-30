@@ -1,10 +1,16 @@
-pngdir = '\\sosiknas1\IFCB_products\MVCO\MVCO_train_Aug2015\'; %output from export train - where the training images are located
-savedir = '\\sosiknas1\IFCB_products\MVCO\classifiers\';
-feapath_base = '\\sosiknas1\IFCB_products\MVCO\features\featuresxxxx_v2\'
-maxn = 500; %USER select
+pngdir = 'C:\work\IFCB\user_training_test_data\manual\pngs\';
+savedir = 'C:\work\IFCB\user_training_test_data\manual\summary\';
+feapath_base = 'C:\work\IFCB\user_training_test_data\features\xxxx\'
+%pngdir = '\\sosiknas1\IFCB_products\MVCO\MVCO_train_Aug2015\'; %output from export train - where the training images are located
+%savedir = '\\sosiknas1\IFCB_products\MVCO\classifiers\';
+%feapath_base = '\\sosiknas1\IFCB_products\MVCO\features\featuresxxxx_v2\'
+maxn = 100; %USER select
 minn = 0; %minimum number for inclusion
-outstring = 'MVCO_train_Aug2015'; %e.g., 'MVCO_train_Aug2015'
 
+outstring = 'UserExample_Train'; %e.g., 'MVCO_train_Aug2015'
+if ~exist(savedir, 'dir')
+    mkdir(savedir)
+end
 %find the class names from the subdirs
 temp = dir(pngdir);
 temp = temp([temp.isdir]);
@@ -25,7 +31,11 @@ for classcount = 1:length(classes)
     fea_mat = [];
     for filecount = 1:length(unqfilelist)
         feaname = [unqfilelist{filecount} '_fea_v2.csv'];
-        feapath = regexprep(feapath_base, 'xxxx', feaname(7:10));
+        if feaname(1)== 'I'
+            feapath = regexprep(feapath_base, 'xxxx', feaname(7:10));
+        else
+            feapath = regexprep(feapath_base, 'xxxx', feaname(2:5));
+        end
         [ feadata, featitles ] = get_fea_file([feapath feaname]);
         if exist('fea2use', 'var')
             [~,fea2use_ind] = intersect(featitles,fea2use);

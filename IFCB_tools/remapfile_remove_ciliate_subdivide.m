@@ -13,7 +13,7 @@ load class2use_MVCOciliate
 class2use = [class2use class2use_sub4];
 
 classlist = file_struct.classlist;
-keyboard
+%keyboard
 if size(file_struct.classlist,2) > 3,
     ind2move = find(~isnan(file_struct.classlist(:,4)));
     classlist(ind2move,2) = classlist(ind2move,4) + orig_length;

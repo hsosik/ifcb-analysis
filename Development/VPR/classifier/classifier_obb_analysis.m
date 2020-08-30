@@ -144,7 +144,7 @@ end;
 ind = find(isnan(Yfit_max));
 Yfit_max(ind) = length(classes)+1; %unclassified set to last class
 ind = find(Yfit_max);
-classes2 = [classes; 'unclassified'];
+classes2 = [classes(:); 'unclassified'];
 [c3, gord] = confusionmat(b.Y,classes2(Yfit_max));
 total = sum(c3')';
 Pd3 = diag(c3)./total; %true pos rate among accepted classifications

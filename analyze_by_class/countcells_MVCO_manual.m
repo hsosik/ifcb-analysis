@@ -1,4 +1,5 @@
 resultpath = '\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\';
+urlstr = 'http://ifcb-data.whoi.edu/mvco/';
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the milliliters analyzed for all sample files
 
@@ -17,6 +18,12 @@ temp(ia) = ml_analyzed(ib);
 ml_analyzed = temp;
 %clean up from ml_analyzed_all
 clear filelist_all looktime matdate minproctime runtime
+
+ia = find(isnan(ml_analyzed));
+files_missing_ml = filelist(ia); %assume these are the D files
+temp = IFCB_volume_analyzed([repmat(urlstr,length(ia),1) char(filelist(ia)) repmat('.hdr', length(ia),1)]);
+ml_analyzed(ia) = temp;
+
 
 %mark NaNs in ml_analyzed for classify not complete in manual annotation
 analyzed_flag = classes_byfile.classes_checked; analyzed_flag(analyzed_flag == 0) = NaN;

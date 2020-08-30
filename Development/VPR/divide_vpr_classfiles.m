@@ -1,6 +1,6 @@
 
 
-classpath = '\\sosiknas1\Lab_data\VPR\NBP1201\vpr8\class_RossSea_Trees_30Oct2015_seven_classes\';
+classpath = '\\sosiknas1\Lab_data\VPR\NBP1201\class_RossSea_Trees_test26May2017\';
 classpath_div = [classpath, filesep, 'classpath_div', filesep];
 
 if ~exist(classpath_div, 'dir'),

@@ -15,11 +15,16 @@ function [ ] = countcells_allTBnew_user_training(classpath_generic , in_dir, yrr
 % summary file will be located in subdir \summary\ at the top level
 % location of classifier output files
 
+%check whether in dir
+urlflag = 0;
+if strcmp('http', in_dir(1:4))
+    urlflag = 1;
+end
 %make sure input paths end with filesep
 if ~isequal(classpath_generic(end), filesep)
     classpath_generic = [classpath_generic filesep];
 end
-if ~isequal(in_dir(end), filesep)
+if (~isequal(in_dir(end), filesep) && ~urlflag)
     in_dir = [in_dir filesep];
 end
 
@@ -27,9 +32,9 @@ path_out = [regexprep(classpath_generic, 'classxxxx_v1\', ''), 'summary' filesep
 
 classfiles = [];
 filelist = [];
-for yrcount = 1:length(yrrange), %USER not tested yet for multiple years, but should work
+for yrcount = 1:length(yrrange) %USER not tested yet for multiple years, but should work
     yr = yrrange(yrcount);
-    classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
+    classpath = regexprep(classpath_generic, 'XXXX', num2str(yr));
     %temp = [dir([classpath 'I*.mat']); dir([classpath 'D*.mat'])];
     temp = dir([classpath 'D*.mat']);
     if ~isempty(temp)
@@ -40,17 +45,21 @@ for yrcount = 1:length(yrrange), %USER not tested yet for multiple years, but sh
     end
     clear temp pathall classpath
 end;
-if strcmp('http', in_dir(1:4))
-    hdrfiles = cellstr([repmat(in_dir,length(filelist),1) filelist repmat('.hdr', length(filelist), 1)]);
+if urlflag
+    hdrfiles = cellstr(strcat( in_dir, filelist, '.hdr'));
+    %hdrfiles = cellstr([repmat(in_dir,length(filelist),1) filelist repmat('.hdr', length(filelist), 1)]);
 else
     fsep = repmat(filesep, size(filelist,1),1);
     %determine data subdir structure
     if exist([in_dir filelist(1,:) '.hdr'], 'file') %presume all files in top level of in_dir
-        hdrfiles = cellstr([repmat(in_dir,size(filelist,1),1) fsep filelist repmat('.hdr', size(filelist,1), 1)]);   
+        hdrfiles = cellstr(strcat(in_dir, fsep, filelist, '.hdr'));   
+%        hdrfiles = cellstr([repmat(in_dir,size(filelist,1),1) fsep filelist repmat('.hdr', size(filelist,1), 1)]);   
     elseif exist([in_dir filelist(1,2:5) filesep filelist(1,:) '.hdr'], 'file') %presume all files in subdir by year
-        hdrfiles = cellstr([repmat(in_dir,size(filelist,1),1) filelist(:,2:5) fsep filelist repmat('.hdr', size(filelist,1), 1)]);
+        hdrfiles = cellstr(strcat(in_dir, filelist(:,2:5), fsep, filelist, '.hdr'));
+        %hdrfiles = cellstr([repmat(in_dir,size(filelist,1),1) filelist(:,2:5) fsep filelist repmat('.hdr', size(filelist,1), 1)]);
     elseif exist([in_dir filelist(1,2:5) filesep filelist(1,1:9) filesep filelist(1,:) '.hdr'], 'file') %presume all files in subdir by year then day
-        hdrfiles = cellstr([repmat(in_dir,size(filelist,1),1) filelist(:,2:5) fsep filelist(:,1:9) fsep filelist repmat('.hdr', size(filelist,1), 1)]);
+        hdrfiles = cellstr(strcat(in_dir, filelist(:,2:5), fsep, filelist(:,1:9), fsep, filelist, '.hdr'));
+        %hdrfiles = cellstr([repmat(in_dir,size(filelist,1),1) filelist(:,2:5) fsep filelist(:,1:9) fsep filelist repmat('.hdr', size(filelist,1), 1)]);
     else
         disp('First hdr file not found. Check input directory.')
         return
@@ -88,18 +97,24 @@ filelistTB = filelist;
 class2useTB = class2use;
 classcountTB = classcount;
 classcountTB_above_optthresh = classcount_above_optthresh;
-clear mdate filelist class2use classcount classcount_above_optthresh filecount yr* classfiles in_dir num2dostr
+
+yrrangestr = num2str(yrrange(1));
+if length(yrrange) > 1
+    yrrangestr = [yrrangestr '_' num2str(yrrange(end))];
+end
+
+clear mdate filelist class2use classcount classcount_above_optthresh filecount yrrange yrcount yr classfiles in_dir num2dostr
 
 if exist('adhocthresh', 'var'),
     classcountTB_above_adhocthresh = classcount_above_adhocthresh;
-    save([path_out 'summary_allTB'] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'classcountTB_above_adhocthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'adhocthresh', 'classpath_generic')
+    save([path_out 'summary_allTB_' yrrangestr] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'classcountTB_above_adhocthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'adhocthresh', 'classpath_generic')
 else
-    save([path_out 'summary_allTB'] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic')
+    save([path_out 'summary_allTB_' yrrangestr] , 'class2useTB', 'classcountTB', 'classcountTB_above_optthresh', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic')
 end;
 
 
 disp('Summary cell count file stored here:')
-disp([path_out 'summary_allTB'])
+disp([path_out 'summary_allTB_' yrrangestr])
 
 return
 % %example plotting code for all of the data (load summary file first)

@@ -1,10 +1,12 @@
 %MVCO case
 classpath_generic = '\\SOSIKNAS1\IFCB_products\MVCO\class\classxxxx_v1\';
+urlstr = 'https://ifcb-data.whoi.edu/mvco/';
 
 classfiles = [];
-for yr = 2016, %:2012,
+for yr = 2018 %:2012,
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'I*.mat']);
+    temp = [temp; dir([classpath 'D*.mat'])];
     pathall = repmat(classpath, length(temp),1);
     classfiles = [classfiles; cellstr([pathall char(temp.name)])];
     clear temp pathall classpath
@@ -12,10 +14,12 @@ end;
 
 temp = char(classfiles);
 ind = length(classpath_generic)+1;
-filelist = cellstr(temp(:,ind:ind+20));
+%filelist = cellstr(temp(:,ind:ind+20));
+filelist = cellstr(temp(:,ind:end));
+filelist = regexprep(filelist, '_class_v1.mat', '');
 mdate = IFCB_file2date(filelist);
 
-load('\\sosiknas1\IFCB_products\MVCO\class\summary\ml_analyzed_all', 'ml_analyzed', 'filelist_all');
+load('\\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all', 'ml_analyzed', 'filelist_all');
 [~,ia, ib] = intersect(filelist, filelist_all);
 if length(ia) ~= length(filelist),
     disp('missing some ml_analyzed values; need to make updated ml_analyzed all.mat?')
