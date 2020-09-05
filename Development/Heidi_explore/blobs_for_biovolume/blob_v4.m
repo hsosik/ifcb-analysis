@@ -30,12 +30,8 @@ img_blob = bwmorph(img_blob, 'thin', 3); %tar20 oct 2011, Heidi thinks 3 times h
 img_edge = img_blob; %keep this to plot?
 
 %% now use kmean clustering approach to make sure dark areas are included
-%img_dark = kmean_segment(img);
-%img_blob(img_dark==1)=1;
-% now use Otsu's method to make sure dark areas are included
-otsu_thresh = round((graythresh(img)*255)*0.65); % use integer threshold
-img_blob(img < otsu_thresh)=1;
-img_dark = img_blob;
+img_dark = kmean_segment(img);
+img_blob(img_dark==1)=1;
 
 % morphological processing 
 img_blob = imfill(img_blob, 'holes');
