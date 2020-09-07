@@ -20,10 +20,7 @@ config.pc3.noiseMethod = -1;
 % hysthresh params
 config.hysthresh = struct;
 config.hysthresh.high = 0.3; 
-config.hysthresh.low = 0.1; %.1 / .25-.35
-config.hysthresh.high = 0.3; 
 config.hysthresh.low = 0.09; %.1 / .25-.35
-
 
 config.blob_min = 40; %150; % minimum area of blob
 % list of region props to compute for blob; AREA is done no matter what so
