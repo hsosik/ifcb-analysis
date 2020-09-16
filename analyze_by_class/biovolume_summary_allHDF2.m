@@ -11,28 +11,28 @@
 % metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_broadscale', weboptions('Timeout', 180));
 
 % 
-%resultpath = '\\sosiknas1\IFCB_products\NESLTER_transect\summary\';
-%classpath_generic = '\\sosiknas1\ifcb_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_TRANSECT__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
-%feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\features\';
+ resultpath = '\\sosiknas1\IFCB_products\NESLTER_transect\summary\';
+ classpath_generic = '\\sosiknas1\ifcb_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_TRANSECT__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
+ feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\features\';
+ myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f %s%s %f%s%f %s%s%s%s%s %f'); %case with 5 tags
+ metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_transect', weboptions('Timeout', 60, 'ContentReader', myreadtable));
 %% metaT = readtable('\\sosiknas1\IFCB_products\NESLTER_transect\NESLTER_transect.csv');
 %% webread doesn't work to capture all the column variables for transect--maybe associated with some many blanks for first cruise
 %% download the csv, then add blank string or Nan to top row entries
 %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_transect', weboptions('Timeout', 200));
-%myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f %s%s %f%s%f %s%s%s%s%s %f'); %case with 5 tags
-%metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_transect', weboptions('Timeout', 60, 'ContentReader', myreadtable));
 
 % %
- resultpath = '\\sosiknas1\IFCB_products\SPIROPA\summary\';
- classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_SPIROPA__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
- feapath_generic = '\\sosiknas1\IFCB_products\SPIROPA\features\';
- metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SPIROPA', weboptions('Timeout', 30));
+%  resultpath = '\\sosiknas1\IFCB_products\SPIROPA\summary\';
+%  classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_SPIROPA__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
+%  feapath_generic = '\\sosiknas1\IFCB_products\SPIROPA\features\';
+%  metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SPIROPA', weboptions('Timeout', 30));
 
-%resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
-%classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_EXPORTS__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
-%feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
-%%%metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 30));
-%myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f%s%s %f%s%f %s%s%s %f'); %case with 3 tags
-%metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+%  resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
+%  classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_EXPORTS__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
+%  feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
+%  myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f%s%s %f%s%f %s%s%s %f'); %case with 3 tags
+%  metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+% % %%%metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 30));
 
 %resultpath = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\summary\';
 %classpath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\class_v2\';
@@ -41,7 +41,7 @@
 
 adhocthresh = 0.5;
 
-for yr = 2019:2019 %:2012,
+for yr = 2017:2019 %:2012,
     classpath = classpath_generic;
     temp = dir([classpath 'D' num2str(yr) '*.h5']);
     pathall = repmat(classpath, length(temp),1);
@@ -53,11 +53,12 @@ for yr = 2019:2019 %:2012,
     feafiles(ii) = cellstr([pathall(ii,:) names(ii,1:24) xall(ii,:)]);
     ii = strmatch('I', names);
     feafiles(ii) = cellstr([pathall(ii,:) names(ii,1:21) xall(ii,:)]);
-    clear temp pathall classpath xall
+    clear temp pathall classpath xall names
 
     temp = char(classfiles);
     ind = length(classpath_generic)+1;
     filelist = cellstr(temp(:,ind:ind+23));
+    clear temp
     %mdate = IFCB_file2date(filelist);
     %pathall = repmat(hdrpath, size(temp,1),1);
     %xall = repmat('.hdr', size(temp,1),1);
@@ -75,7 +76,12 @@ for yr = 2019:2019 %:2012,
     
     [~,a,b] = intersect(filelist, metaT.pid);
     meta_data(a,:) = metaT(b,:); 
+    ind = find(meta_data.ifcb ==0);
+    meta_data(ind,:) = []; %omit any files not in dashboard table
     mdate = datenum(meta_data.sample_time, 'yyyy-mm-dd HH:MM:ss+00:00');
+    classfiles(ind) = [];
+    filelist(ind) = [];
+    feafiles(ind) = []; 
     
     [~, ~, ~, class2use] = load_class_scores(classfiles{1});
     class2use = deblank(class2use); 
@@ -91,7 +97,7 @@ for yr = 2019:2019 %:2012,
     num2dostr = num2str(length(classfiles));
     classFeaList = cell(size(classcount));
     classPidList = cell(size(classcount));
-    classFeaList_variables = {'ESD' 'maxFeretDiameter' 'summedMajorAxis' 'pmtA' 'pmtB' 'pmtC' 'pmtD' 'peakA' 'peakB' 'peakC' 'peakD' 'TimeOfFlight' 'score'};
+    classFeaList_variables = {'ESD' 'maxFeretDiameter' 'summedMajorAxis' 'numBlobs' 'pmtA' 'pmtB' 'pmtC' 'pmtD' 'peakA' 'peakB' 'peakC' 'peakD' 'TimeOfFlight' 'score'};
     
     %
     for filecount = 1:length(classfiles)

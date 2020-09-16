@@ -27,6 +27,8 @@ ind = strmatch('maxFeretDiameter', feastruct.textdata);
 targets.maxFeretDiameter = feastruct.data(:,ind)*micron_factor;
 ind = strmatch('summedMajorAxisLength', feastruct.textdata);
 targets.summedMajorAxisLength = feastruct.data(:,ind)*micron_factor;
+ind = strmatch('numBlobs', feastruct.textdata);
+targets.numBlobs = feastruct.data(:,ind);
 targets.pid = cellstr(strcat(bin_id, '_', num2str(roi_numbers, '%05.0f')));
 %%
 adcfile = regexprep(feafile, '_fea_v4.csv', '.adc');
@@ -76,7 +78,11 @@ for ii = 1:length(class_labels)
     classcount(ii) = size(ind,1);
     classbiovol(ii) = sum(targets.Biovolume(ind));
     classC(ii) = sum(cellC(ind));
-    classFeaList{ii} = [targets.esd(ind) targets.maxFeretDiameter(ind) targets.summedMajorAxisLength(ind) targets.adc(ind,:) targets.maxscore(ind)'];
+    if ~isempty(ind)
+        classFeaList{ii} = [targets.esd(ind) targets.maxFeretDiameter(ind) targets.summedMajorAxisLength(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
+    else
+        classFeaList{ii} = single.empty(0,size(targets.adc,2)+5);
+    end
     classPidList{ii} = targets.pid(ind);
 
     if exist('TBclass_above_threshold', 'var')
