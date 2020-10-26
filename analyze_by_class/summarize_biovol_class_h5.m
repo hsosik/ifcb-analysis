@@ -6,9 +6,10 @@ function [classcount, classbiovol, classC, classcount_above_optthresh, classbiov
 micron_factor = 1/2.77; %microns per pixel
 
 %load(classfile)
-[bin_id, scores, roi_numbers, class_labels] = load_class_scores(classfile);
+%[bin_id, scores, roi_numbers, class_labels] = load_class_scores(classfile);
+classTable = load_class_scores(classfile);
 
-classcount = NaN(length(class_labels),1);
+classcount = NaN(length(classTable.class_labels),1);
 classcount_above_optthresh = classcount;
 classcount_above_adhocthresh = classcount;
 classbiovol = classcount;
@@ -29,7 +30,7 @@ ind = strmatch('summedMajorAxisLength', feastruct.textdata);
 targets.summedMajorAxisLength = feastruct.data(:,ind)*micron_factor;
 ind = strmatch('numBlobs', feastruct.textdata);
 targets.numBlobs = feastruct.data(:,ind);
-targets.pid = cellstr(strcat(bin_id, '_', num2str(roi_numbers, '%05.0f')));
+targets.pid = cellstr(strcat(bin_id, '_', num2str(classTable.roi_numbers, '%05.0f')));
 %%
 adcfile = regexprep(feafile, '_fea_v4.csv', '.adc');
 adcfile = regexprep(adcfile, 'IFCB_products', 'IFCB_data');
@@ -39,32 +40,32 @@ adcfile = regexprep(adcfile, 'features\\D', 'data\');
 adc = readtable(adcfile, 'FileType', 'text');
 targets.adc = adc{roi_numbers, 3:11};
 
-%% get the TBclass labels with application of adhocthresh
+%% get the Predicted_class labels with application of adhocthresh
 if length(adhocthresh) == 1
-    t = ones(size(scores))*adhocthresh;
+    t = ones(size(classTable.scores))*adhocthresh;
 else
-    t = repmat(adhocthresh,length(TBclass),1);
+    t = repmat(adhocthresh,length(Predicted_class),1);
 end
 win = (scores > t);
 [i,j] = find(win);
 %if ~exist('TBclass', 'var')
     %[~,TBclass] = max(scores');
-    [targets.maxscore, TBclass] = max(scores');
-    TBclass = class_labels(TBclass)';
+    [targets.maxscore, Predicted_class] = max(classTable.scores');
+    Predicted_class = class_labels(Predicted_class)';
 %end
-TBclass_above_adhocthresh = cell(size(TBclass));
-TBclass_above_adhocthresh = cell(size(TBclass));
-TBclass_above_adhocthresh(:) = deal(repmat({'unclassified'},1,length(TBclass)));
-TBclass_above_adhocthresh(i) = class_labels(j); %most are correct his way (zero or one case above threshold)
+Predicted_class_above_adhocthresh = cell(size(Predicted_class));
+Predicted_class_above_adhocthresh = cell(size(Predicted_class));
+Predicted_class_above_adhocthresh(:) = deal(repmat({'unclassified'},1,length(Predicted_class)));
+Predicted_class_above_adhocthresh(i) = classTable.class_labels(j); %most are correct his way (zero or one case above threshold)
 ind = find(sum(win')>1); %now go back and fix the conflicts with more than one above threshold
 for count = 1:length(ind)
     [~,ii] = max(scores(ind(count),:));
-    TBclass_above_adhocthresh(ind(count)) = class_labels(ii);
+    Predicted_class_above_adhocthresh(ind(count)) = classTable.class_labels(ii);
 end
 %%
 
-[ind_diatom] = get_diatom_ind(class_labels,class_labels);
-diatom_flag = zeros(size(class_labels));
+[ind_diatom] = get_diatom_ind(classTable.class_labels,classTable.class_labels);
+diatom_flag = zeros(size(classTable.class_labels));
 diatom_flag(ind_diatom) = 1;
 cellC_diatom = biovol2carbon(targets.Biovolume,1);
 cellC_notdiatom = biovol2carbon(targets.Biovolume,0);
@@ -74,7 +75,7 @@ for ii = 1:length(class_labels)
     else
         cellC = cellC_notdiatom;
     end
-    ind = strmatch(class_labels(ii), TBclass,'exact');
+    ind = strmatch(classTable.class_labels(ii), Predicted_class,'exact');
     classcount(ii) = size(ind,1);
     classbiovol(ii) = sum(targets.Biovolume(ind));
     classC(ii) = sum(cellC(ind));
@@ -85,15 +86,15 @@ for ii = 1:length(class_labels)
     end
     classPidList{ii} = targets.pid(ind);
 
-    if exist('TBclass_above_threshold', 'var')
-        ind = strmatch(class_labels(ii), TBclass_above_threshold, 'exact');
+    if exist('Predicted_class_above_threshold', 'var')
+        ind = strmatch(classTable.class_labels(ii), Predicted_class_above_threshold, 'exact');
         classcount_above_optthresh(ii) = size(ind,1);
         classbiovol_above_optthresh(ii) = sum(targets.Biovolume(ind));
         classC_above_optthresh(ii) = sum(cellC(ind));
     else 
-        TBclass_above_threshold = NaN;
+        Predicted_class_above_threshold = NaN;
     end
-    ind = strmatch(class_labels(ii), TBclass_above_adhocthresh, 'exact');
+    ind = strmatch(classTable.class_labels(ii), Predicted_class_above_adhocthresh, 'exact');
     classcount_above_adhocthresh(ii) = size(ind,1);
     classbiovol_above_adhocthresh(ii) = sum(targets.Biovolume(ind));
     classC_above_adhocthresh(ii) = sum(cellC(ind));
