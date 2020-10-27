@@ -11,22 +11,26 @@
 % metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_broadscale', weboptions('Timeout', 180));
 
 % 
- resultpath = '\\sosiknas1\IFCB_products\NESLTER_transect\summary\';
- classpath_generic = '\\sosiknas1\ifcb_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_TRANSECT__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
- feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\features\';
- myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f %s%s %f%s%f %s%s%s%s%s %f'); %case with 5 tags
- metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_transect', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+if 1 
+    resultpath = '\\sosiknas1\IFCB_products\NESLTER_transect\summary\';
+    classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\class\v3\20201022_NES\';
+    feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\features\';
+    myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f %s%s %f%s%f %s%s%s%s%s %f'); %case with 5 tags
+    metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_transect', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+end
 %% metaT = readtable('\\sosiknas1\IFCB_products\NESLTER_transect\NESLTER_transect.csv');
 %% webread doesn't work to capture all the column variables for transect--maybe associated with some many blanks for first cruise
 %% download the csv, then add blank string or Nan to top row entries
 %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_transect', weboptions('Timeout', 200));
 
 % %
-%  resultpath = '\\sosiknas1\IFCB_products\SPIROPA\summary\';
-%  classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_SPIROPA__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
-%  feapath_generic = '\\sosiknas1\IFCB_products\SPIROPA\features\';
-%  metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SPIROPA', weboptions('Timeout', 30));
-
+if 0
+  resultpath = '\\sosiknas1\IFCB_products\SPIROPA\summary\';
+  %classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_SPIROPA__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
+  classpath_generic = '\\sosiknas1\IFCB_products\SPIROPA\class\v3\20201022_NES\';
+  feapath_generic = '\\sosiknas1\IFCB_products\SPIROPA\features\';
+  metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SPIROPA', weboptions('Timeout', 30));
+end
 %  resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
 %  classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_EXPORTS__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
 %  feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
@@ -41,22 +45,32 @@
 
 adhocthresh = 0.5;
 
-for yr = 2017:2019 %:2012,
-    classpath = classpath_generic;
-    temp = dir([classpath 'D' num2str(yr) '*.h5']);
-    pathall = repmat(classpath, length(temp),1);
-    names = char(temp.name);
+for yr = 2019:2019 %:2012,
+    ystr = ['D' num2str(yr)];
+    classpath = [classpath_generic filesep ystr filesep];
+    %temp = dir([classpath 'D' num2str(yr) '*.h5']);
+    temp = dir([classpath ystr '*']);
+    temp = {temp([temp.isdir]).name};
+    pathall = [];
+    names = [];
+    for ii = 1:length(temp)
+        pathnow = [classpath temp{ii} filesep];
+        temp2 = dir([pathnow '*.h5']);
+        pathall = [pathall; repmat(pathnow, length(temp2),1)];
+        names = [names; char(temp2.name)];
+    end
+    
     classfiles = cellstr([pathall names]);
     pathall = strcat(feapath_generic, names(:,1:5), filesep, names(:,1:9), filesep);
-    xall = repmat('_fea_v4.csv', length(temp),1);
+    xall = repmat('_fea_v4.csv', length(names),1);
     ii = strmatch('D', names);
     feafiles(ii) = cellstr([pathall(ii,:) names(ii,1:24) xall(ii,:)]);
     ii = strmatch('I', names);
     feafiles(ii) = cellstr([pathall(ii,:) names(ii,1:21) xall(ii,:)]);
-    clear temp pathall classpath xall names
+    clear temp* pathall classpath xall names
 
     temp = char(classfiles);
-    ind = length(classpath_generic)+1;
+    ind = length(classpath_generic)+18;
     filelist = cellstr(temp(:,ind:ind+23));
     clear temp
     %mdate = IFCB_file2date(filelist);
@@ -83,8 +97,8 @@ for yr = 2017:2019 %:2012,
     filelist(ind) = [];
     feafiles(ind) = []; 
     
-    [~, ~, ~, class2use] = load_class_scores(classfiles{1});
-    class2use = deblank(class2use); 
+    classTable = load_class_scores(classfiles{1});
+    class2use = deblank(classTable.class_labels); 
     classcount = NaN(length(classfiles),length(class2use));
     classbiovol = classcount;
     classC = classcount;
