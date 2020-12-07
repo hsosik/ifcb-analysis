@@ -1,4 +1,4 @@
-function [ binlist, summary ] = biovolume_size_manual_onetimeseries( timeseries, feapath_base, classes)
+function [ binlist, summary ] = biovolume_size_manual_onetimeseries( timeseries, feapath_base, adcpath_base, classes)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 %[ classcount, binlist, class2use ] = countcells_manual_onetimeseries('mvco')
@@ -21,7 +21,7 @@ cursor = fetch(cursor);
 binlist = cursor.Data;
 
 lbstr = num2str(length(binlist));
-summary.count = NaN( length(binlist), length(classes) );
+summary.count = zeros( length(binlist), length(classes) );
 summary.count_gt10 = summary.count;
 for filecount = 1:length(binlist)
     filename = binlist{filecount};
@@ -31,14 +31,19 @@ for filecount = 1:length(binlist)
     else
        % feapath = regexprep(feapath_base, 'XXXX', filename(2:5));
         feapath = [feapath_base filesep filename(1:5) filesep filename(1:9) filesep];
+        adcpath = [adcpath_base filesep filename(2:5) filesep filename(1:9) filesep];
     end
     %get the annotations from SQL query
     [ data ] = bin_classifications( filename );
     %get the features
-    target = get_bin_features([feapath filename '_fea_v4.csv'], {'Biovolume' 'EquivDiameter' 'Perimeter' 'summedBiovolume' 'maxFeretDiameter' 'minFeretDiameter'});
+    target = get_bin_features([feapath filename '_fea_v4.csv'], {'Biovolume' 'EquivDiameter' 'Perimeter' 'summedBiovolume' 'maxFeretDiameter' 'minFeretDiameter' 'numBlobs'});
     %match up the annotations and the features
     [~,ia, ib] = intersect(target.pid, data(:,1));
-    
+    adcfile = [adcpath filename '.adc'];
+    adc = readtable(adcfile, 'FileType', 'text');
+    roi_numbers = char(target.pid);
+    roi_numbers = str2num(roi_numbers(:,end-4:end));
+    target.adc = adc{roi_numbers, 3:11};
     data_match(:,1) = target.pid;
     data_match(:,2) = {'unclassified'}; %initialize as unclassified
     data_match(:,3) = {NaN}; %initialize WoRMS aphiaID
@@ -54,9 +59,11 @@ for filecount = 1:length(binlist)
         summary.perim{filecount,ccol} = target.Perimeter(cind)*micron_factor;
         summary.maxFd{filecount,ccol} = target.maxFeretDiameter(cind)*micron_factor;
         summary.minFd{filecount,ccol} = target.minFeretDiameter(cind)*micron_factor;
+        summary.adc{filecount,ccol} = target.adc(cind,:);
         summary.count(filecount,ccol) = length(cind);
         summary.count_gt10(filecount,ccol) = sum(summary.esd{filecount,ccol}>10);
-    end;
+        summary.numBlobs{filecount,ccol} = target.numBlobs(cind);
+    end
     clear data_match
 end
 

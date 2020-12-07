@@ -4,14 +4,18 @@
 %feapath_generic = '\\sosiknas1\IFCB_products\MVCO\features\featuresxxxx_v2\';
 %hdrpath = 'https://ifcb-data.whoi.edu/MVCO/';
 
-% resultpath = '\\sosiknas1\IFCB_products\NESLTER_broadscale\summary\';
-% classpath_generic = '\\sosiknas1\ifcb_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_BROADSCALE__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
-% feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\features\';
-% hdrpath = 'https://ifcb-data.whoi.edu/NESLTER_broadscale/';
-% metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_broadscale', weboptions('Timeout', 180));
+if 0
+    resultpath = '\\sosiknas1\IFCB_products\NESLTER_broadscale\summary\';
+    classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\class\v3\20201022_NES\';
+    feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\features\';
+    hdrpath = 'https://ifcb-data.whoi.edu/NESLTER_broadscale/';
+   % metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_broadscale', weboptions('Timeout', 180));
+    myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f %s%s %f%s%f %s%s%s%s%s%s%s%s %f'); %case with 8 tags (for now)
+    metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_broadscale', weboptions('Timeout', 120, 'ContentReader', myreadtable));
+end
 
 % 
-if 1 
+if 0 
     resultpath = '\\sosiknas1\IFCB_products\NESLTER_transect\summary\';
     classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\class\v3\20201022_NES\';
     feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\features\';
@@ -24,25 +28,30 @@ end
 %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_transect', weboptions('Timeout', 200));
 
 % %
-if 0
+if 1
   resultpath = '\\sosiknas1\IFCB_products\SPIROPA\summary\';
   %classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_SPIROPA__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
   classpath_generic = '\\sosiknas1\IFCB_products\SPIROPA\class\v3\20201022_NES\';
   feapath_generic = '\\sosiknas1\IFCB_products\SPIROPA\features\';
   metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SPIROPA', weboptions('Timeout', 30));
 end
-%  resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
+if 0
+  resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
 %  classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_EXPORTS__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
-%  feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
-%  myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f%s%s %f%s%f %s%s%s %f'); %case with 3 tags
-%  metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+%  classpath_generic = '\\vortex\omics\sosik\run-output\EXPORTS_run\v3\20201030_EXPORTS\';
+  classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20201102_EXPORTS\';
+  feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
+  myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f%s%s %f%s%f %s%s%s %f'); %case with 3 tags
+  metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60, 'ContentReader', myreadtable));
 % % %%%metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 30));
+end
 
 %resultpath = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\summary\';
 %classpath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\class_v2\';
 %feapath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\features\';
 %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SIO_Delmar_mooring', weboptions('Timeout', 30));
 
+%%
 adhocthresh = 0.5;
 
 for yr = 2019:2019 %:2012,
@@ -111,12 +120,16 @@ for yr = 2019:2019 %:2012,
     num2dostr = num2str(length(classfiles));
     classFeaList = cell(size(classcount));
     classPidList = cell(size(classcount));
-    classFeaList_variables = {'ESD' 'maxFeretDiameter' 'summedMajorAxis' 'numBlobs' 'pmtA' 'pmtB' 'pmtC' 'pmtD' 'peakA' 'peakB' 'peakC' 'peakD' 'TimeOfFlight' 'score'};
+    classFeaList_variables = {'ESD' 'maxFeretDiameter' 'summedMajorAxis' 'summedBiovolume' 'cellC' 'numBlobs' 'pmtA' 'pmtB' 'pmtC' 'pmtD' 'peakA' 'peakB' 'peakC' 'peakD' 'TimeOfFlight' 'score'};
     
     %
     for filecount = 1:length(classfiles)
         if ~rem(filecount,10), disp(['reading ' num2str(filecount) ' of ' num2dostr]), end
-        [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2useTB, classFeaList(filecount,:), classPidList(filecount,:)] = summarize_biovol_class_h5(classfiles{filecount}, feafiles{filecount}, adhocthresh);
+        if exist( feafiles{filecount}, 'file')
+            [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2useTB, classFeaList(filecount,:), classPidList(filecount,:)] = summarize_biovol_class_h5(classfiles{filecount}, feafiles{filecount}, adhocthresh);
+        else
+            disp(['skipping, no feature file: ' feafiles{filecount}])
+        end                
     end
     
     if ~exist(resultpath, 'dir')

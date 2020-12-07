@@ -1,4 +1,4 @@
-function [ ] = biovolume_size_summary_manual_webMC( datasetName, feapath)
+function [ ] = biovolume_size_summary_manual_webMC( datasetName, feapath, adcpath)
 %function [ ] = biovolume_size_summary_manual_webMC( datasetName, feapath)
 %
 %For example:
@@ -29,10 +29,15 @@ disp('checking for full class list...')
 classes = [classes {'unclassified'}];
 
 disp('checking all samples...')
-[ filelist, summary ] = biovolume_size_manual_onetimeseries(datasetName, feapath, classes);
+[ filelist, summary ] = biovolume_size_manual_onetimeseries(datasetName, feapath, adcpath, classes);
 disp('getting metadata...')
-metaT = webread(url_metadata, weboptions('Timeout', 60));
 
+if ismember(datasetName, {'NESLTER_transect', 'NESLTER_broadscale'})
+    myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f%s%s %f%s%f %s%s%s %f'); %case with 3 tags
+    metaT =  webread(url_metadata, weboptions('Timeout', 60, 'ContentReader', myreadtable));
+else
+    metaT = webread(url_metadata, weboptions('Timeout', 60));
+end
 disp('saving results...')
 [~,a,b] = intersect(filelist, metaT.pid);
 meta_data(a,:) = metaT(b,:);

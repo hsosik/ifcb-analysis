@@ -81,9 +81,9 @@ for ii = 1:length(class_labels)
     classbiovol(ii) = sum(targets.Biovolume(ind));
     classC(ii) = sum(cellC(ind));
     if ~isempty(ind)
-        classFeaList{ii} = [targets.esd(ind) targets.maxFeretDiameter(ind) targets.summedMajorAxisLength(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
+        classFeaList{ii} = [targets.esd(ind) targets.maxFeretDiameter(ind) targets.summedMajorAxisLength(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
     else
-        classFeaList{ii} = single.empty(0,size(targets.adc,2)+5);
+        classFeaList{ii} = single.empty(0,size(targets.adc,2)+7);
     end
     classPidList{ii} = targets.pid(ind);
 
