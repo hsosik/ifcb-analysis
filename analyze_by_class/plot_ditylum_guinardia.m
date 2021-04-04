@@ -6,8 +6,8 @@ mdateTB = [];
 filelistTB = [];
 
 for yr = 2006:2018
-    %temp = load(['\\sosiknas1\IFCB_products\MVCO\class\summary\' 'summary_allTB' num2str(yr)]);
-    temp = load(['C:\work\IFCB\class\summary\' 'summary_allTB' num2str(yr)]);
+    temp = load(['\\sosiknas1\IFCB_products\MVCO\class\summary\' 'summary_allTB' num2str(yr)]);
+    %temp = load(['C:\work\IFCB\class\summary\' 'summary_allTB' num2str(yr)]);
     classcountTB = [ classcountTB; temp.classcountTB];
     classcountTB_above_adhocthresh = [ classcountTB_above_adhocthresh; temp.classcountTB_above_adhocthresh];
     classcountTB_above_optthresh = [ classcountTB_above_optthresh; temp.classcountTB_above_optthresh];
