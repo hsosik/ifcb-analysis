@@ -41,7 +41,7 @@ matdate = IFCB_file2date(filelist);
 if ~exist(outpath, 'dir')
     mkdir(outpath)
 end;
-datestr2 = date; datestr = regexprep(datestr2,'-','');
+datestr2 = date; datestr2 = regexprep(datestr2,'-','');
 save([outpath 'count_manual_' datestr2], 'matdate', 'ml_analyzed_mat', 'classcount', 'filelist', 'class2use')
 save([outpath 'count_manual_current'], 'matdate', 'ml_analyzed_mat', 'classcount', 'filelist', 'class2use')
 
@@ -52,3 +52,5 @@ save([outpath 'count_manual_current_day'], 'matdate_bin', 'classcount_bin', 'ml_
 
 disp(['Results saved: '  outpath 'count_manual_' datestr2])
 disp(['Results saved: '  outpath 'count_manual_current'])
+disp(['Results saved: '  outpath 'count_manual_' datestr2 '_day'])
+disp(['Results saved: '  outpath 'count_manual_current_day'])

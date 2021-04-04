@@ -14,10 +14,11 @@ filelist = manual_list(2:end,1); filelist = regexprep(filelist, '.mat', '');
 mode_flags_byfile = cell2mat(manual_list(2:end,2:end-1));
 
 
-for count = 1:length(mode_list),
+for count = 1:length(mode_list)
 
     annotate_mode = mode_list{count};
 
+    class_cat = {}; %set to no classes if all entries in manual_list are zero
     switch annotate_mode
         case 'all categories'
             %use them all
@@ -52,15 +53,17 @@ for count = 1:length(mode_list),
                 'Guinardia delicatula_bleach damaged'});
        case 'gyrodenoids'
             [~, class_cat] = intersect(class2use_here, {'Gyrodinium'});
-    end;
+    end
     classes_bymode.classes_manual_check{count} = class_cat;
     
 end
 
 classes_checked = zeros(length(filelist), length(class2use_here));
-for count = 1:length(mode_list),
-    classes_checked(mode_flags_byfile(:,count)==1,classes_bymode.classes_manual_check{count}) = 1;
-end;
+for count = 1:length(mode_list)
+    if ~isempty(classes_bymode.classes_manual_check{count})
+        classes_checked(mode_flags_byfile(:,count)==1,classes_bymode.classes_manual_check{count}) = 1;
+    end
+end
 
 classes_bymode.mode_list = mode_list;
 classes_bymode.manual_list_col = manual_list_col;
