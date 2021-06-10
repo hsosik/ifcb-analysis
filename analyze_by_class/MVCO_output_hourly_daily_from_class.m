@@ -41,6 +41,23 @@ T.datetime = datetime(mdate_hr, 'ConvertFrom', 'datenum');
 T2 = array2table(count_hr./ml_hr, 'VariableNames', class2useTB);
 concentration_by_class_time_series = [T T2];
 
+writetable(concentration_by_class_time_series_hr, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series.csv')
+
+floordy = floor(mdateTB(ii));
+unqdy = unique(floordy);
+numdys = length(unqdy);
+count_dy = NaN(numdy,length(class2useTB));
+ml_dy = NaN(numdy,1);
+mdate_dy = ml_dy;
+for cc = 1:size(t,1)
+    ind = find(floordy == unqdy(cc));
+    count_dy(cc,:) = sum(count(ind,:),1);
+    ml_dy(cc) = sum(ml(ind));
+    mdate_dy(cc) = nanmean(mdateTB(ii(ind)));
+end
+
+writetable(concentration_by_class_time_series_hr, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series.csv')
+
 %writetable(concentration_by_class_time_series, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series.csv')
 
 %T2 = array2table(classcountTB_above_optthresh./ml_analyzedTB, 'VariableNames', class2useTB);
