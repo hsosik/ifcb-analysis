@@ -19,7 +19,6 @@ for yr = 2006:2018
 end
 
 
-
 ii = find(ml_analyzedTB<=5 & ml_analyzedTB>0);
 count = classcountTB_above_optthresh(ii,:);
 ml = ml_analyzedTB(ii);
@@ -29,7 +28,7 @@ numhrs = length(unqhr);
 count_hr = NaN(numhrs,length(class2useTB));
 ml_hr = NaN(numhrs,1);
 mdate_hr = ml_hr;
-for cc = 1:size(t,1)
+for cc = 1:size(unqhr,1)
     ind = find(floorhr == unqhr(cc));
     count_hr(cc,:) = sum(count(ind,:),1);
     ml_hr(cc) = sum(ml(ind));
@@ -49,14 +48,19 @@ numdys = length(unqdy);
 count_dy = NaN(numdy,length(class2useTB));
 ml_dy = NaN(numdy,1);
 mdate_dy = ml_dy;
-for cc = 1:size(t,1)
+for cc = 1:size(unqdy,1)
     ind = find(floordy == unqdy(cc));
     count_dy(cc,:) = sum(count(ind,:),1);
     ml_dy(cc) = sum(ml(ind));
     mdate_dy(cc) = nanmean(mdateTB(ii(ind)));
 end
 
-writetable(concentration_by_class_time_series_hr, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series.csv')
+T = table;
+T.datetime = datetime(mdate_dy, 'ConvertFrom', 'datenum');
+T2 = array2table(count_hr./ml_dy, 'VariableNames', class2useTB);
+concentration_by_class_time_series_dy = [T T2];
+
+writetable(concentration_by_class_time_series_dy, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series.csv')
 
 %writetable(concentration_by_class_time_series, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series.csv')
 
