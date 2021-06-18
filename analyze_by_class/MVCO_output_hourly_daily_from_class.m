@@ -19,9 +19,25 @@ for yr = 2006:2018
 end
 
 
+%% Compute and save full resolution concentrations, include ml_analyzed in the output
+
 ii = find(ml_analyzedTB<=5 & ml_analyzedTB>0);
 count = classcountTB_above_optthresh(ii,:);
 ml = ml_analyzedTB(ii);
+mdate = mdateTB(ii);
+filelist = filelistTB(ii);
+
+T = table;
+T.datetime = datetime(mdate, 'ConvertFrom', 'datenum');
+T.matdate = mdate;
+T.ml_analyzed = ml;
+T.pid = filelist;
+T2 = array2table(count./ml, 'VariableNames', class2useTB);
+concentration_by_class_time_series_full = [T T2];
+
+writetable(concentration_by_class_time_series_full, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series_full.csv')
+
+%% Compute and save hourly concentrations
 floorhr = floor(mdateTB(ii)*24)/24;
 unqhr = unique(floorhr);
 numhrs = length(unqhr);
@@ -37,14 +53,17 @@ end
 
 T = table;
 T.datetime = datetime(mdate_hr, 'ConvertFrom', 'datenum');
+T.matdate = mdate_hr;
 T2 = array2table(count_hr./ml_hr, 'VariableNames', class2useTB);
-concentration_by_class_time_series = [T T2];
+concentration_by_class_time_series_hr = [T T2];
 
-writetable(concentration_by_class_time_series_hr, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series.csv')
+writetable(concentration_by_class_time_series_hr, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series_hr.csv')
 
+
+%% Compute and save daily concentrations
 floordy = floor(mdateTB(ii));
 unqdy = unique(floordy);
-numdys = length(unqdy);
+numdy = length(unqdy);
 count_dy = NaN(numdy,length(class2useTB));
 ml_dy = NaN(numdy,1);
 mdate_dy = ml_dy;
@@ -57,10 +76,11 @@ end
 
 T = table;
 T.datetime = datetime(mdate_dy, 'ConvertFrom', 'datenum');
-T2 = array2table(count_hr./ml_dy, 'VariableNames', class2useTB);
+T.matdate = mdate_dy;
+T2 = array2table(count_dy./ml_dy, 'VariableNames', class2useTB);
 concentration_by_class_time_series_dy = [T T2];
 
-writetable(concentration_by_class_time_series_dy, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series.csv')
+writetable(concentration_by_class_time_series_dy, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series_dy.csv')
 
 %writetable(concentration_by_class_time_series, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series.csv')
 
