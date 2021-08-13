@@ -2,7 +2,7 @@ resultpath = '\\sosiknas1\IFCB_products\MVCO\class\summary\';
 classpath_generic = '\\sosiknas1\IFCB_products\MVCO\class\classxxxx_v1\';
 feapath_generic = '\\sosiknas1\IFCB_products\MVCO\features\featuresxxxx_v2\';
 
-for yr = 2016, %2009,2010,2012 needs redoing
+for yr = 2016 %2009,2010,2012 needs redoing
     classpath = regexprep(classpath_generic, 'xxxx', num2str(yr));
     feapath = regexprep(feapath_generic, 'xxxx', num2str(yr));
     temp = dir([classpath 'I*.mat']);
@@ -23,10 +23,10 @@ for yr = 2016, %2009,2010,2012 needs redoing
 
 %    load('ml_analyzed_all', 'ml_analyzed', 'filelist_all');
     [~,ia, ib] = intersect(filelist, filelist_all);
-    if length(ia) ~= length(filelist),
+    if length(ia) ~= length(filelist)
         disp('missing some ml_analyzed values; need to make updated ml_analyzed all.mat?')
         pause
-    end;
+    end
     temp = NaN(size(filelist));
     temp(ia) = ml_analyzed(ib);
     ml_analyzed_list = temp;
