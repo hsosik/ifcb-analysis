@@ -38,6 +38,19 @@ adcfile = regexprep(adcfile, 'IFCB_products', 'IFCB_data');
 adcfile = regexprep(adcfile, 'IFCB_products', 'IFCB_data');
 adcfile = regexprep(adcfile, 'features\\D', 'data\');
 
+%temp fudge for old MVCO products
+if strfind(feafile, 'MVCO')
+    mvco_flag = 1;
+    [p,f] = fileparts(feafile);
+    f = regexprep(f, '_fea_v2', '');
+    if strmatch(f(1),'I')
+        adcfile = strcat('\\sosiknas1\IFCB_data\MVCO\data\',f(7:10), filesep, f(1:14),filesep, f, '.adc');
+    else
+        adcfile = strcat('\\sosiknas1\IFCB_data\MVCO\data\',f(2:5), filesep, f(1:9),filesep, f, '.adc')
+    end
+end
+    
+
 adc = readtable(adcfile, 'FileType', 'text');
 targets.adc = adc{classTable.roi_numbers, 3:11};
 
@@ -79,9 +92,13 @@ for ii = 1:length(class_labels)
     ind = strmatch(class_labels(ii), Predicted_class,'exact');
     classcount(ii) = size(ind,1);
     classbiovol(ii) = sum(targets.Biovolume(ind));
-    classC(ii) = sum(cellC(ind));
+op    classC(ii) = sum(cellC(ind));
     if ~isempty(ind)
-        classFeaList{ii} = [targets.esd(ind) targets.maxFeretDiameter(ind) targets.summedMajorAxisLength(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
+        if mvco_flag %temp fudge for old mvco features
+            classFeaList{ii} = [targets.esd(ind) targets.summedMajorAxisLength(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
+        else
+            classFeaList{ii} = [targets.esd(ind) targets.maxFeretDiameter(ind) targets.summedMajorAxisLength(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
+        end
     else
         classFeaList{ii} = single.empty(0,size(targets.adc,2)+7);
     end

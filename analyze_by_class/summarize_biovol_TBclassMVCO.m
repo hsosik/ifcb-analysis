@@ -2,8 +2,8 @@ function [classcount, classbiovol, classC, classcount_above_optthresh, classbiov
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-%micron_factor = 1/3.4; %microns per pixel
-micron_factor = 1/2.77; %microns per pixel
+micron_factor = 1/3.4; %microns per pixel
+%micron_factor = 1/2.77; %microns per pixel
 
 load(classfile)
 classcount = NaN(length(class2useTB),1);

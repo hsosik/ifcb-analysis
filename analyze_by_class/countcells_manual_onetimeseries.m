@@ -45,6 +45,6 @@ function [ classcount, bins, class2use ] = countcells_manual_onetimeseries( time
    
    %fprintf('Query complete, results are available in %s\n', filename);
     disp('WARNING: These results to not yet reflect manual_list task completeness information!!')
-
+keyboard
 end
 
