@@ -1,4 +1,4 @@
-function [ ] = organize_daydir( inpath, outpath )
+function [ ] = organize_daydir_fea( inpath, outpath )
 %function [ ] = organize_daydir( inpath, outpath )
 %   Move IFCB data files from location specified by 'inpath' into daily
 %   sub-directories created (if needed) under 'outpath'
@@ -10,7 +10,7 @@ if ~exist('outpath', 'var')
     outpath = inpath;
 end
 
-filelist = dir(fullfile(inpath, '*.roi'));
+filelist = dir(fullfile(inpath, '*.csv'));
 if isempty(filelist)
     disp('no roi files found')
     return
