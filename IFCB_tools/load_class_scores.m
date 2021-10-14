@@ -1,5 +1,5 @@
 function classTable = load_class_scores(path)
-%function [bin_id, scores, roi_numbers, class_labels] = load_class_scores(path)
+%function classTable = load_class_scores(path)
 
 %scores = h5read(path,'/scores')';
 
