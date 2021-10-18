@@ -38,7 +38,7 @@ if target.blob_props.numBlobs > 0,
             geomprops(count).ConvexArea = conv_area;
         catch
             r = corrcoef(x,y);
-            if r(2,2) == 1 %colinear so set convex properties same as raw
+            if r(2,2) == 1 || isnan(r(2,2))%colinear, or one pixel wide (NaN), so set convex properties same as raw
                 geomprops(count).ConvexPerimeter = geomprops(count).Perimeter;
                 geomprops(count).ConvexArea = geomprops(count).Area;
                 ch = [x(:) y(:)];
