@@ -13,8 +13,9 @@ filelist = [];
 for ii = 1:length(flist)
     temp = load([p flist(ii).name]);
     classcount = [ classcount; temp.classcount];
-    classcount_above_adhocthresh = [ classcount_above_adhocthresh; temp.classcount_above_adhocthresh];
+    %classcount_above_adhocthresh = [ classcount_above_adhocthresh; temp.classcount_above_adhocthresh];
     classbiovol = [classbiovol; temp.classbiovol];
+    %classbiovol_above_adhocthresh = [classbiovol_above_adhocthresh; temp.classbiovolclassbiovol_above_adhocthresh];
     ml_analyzed = [ ml_analyzed; temp.meta_data.ml_analyzed];
     mdate = [ mdate; temp.mdate];
     filelist = [ filelist; temp.filelist];
@@ -26,7 +27,20 @@ ii = find(ml_analyzed<=5 & ml_analyzed>0);
 count = classcount(ii,:);
 biovol = classbiovol(ii,:);
 ml = ml_analyzed(ii);
+filelist = filelist(ii);
 floorhr = floor(mdate(ii)*24)/24;
+
+if 1 % case for full res counts
+    T = table;
+    T.datetime = datetime(mdate(ii), 'ConvertFrom', 'datenum');
+    T.milliliters_analyzed = ml;
+    T.filelist = filelist;
+    T2 = array2table(count, 'VariableNames', class2use);
+    count_by_class_time_series_full = [T T2];
+
+    writetable(count_by_class_time_series_full, '\\sosiknas1\IFCB_products\MVCO\class\summary\count_by_class_time_seriesCNN_full.csv')
+end
+
 unqhr = unique(floorhr);
 numhrs = length(unqhr);
 count_hr = NaN(numhrs,length(class2use));
@@ -47,7 +61,6 @@ T2 = array2table(count_hr./ml_hr, 'VariableNames', class2use);
 concentration_by_class_time_series_hr = [T T2];
 
 writetable(concentration_by_class_time_series_hr, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_seriesCNN_hourly.csv')
-
 
 T = table;
 T.datetime = datetime(mdate_hr, 'ConvertFrom', 'datenum');
@@ -103,6 +116,7 @@ writetable(biovol_concentration_by_class_time_series_dy, '\\sosiknas1\IFCB_produ
 
 %T2 = array2table(classcountTB_above_optthresh./ml_analyzedTB, 'VariableNames', class2useTB);
 
+return
 T = readtable('\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series_CNN_daily.csv');
 
 group_table = readtable('\\sosiknas1\training_sets\IFCB\config\IFCB_classlist_type.csv');
