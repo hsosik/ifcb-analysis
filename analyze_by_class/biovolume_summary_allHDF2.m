@@ -39,8 +39,9 @@ if 0
     resultpath = '\\sosiknas1\IFCB_products\OTZ\summary\';
     classpath_generic = '\\sosiknas1\IFCB_products\OTZ\class\v3\20210606_Dec2020_NES_1.6\';
     feapath_generic = '\\sosiknas1\IFCB_products\OTZ\features\';
-    myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f %s%s %f%s%f %s%s%s%s%s %f'); %case with 5 tags
-    metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/OTZ_Atlantic', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+    %myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f %s%s %f%s%f %s%s%s%s%s %f'); %case with 5 tags
+    %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/OTZ_Atlantic', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+    metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/OTZ_Atlantic');
 end
 
 if 0
@@ -53,7 +54,7 @@ end
 
 %
 mvco_flag = 0;
-if 1
+if 0
   resultpath = '\\sosiknas1\IFCB_products\MVCO\summary\';
   %classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_SPIROPA__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
   classpath_generic = '\\sosiknas1\IFCB_products\MVCO\class\v3\20210606_Dec2020_NES_1.6\';
@@ -62,15 +63,24 @@ if 1
   mvco_flag = 1;
 end
 
-if 0
+if 1 %EXPORTS 2018
   resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
 %  classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_EXPORTS__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
 %  classpath_generic = '\\vortex\omics\sosik\run-output\EXPORTS_run\v3\20201030_EXPORTS\';
   classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20201102_EXPORTS\';
   feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
-  myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f%s%s %f%s%f %s%s%s %f'); %case with 3 tags
-  metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60, 'ContentReader', myreadtable));
-% % %%%metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 30));
+%  myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f%s%s %f%s%f %s%s%s %f'); %case with 3 tags
+%  metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+  metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60));
+end
+
+if 0 %EXPORTS 2021
+  resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
+  classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20210606_Dec2020_NES_1.6\';
+  feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
+  %myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f%s%s %f%s%f %s%s%s %f'); %case with 3 tags
+  %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+  metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60));
 end
 
 %resultpath = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\summary\';
@@ -81,7 +91,7 @@ end
 %%
 adhocthresh = 0.5;
 
-for yr = 2015:2015 
+for yr = 2018:2018 
     ystr = ['D' num2str(yr)];
     classpath = [classpath_generic filesep ystr filesep];
     feapath = [feapath_generic ystr filesep];
@@ -134,7 +144,7 @@ for yr = 2015:2015
     %clear temp
 
     filelist = regexprep(cellstr(names), '_class.h5', '');
-
+    clear names
     %mdate = IFCB_file2date(filelist);
     %pathall = repmat(hdrpath, size(temp,1),1);
     %xall = repmat('.hdr', size(temp,1),1);
@@ -151,10 +161,12 @@ for yr = 2015:2015
     %ml_analyzed(a) = meta.ml_analyzed(b);    
     
     [~,a,b] = intersect(filelist, metaT.pid);
+    clear meta_data
     meta_data(a,:) = metaT(b,:); 
     ind = find(meta_data.ifcb ==0);
     meta_data(ind,:) = []; %omit any files not in dashboard table
     mdate = datenum(meta_data.sample_time, 'yyyy-mm-dd HH:MM:ss+00:00');
+    [~,ind] = setdiff(filelist,meta_data.pid);
     classfiles(ind) = [];
     filelist(ind) = [];
     feafiles(ind) = []; 
@@ -183,7 +195,7 @@ for yr = 2015:2015
             %temp MVCO old features
          %   [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2useTB, classFeaList(filecount,:), classPidList(filecount,:)] = summarize_biovol_class_h5_mvco_temp(classfiles{filecount}, feafiles{filecount}, adhocthresh);
          %skip classPidList, classFeaList
-            [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2useTB, classFeaList(1,:), classPidList(1,:)] = summarize_biovol_class_h5_mvco_temp(classfiles{filecount}, feafiles{filecount}, adhocthresh);
+            [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2useTB, classFeaList(filecount,:), classPidList(filecount,:)] = summarize_biovol_class_h5_mvco_temp(classfiles{filecount}, feafiles{filecount}, adhocthresh);
         else
             disp(['skipping, no feature file: ' feafiles{filecount}])
         end                
