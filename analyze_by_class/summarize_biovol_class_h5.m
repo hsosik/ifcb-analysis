@@ -1,7 +1,7 @@
 function [classcount, classbiovol, classC, classcount_above_optthresh, classbiovol_above_optthresh, classC_above_optthresh, classcount_above_adhocthresh, classbiovol_above_adhocthresh, classC_above_adhocthresh, class_labels, classFeaList, classPidList] = summarize_biovol_class_h5(classfile, feafile, adhocthresh)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
-
+persistent ind_diatom class2use
 %micron_factor = 1/3.4; %microns per pixel
 micron_factor = 1/2.77; %microns per pixel
 
@@ -9,7 +9,13 @@ micron_factor = 1/2.77; %microns per pixel
 %[bin_id, scores, roi_numbers, class_labels] = load_class_scores(classfile);
 classTable = load_class_scores(classfile);
 class_labels = classTable.class_labels;
-
+if isempty(class2use)
+    class2use = class_labels;
+end
+if ~isequal(class_labels,class2use)
+    disp('class2use different between calls to this function')
+    keyboard
+end
 classcount = NaN(length(class_labels),1);
 classcount_above_optthresh = classcount;
 classcount_above_adhocthresh = classcount;
@@ -39,6 +45,7 @@ adcfile = regexprep(adcfile, 'IFCB_products', 'IFCB_data');
 adcfile = regexprep(adcfile, 'features\\D', 'data\');
 
 %temp fudge for old MVCO products
+mvco_flag = 0;
 if strfind(feafile, 'MVCO')
     mvco_flag = 1;
     [p,f] = fileparts(feafile);
@@ -49,9 +56,12 @@ if strfind(feafile, 'MVCO')
         adcfile = strcat('\\sosiknas1\IFCB_data\MVCO\data\',f(2:5), filesep, f(1:9),filesep, f, '.adc')
     end
 end
-    
 
-adc = readtable(adcfile, 'FileType', 'text');
+%add opts to address adc files with only 1 row of data
+opts = delimitedTextImportOptions("NumVariables", 24);
+opts.VariableTypes = repmat("double", 1,24); %["double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double"];
+adc = readtable(adcfile, opts);
+%adc = readtable(adcfile, 'FileType', 'text');
 targets.adc = adc{classTable.roi_numbers, 3:11};
 
 %% get the Predicted_class labels with application of adhocthresh
@@ -78,7 +88,15 @@ for count = 1:length(ind)
 end
 %%
 
-[ind_diatom] = get_diatom_ind(class_labels,class_labels);
+%[ind_diatom] = get_diatom_ind(class_labels,class_labels);
+if isempty(ind_diatom) %first call to function
+    gfile = '\\sosiknas1\training_sets\IFCB\config\IFCB_classlist_type.csv';
+    disp('Loading list of diatom classes from:')
+    disp(gfile)
+    group_table = readtable(gfile);
+    [~,ia,ib] = intersect(group_table.CNN_classlist, class2use);
+    ind_diatom = ib(find(group_table.Diatom(ia)));
+end
 diatom_flag = zeros(size(class_labels));
 diatom_flag(ind_diatom) = 1;
 cellC_diatom = biovol2carbon(targets.Biovolume,1);
@@ -92,7 +110,7 @@ for ii = 1:length(class_labels)
     ind = strmatch(class_labels(ii), Predicted_class,'exact');
     classcount(ii) = size(ind,1);
     classbiovol(ii) = sum(targets.Biovolume(ind));
-op    classC(ii) = sum(cellC(ind));
+    classC(ii) = sum(cellC(ind));
     if ~isempty(ind)
         if mvco_flag %temp fudge for old mvco features
             classFeaList{ii} = [targets.esd(ind) targets.summedMajorAxisLength(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
