@@ -4,12 +4,20 @@
 %feapath_generic = '\\sosiknas1\IFCB_products\MVCO\features\featuresxxxx_v2\';
 %hdrpath = 'https://ifcb-data.whoi.edu/MVCO/';
 
-if 1
+if 0
     resultpath = '\\sosiknas1\IFCB_products\NESLTER_broadscale\summary\';
     classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\class\v3\20210606_Dec2020_NES_1.6\';
     feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\features\';
     hdrpath = 'https://ifcb-data.whoi.edu/NESLTER_broadscale/';
-    metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_broadscale', weboptions('Timeout', 180));
+    opts = delimitedTextImportOptions("NumVariables", 24);
+    opts.DataLines = [2 inf];
+    %opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "double", "double"];
+    %case with 7 tags
+    opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "string", "string", "string", "double", "double"];
+    opts.VariableNamesLine = 1;
+    myreadtable = @(filename)readtable(filename, opts);
+    metaT = webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_broadscale', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+    %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_broadscale', weboptions('Timeout', 180));
     %myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f %s%s %f%s%f %s%s%s%s%s%s%s%s %f'); %case with 8 tags (for now)
     %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_broadscale', weboptions('Timeout', 120, 'ContentReader', myreadtable));
 end
@@ -19,8 +27,15 @@ if 0
     resultpath = '\\sosiknas1\IFCB_products\NESLTER_transect\summary\';
     classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\class\v3\20210606_Dec2020_NES_1.6\';
     feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\features\';
-    myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f %s%s %f%s%f %s%s%s%s%s %f'); %case with 5 tags
-    metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_transect', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+    opts = delimitedTextImportOptions("NumVariables", 21);
+    opts.DataLines = [2 inf];
+    %case with 5 tags
+    opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "string", "double", "double"];
+    opts.VariableNamesLine = 1;
+    myreadtable = @(filename)readtable(filename, opts);
+    metaT = webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_transect', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+    %myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f %s%s %f%s%f %s%s%s%s%s %f'); %case with 5 tags
+    %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_transect', weboptions('Timeout', 60, 'ContentReader', myreadtable));
 end
 %% metaT = readtable('\\sosiknas1\IFCB_products\NESLTER_transect\NESLTER_transect.csv');
 %% webread doesn't work to capture all the column variables for transect--maybe associated with some many blanks for first cruise
@@ -59,13 +74,21 @@ end
 
 %
 mvco_flag = 0;
-if 0
-  resultpath = '\\sosiknas1\IFCB_products\MVCO\summary\';
-  %classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_SPIROPA__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
-  classpath_generic = '\\sosiknas1\IFCB_products\MVCO\class\v3\20210606_Dec2020_NES_1.6\';
-  feapath_generic = '\\sosiknas1\IFCB_products\MVCO\features\featuresxxxx_v2\';
-  metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/mvco', weboptions('Timeout', 30));
-  mvco_flag = 1;
+if 1
+    resultpath = '\\sosiknas1\IFCB_products\MVCO\summary_v4\';
+    %classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_SPIROPA__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
+    classpath_generic = '\\sosiknas1\IFCB_products\MVCO\class\v3\20210606_Dec2020_NES_1.6\';
+    %feapath_generic = '\\sosiknas1\IFCB_products\MVCO\features\featuresxxxx_v2\';
+    feapath_generic = '\\sosiknas1\IFCB_products\MVCO\features_v4\';
+    %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/mvco', weboptions('Timeout', 60));
+    opts = delimitedTextImportOptions("NumVariables", 20);
+    opts.DataLines = [2 inf];
+    %case 4 tags
+    opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "double", "double"];
+    opts.VariableNamesLine = 1;
+    myreadtable = @(filename)readtable(filename, opts); %
+    metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/mvco', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+    mvco_flag = 1; 
 end
 
 if 0 %EXPORTS 2018
@@ -90,7 +113,7 @@ if 0 %EXPORTS 2021
   feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
   %myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f%s%s %f%s%f %s%s%s %f'); %case with 3 tags
   %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60));
-    opts = delimitedTextImportOptions("NumVariables", 20);
+    opts = delimitedTextImportOptions("NumVariables", 21);
     opts.DataLines = [2 inf];
     opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "double", "double"];
     opts.VariableNamesLine = 1;
@@ -106,7 +129,7 @@ end
 %%
 adhocthresh = 0.5;
 
-for yr = 2014:2019
+for yr = 2007:2011
     ystr = ['D' num2str(yr)];
     classpath = [classpath_generic filesep ystr filesep];
     feapath = [feapath_generic ystr filesep];
@@ -138,7 +161,7 @@ for yr = 2014:2019
         %feafiles(ii) = cellstr([pathall(ii,:) names(ii,1:21) xall(ii,:)]);        
         clear temp* pathall* classpath xall 
     else
-        xall = repmat('_fea_v2.csv', length(names),1);
+       % xall = repmat('_fea_v4.csv', length(names),1);
         ii = strmatch('D', names);
         names_temp = char(names{ii});
         if ~isempty(ii)
@@ -147,7 +170,8 @@ for yr = 2014:2019
         ii = strmatch('I', names);
         names_temp = char(names{ii});
         if ~isempty(ii)
-            feafiles(ii) = cellstr( strcat(feapath_base, names_temp(:,1:21), xall(ii,:)));      
+            %feafiles(ii) = cellstr( strcat(feapath_base, names_temp(:,1:21), xall(ii,:)));      
+            feafiles(ii) = cellstr( strcat(feapath_generic, ystr, filesep, names_temp(:,1:14),filesep, char(regexprep(names(ii),'class.h5', 'fea_v4.csv'))));
         end
         clear temp* pathall classpath xall 
     end
@@ -176,8 +200,7 @@ for yr = 2014:2019
     %ml_analyzed(a) = meta.ml_analyzed(b);    
     
     [~,a,b] = intersect(filelist, metaT.pid);
-    clear meta_data
-    meta_data(a,:) = metaT(b,:); 
+    clear meta_data, meta_data(a,:) = metaT(b,:); 
     ind = find(meta_data.ifcb ==0);
     meta_data(ind,:) = []; %omit any files not in dashboard table
     mdate = datenum(meta_data.sample_time, 'yyyy-mm-dd HH:MM:ss+00:00');
@@ -223,12 +246,13 @@ for yr = 2014:2019
     
     %save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)] , 'class2use', 'classcount*', 'classbiovol*', 'classC*', 'ml_analyzed', 'mdate', 'filelist', 'classpath_generic', 'feapath_generic')
     save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)] , 'class2use', 'classcount*', 'classbiovol*', 'classC*', 'meta_data', 'mdate', 'filelist', 'classpath_generic', 'feapath_generic')
-    %save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists'] , 'class2use', 'filelist', 'classpath_generic', 'feapath_generic', 'classFeaList*', 'classPidList', '-v7.3')
+    save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'list_pid'] , 'class2use', 'filelist', 'classpath_generic', 'feapath_generic', 'classPidList', '-v7.3')
     save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists'] , 'class2use', 'filelist', 'classpath_generic', 'feapath_generic', 'classFeaList*', 'classPidList')
     disp('results saved: ')
     disp([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)])
     disp([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists'])
-        
+    disp([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists_pid'])
+
     clear *files* classcount* classbiovol* classC* meta_data mdate class*List
 end
 clear summarize_biovol_class_h5 %clear the summarize function to clear the persistent variables

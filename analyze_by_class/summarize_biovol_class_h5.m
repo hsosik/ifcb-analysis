@@ -43,19 +43,20 @@ adcfile = regexprep(feafile, '_fea_v4.csv', '.adc');
 adcfile = regexprep(adcfile, 'IFCB_products', 'IFCB_data');
 adcfile = regexprep(adcfile, 'IFCB_products', 'IFCB_data');
 adcfile = regexprep(adcfile, 'features\\D', 'data\');
+adcfile = regexprep(adcfile, 'features_v4\\D', 'data\'); %MVCO case
 
 %temp fudge for old MVCO products
-mvco_flag = 0;
-if strfind(feafile, 'MVCO')
-    mvco_flag = 1;
-    [p,f] = fileparts(feafile);
-    f = regexprep(f, '_fea_v2', '');
-    if strmatch(f(1),'I')
-        adcfile = strcat('\\sosiknas1\IFCB_data\MVCO\data\',f(7:10), filesep, f(1:14),filesep, f, '.adc');
-    else
-        adcfile = strcat('\\sosiknas1\IFCB_data\MVCO\data\',f(2:5), filesep, f(1:9),filesep, f, '.adc')
-    end
-end
+% mvco_flag = 0;
+% if strfind(feafile, 'MVCO')
+%     mvco_flag = 1;
+%     [p,f] = fileparts(feafile);
+%     f = regexprep(f, '_fea_v2', '');
+%     if strmatch(f(1),'I')
+%         adcfile = strcat('\\sosiknas1\IFCB_data\MVCO\data\',f(7:10), filesep, f(1:14),filesep, f, '.adc');
+%     else
+%         adcfile = strcat('\\sosiknas1\IFCB_data\MVCO\data\',f(2:5), filesep, f(1:9),filesep, f, '.adc')
+%     end
+% end
 
 %add opts to address adc files with only 1 row of data
 opts = delimitedTextImportOptions("NumVariables", 24);
@@ -112,11 +113,11 @@ for ii = 1:length(class_labels)
     classbiovol(ii) = sum(targets.Biovolume(ind));
     classC(ii) = sum(cellC(ind));
     if ~isempty(ind)
-        if mvco_flag %temp fudge for old mvco features
-            classFeaList{ii} = [targets.esd(ind) targets.summedMajorAxisLength(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
-        else
+%        if mvco_flag %temp fudge for old mvco features
+%            classFeaList{ii} = [targets.esd(ind) targets.summedMajorAxisLength(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
+%        else
             classFeaList{ii} = [targets.esd(ind) targets.maxFeretDiameter(ind) targets.summedMajorAxisLength(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
-        end
+%        end
     else
         classFeaList{ii} = single.empty(0,size(targets.adc,2)+7);
     end
