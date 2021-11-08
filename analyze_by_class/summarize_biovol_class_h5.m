@@ -41,7 +41,7 @@ ind = strmatch('RepresentativeWidth', feastruct.textdata);
 targets.RepresentativeWidth = feastruct.data(:,ind)*micron_factor;
 ind = strmatch('numBlobs', feastruct.textdata);
 targets.numBlobs = feastruct.data(:,ind);
-targets.pid = cellstr(strcat(classTable.metadata.bin_id, '_', num2str(classTable.roi_numbers, '%05.0f')));
+targets.pid = cellstr(strcat(classTable.metadata.bin_id, '_', num2str(feastruct.data(:,1), '%05.0f')));
 %%
 adcfile = regexprep(feafile, '_fea_v4.csv', '.adc');
 adcfile = regexprep(adcfile, 'IFCB_products', 'IFCB_data');
@@ -67,7 +67,7 @@ opts = delimitedTextImportOptions("NumVariables", 24);
 opts.VariableTypes = repmat("double", 1,24); %["double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double"];
 adc = readtable(adcfile, opts);
 %adc = readtable(adcfile, 'FileType', 'text');
-targets.adc = adc{classTable.roi_numbers, 3:11};
+targets.adc = adc{feastruct.data(:,1), 3:11};
 
 %make sure the roi_numbers match
 [~,ia,ib] = intersect(feastruct.data(:,1), classTable.roi_numbers);
