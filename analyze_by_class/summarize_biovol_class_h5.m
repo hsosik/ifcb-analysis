@@ -65,17 +65,21 @@ adc = readtable(adcfile, opts);
 %adc = readtable(adcfile, 'FileType', 'text');
 targets.adc = adc{classTable.roi_numbers, 3:11};
 
+%make sure the roi_numbers match
+[~,ia,ib] = intersect(feastruct.data(:,1), classTable.roi_numbers);
+classTable.scores_feamatch(ia,:) = classTable.scores(ib,:);
+
 %% get the Predicted_class labels with application of adhocthresh
 if length(adhocthresh) == 1
-    t = ones(size(classTable.scores))*adhocthresh;
+    t = ones(size(classTable.scores_feamatch))*adhocthresh;
 else
     t = repmat(adhocthresh,length(Predicted_class),1);
 end
-win = (classTable.scores > t);
+win = (classTable.scores_feamatch > t);
 [i,j] = find(win);
 %if ~exist('TBclass', 'var')
     %[~,TBclass] = max(scores');
-    [targets.maxscore, Predicted_class] = max(classTable.scores');
+    [targets.maxscore, Predicted_class] = max(classTable.scores_feamatch');
     Predicted_class = class_labels(Predicted_class)';
 %end
 Predicted_class_above_adhocthresh = cell(size(Predicted_class));
@@ -84,7 +88,7 @@ Predicted_class_above_adhocthresh(:) = deal(repmat({'unclassified'},1,length(Pre
 Predicted_class_above_adhocthresh(i) = class_labels(j); %most are correct his way (zero or one case above threshold)
 ind = find(sum(win')>1); %now go back and fix the conflicts with more than one above threshold
 for count = 1:length(ind)
-    [~,ii] = max(scores(ind(count),:));
+    [~,ii] = max(classTable.scores_feamatch(ind(count),:));
     Predicted_class_above_adhocthresh(ind(count)) = class_labels(ii);
 end
 %%
