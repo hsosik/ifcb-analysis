@@ -31,10 +31,14 @@ ind = strmatch('summedBiovolume', feastruct.textdata);
 targets.Biovolume = feastruct.data(:,ind)*micron_factor.^3;
 %targets.esd = (targets.Biovolume*3/4/pi).^(1/3)*2; 
 targets.esd = biovol2esd(targets.Biovolume);
+ind = strmatch('summedSurfaceArea', feastruct.textdata);
+targets.SurfaceArea = feastruct.data(:,ind)*micron_factor.^2;
 ind = strmatch('maxFeretDiameter', feastruct.textdata);
 targets.maxFeretDiameter = feastruct.data(:,ind)*micron_factor;
 ind = strmatch('summedMajorAxisLength', feastruct.textdata);
 targets.summedMajorAxisLength = feastruct.data(:,ind)*micron_factor;
+ind = strmatch('RepresentativeWidth', feastruct.textdata);
+targets.RepresentativeWidth = feastruct.data(:,ind)*micron_factor;
 ind = strmatch('numBlobs', feastruct.textdata);
 targets.numBlobs = feastruct.data(:,ind);
 targets.pid = cellstr(strcat(classTable.metadata.bin_id, '_', num2str(classTable.roi_numbers, '%05.0f')));
@@ -120,10 +124,10 @@ for ii = 1:length(class_labels)
 %        if mvco_flag %temp fudge for old mvco features
 %            classFeaList{ii} = [targets.esd(ind) targets.summedMajorAxisLength(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
 %        else
-            classFeaList{ii} = [targets.esd(ind) targets.maxFeretDiameter(ind) targets.summedMajorAxisLength(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
+            classFeaList{ii} = [targets.esd(ind) targets.maxFeretDiameter(ind) targets.summedMajorAxisLength(ind) targets.RepresentativeWidth(ind) targets.SurfaceArea(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
 %        end
     else
-        classFeaList{ii} = single.empty(0,size(targets.adc,2)+7);
+        classFeaList{ii} = single.empty(0,size(targets.adc,2)+9);
     end
     classPidList{ii} = targets.pid(ind);
 
