@@ -1,4 +1,4 @@
-function [classcount, classbiovol, classC, classcount_above_optthresh, classbiovol_above_optthresh, classC_above_optthresh, classcount_above_adhocthresh, classbiovol_above_adhocthresh, classC_above_adhocthresh, class_labels, classFeaList, classPidList] = summarize_biovol_class_h5(classfile, feafile, adhocthresh)
+function [classcount, classbiovol, classC, classcount_above_optthresh, classbiovol_above_optthresh, classC_above_optthresh, classcount_above_adhocthresh, classbiovol_above_adhocthresh, classC_above_adhocthresh, class_labels, classFeaList] = summarize_biovol_class_h5(classfile, feafile, adhocthresh)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 persistent ind_diatom class2use
@@ -41,7 +41,8 @@ ind = strmatch('RepresentativeWidth', feastruct.textdata);
 targets.RepresentativeWidth = feastruct.data(:,ind)*micron_factor;
 ind = strmatch('numBlobs', feastruct.textdata);
 targets.numBlobs = feastruct.data(:,ind);
-targets.pid = cellstr(strcat(classTable.metadata.bin_id, '_', num2str(feastruct.data(:,1), '%05.0f')));
+targets.roi_numbers = feastruct.data(:,1);
+%targets.pid = cellstr(strcat(classTable.metadata.bin_id, '_', num2str(feastruct.data(:,1), '%05.0f')));
 %%
 adcfile = regexprep(feafile, '_fea_v4.csv', '.adc');
 adcfile = regexprep(adcfile, 'IFCB_products', 'IFCB_data');
@@ -128,12 +129,12 @@ for ii = 1:length(class_labels)
 %        if mvco_flag %temp fudge for old mvco features
 %            classFeaList{ii} = [targets.esd(ind) targets.summedMajorAxisLength(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
 %        else
-            classFeaList{ii} = [targets.esd(ind) targets.maxFeretDiameter(ind) targets.summedMajorAxisLength(ind) targets.RepresentativeWidth(ind) targets.SurfaceArea(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.maxscore(ind)'];
+            classFeaList{ii} = [targets.esd(ind) targets.maxFeretDiameter(ind) targets.summedMajorAxisLength(ind) targets.RepresentativeWidth(ind) targets.SurfaceArea(ind) targets.Biovolume(ind) cellC(ind) targets.numBlobs(ind) targets.adc(ind,:) targets.roi_numbers(ind) targets.maxscore(ind)'];
 %        end
     else
-        classFeaList{ii} = single.empty(0,size(targets.adc,2)+9);
+        classFeaList{ii} = single.empty(0,size(targets.adc,2)+10);
     end
-    classPidList{ii} = targets.pid(ind);
+    %classPidList{ii} = targets.pid(ind);
 
     if exist('Predicted_class_above_threshold', 'var')
         %ind = strmatch(class_labels(ii), Predicted_class_above_threshold, 'exact');
