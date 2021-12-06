@@ -2,17 +2,20 @@ function [ feature_mat, featitles, multiblob_features, multiblob_titles ] = make
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
-roinum = char([out.pid]);
-roinum = str2num(roinum(:,end-4:end));
-
+%roinum = char([out.pid]);
+ii = strncmp(out.pid, 'I',1);
+roinum(ii) = str2num(char(extractAfter(out.pid(ii),22)));
+ii = strncmp(out.pid, 'D',1);
+roinum(ii) = str2num(char(extractAfter(out.pid(ii),25)));
+roinum = roinum';
 ii = find([out.features.numBlobs] > 1);
 tempfea = out.features(ii);
 %make list properly repeated roi numbers
 n = [tempfea.numBlobs];
 roinum_multi = [];
-for count = 1:length(ii), 
+for count = 1:length(ii) 
     roinum_multi = [roinum_multi [repmat(roinum(ii(count)),1,n(count)); 1:n(count)];];
-end;
+end
 %omit fields that don't apply to separate blobs
 names = fields(tempfea);
 ind = strmatch('summed', names);
