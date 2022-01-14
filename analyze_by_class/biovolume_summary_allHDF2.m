@@ -12,8 +12,8 @@ if 0
     opts = delimitedTextImportOptions("NumVariables", 24);
     opts.DataLines = [2 inf];
     %opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "double", "double"];
-    %case with 7 tags
-    opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "string", "string", "string", "double", "double"];
+    %case with 8 tags
+    opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "string", "string", "string", "string", "double", "double"];
     opts.VariableNamesLine = 1;
     myreadtable = @(filename)readtable(filename, opts);
     metaT = webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_broadscale', weboptions('Timeout', 60, 'ContentReader', myreadtable));
@@ -64,7 +64,7 @@ if 0
     classpath_generic = '\\sosiknas1\IFCB_products\SPIROPA\class\v3\20210606_Dec2020_NES_1.6\';
     feapath_generic = '\\sosiknas1\IFCB_products\SPIROPA\features\';
   %  myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f %s%s %f%s%f %s%s%s%s%s %f'); %case with 5 tags
-     opts = delimitedTextImportOptions("NumVariables", 20);
+    opts = delimitedTextImportOptions("NumVariables", 20);
     opts.DataLines = [2 inf];
     opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "double", "double"];
     opts.VariableNamesLine = 1;
@@ -74,6 +74,7 @@ end
 
 %
 mvco_flag = 0;
+pidlist_flag = 1;
 if 1
     resultpath = '\\sosiknas1\IFCB_products\MVCO\summary_v4\';
     %classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_SPIROPA__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
@@ -88,14 +89,15 @@ if 1
     opts.VariableNamesLine = 1;
     myreadtable = @(filename)readtable(filename, opts); %
     metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/mvco', weboptions('Timeout', 60, 'ContentReader', myreadtable));
-    mvco_flag = 1; 
+    mvco_flag = 1;
+    pidlist_flag = 0;
 end
 
 if 0 %EXPORTS 2018
   resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
 %  classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_EXPORTS__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
 %  classpath_generic = '\\vortex\omics\sosik\run-output\EXPORTS_run\v3\20201030_EXPORTS\';
-  classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20201102_EXPORTS\';
+  classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20211105_EXPORTS_pacific_Oct2021\';
   feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
     opts = delimitedTextImportOptions("NumVariables", 20);
     opts.DataLines = [2 inf];
@@ -128,8 +130,8 @@ end
 
 %%
 adhocthresh = 0.5;
-
-for yr = 2006:2011
+optthresh = [.5 .1]; %first and second ranked score cutoffs
+for yr = 2010:2017
     ystr = ['D' num2str(yr)];
     classpath = [classpath_generic filesep ystr filesep];
     feapath = [feapath_generic ystr filesep];
@@ -165,7 +167,8 @@ for yr = 2006:2011
         ii = strmatch('D', names);
         names_temp = char(names{ii});
         if ~isempty(ii)
-            feafiles(ii) = cellstr( strcat(feapath_base, names_temp(:,1:24), xall(ii,:)));
+%            feafiles(ii) = cellstr( strcat(feapath_base, names_temp(:,1:24), xall(ii,:)));
+             feafiles(ii) = cellstr( strcat(feapath_generic, ystr, filesep, names_temp(:,1:9),filesep, char(regexprep(names(ii),'class.h5', 'fea_v4.csv'))));
         end
         ii = strmatch('I', names);
         names_temp = char(names{ii});
@@ -184,20 +187,6 @@ for yr = 2006:2011
 
     filelist = regexprep(cellstr(names), '_class.h5', '');
     clear names
-    %mdate = IFCB_file2date(filelist);
-    %pathall = repmat(hdrpath, size(temp,1),1);
-    %xall = repmat('.hdr', size(temp,1),1);
-    %temp = cellstr([pathall temp(:,ind:ind+23) xall]);
-    %f = [resultpath 'ml_analyzed' num2str(yr) '.mat'];
-    %if exist(f, 'file')
-    %    load(f)
-    %else
-    %    ml_analyzed = IFCB_volume_analyzed(temp); 
-    %    save(f, 'ml_analyzed')
-    %end
-    %ml_analyzed = NaN(size(filelist));
-    %[~,a,b] = intersect(filelist, meta.pid);
-    %ml_analyzed(a) = meta.ml_analyzed(b);    
     
     [~,a,b] = intersect(filelist, metaT.pid);
     clear meta_data, meta_data(a,:) = metaT(b,:); 
@@ -222,14 +211,20 @@ for yr = 2006:2011
     classC_above_adhocthresh = classcount;
     num2dostr = num2str(length(classfiles));
     classFeaList = cell(size(classcount));
-    classPidList = cell(size(classcount));
-    classFeaList_variables = {'ESD' 'maxFeretDiameter' 'summedMajorAxis' 'representativeWidth' 'summedSurfaceArea' 'summedBiovolume' 'cellC'  'numBlobs' 'pmtA' 'pmtB' 'pmtC' 'pmtD' 'peakA' 'peakB' 'peakC' 'peakD' 'TimeOfFlight' 'roi_numbers' 'score'};
+    if ~pidlist_flag
+        classPidList = cell(size(classcount));
+    end
+    classFeaList_variables = {'ESD' 'maxFeretDiameter' 'summedMajorAxis' 'representativeWidth' 'summedArea' 'summedSurfaceArea' 'summedBiovolume' 'cellC'  'numBlobs' 'pmtA' 'pmtB' 'pmtC' 'pmtD' 'peakA' 'peakB' 'peakC' 'peakD' 'TimeOfFlight' 'roi_numbers' 'score'};
     
     %%
     for filecount = 1:length(classfiles)
         if ~rem(filecount,10), disp(['reading ' num2str(filecount) ' of ' num2dostr]), end
         if exist( feafiles{filecount}, 'file')
-            [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2useTB, classFeaList(filecount,:)] = summarize_biovol_class_h5(classfiles{filecount}, feafiles{filecount}, adhocthresh);
+            if pidlist_flag
+                [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2useTB, classFeaList(filecount,:), classPidList(filecount,:)] = summarize_biovol_class_h5(classfiles{filecount}, feafiles{filecount}, adhocthresh, optthresh, pidlist_flag);
+            else
+                [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2useTB, classFeaList(filecount,:), classPidList] = summarize_biovol_class_h5(classfiles{filecount}, feafiles{filecount}, adhocthresh, optthresh, pidlist_flag);
+            end
             %temp MVCO old features
          % %   [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2useTB, classFeaList(filecount,:), classPidList(filecount,:)] = summarize_biovol_class_h5_mvco_temp(classfiles{filecount}, feafiles{filecount}, adhocthresh);
          % %skip classPidList, classFeaList
@@ -246,8 +241,8 @@ for yr = 2006:2011
     
     %save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)] , 'class2use', 'classcount*', 'classbiovol*', 'classC*', 'ml_analyzed', 'mdate', 'filelist', 'classpath_generic', 'feapath_generic')
     save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)] , 'class2use', 'classcount*', 'classbiovol*', 'classC*', 'meta_data', 'mdate', 'filelist', 'classpath_generic', 'feapath_generic')
-    save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists'] , 'class2use', 'filelist', 'classpath_generic', 'feapath_generic', 'classFeaList*', '-v7.3')
-  % save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'list_pid'] , 'class2use', 'filelist', 'classpath_generic', 'feapath_generic', 'classPidList', '-v7.3')
+  %  save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists'] , 'class2use', 'filelist', 'classpath_generic', 'feapath_generic', 'classFeaList*', '-v7.3')
+   save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'list_pid'] , 'class2use', 'filelist', 'classpath_generic', 'feapath_generic', 'classPidList', '-v7.3')
     disp('results saved: ')
     disp([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)])
     disp([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists'])
