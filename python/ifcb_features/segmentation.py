@@ -2,24 +2,39 @@ import numpy as np
 
 from skimage import img_as_float
 from scipy.ndimage.morphology import binary_fill_holes
-from skimage.morphology import binary_closing, binary_dilation, remove_small_objects
+from skimage.morphology import binary_closing, binary_dilation, binary_erosion, remove_small_objects, diamond
+import skimage.filters as imfilters
+from sklearn.cluster import KMeans
 
-try:
-    import skimage.filters as imfilters
-except ImportError:
-    import skimage.filter as imfilters
+from phasecong import phasecong_Mm
+from morphology import SE3, hysthresh, bwmorph_thin
 
-from .phasecong import phasecong_Mm
-from .morphology import SE2, SE3, hysthresh, bwmorph_thin
+SE2 = diamond(2, np.bool)
+SED = diamond(1, np.bool)
 
 # parameters
-HT_T1, HT_T2 = 0.2, 0.1
-BLOB_MIN = 150
-DARK_THRESHOLD_ADJUSTMENT=0.65
+HT_T1, HT_T2 = 0.3, 0.09
+BLOB_MIN = 40
+DARK_THRESHOLD_ADJUSTMENT = 0.75
 
-def dark_threshold(roi,adj=DARK_THRESHOLD_ADJUSTMENT):
-    thresh = int(round(imfilters.threshold_otsu(roi) * adj))
-    return roi < thresh
+
+def kmeans_segment(roi):
+    r = img_as_float(roi)
+    # compute "dark" and "light" clusters
+    km = KMeans(n_clusters=2, n_init=1, init=np.array([[0], [1]]))
+    km.fit(r.reshape(-1, 1))
+    J = km.labels_
+    C = km.cluster_centers_
+    bg_label = np.argmax(C)
+    # find the darkest pixel value in the bright (background) cluster
+    roi_1d = r.ravel()
+    darkest_background = np.min(roi_1d[J == bg_label])
+    # use it to compute a threshold
+    threshold = darkest_background * DARK_THRESHOLD_ADJUSTMENT
+    # return thresholded image
+    mask = (J < threshold).reshape(roi.shape)
+    return mask
+
 
 def segment_roi(roi, raw_stitch=None):
     # step 1. phase congruency (edge detection)
@@ -36,20 +51,18 @@ def segment_roi(roi, raw_stitch=None):
     B[B[:,-2]==0,-1]=0
     B[0,B[1,:]==0]=0
     B[-1,B[-2,:]==0]=0
-    # step 4. threshold to find dark areas
-    dark = dark_threshold(roi, DARK_THRESHOLD_ADJUSTMENT)
-    # step 5. add dark areas back to blob
-    B = np.logical_or(B,dark)
-    # step 6. binary closing
-    B = binary_closing(B,SE3)
-    # step 7. binary dilation
-    B = binary_dilation(B,SE2)
-    # step 8. thinning
-    B = bwmorph_thin(B,3)
-    # step 9. fill holes
+    # step 4. binary closing
+    B = binary_closing(B, SE2)
+    # step 5. morphological thinning
+    B = bwmorph_thin(B, 3)
+    # step 6. background/foreground thresholding
+    dark = kmeans_segment(roi)
+    B = np.logical_or(B, dark)
+    # step 7. fill holes (surrounded by target pixels)
     B = binary_fill_holes(B)
-    # step 10. remove blobs <= BLOB_MIN
+    # step 8. erode
+    B = binary_erosion(B, SED)
+    # step 9. remove objects of area below blob_min
     B = remove_small_objects(B,BLOB_MIN+1,connectivity=2)
-    # done.
     return B
-    
+

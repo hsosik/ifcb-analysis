@@ -3,3 +3,4 @@ scipy
 scikit-image
 phasepack
 pyfftw
+scikit-learn
