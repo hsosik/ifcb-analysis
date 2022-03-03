@@ -31,9 +31,10 @@ def kmeans_segment(roi):
     darkest_background = np.min(roi_1d[J == bg_label])
     # use it to compute a threshold
     threshold = darkest_background * DARK_THRESHOLD_ADJUSTMENT
-    # return thresholded image
-    mask = (J < threshold).reshape(roi.shape)
-    return mask
+    # extend the background using that threshold
+    J[roi_1d > threshold] = bg_label
+    # return True for non-background pixels
+    return (J != bg_label).reshape(roi.shape)
 
 
 def segment_roi(roi, raw_stitch=None):
