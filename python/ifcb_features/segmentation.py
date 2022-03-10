@@ -37,6 +37,10 @@ def kmeans_segment(roi):
     return (J != bg_label).reshape(roi.shape)
 
 
+def apply_blob_min(roi):
+    return remove_small_objects(roi, BLOB_MIN + 1, connectivity=2)
+
+
 def segment_roi(roi, raw_stitch=None):
     # step 1. phase congruency (edge detection)
     Mm = phasecong_Mm(roi)
@@ -61,9 +65,10 @@ def segment_roi(roi, raw_stitch=None):
     B = np.logical_or(B, dark)
     # step 7. fill holes (surrounded by target pixels)
     B = binary_fill_holes(B)
-    # step 8. erode
-    B = binary_erosion(B, SED)
-    # step 9. remove objects of area below blob_min
-    B = remove_small_objects(B,BLOB_MIN+1,connectivity=2)
+    # step 8. erode and remove small blobs
+    B_eroded = binary_erosion(B, SED)
+    if np.sum(apply_blob_min(B_eroded)) > 0:
+        B = B_eroded
+    B = apply_blob_min(B)
     return B
 
