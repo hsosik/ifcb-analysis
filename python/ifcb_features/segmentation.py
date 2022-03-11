@@ -1,6 +1,6 @@
 import numpy as np
 
-from skimage import img_as_float
+from skimage import img_as_float32
 from scipy.ndimage.morphology import binary_fill_holes
 from skimage.morphology import binary_closing, binary_dilation, binary_erosion, remove_small_objects, diamond
 import skimage.filters as imfilters
@@ -19,9 +19,9 @@ DARK_THRESHOLD_ADJUSTMENT = 0.75
 
 
 def kmeans_segment(roi):
-    r = img_as_float(roi)
+    r = img_as_float32(roi)
     # compute "dark" and "light" clusters
-    km = KMeans(n_clusters=2, n_init=1, init=np.array([[0], [1]]))
+    km = KMeans(n_clusters=2, n_init=1, init=np.array([[0], [1]]), max_iter=100)
     km.fit(r.reshape(-1, 1))
     J = km.labels_
     C = km.cluster_centers_
