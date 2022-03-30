@@ -25,19 +25,19 @@ function log(msg) % not to be confused with logarithm function
     logmsg(['day_blobs ' msg],debug);
 end
 
-if not(debug),
+if not(debug)
     try
         pool = parpool;
         %pool = parpool(4);
         log('POOL - started');
     catch e %#ok<NASGU>
         log('WARNING - workers cannot start, or already active');
-    end;
+    end
 end
 
 %daydir = dir([in_dir filesep '*.zip']);
 
-if not(debug),
+if not(debug)
     if exist('in_dir_blob', 'var')
         parfor filecount = 1:length(filelist)
              bin_features_slim(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir{filecount}, [], in_dir_blob{filecount});
@@ -45,7 +45,7 @@ if not(debug),
     else
         parfor filecount = 1:length(filelist)
            bin_features_slim(in_dir{filecount}, [char(filelist(filecount)) '.zip'], out_dir{filecount}, []);
-        end;
+        end
     end
 else
     for filecount = 1:length(filelist)
@@ -53,18 +53,18 @@ else
             bin_features_slim(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir{filecount}, [], in_dir_blob{filecount});
         else
             bin_features_slim(in_dir, [char(filelist(filecount)) '.zip'], out_dir{filecount}, []);
-        end;
+        end
     end
 end
 
 
-if not(debug),
+if not(debug)
     try
         delete(pool)
         log('POOL - stopped');
     catch e %#ok<NASGU>
         log('WARNING - workers cannot stop, or already stopped');
-    end;
+    end
 end
 
 end
