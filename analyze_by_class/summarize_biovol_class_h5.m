@@ -103,30 +103,68 @@ Predicted_class_above_adhocthresh(isnan(Predicted_class)) = NaN; %these are the 
 %% get the Predicted_class labels with application of "optthresh" input as 2-component vector,
 %first value is primary min score, second value is max allowed for second ranked score
 %if length(adhocthresh) == 1
-    t = ones(size(classTable.scores_feamatch))*optthresh(1);
-%else
-%    t = repmat(adhocthresh,length(Predicted_class),1);
-%end
-win = (classTable.scores_feamatch > t);
-[i,j] = find(win);
+%     t = ones(size(classTable.scores_feamatch))*optthresh(1);
+% %else
+% %    t = repmat(adhocthresh,length(Predicted_class),1);
+% %end
+% win = (classTable.scores_feamatch > t);
+% [i,j] = find(win);
+% 
+% Predicted_class_above_optthresh = zeros(size(Predicted_class));
+% Predicted_class_above_optthresh(i) = j; %most are correct his way (zero or one case above threshold)
+% 
+% ind = find(sum(win')>1); %now go back and fix the conflicts with more than one above threshold
+% for count = 1:length(ind)
+%     [~,ii] = max(classTable.scores_feamatch(ind(count),:));
+%     Predicted_class_above_opthresh(ind(count)) = ii;
+% end
+% 
+% %now check to make sure the second ranked score is low enough
+% temp = classTable.scores_feamatch';
+% ind = sub2ind(size(temp),Predicted_class,1:size(temp,2));
+% 
+% temp(ind(~isnan(ind))) = -inf; %set the max values to -inf
+% second_score = max(temp);
+% Predicted_class_above_optthresh((second_score>optthresh(2))) = 0;
 
-Predicted_class_above_optthresh = zeros(size(Predicted_class));
-Predicted_class_above_optthresh(i) = j; %most are correct his way (zero or one case above threshold)
+% % dylan's tweak:
+% scomat = classTable.scores_feamatch;
+% [~, topclassidx] = max(scomat, [], 2); % col index of top class in scomat
+% topclassidx_lin = sub2ind(size(scomat), (1:size(scomat,1)).', topclassidx);
+% topclasssco = scomat(topclassidx_lin);
+% 
+% % here's the top-scoring class with score > optthresh(1):
+% Predicted_class_above_optthresh = topclassidx(topclasssco > optthresh(1)); 
+% 
+% % this zero's out the top-scoring class where any other score is >
+% % optthresh(2):
+% scomat(topclassidx_lin) = -1;
+% Predicted_class_above_optthresh(any(scomat > optthresh(2), 2)) = 0;
+% 
+% % transpose to get it the same format as heidi's:
+% Predicted_class_above_optthresh = Predicted_class_above_optthresh';
+% 
+% % Predicted_class_above_optthresh is a 1 x roi vector of the column index of 
+% % the "winning class". 0 indicates no winning class.
+% 
+% Predicted_class_above_optthresh(isnan(Predicted_class)) = NaN; %these are the no ROI triggers
+ 
+%% dylan's tweak for opt thresh X statistic X class:
 
-ind = find(sum(win')>1); %now go back and fix the conflicts with more than one above threshold
-for count = 1:length(ind)
-    [~,ii] = max(classTable.scores_feamatch(ind(count),:));
-    Predicted_class_above_opthresh(ind(count)) = ii;
-end
+scomat = classTable.scores_feamatch;
+[~, topclassidx] = max(scomat, [], 2); % col index of top class in scomat
+topclassidx_lin = sub2ind(size(scomat), (1:size(scomat,1)).', topclassidx);
+topclasssco = scomat(topclassidx_lin);
 
-%now check to make sure the second ranked score is low enough
-temp = classTable.scores_feamatch';
-ind = sub2ind(size(temp),Predicted_class,1:size(temp,2));
+% here's the top-scoring class with score > optthresh(1):
+tmp = optthresh(topclassidx)'; % this creates a vector of opt thresh X roi 
+% where opt thresh is for the top-scoring class of each roi.
+keepers = topclasssco > tmp; % =1 where the top-scoring class exceeded it's opt thresh
+Predicted_class_above_optthresh = zeros(1, length(keepers));
+Predicted_class_above_optthresh(keepers) = topclassidx(keepers); 
 
-temp(ind(~isnan(ind))) = -inf; %set the max values to -inf
-second_score = max(temp);
-Predicted_class_above_optthresh((second_score>optthresh(2))) = 0;
-
+% Predicted_class_above_optthresh is a 1 x roi vector of the column index of 
+% the "winning class". 0 indicates no winning class.
 Predicted_class_above_optthresh(isnan(Predicted_class)) = NaN; %these are the no ROI triggers
 
 %%

@@ -6,7 +6,8 @@
 
 if 0
     resultpath = '\\sosiknas1\IFCB_products\NESLTER_broadscale\summary\';
-    classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\class\v3\20210606_Dec2020_NES_1.6\';
+%     classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\class\v3\20210606_Dec2020_NES_1.6\';
+    classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\class\v3\20220209_Jan2022_NES_2.4\';
     feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\features\';
     hdrpath = 'https://ifcb-data.whoi.edu/NESLTER_broadscale/';
     opts = delimitedTextImportOptions("NumVariables", 24);
@@ -23,9 +24,9 @@ if 0
 end
 
 % 
-if 0 
+if 1 
     resultpath = '\\sosiknas1\IFCB_products\NESLTER_transect\summary\';
-    classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\class\v3\20210606_Dec2020_NES_1.6\';
+    classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\class\v3\20220209_Jan2022_NES_2.4\';
     feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\features\';
     opts = delimitedTextImportOptions("NumVariables", 21);
     opts.DataLines = [2 inf];
@@ -61,7 +62,7 @@ end
 
 if 0
     resultpath = '\\sosiknas1\IFCB_products\SPIROPA\summary\';
-    classpath_generic = '\\sosiknas1\IFCB_products\SPIROPA\class\v3\20210606_Dec2020_NES_1.6\';
+    classpath_generic = '\\sosiknas1\IFCB_products\SPIROPA\class\v3\20220209_Jan2022_NES_2.4\';
     feapath_generic = '\\sosiknas1\IFCB_products\SPIROPA\features\';
   %  myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f %s%s %f%s%f %s%s%s%s%s %f'); %case with 5 tags
     opts = delimitedTextImportOptions("NumVariables", 20);
@@ -75,10 +76,10 @@ end
 %
 mvco_flag = 0;
 pidlist_flag = 1;
-if 1
+if 0
     resultpath = '\\sosiknas1\IFCB_products\MVCO\summary_v4\';
     %classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_SPIROPA__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
-    classpath_generic = '\\sosiknas1\IFCB_products\MVCO\class\v3\20210606_Dec2020_NES_1.6\';
+    classpath_generic = '\\sosiknas1\IFCB_products\MVCO\class\v3\20220209_Jan2022_NES_2.4\';
     %feapath_generic = '\\sosiknas1\IFCB_products\MVCO\features\featuresxxxx_v2\';
     feapath_generic = '\\sosiknas1\IFCB_products\MVCO\features_v4\';
     %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/mvco', weboptions('Timeout', 60));
@@ -97,13 +98,13 @@ if 0 %EXPORTS 2018
   resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
 %  classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_EXPORTS__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
 %  classpath_generic = '\\vortex\omics\sosik\run-output\EXPORTS_run\v3\20201030_EXPORTS\';
-  classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20211105_EXPORTS_pacific_Oct2021\';
+  classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20220225_EXPORTS_pacific_Dec2021_1_3\';
   feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
     opts = delimitedTextImportOptions("NumVariables", 20);
     opts.DataLines = [2 inf];
     opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "double", "double"];
     opts.VariableNamesLine = 1;
-    myreadtable = @(filename)readtable(filename, opts); %
+    myreadtable = @(filename)readtable(filename, opts); %w
     metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60, 'ContentReader', myreadtable));
     %  myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f %s%s %f%s%f %s%s%s%s %f%f', 'HeaderLines', 1,'ReadVariableNames', true); %case with 4 tags, 1 comment summary
     %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60));
@@ -111,11 +112,11 @@ end
 
 if 0 %EXPORTS 2021
   resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
-  classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20210606_Dec2020_NES_1.6\';
+  classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20220209_Jan2022_NES_2.4_RELABELED\';
   feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
   %myreadtable = @(filename)readtable(filename, 'Format', '%s%s%s %f%f%f%f%f%s%s %f%s%f %s%s%s %f'); %case with 3 tags
   %metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60));
-    opts = delimitedTextImportOptions("NumVariables", 21);
+    opts = delimitedTextImportOptions("NumVariables", 20);
     opts.DataLines = [2 inf];
     opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "double", "double"];
     opts.VariableNamesLine = 1;
@@ -123,15 +124,23 @@ if 0 %EXPORTS 2021
     metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60, 'ContentReader', myreadtable));
 end
 
-%resultpath = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\summary\';
-%classpath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\class_v2\';
-%feapath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\features\';
-%metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SIO_Delmar_mooring', weboptions('Timeout', 30));
-
+if 0
+resultpath = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\summary\';
+classpath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\class\v3\20220416_Delmar_NES_1\';
+feapath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\features_v4\';
+metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SIO_Delmar_mooring', weboptions('Timeout', 30));
+end
 %%
 adhocthresh = 0.5;
-optthresh = [.5 .1]; %first and second ranked score cutoffs
-for yr = 2010:2017
+% optimal thresholds:
+% list classes and corresponding statistic you'd like to use the opt-thresh
+% in rows of a cell array. class = col 1, stat = col 2:
+classXstat = {'Guinardia_delicatula', 'f1'; ...
+    'Guinardia_delicatula_TAG_internal_parasite', 'f1'; ...
+    'Mesodinium', 'prec-rec'};
+% load up the optthreshXstatXclass:
+load("\\sosiknas1\Lab_data\dylan_working\cnn_score_data_byClass\opt_threshXstatisticXclass.mat")
+for yr = 2021:2022
     ystr = ['D' num2str(yr)];
     classpath = [classpath_generic filesep ystr filesep];
     feapath = [feapath_generic ystr filesep];
@@ -200,6 +209,22 @@ for yr = 2010:2017
     
     classTable = load_class_scores(classfiles{1});
     class2use = deblank(classTable.class_labels); 
+%     dylans addition Sep 2022
+    optthresh = ones(1, length(class2use)); % start with ones to make classes that aren't specified explicitly useless
+    for i = 1:size(classXstat,1)
+
+        cc = classXstat{i,1}; % class name
+        cmatch = strrep(cc, '_TAG_', 'TAG');
+        cmatch = strrep(cmatch, '_', ' ');
+
+        ss = classXstat{i,2}; % statistic
+        oo = optXstatXclass(ss , cmatch); % opt thresh value
+
+        idx = ismember(class2use, cc); % index to add opt thresh to
+
+        optthresh(idx) = table2array(oo);
+    end
+
     classcount = NaN(length(classfiles),length(class2use));
     classbiovol = classcount;
     classC = classcount;
@@ -241,13 +266,15 @@ for yr = 2010:2017
     
     %save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)] , 'class2use', 'classcount*', 'classbiovol*', 'classC*', 'ml_analyzed', 'mdate', 'filelist', 'classpath_generic', 'feapath_generic')
     save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)] , 'class2use', 'classcount*', 'classbiovol*', 'classC*', 'meta_data', 'mdate', 'filelist', 'classpath_generic', 'feapath_generic')
-  %  save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists'] , 'class2use', 'filelist', 'classpath_generic', 'feapath_generic', 'classFeaList*', '-v7.3')
-   save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'list_pid'] , 'class2use', 'filelist', 'classpath_generic', 'feapath_generic', 'classPidList', '-v7.3')
+    save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists'] , 'class2use', 'filelist', 'classpath_generic', 'feapath_generic', 'classFeaList*', '-v7.3')
     disp('results saved: ')
     disp([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)])
     disp([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists'])
-  %  disp([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists_pid'])
-
+    if pidlist_flag 
+        save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'list_pid'] , 'class2use', 'filelist', 'classpath_generic', 'feapath_generic', 'classPidList', '-v7.3')
+        disp([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists_pid'])
+    end
+    
     clear *files* classcount* classbiovol* classC* meta_data mdate class*List
 end
 clear summarize_biovol_class_h5 %clear the summarize function to clear the persistent variables
