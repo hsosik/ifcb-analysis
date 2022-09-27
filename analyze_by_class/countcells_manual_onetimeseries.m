@@ -2,7 +2,8 @@ function [ classcount, bins, class2use ] = countcells_manual_onetimeseries( time
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 %[ classcount, binlist, class2use ] = countcells_manual_onetimeseries('mvco')
-     conn = getDBConnection_readonly();
+     %conn = getDBConnection_readonly();
+     conn = getDBConnection();
 
     if ~isopen(conn)
         fprintf('ERROR: No connection, are your credentials correct?\n');
@@ -45,6 +46,6 @@ function [ classcount, bins, class2use ] = countcells_manual_onetimeseries( time
    
    %fprintf('Query complete, results are available in %s\n', filename);
     disp('WARNING: These results to not yet reflect manual_list task completeness information!!')
-keyboard
+
 end
 

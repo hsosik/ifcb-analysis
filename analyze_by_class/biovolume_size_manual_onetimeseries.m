@@ -2,7 +2,8 @@ function [ binlist, summary ] = biovolume_size_manual_onetimeseries( timeseries,
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 %[ classcount, binlist, class2use ] = countcells_manual_onetimeseries('mvco')
-conn = getDBConnection_readonly();
+%conn = getDBConnection_readonly();
+conn = getDBConnection();
 
 micron_factor = 1/2.77; %microns per pixel
 summary.micron_factor = micron_factor;
@@ -23,11 +24,14 @@ binlist = cursor.Data;
 lbstr = num2str(length(binlist));
 summary.count = zeros( length(binlist), length(classes) );
 summary.count_gt10 = summary.count;
+summary.biovol_sum = summary.count;
 for filecount = 1:length(binlist)
     filename = binlist{filecount};
     disp([filename ': ' num2str(filecount) ' of ' lbstr])
     if filename(1) =='I'
-        feapath = regexprep(feapath_base, 'XXXX', filename(7:10));
+        %feapath = regexprep(feapath_base, 'XXXX', filename(7:10));
+        feapath = [feapath_base filesep 'D' filename(7:10) filesep filename(1:14) filesep];
+        adcpath = [adcpath_base filesep filename(7:10) filesep filename(1:14) filesep]
     else
        % feapath = regexprep(feapath_base, 'XXXX', filename(2:5));
         feapath = [feapath_base filesep filename(1:5) filesep filename(1:9) filesep];
@@ -40,7 +44,7 @@ for filecount = 1:length(binlist)
     %match up the annotations and the features
     [~,ia, ib] = intersect(target.pid, data(:,1));
     adcfile = [adcpath filename '.adc'];
-    adc = readtable(adcfile, 'FileType', 'text');
+    adc = readtable(adcfile, 'FileType', 'text', 'delimiter', ',');
     roi_numbers = char(target.pid);
     roi_numbers = str2num(roi_numbers(:,end-4:end));
     target.adc = adc{roi_numbers, 3:11};
@@ -62,6 +66,7 @@ for filecount = 1:length(binlist)
         summary.adc{filecount,ccol} = target.adc(cind,:);
         summary.count(filecount,ccol) = length(cind);
         summary.count_gt10(filecount,ccol) = sum(summary.esd{filecount,ccol}>10);
+        summary.biovol_sum(filecount,ccol) = sum(summary.biovol{filecount,ccol});
         summary.numBlobs{filecount,ccol} = target.numBlobs(cind);
     end
     clear data_match

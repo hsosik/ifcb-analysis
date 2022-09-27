@@ -3,8 +3,8 @@ function [ data ] = bin_classifications( bin )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 %[ classcount, binlist, class2use ] = countcells_manual_oneclass_onetimeseries('Ceratium', 'mvco')
-     conn = getDBConnection_readonly();
-
+    %conn = getDBConnection_readonly();
+    conn = getDBConnection();
     if ~isopen(conn)
         fprintf('ERROR: No connection, are your credentials correct?\n');
         return;

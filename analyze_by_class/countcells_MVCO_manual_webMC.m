@@ -6,7 +6,7 @@ metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/mvco', weboptio
 [ classcount_sql, filelist_sql, class2use ] = countcells_manual_onetimeseries('mvco');
 
 %%
-%get metadata according to filelist in manual_list
+%get metadata according to filelist in manual_list 
 load([resultpath 'manual_list']) %load the manual list detailing annotate mode for each sample file
 %load \\sosiknas1\IFCB_products\MVCO\ml_analyzed\ml_analyzed_all %load the milliliters analyzed for all sample files
 
@@ -15,10 +15,10 @@ load([resultpath 'manual_list']) %load the manual list detailing annotate mode f
 filelist = classes_byfile.filelist;
 
 [~,ia, ib] = intersect(filelist, metaT.pid);
-if length(ia) ~= length(filelist),
+if length(ia) ~= length(filelist)
     disp('missing some ml_analyzed values; need to make updated ml_analyzed all.mat?')
     pause
-end;
+end
 temp = NaN(size(filelist));
 temp(ia) = metaT.ml_analyzed(ib);
 ml_analyzed = temp;

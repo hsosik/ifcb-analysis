@@ -17,8 +17,8 @@ end
 if ~exist(out_dir_blob_base, 'dir'),
     mkdir(out_dir_blob_base)
 end;
-daydir = dir([in_dir_base 'D*']);
-% daydir = dir([in_dir_base 'I*']);
+%daydir = dir([in_dir_base 'D*']);
+daydir = dir([in_dir_base 'IFCB1_2015_160*']);
 daydir = daydir([daydir.isdir]); 
 bins = [];
 in_dir = [];
@@ -26,13 +26,17 @@ out_dir_blob = [];
 for ii = 1:length(daydir)
     in_dir_temp = [in_dir_base daydir(ii).name filesep];
     bins_temp = dir([in_dir_temp '*.adc']);
+        if ~isempty(bins_temp)
     bins_temp = regexprep({bins_temp.name}', '.adc', '');
-    daystr = char(bins_temp(1)); daystr = daystr(1:9);
-  %   daystr = char(bins_temp(1)); daystr = daystr(1:14);
+   % daystr = char(bins_temp(1)); daystr = daystr(1:9);
+%%TEMP FOR OLD MVCO STYLE v2
+   % daystr = char(bins_temp(1)); daystr = daystr(2:9);
+       daystr = char(bins_temp(1)); daystr = daystr(7:14);
     out_dir_blob_temp = [out_dir_blob_base daystr filesep];
     bins_done = dir([out_dir_blob_temp '*.zip']);
     bins_done = regexprep({bins_done.name}', '_blobs_v2.zip', '');
     [bins_temp,ia] = setdiff(bins_temp, bins_done);
+end
     if ~isempty(bins_temp)
        daystr = char(bins_temp); daystr = daystr(:,1:9);
    %      daystr = char(bins_temp); daystr = daystr(:,1:14);

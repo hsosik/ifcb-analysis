@@ -24,7 +24,7 @@ if 0
 end
 
 % 
-if 1 
+if 0 
     resultpath = '\\sosiknas1\IFCB_products\NESLTER_transect\summary\';
     classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\class\v3\20220209_Jan2022_NES_2.4\';
     feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\features\';
@@ -76,7 +76,7 @@ end
 %
 mvco_flag = 0;
 pidlist_flag = 1;
-if 0
+if 1
     resultpath = '\\sosiknas1\IFCB_products\MVCO\summary_v4\';
     %classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_SPIROPA__Jan10_8020_seeded_iv3_pt_nn_xyto_min20\';
     classpath_generic = '\\sosiknas1\IFCB_products\MVCO\class\v3\20220209_Jan2022_NES_2.4\';
@@ -125,22 +125,22 @@ if 0 %EXPORTS 2021
 end
 
 if 0
-resultpath = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\summary\';
-classpath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\class\v3\20220416_Delmar_NES_1\';
-feapath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\features_v4\';
-metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SIO_Delmar_mooring', weboptions('Timeout', 30));
+    resultpath = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\summary\';
+    classpath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\class\v3\20220416_Delmar_NES_1\';
+    feapath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\features_v4\';
+    metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SIO_Delmar_mooring', weboptions('Timeout', 30));
 end
 %%
 adhocthresh = 0.5;
 % optimal thresholds:
 % list classes and corresponding statistic you'd like to use the opt-thresh
-% in rows of a cell array. class = col 1, stat = col 2:
+% in rows of a cell array. class = col 1, stat = col 2, i.e.
+% classes not specified here are set to use 'prec-rec' below...
 classXstat = {'Guinardia_delicatula', 'f1'; ...
-    'Guinardia_delicatula_TAG_internal_parasite', 'f1'; ...
-    'Mesodinium', 'prec-rec'};
+    'Guinardia_delicatula_TAG_internal_parasite', 'f1'};
 % load up the optthreshXstatXclass:
 load("\\sosiknas1\Lab_data\dylan_working\cnn_score_data_byClass\opt_threshXstatisticXclass.mat")
-for yr = 2021:2022
+for yr = 2015:2015
     ystr = ['D' num2str(yr)];
     classpath = [classpath_generic filesep ystr filesep];
     feapath = [feapath_generic ystr filesep];
@@ -211,18 +211,26 @@ for yr = 2021:2022
     class2use = deblank(classTable.class_labels); 
 %     dylans addition Sep 2022
     optthresh = ones(1, length(class2use)); % start with ones to make classes that aren't specified explicitly useless
-    for i = 1:size(classXstat,1)
+    for i = 1:size(class2use, 1)
 
-        cc = classXstat{i,1}; % class name
+        cc = class2use{i}; % class name
         cmatch = strrep(cc, '_TAG_', 'TAG');
         cmatch = strrep(cmatch, '_', ' ');
+    
+        if any(ismember(classXstat, cc), "all")
+            % grab opt thresh specified in classXstat
+            ss = classXstat{ismember(classXstat(:,1),cc),2}; % statistic
+            oo = optXstatXclass(ss , cmatch); % opt thresh value
+            optthresh(i) = table2array(oo);
+        elseif ~any(ismember(optXstatXclass.Properties.VariableNames, cmatch))
+            % validation not available for this class. opt thresh = 1
+            optthresh(i) = nan;
+        else
+            % grab opt thresh for prec-rec
+            oo = optXstatXclass("prec-rec", cmatch);
+            optthresh(i) = table2array(oo);
+        end
 
-        ss = classXstat{i,2}; % statistic
-        oo = optXstatXclass(ss , cmatch); % opt thresh value
-
-        idx = ismember(class2use, cc); % index to add opt thresh to
-
-        optthresh(idx) = table2array(oo);
     end
 
     classcount = NaN(length(classfiles),length(class2use));
@@ -265,7 +273,7 @@ for yr = 2021:2022
     %save([resultpath 'summary_biovol_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classbiovolTB', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
     
     %save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)] , 'class2use', 'classcount*', 'classbiovol*', 'classC*', 'ml_analyzed', 'mdate', 'filelist', 'classpath_generic', 'feapath_generic')
-    save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)] , 'class2use', 'classcount*', 'classbiovol*', 'classC*', 'meta_data', 'mdate', 'filelist', 'classpath_generic', 'feapath_generic')
+    save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)] , 'class2use', 'classcount*', 'classbiovol*', 'classC*', 'meta_data', 'mdate', 'filelist', 'classpath_generic', 'feapath_generic', 'adhocthresh', 'classXstat', 'optthresh')
     save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists'] , 'class2use', 'filelist', 'classpath_generic', 'feapath_generic', 'classFeaList*', '-v7.3')
     disp('results saved: ')
     disp([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)])

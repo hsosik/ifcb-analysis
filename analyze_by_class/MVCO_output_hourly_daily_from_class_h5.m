@@ -1,4 +1,6 @@
-p = '\\sosiknas1\IFCB_products\MVCO\summary\';
+p = '\\sosiknas1\IFCB_products\MVCO\summary_v4\';
+pout = '\\sosiknas1\IFCB_products\MVCO\class\summary\above_adhoc_50\';
+dstr = datestr(now, 'ddmmmyyyy');
 
 flist = dir([p 'summary_biovol_allHDF_min20_????.mat']);
 
@@ -12,10 +14,12 @@ filelist = [];
 
 for ii = 1:length(flist)
     temp = load([p flist(ii).name]);
-    classcount = [ classcount; temp.classcount];
-    %classcount_above_adhocthresh = [ classcount_above_adhocthresh; temp.classcount_above_adhocthresh];
-    classbiovol = [classbiovol; temp.classbiovol];
-    %classbiovol_above_adhocthresh = [classbiovol_above_adhocthresh; temp.classbiovolclassbiovol_above_adhocthresh];
+    %classcount = [ classcount; temp.classcount];
+    classcount = [ classcount; temp.classcount_above_adhocthresh];
+%    classcount_above_adhocthresh = [ classcount_above_adhocthresh; temp.classcount_above_adhocthresh];
+    %classbiovol = [classbiovol; temp.classbiovol];
+    classbiovol = [classbiovol; temp.classbiovol_above_adhocthresh];
+%    classbiovol_above_adhocthresh = [classbiovol_above_adhocthresh; temp.classbiovolclassbiovol_above_adhocthresh];
     ml_analyzed = [ ml_analyzed; temp.meta_data.ml_analyzed];
     mdate = [ mdate; temp.mdate];
     filelist = [ filelist; temp.filelist];
@@ -30,7 +34,7 @@ ml = ml_analyzed(ii);
 filelist = filelist(ii);
 floorhr = floor(mdate(ii)*24)/24;
 
-if 1 % case for full res counts
+if 0 % case for full res counts
     T = table;
     T.datetime = datetime(mdate(ii), 'ConvertFrom', 'datenum');
     T.milliliters_analyzed = ml;
@@ -38,7 +42,7 @@ if 1 % case for full res counts
     T2 = array2table(count, 'VariableNames', class2use);
     count_by_class_time_series_full = [T T2];
 
-    writetable(count_by_class_time_series_full, '\\sosiknas1\IFCB_products\MVCO\class\summary\count_by_class_time_seriesCNN_full.csv')
+    writetable(count_by_class_time_series_full, [pout 'count_by_class_time_seriesCNN_full' dstr '.csv'])
 end
 
 unqhr = unique(floorhr);
@@ -60,14 +64,14 @@ T.datetime = datetime(mdate_hr, 'ConvertFrom', 'datenum');
 T2 = array2table(count_hr./ml_hr, 'VariableNames', class2use);
 concentration_by_class_time_series_hr = [T T2];
 
-writetable(concentration_by_class_time_series_hr, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_seriesCNN_hourly.csv')
+writetable(concentration_by_class_time_series_hr, [pout 'concentration_by_class_time_seriesCNN_hourly' dstr '.csv'])
 
 T = table;
 T.datetime = datetime(mdate_hr, 'ConvertFrom', 'datenum');
 T2 = array2table(biovol_hr./ml_hr, 'VariableNames', class2use);
 biovol_concentration_by_class_time_series_hr = [T T2];
 
-writetable(biovol_concentration_by_class_time_series_hr, '\\sosiknas1\IFCB_products\MVCO\class\summary\biovol_concentration_by_class_time_seriesCNN_hourly.csv')
+writetable(biovol_concentration_by_class_time_series_hr, [pout 'biovol_concentration_by_class_time_seriesCNN_hourly' dstr '.csv'])
 %%
 if 1 %case for counts
     T = table;
@@ -76,7 +80,7 @@ if 1 %case for counts
     T2 = array2table(count_hr, 'VariableNames', class2use);
     count_by_class_time_series_hr = [T T2];
 
-    writetable(count_by_class_time_series_hr, '\\sosiknas1\IFCB_products\MVCO\class\summary\count_by_class_time_seriesCNN_hourly.csv')
+    writetable(count_by_class_time_series_hr, [pout 'count_by_class_time_seriesCNN_hourly' dstr '.csv'])
 end
 %%
 
@@ -98,18 +102,20 @@ end
 
 T = table;
 T.datetime = datetime(mdate_dy, 'ConvertFrom', 'datenum');
+T.milliliters_analyzed = ml_dy;
 T2 = array2table(count_dy./ml_dy, 'VariableNames', class2use);
 concentration_by_class_time_series_dy = [T T2];
 
-writetable(concentration_by_class_time_series_dy, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series_CNN_daily.csv')
+writetable(concentration_by_class_time_series_dy, [pout 'concentration_by_class_time_series_CNN_daily' dstr '.csv'])
 
 
 T = table;
 T.datetime = datetime(mdate_dy, 'ConvertFrom', 'datenum');
+T.milliliters_analyzed = ml_dy;
 T2 = array2table(biovol_dy./ml_dy, 'VariableNames', class2use);
 biovol_concentration_by_class_time_series_dy = [T T2];
 
-writetable(biovol_concentration_by_class_time_series_dy, '\\sosiknas1\IFCB_products\MVCO\class\summary\biovol_concentration_by_class_time_series_CNN_daily.csv')
+writetable(biovol_concentration_by_class_time_series_dy, [pout 'biovol_concentration_by_class_time_series_CNN_daily' dstr '.csv'])
 
 
 %writetable(concentration_by_class_time_series, '\\sosiknas1\IFCB_products\MVCO\class\summary\concentration_by_class_time_series.csv')

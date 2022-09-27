@@ -55,7 +55,12 @@ datestr = date; datestr = regexprep(datestr,'-','');
 %save([resultpath 'summary\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed', 'classcount', 'biovol', 'filelist', 'eqdiam', 'perim', 'roiID')
 save([resultpath '\count_biovol_size_manual_' datestr], 'matdate', 'ml_analyzed', 'filelist', 'summary', 'classes', 'meta_data', '-v7.3')
 
+count_table = array2table(summary.count,'VariableNames', classes);
+biovol_table = array2table(summary.biovol_sum,'VariableNames', classes);
+save([resultpath '\count_biovol_size_manual_' datestr '_tables'], 'matdate', 'meta_data', 'count_table', 'biovol_table')
+
 disp('Summary count_biovolume_size file stored here:')
 disp([resultpath 'count_biovol_size_manual_' datestr])
+disp([resultpath 'count_biovol_size_manual_' datestr '_tables'])
 
 
