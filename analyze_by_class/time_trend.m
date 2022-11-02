@@ -17,7 +17,7 @@ ylabel(labelstr)
 datetick
 
 figure
-set(gcf, 'position', [350 600 720 200])
+set(gcf, 'position', [50 100 720 200])
 plot(mdate_mat(:), y_mat(:), '.'), hold on
 xlim(datenum([yearlist(1) next_year],1,1))
 set(gca, 'xtick', datenum([yearlist next_year],1,1))
@@ -28,7 +28,7 @@ title(['r = ' num2str(r(1), '%.2f') '; \tau = '  num2str(r(2), '%.2f') '; y = ' 
 ylabel(labelstr)
 
 figure
-set(gcf, 'position', [350 600 720 200])
+set(gcf, 'position', [50 100 720 200])
 plot(mdate_mat(:), yanom(:), '.'), hold on
 xlim(datenum([yearlist(1) next_year],1,1))
 set(gca, 'xtick', datenum([yearlist next_year],1,1))
@@ -40,7 +40,7 @@ line(xlim, [0 0], 'linestyle',  '--')
 ylabel([labelstr ', anom'])
 
 figure
-set(gcf, 'position', [350 600 720 200])
+set(gcf, 'position', [50 100 720 200])
 ipos = find(yanom(:)>0);
 bar(mdate_mat(ipos), yanom(ipos), 'r', 'edgecolor', 'r')
 hold on 
