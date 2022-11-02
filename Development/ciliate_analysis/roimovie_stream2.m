@@ -12,9 +12,12 @@ roipath= '/Users/markmiller/Documents/Experiments/IFCB_9/Dock_Samples/5-15-13/da
 %roipath = '\\demi\ifcbnew\IFCB5_2012_024\'; %file 2
 %roipath = '\\demi\ifcbnew\IFCB5_2012_045\'; %file 49
 %IFCB5_2012_045_185612
-adcpath = roipath;
+roipath = 'C:\Users\heidi\Downloads\'
 
-filelist = dir([roipath '*.roi']);
+adcpath = roipath;
+%filelist = dir([roipath '*.roi']);
+filelist = dir([roipath 'IFCB5_2012_045_185612.roi']);
+
 close all
 figure;
 colormap(gray)
@@ -32,7 +35,7 @@ set(gcf,'renderermode','manual')
 %set(gcf,'position',[-3          39        1600        1092]) %maximized for beans
 %set(gcf, 'position', [350 50 600 800])
 set(gcf, 'position', [350 50 800 600])
-for filecount = 1:1, %2:2; %length(filelist),
+for filecount = 1:1 %2:2; %length(filelist),
     filename = filelist(filecount).name;
     disp(filename)
     
@@ -45,18 +48,22 @@ for filecount = 1:1, %2:2; %length(filelist),
 %     aviobj = avifile([filename(1:end-4)], 'compression', 'none', 'quality', 100, 'fps', 3);  %initialize movie file
     adcdata = load([adcpath filename(1:end-4) '.adc']);
     fid=fopen([roipath filename]);
-    startbyte = adcdata(:,18);
-%    xsize = adcdata(:,12);
-%    ysize = adcdata(:,13);
-    sizes = adcdata(:,16:17);
-    pos = adcdata(:,14:15);
+    startbyte = adcdata(:,14);
+    sizes = adcdata(:,12:13);
+    pos = adcdata(:,10:11);
+
+%    startbyte = adcdata(:,18);
+%%    xsize = adcdata(:,12);
+%%    ysize = adcdata(:,13);
+%    sizes = adcdata(:,16:17);
+%    pos = adcdata(:,14:15);
 
     totalrois = size(adcdata,1);
     Mcount = 1;
     figure(1),clf
     holdnum = 10;
     holdcount = 1;
-    for imgcount = 1:totalrois,
+    for imgcount = 1:totalrois
         
         position = startbyte(imgcount);
         fseek(fid, position, -1);
