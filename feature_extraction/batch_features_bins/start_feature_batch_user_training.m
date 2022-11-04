@@ -20,8 +20,7 @@ if ~exist(out_dir, 'dir'),
     mkdir(out_dir)
 end;
 
-%daydir = dir([in_dir_base 'D*']);
-daydir = dir([in_dir_base 'IFCB1_2015_160*']);
+daydir = dir([in_dir_base 'D*']);
 daydir = daydir([daydir.isdir]); 
 bins = [];
 in_dir = [];
