@@ -28,10 +28,10 @@ for ii = 1:length(daydir)
     bins_temp = dir([in_dir_temp '*.adc']);
         if ~isempty(bins_temp)
     bins_temp = regexprep({bins_temp.name}', '.adc', '');
-   % daystr = char(bins_temp(1)); daystr = daystr(1:9);
+    daystr = char(bins_temp(1)); daystr = daystr(1:9);
 %%TEMP FOR OLD MVCO STYLE v2
    % daystr = char(bins_temp(1)); daystr = daystr(2:9);
-       daystr = char(bins_temp(1)); daystr = daystr(7:14);
+   %    daystr = char(bins_temp(1)); daystr = daystr(7:14);
     out_dir_blob_temp = [out_dir_blob_base daystr filesep];
     bins_done = dir([out_dir_blob_temp '*.zip']);
     bins_done = regexprep({bins_done.name}', '_blobs_v2.zip', '');
