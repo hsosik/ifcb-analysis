@@ -28,9 +28,11 @@ if ~isempty(ii)
     colonpos = findstr(':', linestr);
     hdr.inhibittime = str2num(linestr(colonpos(1)+1:end));
     ii = strmatch('pmttriggerselection_daq_mcconly:', t);
-    linestr = char(t(ii));  
-    colonpos = findstr(':', linestr);
-    hdr.PMTtriggerSelection_DAQ_MCConly = str2num(linestr(colonpos(1)+1:end));
+    if ~isempty(ii)
+        linestr = char(t(ii));  
+        colonpos = findstr(':', linestr);
+        hdr.PMTtriggerSelection_DAQ_MCConly = str2num(linestr(colonpos(1)+1:end));
+    end
 else
     ii = strmatch('run time', t);
     linestr = char(t(ii));  
