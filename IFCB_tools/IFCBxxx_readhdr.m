@@ -6,6 +6,8 @@ function [ hdr ] = IFCBxxx_readhdr( fullfilename )
 %Sept 2012, modified to accept URL file locations from web services
 %April 2020, modified to use webread for URL files and to inclede runType
 %entry in output
+%November 2022, modified to handle change in capitalization use in hdr file
+%labels that appears associated with MRL's LINUX IFCBacq
 
 if isequal(fullfilename(1:4), 'http')
     t = webread(fullfilename, weboptions('timeout', 15));
@@ -13,18 +15,19 @@ if isequal(fullfilename(1:4), 'http')
 else
     t = importdata(fullfilename,'', 150);
 end
+t = lower(t);
 
-ii = strmatch('runTime:', t);
+ii = strmatch('runtime:', t);
     
-if ~isempty(ii),
+if ~isempty(ii)
     linestr = char(t(ii));  
     colonpos = findstr(':', linestr);
     hdr.runtime = str2num(linestr(colonpos(1)+1:end));
-    ii = strmatch('inhibitTime:', t);
+    ii = strmatch('inhibittime:', t);
     linestr = char(t(ii));  
     colonpos = findstr(':', linestr);
     hdr.inhibittime = str2num(linestr(colonpos(1)+1:end));
-    ii = strmatch('PMTtriggerSelection_DAQ_MCConly:', t);
+    ii = strmatch('pmttriggerselection_daq_mcconly:', t);
     linestr = char(t(ii));  
     colonpos = findstr(':', linestr);
     hdr.PMTtriggerSelection_DAQ_MCConly = str2num(linestr(colonpos(1)+1:end));
@@ -37,7 +40,7 @@ else
     hdr.inhibittime = str2num(linestr(eqpos(2)+1:spos(2)-1));
 end
 
-ii=strmatch('runType:',t);
+ii=strmatch('runtype:',t);
 if ~isempty(ii),
     ii = ii(end); %fudge for 2018 IFCB109 cases with two runType entries
     linestr = char(t(ii));  
