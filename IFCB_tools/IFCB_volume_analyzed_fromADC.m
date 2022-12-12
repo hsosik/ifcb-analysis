@@ -59,7 +59,7 @@ for count = 1:length(adcfilename)
             end
         end
     end
-end
 looktime = runtime-inhibittime;
 ml_analyzed(count) = flowrate.*looktime/60;
+end
 end
