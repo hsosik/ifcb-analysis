@@ -21,7 +21,8 @@ function biovolume_summary_allHDF2(datasetStr,year_range)
 
 %% group selection (dylan's addition):
 group_file = '\\sosiknas1\training_sets\IFCB\config\IFCB_classlist_type.csv';
-group2use = {'Diatom_noDetritus', 'Dinoflagellate', 'Ciliate', 'Other_phyto', 'Detritus', 'IFCBArtifact'};
+group2use = {'protist_tricho', 'Detritus', 'IFCBArtifact', 'metazoan', ...
+    'Diatom_noDetritus', 'Dinoflagellate', 'Ciliate', 'Other_phyto'};
 % (NanoFlagCocco added below)...
 
 group_tab = readtable(group_file);
@@ -30,34 +31,48 @@ group_tab.NanoFlagCocco = zeros(size(group_tab,1),1);
 group_tab.NanoFlagCocco(group_tab.Nano == 1 | group_tab.flagellate == 1 | group_tab.Coccolithophore == 1) = 1;
 group2use_in = cat(2, group2use, {'NanoFlagCocco'});
 
+% this needs to happen for hierarchical classifications: make a table with
+% primary groups as vars and subgroups contained in each.
+groupXgroup = table;
+groupXgroup.protist_tricho = {'Diatom_noDetritus', 'Dinoflagellate', ...
+    'Ciliate', 'Other_phyto', 'NanoFlagCocco'};
+groupXgroup.Detritus = nan(size(groupXgroup,1),1);
+groupXgroup.IFCBArtifact = nan(size(groupXgroup,1),1);
+groupXgroup.metazoan = nan(size(groupXgroup,1),1);
+
 group_tab = group_tab(:, cat(2, {'CNN_classlist'}, group2use_in));
-optthresh_group = nan(1, length(group2use_in));
-group_opt_path = '\\sosiknas1\Lab_data\dylan_working\cnn_score_data_byClassGroup\';
-groupXstat = {}; % if empty does prec-rec. Otherwise write group,stat in an group X 2 cell array.
-for i = 1:length(group2use_in)
-    pp = [group_opt_path, group2use_in{i}, '\', group2use_in{i}, '_adhoc_stat_table_groupsum.mat'];
-    if exist(pp, "file")
-        load(pp);
+% optthresh_group = nan(1, length(group2use_in));
+% group_opt_path = '\\sosiknas1\Lab_data\dylan_working\cnn_score_data_byClass\';
 
-        if any(ismember(groupXstat, group2use_in{i}), "all")
+load("\\sosiknas1\Lab_data\dylan_working\cnn_score_data_byClass\opt_threshXstatisticXgroup.mat")
+% groupXstat = {}; % if empty does prec-rec. Otherwise write group,stat in an group X 2 cell array.
+groupXstat = cat(1, group2use, repmat({'prec-rec'}, 1, length(group2use)))';
+optthresh_group = optXstatXgroup("prec-rec" , :);
 
-            % grab opt thresh specified in classXstat
-            ss = groupXstat{ismember(groupXstat(:,1),group2use_in{i}),2}; % statistic
-            oo = optimize_my_stat_tab(stat_table, ss);
-            optthresh_group(i) = oo;
-        else
-            % grab opt thresh for prec-rec
-            oo = optimize_my_stat_tab(stat_table, 'prec-rec');
-            optthresh_group(i) = min(oo);
-
-            groupXstat = cat(1, groupXstat, {group2use_in{i}, 'prec-rec'});
-        end
-    end
-end
+% for i = 1:length(group2use_in)
+%     pp = [group_opt_path, group2use_in{i}, '\', group2use_in{i}, '_adhoc_stat_table_groupsum.mat'];
+%     if exist(pp, "file")
+%         load(pp);
+% 
+%         if any(ismember(groupXstat, group2use_in{i}), "all")
+% 
+%             % grab opt thresh specified in classXstat
+%             ss = groupXstat{ismember(groupXstat(:,1),group2use_in{i}),2}; % statistic
+%             oo = optimize_my_stat_tab(stat_table, ss);
+%             optthresh_group(i) = oo;
+%         else
+%             % grab opt thresh for prec-rec
+%             oo = optimize_my_stat_tab(stat_table, 'prec-rec');
+%             optthresh_group(i) = min(oo);
+% 
+%             groupXstat = cat(1, groupXstat, {group2use_in{i}, 'prec-rec'});
+%         end
+%     end
+% end
 
 %%
 mvco_flag = 0;
-pidlist_flag = 0;
+pidlist_flag = 1;
 
 switch datasetStr
     case 'NESLTER_broadscale'
@@ -119,8 +134,7 @@ switch datasetStr
         opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "double", "double"];
         opts.VariableNamesLine = 1;
         myreadtable = @(filename)readtable(filename, opts); %
-        metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/mvco', weboptions('Timeout', 60, 'ContentReader', myreadtable));
-
+        metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/mvco', weboptions('Timeout', 120, 'ContentReader', myreadtable));
         metaT = add_fixed_ml_analyzed_to_summary(metaT, 'MVCO');
 
         mvco_flag = 1;
@@ -251,25 +265,26 @@ for yr = year_range(1):year_range(end)
     
     classTable = load_class_scores(classfiles{1});
     class2use = deblank(classTable.class_labels); 
+%     optthresh = optXstatXclass("prec-rec", :);
+
 %     dylans addition Sep 2022 - class opt thresh:
-    optthresh = ones(1, length(class2use)); % start with ones to make classes that aren't specified explicitly useless
+%     this allows to use different statistics for different classes
+    optthresh = nan(1, length(class2use)); % start with ones to make classes that aren't specified explicitly useless
     for i = 1:size(class2use, 1)
 
         cc = class2use{i}; % class name
-        cmatch = strrep(cc, '_TAG_', 'TAG');
-        cmatch = strrep(cmatch, '_', ' ');
     
         if any(ismember(classXstat, cc), "all")
             % grab opt thresh specified in classXstat
             ss = classXstat{ismember(classXstat(:,1),cc),2}; % statistic
-            oo = optXstatXclass(ss , cmatch); % opt thresh value
+            oo = optXstatXclass(ss , cc); % opt thresh value
             optthresh(i) = table2array(oo);
-        elseif ~any(ismember(optXstatXclass.Properties.VariableNames, cmatch))
+        elseif ~any(ismember(optXstatXclass.Properties.VariableNames, cc))
             % validation not available for this class. opt thresh = 1
             optthresh(i) = nan;
         else
             % grab opt thresh for prec-rec
-            oo = optXstatXclass("prec-rec", cmatch);
+            oo = optXstatXclass("prec-rec", cc);
             optthresh(i) = table2array(oo);
 
             classXstat = cat(1, classXstat, {cc, 'prec-rec'});
@@ -292,10 +307,10 @@ for yr = year_range(1):year_range(end)
         classPidList = cell(size(classcount));
     end
     classFeaList_variables = {'ESD' 'maxFeretDiameter' 'summedMajorAxis' 'representativeWidth' 'summedArea' 'summedSurfaceArea' 'summedBiovolume' 'cellC'  'numBlobs' 'pmtA' 'pmtB' 'pmtC' 'pmtD' 'peakA' 'peakB' 'peakC' 'peakD' 'TimeOfFlight' 'roi_numbers' 'score'};
-    groupFeaList_variables = classFeaList_variables;
+    groupFeaList_variables = {'ESD' 'maxFeretDiameter' 'summedMajorAxis' 'representativeWidth' 'summedArea' 'summedSurfaceArea' 'summedBiovolume' 'cellC'  'numBlobs' 'pmtA' 'pmtB' 'pmtC' 'pmtD' 'peakA' 'peakB' 'peakC' 'peakD' 'TimeOfFlight' 'roi_numbers' 'score_prim', 'score_sec'};
     % repeat for groups:
 %     groupcount = NaN(length(classfiles),length(group2use_in)+1); % +1 for an "other" catch-all group
-    groupcount = NaN(length(classfiles),length(group2use_in)); % +1 for an "other" catch-all group
+    groupcount = NaN(length(classfiles),length(group2use_in)); % NO +1 for an "other" catch-all group
     groupbiovol = groupcount;
     groupC = groupcount;
     groupcount_above_optthresh = groupcount;
@@ -311,16 +326,19 @@ for yr = year_range(1):year_range(end)
     end
     %%
     for filecount = 1:length(classfiles)
+
         if ~rem(filecount,10), disp(['reading ' num2str(filecount) ' of ' num2dostr]), end
         if exist( feafiles{filecount}, 'file')
             if pidlist_flag
                 [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2use, classFeaList(filecount,:), classPidList(filecount,:)] = summarize_biovol_class_h5(classfiles{filecount}, feafiles{filecount}, adhocthresh, optthresh, pidlist_flag);
                 % group data:
-                [groupcount(filecount,:), groupbiovol(filecount,:), groupC(filecount,:), groupcount_above_optthresh(filecount,:), groupbiovol_above_optthresh(filecount,:), groupC_above_optthresh(filecount,:), groupcount_above_adhocthresh(filecount,:), groupbiovol_above_adhocthresh(filecount,:), groupC_above_adhocthresh(filecount,:), group2use, groupFeaList(filecount,:), groupPidList(filecount,:)] = summarize_biovol_classGroup_h5(classfiles{filecount}, feafiles{filecount}, adhocthresh, optthresh_group, pidlist_flag, group_tab);
+%                 [groupcount(filecount,:), groupbiovol(filecount,:), groupC(filecount,:), groupcount_above_optthresh(filecount,:), groupbiovol_above_optthresh(filecount,:), groupC_above_optthresh(filecount,:), groupcount_above_adhocthresh(filecount,:), groupbiovol_above_adhocthresh(filecount,:), groupC_above_adhocthresh(filecount,:), group2use, groupFeaList(filecount,:), groupPidList(filecount,:)] = summarize_biovol_classGroup_h5(classfiles{filecount}, feafiles{filecount}, adhocthresh, optthresh_group, pidlist_flag, group_tab);
+                [groupcount(filecount,:), groupbiovol(filecount,:), groupC(filecount,:), groupcount_above_optthresh(filecount,:), groupbiovol_above_optthresh(filecount,:), groupC_above_optthresh(filecount,:), groupcount_above_adhocthresh(filecount,:), groupbiovol_above_adhocthresh(filecount,:), groupC_above_adhocthresh(filecount,:), group2use, groupFeaList(filecount,:), groupPidList(filecount,:)] = summarize_biovol_classGroup_h5_hierarchy(classfiles{filecount}, feafiles{filecount}, adhocthresh, optthresh_group, pidlist_flag, group_tab, groupXgroup);
             else
                 [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2use, classFeaList(filecount,:), classPidList] = summarize_biovol_class_h5(classfiles{filecount}, feafiles{filecount}, adhocthresh, optthresh, pidlist_flag);
                 % group data:
-                [groupcount(filecount,:), groupbiovol(filecount,:), groupC(filecount,:), groupcount_above_optthresh(filecount,:), groupbiovol_above_optthresh(filecount,:), groupC_above_optthresh(filecount,:), groupcount_above_adhocthresh(filecount,:), groupbiovol_above_adhocthresh(filecount,:), groupC_above_adhocthresh(filecount,:), group2use, groupFeaList(filecount,:), groupPidList] = summarize_biovol_classGroup_h5(classfiles{filecount}, feafiles{filecount}, adhocthresh, optthresh_group, pidlist_flag, group_tab);
+%                 [groupcount(filecount,:), groupbiovol(filecount,:), groupC(filecount,:), groupcount_above_optthresh(filecount,:), groupbiovol_above_optthresh(filecount,:), groupC_above_optthresh(filecount,:), groupcount_above_adhocthresh(filecount,:), groupbiovol_above_adhocthresh(filecount,:), groupC_above_adhocthresh(filecount,:), group2use, groupFeaList(filecount,:), groupPidList] = summarize_biovol_classGroup_h5(classfiles{filecount}, feafiles{filecount}, adhocthresh, optthresh_group, pidlist_flag, group_tab);
+                [groupcount(filecount,:), groupbiovol(filecount,:), groupC(filecount,:), groupcount_above_optthresh(filecount,:), groupbiovol_above_optthresh(filecount,:), groupC_above_optthresh(filecount,:), groupcount_above_adhocthresh(filecount,:), groupbiovol_above_adhocthresh(filecount,:), groupC_above_adhocthresh(filecount,:), group2use, groupFeaList(filecount,:), groupPidList] = summarize_biovol_classGroup_h5_hierarchy(classfiles{filecount}, feafiles{filecount}, adhocthresh, optthresh_group, pidlist_flag, group_tab, groupXgroup);
             end
             %temp MVCO old features
          % %   [classcount(filecount,:), classbiovol(filecount,:), classC(filecount,:), classcount_above_optthresh(filecount,:), classbiovol_above_optthresh(filecount,:), classC_above_optthresh(filecount,:), classcount_above_adhocthresh(filecount,:), classbiovol_above_adhocthresh(filecount,:), classC_above_adhocthresh(filecount,:), class2useTB, classFeaList(filecount,:), classPidList(filecount,:)] = summarize_biovol_class_h5_mvco_temp(classfiles{filecount}, feafiles{filecount}, adhocthresh);
@@ -339,24 +357,26 @@ for yr = year_range(1):year_range(end)
     tempStr = {'classcount' 'classbiovol' 'classC' 'classcount_above_optthresh' 'classbiovol_above_optthresh'...
         'classC_above_optthresh' 'classcount_above_adhocthresh' 'classbiovol_above_adhocthresh' 'classC_above_adhocthresh'};
     for ii = 1:length(tempStr)
-        T = array2table(eval(tempStr{ii}), 'VariableNames', class2use); 
+        T = cat(2, meta_data(:, "pid"), array2table(eval(tempStr{ii}), 'VariableNames', class2use)); 
         eval([tempStr{ii} '= T;'])
     end
     tempStr = {'groupcount' 'groupbiovol' 'groupC' 'groupcount_above_optthresh' 'groupbiovol_above_optthresh'...
         'groupC_above_optthresh' 'groupcount_above_adhocthresh' 'groupbiovol_above_adhocthresh' 'groupC_above_adhocthresh'};
     for ii = 1:length(tempStr)
-        T = array2table(eval(tempStr{ii}), 'VariableNames', group2use);
+        T = cat(2, meta_data(:, "pid"), array2table(eval(tempStr{ii}), 'VariableNames', group2use));
         eval([tempStr{ii} '= T;'])
     end
+    optthresh = array2table(optthresh,'VariableNames', class2use);
     clear T ii
     classFeaList = array2table(classFeaList, 'VariableNames', class2use);
     groupFeaList = array2table(groupFeaList, 'VariableNames', group2use);
 
+    val_stats = get_val_stat_tables('\\sosiknas1\Lab_data\dylan_working\cnn_score_data_byClass\',...
+        class2use, group2use, table2array(optthresh), table2array(optthresh_group));
     %save([resultpath 'summary_biovol_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classbiovolTB', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
-    
     %save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)] , 'class2use', 'classcount*', 'classbiovol*', 'classC*', 'ml_analyzed', 'mdate', 'filelist', 'classpath_generic', 'feapath_generic')
     save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)] , 'class2use', 'classcount*', 'classbiovol*', 'classC*', 'meta_data', 'mdate', 'filelist', 'classpath_generic', 'feapath_generic', 'adhocthresh', 'classXstat', 'optthresh', ...
-        'group2use', 'groupcount*', 'groupbiovol*', 'groupC*', 'meta_data', 'mdate', 'filelist', 'groupXstat', 'optthresh_group')
+        'group2use', 'groupcount*', 'groupbiovol*', 'groupC*', 'meta_data', 'mdate', 'filelist', 'groupXstat', 'optthresh_group', 'val_stats')
     save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists'] , 'class2use', 'filelist', 'classpath_generic', 'feapath_generic', 'classFeaList*', '-v7.3')
     save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr) 'lists_group'] , 'group2use', 'filelist', 'classpath_generic', 'feapath_generic', 'groupFeaList*', '-v7.3') 
     disp('results saved: ')
