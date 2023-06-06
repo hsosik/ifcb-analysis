@@ -3,10 +3,7 @@ function [classcount, classbiovol, classC, classcount_above_optthresh, classbiov
 %   Detailed explanation goes here
 persistent ind_diatom class2use
 %micron_factor = 1/3.4; %microns per pixel
-micron_factor = 1/2.77; %microns per pixel
-
-%load(classfile)
-%[bin_id, scores, roi_numbers, class_labels] = load_class_scores(classfile);
+micron_factoscores, roi_numbers, class_labels] = load_class_scores(classfile);
 classTable = load_class_scores(classfile);
 class_labels = classTable.class_labels;
 if isempty(class2use)
