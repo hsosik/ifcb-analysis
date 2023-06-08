@@ -17,7 +17,6 @@ load('\\sosiknas1\IFCB_products\MVCO\Manual_fromClass\manual_list.mat')
 manual_list = array2table(manual_list(2:end, :), "VariableNames", cat(2, {'file'}, manual_list(1,2:end)));
 
 % load a score table to get all the classes:
-load('\\sosiknas1\Lab_data\dylan_working\cnn_score_data_byClass\Acanthoica quattrospina\Acanthoica quattrospina_CNN_score_data_20221013.mat')
 metavar = {'file', 'roi', 'trainset_flag', 'mano_anno', 'multi_mano_flag', 'other_mano_annos'};
 
 % group file:
@@ -146,13 +145,15 @@ for i = 1:length(subgroups)
         
         pp = [strrep(modsco_path_out, [primary_group, '\'], ''), target, '\', target, '_adhoc_count_data_groupsum.mat'];
         save(pp, "allcnn_counts", "man_counts", "binid", '-v7.3');
+        
+        disp(['results saved to ' pp]);
 
     else
         disp(['no score table found for ', target]);
     end
   
     disp(['group ', num2str(i), ' of ', ...
-        num2str(length(subgroups)), 'be done']);
+        num2str(length(subgroups)), ' is done']);
 end
 
 

@@ -9,7 +9,7 @@ primary_group = 'protist_tricho';
 % and subgroups ("NanoFlagCocco" will be added below):
 subgroups = {'Diatom_noDetritus', 'Dinoflagellate', 'Ciliate', 'NanoFlagCocco', 'Other_phyto'};
 
-stat_path = ['\\sosiknas1\Lab_data\dylan_working\cnn_score_data_byClass\', primary_group, '\'];
+stat_path = ['\\sosiknas1\Lab_data\dylan_working\cnn_score_data_byClass\'];
 % stat_path_end = '_adhoc_stat_table_groupmax.mat';
 % count_path_end = '_adhoc_count_data_groupmax.mat';
 stat_path_end = '_adhoc_stat_table_groupsum.mat';
@@ -22,8 +22,8 @@ fig_path_end = '_optval_figs_groupsum.png';
 %% analysis/plots
 
 % primary group first:
-pp = [stat_path, primary_group, stat_path_end];
-pp2 = [stat_path, primary_group, count_path_end];
+pp = [stat_path, primary_group, '\' primary_group, stat_path_end];
+pp2 = [stat_path, primary_group, '\' primary_group, count_path_end];
 load(pp);
 
 % oo = stat_table.threshold(stat_table.f1 == max(stat_table.f1));

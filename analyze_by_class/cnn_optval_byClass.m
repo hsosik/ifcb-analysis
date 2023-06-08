@@ -75,6 +75,8 @@ for i = 1:length(class2opt)
             pp = [sco_path, target2, '\', target2, '_adhoc_count_data.mat'];
             save(pp, "allcnn_counts", "man_counts", "binid");
 
+            disp(['results saved to ' pp]);
+
             % doing a multiple threshold run for G. del analysis:
 %             [~, stat_table, allcnn_counts, man_counts] = optimize_CNN_thresholding(scomat, ...
 %                 all_score_tab.mano_anno, target2, all_score_tab.file, ...

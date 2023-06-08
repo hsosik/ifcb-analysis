@@ -86,6 +86,8 @@ for i = 1:length(groups1)
         pp = [modsco_path_out, target, '\', target, '_adhoc_count_data_groupsum.mat'];
         save(pp, "allcnn_counts", "man_counts", "binid", '-v7.3');
 
+        disp(['results saved to ' pp]);
+
     else
         disp(['no score table found for ', target]);
     end
