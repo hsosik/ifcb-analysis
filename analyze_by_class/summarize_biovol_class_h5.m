@@ -149,7 +149,36 @@ Predicted_class_above_adhocthresh(isnan(Predicted_class)) = NaN; %these are the 
 % 
 % Predicted_class_above_optthresh(isnan(Predicted_class)) = NaN; %these are the no ROI triggers
  
+%% opt thresh following Heidi's approach to adhoc above (-Dylan):
+% with this approach a roi can be classified to a class where the
+% class-specific score threshold is exceeded but the class is not the
+% top-scoring one.
+% if length(optthresh) == 1
+%     t = ones(size(classTable.scores_feamatch))*optthresh;
+% else
+%     t = repmat(optthresh,length(Predicted_class),1);
+% end
+% win = (classTable.scores_feamatch > t);
+% [i,j] = find(win);
+% [targets.maxscore, Predicted_class] = max(classTable.scores_feamatch');
+% Predicted_class((targets.maxscore==0)) = NaN;
+% %Predicted_class_above_adhocthresh = cell(size(Predicted_class));
+% %Predicted_class_above_adhocthresh(:) = deal(repmat({'unclassified'},1,length(Predicted_class)));
+% %Predicted_class_above_adhocthresh(i) = class_labels(j); %most are correct his way (zero or one case above threshold)
+% Predicted_class_above_optthresh = zeros(size(Predicted_class));
+% Predicted_class_above_optthresh(i) = j; %most are correct his way (zero or one case above threshold)
+% 
+% ind = find(sum(win')>1); %now go back and fix the conflicts with more than one above threshold
+% for count = 1:length(ind)
+%     [~,ii] = max(classTable.scores_feamatch(ind(count),:));
+%     Predicted_class_above_optthresh(ind(count)) = ii;
+% end
+% 
+% Predicted_class_above_optthresh(isnan(Predicted_class)) = NaN; %these are the no ROI triggers
+
 %% dylan's tweak for opt thresh X statistic X class:
+% with this approach, the a classification is only accepted when the
+% HIGHEST score a roi also exceeds the class-specific threshold.
 
 scomat = classTable.scores_feamatch;
 [~, topclassidx] = max(scomat, [], 2); % col index of top class in scomat
@@ -166,6 +195,7 @@ Predicted_class_above_optthresh(keepers) = topclassidx(keepers);
 % Predicted_class_above_optthresh is a 1 x roi vector of the column index of 
 % the "winning class". 0 indicates no winning class.
 Predicted_class_above_optthresh(isnan(Predicted_class)) = NaN; %these are the no ROI triggers
+
 
 %%
 

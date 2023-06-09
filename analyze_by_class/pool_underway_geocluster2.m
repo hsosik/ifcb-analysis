@@ -4,12 +4,7 @@ function [pooled_ct, pooled_meta, clust_key1, clust_key_mod] = pool_underway_geo
 % hierarchical clustering procedure based on geographic distances between
 % ifcb samples. Goal is to smooth data for inspection of large-scale
 % abundance, etc distributions
-% this is the same as pool_underway_geocluster.m but uses a modified
-% posthoc cluster merging procedure. When it encounters a cluster with a
-% volume sampled < volthresh, rather than merge the cluster with the
-% nearest cluster, it merges with the cluster with centroid within
-% centdistthresh with the smallest volume sampled. The goal is to make
-% each cluster/pool have more similar sampling effort. 
+% it does this:
 % (1) computes a pairwise great-circle-distance matrix between each
 % discrete sample
 % (2) places samples into geographic clusters using the 'average' linkage 
