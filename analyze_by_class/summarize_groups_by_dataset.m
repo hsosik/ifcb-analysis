@@ -1,8 +1,8 @@
 function [] = summarize_groups_by_dataset(dataset_name)
 
-base_path = ['C:\work\IFCB_products\' dataset_name '\summary\'];
+base_path = ['\\sosiknas1\IFCB_products\' dataset_name '\summary\'];
 if isequal(dataset_name, 'mvco')
-    base_path = ['C:\work\IFCB_products\' dataset_name '\summary_v4\'];
+    base_path = ['\\sosiknas1\IFCB_products\' dataset_name '\summary_v4\'];
 end
 %base_path = ['\\sosiknas1\IFCB_products\' dataset_name '\summary\'];
 TS_path = ['\\sosiknas1\IFCB_data\' dataset_name '\match_up\'];
