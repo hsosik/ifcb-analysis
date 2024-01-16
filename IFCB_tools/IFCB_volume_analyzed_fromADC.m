@@ -22,7 +22,7 @@ for count = 1:length(adcfilename)
     else
         adc = readtable(adcfilename{count}, 'FileType', 'text');       
     end
-    if ~isempty(adc) & sum(adc.Var24~=0)  %add criteria to skip cases rare with all 0 in col24
+    if ~isempty(adc) && sum(adc.Var24~=0)  %add criteria to skip cases rare with all 0 in col24
         %find indices of rows where inhibitime is not 0 and not less than the previous value (within 0.1 second)
         diffinh = diff(adc.Var24);
         iii = [1; find(adc.Var24(2:end)>0 & diffinh>-.1 & diffinh<5) + 1];
