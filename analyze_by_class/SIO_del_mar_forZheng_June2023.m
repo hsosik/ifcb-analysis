@@ -28,7 +28,7 @@ ylabel('\itLingulodinium\rm (\mug C l^{-1})')
 figure %Carbon biomass, total for cells>10 microns and Lpoly
 plot(T.datetime, summedCellC./T.meta_data.ml_analyzed/1000, '.-')
 hold on
-plot(T.datetime, T.classC.Lingulodinium./T.meta_data.ml_analyzed/1000a, '.-')
+plot(T.datetime, T.classC.Lingulodinium./T.meta_data.ml_analyzed/1000, '.-')
 ylabel('Plankton biomass (\mug C l^{-1})')
 legend('All plankton > 10\mum', '\itLingulodinium')
 
