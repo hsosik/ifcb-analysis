@@ -8,9 +8,9 @@ maxn = 1500;
 tag2exclude = {'external detritus' 'blurry' 'uncertain' 'theca fragment' 'gamete'};
 
 %%
-for count = 2:2 %3:length(url_set)
+for count = 2:length(url_set)
     temp = split(url_set{count}, '/');
-    outdir_base = ['\\sosiknas1\training_sets\IFCB\TRAIN-DATA\Cal_May2023\' temp{end} filesep];
+    outdir_base = ['\\sosiknas1\training_sets\IFCB\TRAIN-DATA\Cal_Sep2023\' temp{end} filesep];
     url_base = url_set{count};
     tag_roi_table = tag_roi_list_one_timeseries(url_base);
     tag_roi_table.class_tag_label = strcat(tag_roi_table.classlabel, '_TAG_', tag_roi_table.taglabel);
@@ -26,12 +26,13 @@ for count = 2:2 %3:length(url_set)
     class_roi_table.classnameTAG = class_roi_table.classname;
     class_roi_table.classnameTAG(ib) = tag_roi_table.class_tag_label(ia);
     class_set = unique(class_roi_table.classnameTAG);
-%
-%FUDGE for now: Get rid of 'WHAT?'
-class_roi_table.classnameTAG = regexprep(class_roi_table.classnameTAG, '?', '');
-class_set = regexprep(class_set, '?', '');
+    %
+    %FUDGE for now: Get rid of 'WHAT?'
+    class_roi_table.classnameTAG = regexprep(class_roi_table.classnameTAG, '?', '');
+    class_set = regexprep(class_set, '?', '');
     for ii = 1:length(class_set)
         outdir = [outdir_base class_set{ii} filesep];
+        outdir = regexprep(outdir, ' ', '_'); %make sure _ instead of spaces
         disp(outdir)
         if ~exist(outdir)
             mkdir(outdir)
@@ -43,7 +44,7 @@ class_set = regexprep(class_set, '?', '');
         end
         for iii = 1:length(ind)
             pf = [class_roi_table.roi{ind(iii)} '.png'];
-            outf = websave([outdir pf],[url_base '/' pf]);
+            outf = websave([outdir pf],[url_base '/' pf], weboptions('Timeout', 30));
         end
     end
 end
