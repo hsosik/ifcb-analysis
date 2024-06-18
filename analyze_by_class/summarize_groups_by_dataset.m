@@ -1,14 +1,18 @@
 function [] = summarize_groups_by_dataset(dataset_name)
 
 base_path = ['\\sosiknas1\IFCB_products\' dataset_name '\summary\'];
-if isequal(dataset_name, 'mvco')
+if isequal(lower(dataset_name), 'mvco')
     base_path = ['\\sosiknas1\IFCB_products\' dataset_name '\summary_v4\'];
 end
 %base_path = ['\\sosiknas1\IFCB_products\' dataset_name '\summary\'];
 TS_path = ['\\sosiknas1\IFCB_data\' dataset_name '\match_up\'];
-outname = 'carbon_group_class2';
+outname = 'carbon_group_class';
+outname2 = 'count_group_class';
 %yr = 2018:2022;
 flist = dir([base_path 'summary_biovol_allHDF_min20_????.mat']);
+%flist = flist(end);
+%flist = dir([base_path 'summary_biovol_allHDF_min20_2021.mat']);
+%flist(strcmp({flist.name},'summary_biovol_allHDF_min20_2021.mat')) = [];
 meta_data = table;
 groupC_opt = table;
 groupC = table;
@@ -92,15 +96,20 @@ end
 optthresh = T.optthresh;
 %save([base_path 'carbon_group_class'], 'meta_data', 'classC*', 'groupC*', 'optthresh')
 
-if exist([TS_path 'compiledTS_tables'], 'file')
+if exist([TS_path 'compiledTS_tables.mat'], 'file')
     allTS = load([TS_path 'compiledTS_tables']);
-    [~,ia,ib] = intersect(meta_data.pid, allTS.match_uw.pid); 
+    [~,ia,ib] = intersect(meta_data.pid, allTS.match_uw.pid);
+    meta_data.temperature(:) = NaN;
+    meta_data.salinity(:) = NaN;
     meta_data.temperature(ia) = allTS.match_uw.temperature(ib);
     meta_data.salinity(ia) = allTS.match_uw.salinity(ib);
-    [~,ia,ib] = intersect(meta_data.pid, allTS.match_cast.pid); 
-    meta_data.temperature(ia) = allTS.match_cast.t090c(ib);
-    meta_data.salinity(ia) = allTS.match_cast.sal00(ib);
-    outname = 'carbon_group_class_withTS'
+    if isfield(allTS, 'match_cast')
+        [~,ia,ib] = intersect(meta_data.pid, allTS.match_cast.pid); 
+        meta_data.temperature(ia) = allTS.match_cast.t090c(ib);
+        meta_data.salinity(ia) = allTS.match_cast.sal00(ib);
+    end
+    outname = 'carbon_group_class_withTS';
+    outname2 = 'count_group_class_withTS';
 else
     disp('no compiled TS data; run compile_*_ancillary if needed')
 end
@@ -115,12 +124,19 @@ group_table = readtable('\\sosiknas1\training_sets\IFCB\config\IFCB_classlist_ty
 diatom_label = intersect(classC.Properties.VariableNames, [group_table.CNN_classlist(find(group_table.Diatom_noDetritus))]);
 dino_label = intersect(classC.Properties.VariableNames, [group_table.CNN_classlist(find(group_table.Dinoflagellate))]);
 ciliate_label = intersect(classC.Properties.VariableNames, [group_table.CNN_classlist(find(group_table.Ciliate))]);
+protist_tricho_label = intersect(classC.Properties.VariableNames,[group_table.CNN_classlist(find(group_table.protist_tricho))]);
+detritus_label = intersect(classC.Properties.VariableNames,[group_table.CNN_classlist(find(group_table.Detritus))]);
+artifact_label = intersect(classC.Properties.VariableNames,[group_table.CNN_classlist(find(group_table.IFCBArtifact))]);
+metazoan_label = intersect(classC.Properties.VariableNames,[group_table.CNN_classlist(find(group_table.metazoan))]);
 nanoflagcocco_label = intersect(classC.Properties.VariableNames, [group_table.CNN_classlist(find(group_table.Nano)); group_table.CNN_classlist(find(group_table.flagellate)); group_table.CNN_classlist(find(group_table.Coccolithophore))]);
 
-save([base_path  outname], 'meta_data', 'class*', 'group*', 'optthresh', '*_label')
+save([base_path  outname], 'meta_data', 'classC*', 'groupC*', 'optthresh', '*_label')
+save([base_path  outname2], 'meta_data', 'classcount*', 'groupcount*', 'optthresh', '*_label')
 
 disp('Results saved:')
 disp([base_path outname])
+disp([base_path outname2])
+
 %    uwind = find(strcmp(meta_data.sample_type, 'underway') & ~meta_data.skip);
 %    uwind40 = find(strcmp(meta_data.sample_type, 'underway') & ~meta_data.skip & meta_data.latitude < 40);
 end
