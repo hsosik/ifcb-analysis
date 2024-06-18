@@ -76,6 +76,7 @@ pidlist_flag = 1;
 
 switch datasetStr
     case 'NESLTER_broadscale'
+        pidlist_flag = 1;  %% CHANGE LATER IF DESIRED
         resultpath = '\\sosiknas1\IFCB_products\NESLTER_broadscale\summary\';
         classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\class\v3\20220209_Jan2022_NES_2.4\';
         feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\features\';
@@ -108,7 +109,8 @@ switch datasetStr
 
     case 'OTZ'
         resultpath = '\\sosiknas1\IFCB_products\OTZ\summary\';
-        classpath_generic = '\\sosiknas1\IFCB_products\OTZ\class\v3\20220209_Jan2022_NES_2.4_RELABELED\';
+        %classpath_generic = '\\sosiknas1\IFCB_products\OTZ\class\v3\20220209_Jan2022_NES_2.4_RELABELED\';
+        classpath_generic = '\\sosiknas1\IFCB_products\OTZ\class\v3\20230821_NEAtlantic_3.1\';
         feapath_generic = '\\sosiknas1\IFCB_products\OTZ\features\';
         metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/OTZ_Atlantic');
         metaT = add_fixed_ml_analyzed_to_summary(metaT, 'OTZ');
@@ -144,20 +146,21 @@ switch datasetStr
         resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
         classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20220225_EXPORTS_pacific_Dec2021_1_3\';
         feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
-        opts = delimitedTextImportOptions("NumVariables", 20);
+        opts = delimitedTextImportOptions("NumVariables", 2);
         opts.DataLines = [2 inf];
-        opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "double", "double"];
+        opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "string", "string", "double", "double"];
         opts.VariableNamesLine = 1;
         myreadtable = @(filename)readtable(filename, opts); %w
         metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60, 'ContentReader', myreadtable));
 
     case 'EXPORTS_2021'
         resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
-        classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20220209_Jan2022_NES_2.4_RELABELED\';
+        %classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20220209_Jan2022_NES_2.4_RELABELED\';
+        classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20230821_NEAtlantic_3.1\';
         feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
-        opts = delimitedTextImportOptions("NumVariables", 20);
+        opts = delimitedTextImportOptions("NumVariables", 22);
         opts.DataLines = [2 inf];
-        opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "double", "double"];
+        opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "string", "string", "double", "double"];
         opts.VariableNamesLine = 1;
 
         myreadtable = @(filename)readtable(filename, opts); %
@@ -353,6 +356,11 @@ for yr = year_range(1):year_range(end)
         mkdir(resultpath)
     end
 
+    nind = find(isnan(optthresh));
+    classcount_above_optthresh(:,nind) = NaN;
+    classbiovol_above_optthresh(:,nind) = NaN;
+    classC_above_optthresh(:,nind) = NaN;
+            
     %format as labeled tables
     tempStr = {'classcount' 'classbiovol' 'classC' 'classcount_above_optthresh' 'classbiovol_above_optthresh'...
         'classC_above_optthresh' 'classcount_above_adhocthresh' 'classbiovol_above_adhocthresh' 'classC_above_adhocthresh'};
