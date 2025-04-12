@@ -76,7 +76,7 @@ pidlist_flag = 1;
 
 switch datasetStr
     case 'NESLTER_broadscale'
-        pidlist_flag = 1;  %% CHANGE LATER IF DESIRED
+        pidlist_flag = 0;  %% CHANGE LATER IF DESIRED
         resultpath = '\\sosiknas1\IFCB_products\NESLTER_broadscale\summary\';
         classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\class\v3\20220209_Jan2022_NES_2.4\';
         feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\features\';
@@ -183,6 +183,11 @@ switch datasetStr
         classpath_generic = '\\sosiknas1\IFCB_products\NBP2202_holiver\class\v3\20230330_Jan2022_NES_forNBP2022_1.0\';
         feapath_generic = '\\sosiknas1\IFCB_products\NBP2202_holiver\features\';
         metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NBP2202', weboptions('Timeout', 30));
+    case 'Oleander'
+        resultpath = '\\sosiknas1\IFCB_products\Oleander\summary\';
+        classpath_generic = '\\sosiknas1\IFCB_products\Oleander\class\v3\20220209_Jan2022_NES_2.4\';
+        feapath_generic = '\\sosiknas1\IFCB_products\Oleander\features\';
+        metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/Oleander', weboptions('Timeout', 30));
    
     otherwise
         disp('Missing dataset case: check the m-file cases')
