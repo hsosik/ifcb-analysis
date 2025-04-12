@@ -1,10 +1,10 @@
 function [] = summarize_groups_by_dataset(dataset_name)
 
 base_path = ['\\sosiknas1\IFCB_products\' dataset_name '\summary\'];
+%base_path = ['c:\work\IFCB_products\' dataset_name '\summary\'];
 if isequal(lower(dataset_name), 'mvco')
     base_path = ['\\sosiknas1\IFCB_products\' dataset_name '\summary_v4\'];
 end
-%base_path = ['\\sosiknas1\IFCB_products\' dataset_name '\summary\'];
 TS_path = ['\\sosiknas1\IFCB_data\' dataset_name '\match_up\'];
 outname = 'carbon_group_class';
 outname2 = 'count_group_class';
@@ -14,6 +14,7 @@ flist = dir([base_path 'summary_biovol_allHDF_min20_????.mat']);
 %flist = dir([base_path 'summary_biovol_allHDF_min20_2021.mat']);
 %flist(strcmp({flist.name},'summary_biovol_allHDF_min20_2021.mat')) = [];
 meta_data = table;
+
 groupC_opt = table;
 groupC = table;
 groupC_adhoc = table;
