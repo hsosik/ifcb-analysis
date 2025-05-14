@@ -188,7 +188,13 @@ switch datasetStr
         classpath_generic = '\\sosiknas1\IFCB_products\Oleander\class\v3\20220209_Jan2022_NES_2.4\';
         feapath_generic = '\\sosiknas1\IFCB_products\Oleander\features\';
         metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/Oleander', weboptions('Timeout', 30));
-   
+    case 'pioneer_mooring'
+        resultpath = '\\sosiknas1\IFCB_products\ooi\pioneer_mooring\summary\';
+        classpath_generic = '\\sosiknas1\IFCB_products\ooi\pioneer_mooring\class\v3\20220209_Jan2022_NES_2.4\';
+        feapath_generic = '\\sosiknas1\IFCB_products\ooi\pioneer_mooring\features\';
+        load('\\sosiknas1\IFCB_products\ooi\pioneer_mooring\summary\meta_data')
+        %metaT =  webread('https://ifcb-data.oceanobservatories.org/api/export_metadata/oo', weboptions('Timeout', 30));
+        
     otherwise
         disp('Missing dataset case: check the m-file cases')
         return
