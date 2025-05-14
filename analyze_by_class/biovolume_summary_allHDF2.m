@@ -72,7 +72,7 @@ optthresh_group = optXstatXgroup("prec-rec" , :);
 
 %%
 mvco_flag = 0;
-pidlist_flag = 1;
+pidlist_flag = 0;
 
 switch datasetStr
     case 'NESLTER_broadscale'

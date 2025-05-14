@@ -49,6 +49,14 @@ if ~isempty(ii),
     colonpos = findstr(':', linestr);
     hdr.runType = linestr(colonpos(1)+2:end);
 end
+
+ii=strmatch('sampletype:',t);
+if ~isempty(ii)
+    linestr = char(t(ii));  
+    colonpos = findstr(':', linestr);
+    hdr.sampletype = linestr(colonpos(1)+2:end);
+end
+
 end
 
 
