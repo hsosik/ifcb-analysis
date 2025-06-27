@@ -57,6 +57,13 @@ if ~isempty(ii)
     hdr.sampletype = linestr(colonpos(1)+2:end);
 end
 
+ii=strmatch('adcfileformat:',t);
+if ~isempty(ii)   
+    hdr.adc_columns = strsplit(regexprep(t{ii,:}, 'adcfileformat: ', ''), ', ');
+end
+
+%adc_columns = strsplit(regexprep(hdr{strmatch('ADCFileFormat: ',hdr),:}, 'ADCFileFormat: ', ''), ', ');
+
 end
 
 
