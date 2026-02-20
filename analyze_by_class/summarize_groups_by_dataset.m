@@ -131,8 +131,8 @@ artifact_label = intersect(classC.Properties.VariableNames,[group_table.CNN_clas
 metazoan_label = intersect(classC.Properties.VariableNames,[group_table.CNN_classlist(find(group_table.metazoan))]);
 nanoflagcocco_label = intersect(classC.Properties.VariableNames, [group_table.CNN_classlist(find(group_table.Nano)); group_table.CNN_classlist(find(group_table.flagellate)); group_table.CNN_classlist(find(group_table.Coccolithophore))]);
 
-save([base_path  outname], 'meta_data', 'classC*', 'groupC*', 'optthresh', '*_label')
-save([base_path  outname2], 'meta_data', 'classcount*', 'groupcount*', 'optthresh', '*_label')
+save([base_path  outname], 'meta_data', 'classC*', 'groupC*', 'optthresh*', '*_label')
+save([base_path  outname2], 'meta_data', 'classcount*', 'groupcount*', 'optthresh*', '*_label')
 
 disp('Results saved:')
 disp([base_path outname])
