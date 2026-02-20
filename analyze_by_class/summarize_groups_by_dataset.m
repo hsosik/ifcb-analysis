@@ -45,7 +45,7 @@ for ii = 1:length(flist)
             ind = (T2.groupFeaList.NanoFlagCocco{iii}(:,ESD_ind)>=5 & T2.groupFeaList.NanoFlagCocco{iii}(:,primary_score_ind) >= T.optthresh_group.protist_tricho & T2.groupFeaList.NanoFlagCocco{iii}(:,second_score_ind) >= T.optthresh_group.NanoFlagCocco);
             T.groupC_above_optthresh.NanoFlagCocco_gt5(iii) = sum(T2.groupFeaList.NanoFlagCocco{iii}(ind,cellC_ind));
             T.groupcount_above_optthresh.NanoFlagCocco_gt5(iii) = sum(ind);      
-            
+               
             ind = (T2.groupFeaList.NanoFlagCocco{iii}(:,ESD_ind)>=5 & T2.groupFeaList.NanoFlagCocco{iii}(:,primary_score_ind) >= T.optthresh_group.protist_tricho & T2.groupFeaList.NanoFlagCocco{iii}(:,second_score_ind) >= T.optthresh_group.NanoFlagCocco);
             T.groupC_above_adhocthresh.NanoFlagCocco_gt5(iii) = sum(T2.groupFeaList.NanoFlagCocco{iii}(ind,cellC_ind));
             T.groupcount_above_adhocthresh.NanoFlagCocco_gt5(iii) = sum(ind);
@@ -53,6 +53,20 @@ for ii = 1:length(flist)
             ind = (T2.groupFeaList.NanoFlagCocco{iii}(:,ESD_ind)>=5 & T2.groupFeaList.NanoFlagCocco{iii}(:,primary_score_ind) >= T.optthresh_group.protist_tricho);
             T.groupC.NanoFlagCocco_gt5(iii) = sum(T2.groupFeaList.NanoFlagCocco{iii}(ind,cellC_ind));
             T.groupcount.NanoFlagCocco_gt5(iii) = sum(ind);
+
+            ind = (T2.groupFeaList.NanoFlagCocco{iii}(:,ESD_ind)>=10 & T2.groupFeaList.NanoFlagCocco{iii}(:,primary_score_ind) >= T.optthresh_group.protist_tricho & T2.groupFeaList.NanoFlagCocco{iii}(:,second_score_ind) >= T.optthresh_group.NanoFlagCocco);
+            T.groupC_above_optthresh.NanoFlagCocco_gt10(iii) = sum(T2.groupFeaList.NanoFlagCocco{iii}(ind,cellC_ind));
+            T.groupcount_above_optthresh.NanoFlagCocco_gt10(iii) = sum(ind);      
+        
+            ind = (T2.groupFeaList.NanoFlagCocco{iii}(:,ESD_ind)>=10 & T2.groupFeaList.NanoFlagCocco{iii}(:,primary_score_ind) >= T.optthresh_group.protist_tricho & T2.groupFeaList.NanoFlagCocco{iii}(:,second_score_ind) >= T.optthresh_group.NanoFlagCocco);
+            T.groupC_above_adhocthresh.NanoFlagCocco_gt10(iii) = sum(T2.groupFeaList.NanoFlagCocco{iii}(ind,cellC_ind));
+            T.groupcount_above_adhocthresh.NanoFlagCocco_gt10(iii) = sum(ind);
+            
+            ind = (T2.groupFeaList.NanoFlagCocco{iii}(:,ESD_ind)>=10 & T2.groupFeaList.NanoFlagCocco{iii}(:,primary_score_ind) >= T.optthresh_group.protist_tricho);
+            T.groupC.NanoFlagCocco_gt10(iii) = sum(T2.groupFeaList.NanoFlagCocco{iii}(ind,cellC_ind));
+            T.groupcount.NanoFlagCocco_gt10(iii) = sum(ind);
+
+
 %            ind = (T2.groupFeaList.NanoFlagCocco{iii}(:,primary_score_ind) >= T.optthresh_group.protist_tricho);
 
             %tally those >5 micron, yes protist, but no for more specific groups
@@ -70,10 +84,16 @@ for ii = 1:length(flist)
             T.groupC_above_optthresh.NanoFlagCocco_gt5(iii) = NaN;
             T.groupC_above_adhocthresh.NanoFlagCocco_gt5(iii) = NaN;
             T.groupC.NanoFlagCocco_gt5(iii) = NaN;
+            T.groupC_above_optthresh.NanoFlagCocco_gt10(iii) = NaN;
+            T.groupC_above_adhocthresh.NanoFlagCocco_gt10(iii) = NaN;
+            T.groupC.NanoFlagCocco_gt10(iii) = NaN;
             T.groupC_above_optthresh.miscProtist_gt5(iii) = NaN;
             T.groupcount_above_optthresh.NanoFlagCocco_gt5(iii) = NaN;
             T.groupcount_above_adhocthresh.NanoFlagCocco_gt5(iii) = NaN;
             T.groupcount.NanoFlagCocco_gt5(iii) = NaN;
+            T.groupcount_above_optthresh.NanoFlagCocco_gt10(iii) = NaN;
+            T.groupcount_above_adhocthresh.NanoFlagCocco_gt10(iii) = NaN;
+            T.groupcount.NanoFlagCocco_gt10(iii) = NaN;
             T.groupcount_above_optthresh.miscProtist_gt5(iii) = NaN;
         end
     end
@@ -104,6 +124,9 @@ if exist([TS_path 'compiledTS_tables.mat'], 'file')
     meta_data.salinity(:) = NaN;
     meta_data.temperature(ia) = allTS.match_uw.temperature(ib);
     meta_data.salinity(ia) = allTS.match_uw.salinity(ib);
+    if ismember('section', allTS.match_uw.Properties.VariableNames)  %for Oleander
+        meta_data.section(ia) = allTS.match_uw.section(ib);
+    end 
     if isfield(allTS, 'match_cast')
         [~,ia,ib] = intersect(meta_data.pid, allTS.match_cast.pid); 
         meta_data.temperature(ia) = allTS.match_cast.t090c(ib);
