@@ -6,16 +6,25 @@ if ~exist('centroid','var')
     centroid = rp.Centroid;
 end;
 
-% pad and center the blob in a square image large enough to support
-% rotation and reflection operations
-[h, w] = size(blob_image);
-xc = centroid(1)-1;
-yc = centroid(2)-1;
-s = max([yc,h-yc,xc,w-xc]);
-m = ceil(s*2);
-C = zeros(m,m);
-y0 = floor(s-yc);
-x0 = floor(s-xc);
-C(y0+1:y0+h,x0+1:x0+w) = blob_image;
+[ys, xs] = find(blob_image);
+h = size(blob_image,1); w = size(blob_image,2);
+n = numel(ys);
+
+% Integer-exact centering
+sum_y = sum(ys) - n;
+sum_x = sum(xs) - n;
+
+hN = h * n;
+wN = w * n;
+ycN = sum_y;
+xcN = sum_x;
+sN = max([ycN, hN - ycN, xcN, wN - xcN]);
+
+m  = floor((2 * sN + n - 1) / n);
+y0 = floor((sN - ycN) / n);
+x0 = floor((sN - xcN) / n);
+
+C = false(m, m);
+C(y0+1:y0+h, x0+1:x0+w) = blob_image;
 
 end

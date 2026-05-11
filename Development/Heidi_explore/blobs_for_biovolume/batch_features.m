@@ -27,7 +27,7 @@ end
 
 if not(debug),
     try
-        pool = parpool;
+	pool = parpool;
         %pool = parpool(4);
         log('POOL - started');
     catch e %#ok<NASGU>

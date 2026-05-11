@@ -12,8 +12,8 @@
 %
 % Surface area added (March 2016) according to algorithm by Louis Kilfoyle
 
-% calculate distance map
-dist = bwdist(boundary_image); 
+% calculate distance map (SciPy-matching EDT)
+dist = bwdist_scipy(~boundary_image); 
 dist = dist + 1;
 
 % mask distance map image (all distances outside boundary set to NaN)

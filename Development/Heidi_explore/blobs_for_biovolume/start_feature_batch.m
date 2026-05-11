@@ -61,7 +61,8 @@ end
 nfiles = length(bins); 
 disp(['processing ' num2str(nfiles) ' files'])
 if nfiles > 0
-    batch_features( in_dir, bins, out_dir, in_dir_blob , parallel_proc_flag);
+    n = 1;
+    batch_features( in_dir(n:end), bins(n:end), out_dir(n:end), in_dir_blob(n:end) , parallel_proc_flag);
 end
 
 end

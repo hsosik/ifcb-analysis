@@ -11,15 +11,20 @@ end
 roi_flag = strmatch('.roi',x);
 if roi_flag
     targets = get_images_fromROI([in_dir file]);
-    png_dir = [out_dir filesep regexprep(file,'.roi','')];
-    archive = [out_dir filesep regexprep(file,'.roi','_blobs_v4.zip')];
+    out_dir_temp = '/home/john.walsh/temp_blobs/';
+    png_dir = [out_dir_temp filesep regexprep(file,'.roi','')];
+    %png_dir = [out_dir filesep regexprep(file,'.roi','')];
+    archive2 = [out_dir filesep regexprep(file,'.roi','_blobs_v4.zip')];
+    archive = [out_dir_temp filesep regexprep(file,'.roi','_blobs_v4.zip')];
 else %assume zip
     targets = get_bin_file([in_dir file]);
     png_dir = [out_dir filesep regexprep(file,'.zip','')];
-    archive = [out_dir filesep regexprep(file,'.zip','_blobs_v4.zip')];
+    png_dir = [out_dir_temp filesep regexprep(file,'.zip','')];
+    archive2 = [out_dir filesep regexprep(file,'.zip','_blobs_v4.zip')];    
+    archive = [out_dir_temp filesep regexprep(file,'.zip','_blobs_v4.zip')];
 end;
 
-if exist(archive,'file'),
+if exist(archive2,'file'),
     log(['SKIPPING ' file]);
     return
 end
@@ -57,8 +62,13 @@ csvwrite([png_dir filesep 'version'], [4])
 png_paths = [png_paths; 'version'];
 
 if nt > 0,
-    zip(archive, png_paths, png_dir);
     log(['SAVING ' archive]);
+    zip(archive, png_paths, png_dir);
+    [p,f] = fileparts(archive2);
+    if ~exist(p, 'dir')
+        mkdir(p)
+    end
+    movefile(archive, archive2);
     log(['DONE ' file]);
 else
     log(['NO targets ' file]);
@@ -66,4 +76,3 @@ end;
 
     rmdir(png_dir,'s');
 end
-

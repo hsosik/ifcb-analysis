@@ -12,24 +12,35 @@
 %
 % updated to also return a surface area estimate, October 2015, Heidi
 
-% calculate distance map
-dist = bwdist(boundary_image); 
+% calculate distance map (SciPy-matching EDT)
+dist = bwdist_scipy(~boundary_image); 
 dist = dist + 1;
 
 % mask distance map image (all distances outside boundary set to NaN)
 image_fill = imfill(boundary_image,'holes'); 
 dist(image_fill==0) = NaN; 
+% deterministic single-precision sum/mean (column-major)
+flat = dist(:);
+sum_val = single(0.0); count = 0;
+for i = 1:numel(flat)
+    v = flat(i);
+    if ~isnan(v)
+        sum_val = single(sum_val + single(v));
+        count = count + 1;
+    end
+end
+mean_val = single(sum_val / single(count));
 % find representative transect length
-x = 4*nanmean(dist(:)) - 2;
+x = single(4.0) * mean_val - single(2.0);
 
 % define cross-section correction factors 
 % pyramidal cross-section to interpolated diamond
-c1 = (x^2)/(x^2 + 2*x + 1/2);  
+c1 = (x^2)/(x^2 + 2*x + single(1/2));  
 % diamond to circumscribing circle
-c2 = pi/2;
+c2 = single(pi/2);
 
 % calculate final volume applying correction factors to distance map
-volume = c1*c2*2*nansum(dist(:)); 
+volume = single(c1 * c2 * single(2.0) * sum_val); 
 
 surface_area = distance_map2surface_area4(dist, x);
 

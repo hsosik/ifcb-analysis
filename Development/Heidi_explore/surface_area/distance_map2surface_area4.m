@@ -12,9 +12,9 @@ function [ SA ] = distance_map2surface_area( dist, xr )
 %
 % Based on algorithm contributions from Louis Kilfoyle, February 2016
 
-Z = dist; Z(isnan(Z)) = 0; % dist map is an X,Y indexed matrix of Z heights
-X = repmat((1:size(Z,2)),size(Z,1),1) ; % X is just the 2 indices from Z
-Y = repmat((1:size(Z,1))',1,size(Z,2)) ; % Y is just the 1 indices from Z
+Z = single(dist); Z(isnan(Z)) = 0; % dist map is an X,Y indexed matrix of Z heights
+X = single(repmat((1:size(Z,2)),size(Z,1),1)) ; % X is just the 2 indices from Z
+Y = single(repmat((1:size(Z,1))',1,size(Z,2))) ; % Y is just the 1 indices from Z
 
 % like in the revolution method, these are indices of "neighbors"
 i2 = 1:size(Z,1)-1; % left neighbor
@@ -67,8 +67,35 @@ AREA_BOT(gg) = 0; % set area to 0 for those facets
 AREA_TOP(gg) = 0; % set area to 0 for those facets
 % then we do a final correction to correct the diamond cross-section
 % inherent in the distance map to be circular instead
-c = pi*xr/2./(2*sqrt(2)*xr/2+(1+sqrt(2))/2);
-SA = 2*c*(sum(AREA_BOT(:)) + sum(AREA_TOP(:))) ; 
+c = single(pi)*xr/single(2)./(single(2)*single(sqrt(2))*xr/single(2)+(single(1)+single(sqrt(2)))/single(2));
+sum_bot = single(0.0);
+flat = AREA_BOT(:);
+for i = 1:numel(flat)
+    sum_bot = single(sum_bot + single(flat(i)));
+end
+sum_top = single(0.0);
+flat = AREA_TOP(:);
+for i = 1:numel(flat)
+    sum_top = single(sum_top + single(flat(i)));
+end
+SA = single(2.0) * c * single(sum_bot + sum_top);
+
+% Optional debug dump (expects global IFCB_DEBUG_PID and IFCB_DEBUG_PID_CURRENT)
+global IFCB_DEBUG_PID IFCB_DEBUG_PID_CURRENT IFCB_DEBUG_BLOB_INDEX;
+if ~isempty(IFCB_DEBUG_PID) && ~isempty(IFCB_DEBUG_PID_CURRENT)
+    if ischar(IFCB_DEBUG_PID_CURRENT) && strcmp(IFCB_DEBUG_PID_CURRENT, IFCB_DEBUG_PID)
+        debug_dir = ['surface_area_pipeline_debug_' IFCB_DEBUG_PID_CURRENT];
+        if ~exist(debug_dir, 'dir')
+            mkdir(debug_dir);
+        end
+        blob_idx = IFCB_DEBUG_BLOB_INDEX;
+        if isempty(blob_idx)
+            blob_idx = 0;
+        end
+        dbg_path = fullfile(debug_dir, sprintf('%s_area_%04d.mat', IFCB_DEBUG_PID_CURRENT, blob_idx));
+        save(dbg_path, 'sum_bot', 'sum_top', 'c', 'SA', 'xr', 'blob_idx');
+    end
+end
 end
 
 %return 
