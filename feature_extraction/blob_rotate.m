@@ -1,19 +1,16 @@
 function [ target ] = blob_rotate( target )
-% for each blob image in the target,
-% take the image and transform it so that
-% the blob's major axis is horizontal and the image is
-% centered on the blob's centroid
-%Heidi M. Sosik, Woods Hole Oceanographic Institution
-%November 2011, IFCB processing
+% Rotate each blob using deterministic orientation and crop-rotation code.
 
-if target.blob_props.numBlobs > 0,
-    for i = 1:target.blob_props.numBlobs,
-        theta = -1*target.blob_props.Orientation(i);
+if target.blob_props.numBlobs > 0
+    for i = 1:target.blob_props.numBlobs
+        orientation = explicit_orientation(target.blob_images{i});
+        target.blob_props.Orientation(i) = orientation;
         centered = center_blob(target.blob_images{i});
-        rot = imrotate(centered,theta,'nearest','crop');
+        rot = imrotate_nearest_crop_explicit(centered, orientation);
         target.rotated_blob_images{i}=rot;
-    end;
-else %empty blob image
+    end
+else
     target.rotated_blob_images = {};
 end
 
+end

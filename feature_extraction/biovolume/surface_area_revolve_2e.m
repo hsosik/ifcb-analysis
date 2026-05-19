@@ -9,15 +9,12 @@ function [ V xr SA ] = surface_area_revolve_2e( blob )
 %
 % Based on algorithm contributions from Louis Kilfoyle, February 2016
 
-rowind = repmat((1:size(blob,1))', 1, size(blob,2));
-temp = rowind.*blob;
-temp(temp==0) = NaN;
-center = median(temp,'omitnan')+0.5;
-r = sum(blob); % find the diameter of the circle for each slice
+[~,y1] = max(blob); % find the "bottom" point of the circle for each slice
+r = (sum(blob)); % find the diameter of the circle for each slice
 ri = find(r); % find all diameter > 0 (the slice actually exists)
 r = r/2; % turn diameters into radii
 r = r(ri); % only store radii that actually exist ( r > 0 )
-center = center(ri);
+y1 = y1(ri); % only store first point of circle for circles that exist ( r > 0 )
 
 da = .25; % the arc amount in degrees of each triangular facet base
 angvec = 0:da:180; % how many degrees to step along
@@ -31,7 +28,8 @@ i1 = 2:length(r); % select "right" radii neighbors
 ia2 = 1:length(angvec)-1; % select "left" angle neighbors
 ia1 = 2:length(angvec); % select "right" angle neighbors
 r = repmat(r',1,length(angvec)); % format vector into matrix for operations
-center = repmat(center',1,length(angvec)); % format vector into matrix for operations
+y1 = repmat(y1',1,length(angvec)); % format vector into matrix for operations
+center = y1+r; % find the center of the circle for each slice
 center([1,end],:) = center([2,end-1],:); % avoid effects at ends
 
 Y = center + cos(angR).*r ; % Y coordinates of all angles on all circles
@@ -91,6 +89,7 @@ b1 = pi * r(i1,1).^2;
 b2 = pi * r(i2,1).^2;
 h = diff(x)'; %height of cone slices
 V = sum(h/3 .* (b1 + b2 + sqrt(b1.*b2)));
+
 xr = mean(r(:,1)*2);
 
 end
