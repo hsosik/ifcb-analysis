@@ -3,10 +3,10 @@ function [ feature_mat, featitles ] = format_features( bin )
 %   Detailed explanation goes here
 
 s_temp = bin.features;
-Rings = [s_temp.Rings];
-Wedges = [s_temp.Wedges];
-HOG = [s_temp.HOG];
-s_temp = rmfield(s_temp, {'Rings' 'Wedges' 'HOG'});
+%Rings = [s_temp.Rings];
+%Wedges = [s_temp.Wedges];
+%HOG = [s_temp.HOG];
+%s_temp = rmfield(s_temp, {'Rings' 'Wedges' 'HOG'});
 %n = [s_temp.numBlobs];
 n = zeros(1,length(s_temp));
 for i = 1:length(s_temp),
@@ -28,12 +28,13 @@ end;
 
 output_largest.features = s_largest;
 temp = struct2cell(s_largest);    
-feature_mat = [cell2mat(temp); Wedges; Rings; HOG];
+%feature_mat = [cell2mat(temp); Wedges; Rings; HOG];
+feature_mat = cell2mat(temp);
 feature_mat(isnan(feature_mat)) = 0;
   
 featitles = fieldnames(output_largest.features);
-nring = size(Rings,1); nwedge = size(Wedges,1); nhog = size(HOG,1);
-featitles = [featitles; cellstr([repmat('Wedge',nwedge,1) num2str((1:nwedge)','%02d')]); cellstr([repmat('Ring',nring,1) num2str((1:nring)','%02d')]); cellstr([repmat('HOG',nhog,1) num2str((1:nhog)','%02d')])];
+%nring = size(Rings,1); nwedge = size(Wedges,1); nhog = size(HOG,1);
+%featitles = [featitles; cellstr([repmat('Wedge',nwedge,1) num2str((1:nwedge)','%02d')]); cellstr([repmat('Ring',nring,1) num2str((1:nring)','%02d')]); cellstr([repmat('HOG',nhog,1) num2str((1:nhog)','%02d')])];
 
 end
 

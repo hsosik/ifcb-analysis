@@ -27,7 +27,7 @@ end
 
 if not(debug),
     try
-        pool = parpool;
+	pool = parpool;
         %pool = parpool(4);
         log('POOL - started');
     catch e %#ok<NASGU>
@@ -40,35 +40,19 @@ end
 if not(debug),
     if exist('in_dir_blob', 'var')
         parfor filecount = 1:length(filelist)
-            try
-            	bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
-            catch ME
-                disp(getReport(ME,'extended'));
-            end
+             bin_features_slim(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir{filecount}, [], in_dir_blob{filecount});
         end
     else
         parfor filecount = 1:length(filelist)
-            try
-                bin_features(in_dir, [char(filelist(filecount)) '.zip'], out_dir, []);
-            catch ME
-                disp(getReport(ME,'extended'));
-            end
+           bin_features_slim(in_dir{filecount}, [char(filelist(filecount)) '.zip'], out_dir{filecount}, []);
         end;
     end
 else
     for filecount = 1:length(filelist)
         if exist('in_dir_blob', 'var')
-            try
-                bin_features(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir, [], in_dir_blob{filecount});
-            catch ME
-                disp(getReport(ME,'extended'));
-            end
+            bin_features_slim(in_dir{filecount}, [char(filelist(filecount)) '.roi'], out_dir{filecount}, [], in_dir_blob{filecount});
         else
-            try
-                bin_features(in_dir, [char(filelist(filecount)) '.zip'], out_dir, []);
-            catch ME
-                disp(getReport(ME,'extended'));
-            end
+            bin_features_slim(in_dir, [char(filelist(filecount)) '.zip'], out_dir{filecount}, []);
         end;
     end
 end

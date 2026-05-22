@@ -1,5 +1,4 @@
-function [ volume 
-  x surface_area ] = distmap_volume( boundary_image )
+ function [ volume x surface_area ] = distmap_volume_test( boundary_image )
 % [ volume ] = distmap_volume( boundary_image )
 % distmap_volume( boundary_image ) returns the volume in pixel cubes 
 % of a target with complex closed boundary shape indicated in the 
