@@ -43,7 +43,7 @@ png_paths = {};
 for i = 1:nt
     target = {};
     % configure feature extraction
-    target.config = configure_test();
+    target.config = configure();
     % get the image
     target.image = cell2mat(targets.image(i));
     % compute the blob mask (result in target.blob_image)
