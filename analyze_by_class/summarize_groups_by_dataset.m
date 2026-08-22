@@ -111,7 +111,6 @@ for ii = 1:length(flist)
     classcount_opt = [classcount_opt; T.classcount_above_optthresh];
     classcount_adhoc = [classcount_adhoc; T.classcount_above_adhocthresh];
     classcount = [classcount; T.classcount];
-
     meta_data = [meta_data; T.meta_data];
 end
 optthresh = T.optthresh;
