@@ -201,7 +201,7 @@ Predicted_class_above_optthresh(isnan(Predicted_class)) = NaN; %these are the no
 
 %[ind_diatom] = get_diatom_ind(class_labels,class_labels);
 if isempty(ind_diatom) %first call to function
-    gfile = '\\sosiknas1\training_sets\IFCB\config\IFCB_classlist_type.csv';
+    gfile = '\\sosiknas1.whoi.edu\training_sets\IFCB\config\IFCB_classlist_type.csv';
     disp('Loading list of diatom classes from:')
     disp(gfile)
     group_table = readtable(gfile);
