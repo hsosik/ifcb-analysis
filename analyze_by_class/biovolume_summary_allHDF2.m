@@ -14,13 +14,13 @@ function biovolume_summary_allHDF2(datasetStr,year_range)
 % tables on 9/30/2022. Cite this if you use that field:
 % Chad A. Greene, Kaustubh Thirumalai, Kelly A. Kearney, Jose Miguel Delgado, Wolfgang Schwanghart, Natalie S. Wolfenbarger, Kristen M. Thyng, David E. Gwyther, Alex S. Gardner, and Donald D. Blankenship. The Climate Data Toolbox for MATLAB. Geochemistry, Geophysics, Geosystems 2019. doi:10.1029/2019GC008392
 
-%resultpath = '\\sosiknas1\IFCB_products\MVCO\summary\';
-%classpath_generic = '\\sosiknas1\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_mvco_Jan10-pt-uw\';
-%feapath_generic = '\\sosiknas1\IFCB_products\MVCO\features\featuresxxxx_v2\';
+%resultpath = '\\sosiknas1.whoi.edu\IFCB_products\MVCO\summary\';
+%classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\MVCO\train_May2019_jmf\RUN-RESULTS\RUN_mvco_Jan10-pt-uw\';
+%feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\MVCO\features\featuresxxxx_v2\';
 %hdrpath = 'https://ifcb-data.whoi.edu/MVCO/';
 
 %% group selection (dylan's addition):
-group_file = '\\sosiknas1\training_sets\IFCB\config\IFCB_classlist_type.csv';
+group_file = '\\sosiknas1.whoi.edu\training_sets\IFCB\config\IFCB_classlist_type.csv';
 group2use = {'protist_tricho', 'Detritus', 'IFCBArtifact', 'metazoan', ...
     'Diatom_noDetritus', 'Dinoflagellate', 'Ciliate', 'Other_phyto'};
 % (NanoFlagCocco added below)...
@@ -42,9 +42,9 @@ groupXgroup.metazoan = nan(size(groupXgroup,1),1);
 
 group_tab = group_tab(:, cat(2, {'CNN_classlist'}, group2use_in));
 % optthresh_group = nan(1, length(group2use_in));
-% group_opt_path = '\\sosiknas1\Lab_data\dylan_working\cnn_score_data_byClass\';
+% group_opt_path = '\\sosiknas1.whoi.edu\Lab_data\dylan_working\cnn_score_data_byClass\';
 
-load("\\sosiknas1\Lab_data\dylan_working\cnn_score_data_byClass\opt_threshXstatisticXgroup.mat")
+load("\\sosiknas1.whoi.edu\Lab_data\dylan_working\cnn_score_data_byClass\opt_threshXstatisticXgroup.mat")
 % groupXstat = {}; % if empty does prec-rec. Otherwise write group,stat in an group X 2 cell array.
 groupXstat = cat(1, group2use, repmat({'prec-rec'}, 1, length(group2use)))';
 optthresh_group = optXstatXgroup("prec-rec" , :);
@@ -77,48 +77,51 @@ pidlist_flag = 0;
 switch datasetStr
     case 'NESLTER_broadscale'
         pidlist_flag = 0;  %% CHANGE LATER IF DESIRED
-        resultpath = '\\sosiknas1\IFCB_products\NESLTER_broadscale\summary\';
-        classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\class\v3\20220209_Jan2022_NES_2.4\';
-        feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_broadscale\features\';
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\NESLTER_broadscale\summary\';
+        %classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\NESLTER_broadscale\class\v3\20220209_Jan2022_NES_2.4\';
+        classpath_generic = '\\vast\proj\sosiklab\IFCB_products\NESLTER_broadscale\class\v3\20220209_Jan2022_NES_2.4\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\NESLTER_broadscale\features\';
         hdrpath = 'https://ifcb-data.whoi.edu/NESLTER_broadscale/';
-        opts = delimitedTextImportOptions("NumVariables", 24);
-        opts.DataLines = [2 inf];
-        %case with 8 tags
-        opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "string", "string", "string", "string", "double", "double"];
-        opts.VariableNamesLine = 1;
-        myreadtable = @(filename)readtable(filename, opts);
-        metaT = webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_broadscale', weboptions('Timeout', 60, 'ContentReader', myreadtable));
-        metaT.km2coast = dist2coast(metaT.latitude, metaT.longitude);
+      %  opts = delimitedTextImportOptions("NumVariables", 24);
+      %  opts.DataLines = [2 inf];
+      %  %case with 8 tags
+      %  opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "string", "string", "string", "string", "double", "double"];
+      %  opts.VariableNamesLine = 1;
+      %  myreadtable = @(filename)readtable(filename, opts);
+      %  metaT = webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_broadscale', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+      metaT = webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_broadscale',weboptions('Timeout', 60));
+      metaT.km2coast = dist2coast(metaT.latitude, metaT.longitude);
 
-        metaT = add_fixed_ml_analyzed_to_summary(metaT, 'NESLTER_broadscale');
+        %metaT = add_fixed_ml_analyzed_to_summary(metaT, 'NESLTER_broadscale');
 
     case 'NESLTER_transect'
-        resultpath = '\\sosiknas1\IFCB_products\NESLTER_transect\summary\';
-        classpath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\class\v3\20220209_Jan2022_NES_2.4\';
-        feapath_generic = '\\sosiknas1\IFCB_products\NESLTER_transect\features\';
-        opts = delimitedTextImportOptions("NumVariables", 21);
-        opts.DataLines = [2 inf];
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\NESLTER_transect\summary\';
+        classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\NESLTER_transect\class\v3\20220209_Jan2022_NES_2.4\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\NESLTER_transect\features\';
+        %opts = delimitedTextImportOptions("NumVariables", 21);
+        %opts.DataLines = [2 inf];
         %case with 5 tags
-        opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "string", "double", "double"];
-        opts.VariableNamesLine = 1;
-        myreadtable = @(filename)readtable(filename, opts);
-        metaT = webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_transect', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+        %opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "string", "double", "double"];
+        %opts.VariableNamesLine = 1;
+        %myreadtable = @(filename)readtable(filename, opts);
+        %metaT = webread('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_transect', weboptions('Timeout', 60, 'ContentReader', myreadtable));
+        metaT = readtable('https://ifcb-data.whoi.edu/api/export_metadata/NESLTER_transect');
         metaT.km2coast = dist2coast(metaT.latitude, metaT.longitude);
 
-        metaT = add_fixed_ml_analyzed_to_summary(metaT, 'NESLTER_transect');
+        %metaT = add_fixed_ml_analyzed_to_summary(metaT, 'NESLTER_transect');
 
     case 'OTZ'
-        resultpath = '\\sosiknas1\IFCB_products\OTZ\summary\';
-        %classpath_generic = '\\sosiknas1\IFCB_products\OTZ\class\v3\20220209_Jan2022_NES_2.4_RELABELED\';
-        classpath_generic = '\\sosiknas1\IFCB_products\OTZ\class\v3\20230821_NEAtlantic_3.1\';
-        feapath_generic = '\\sosiknas1\IFCB_products\OTZ\features\';
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\OTZ\summary\';
+        %classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\OTZ\class\v3\20220209_Jan2022_NES_2.4_RELABELED\';
+        classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\OTZ\class\v3\20230821_NEAtlantic_3.1\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\OTZ\features\';
         metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/OTZ_Atlantic');
         metaT = add_fixed_ml_analyzed_to_summary(metaT, 'OTZ');
 
     case 'SPIROPA'
-        resultpath = '\\sosiknas1\IFCB_products\SPIROPA\summary\';
-        classpath_generic = '\\sosiknas1\IFCB_products\SPIROPA\class\v3\20220209_Jan2022_NES_2.4\';
-        feapath_generic = '\\sosiknas1\IFCB_products\SPIROPA\features\';
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\SPIROPA\summary\';
+        classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\SPIROPA\class\v3\20220209_Jan2022_NES_2.4\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\SPIROPA\features\';
         opts = delimitedTextImportOptions("NumVariables", 20);
         opts.DataLines = [2 inf];
         opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "double", "double"];
@@ -127,9 +130,9 @@ switch datasetStr
         metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SPIROPA', weboptions('Timeout', 60, 'ContentReader', myreadtable));
 
     case 'MVCO'
-        resultpath = '\\sosiknas1\IFCB_products\MVCO\summary_v4\';
-        classpath_generic = '\\sosiknas1\IFCB_products\MVCO\class\v3\20220209_Jan2022_NES_2.4\';
-        feapath_generic = '\\sosiknas1\IFCB_products\MVCO\features_v4\';
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\MVCO\summary_v4\';
+        classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\MVCO\class\v3\20220209_Jan2022_NES_2.4\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\MVCO\features_v4\';
         opts = delimitedTextImportOptions("NumVariables", 20);
         opts.DataLines = [2 inf];
         %case 4 tags
@@ -143,9 +146,9 @@ switch datasetStr
         pidlist_flag = 0;
 
     case 'EXPORTS_2018'
-        resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
-        classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20220225_EXPORTS_pacific_Dec2021_1_3\';
-        feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\EXPORTS\summary\';
+        classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\EXPORTS\class\v3\20220225_EXPORTS_pacific_Dec2021_1_3\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\EXPORTS\features\';
         opts = delimitedTextImportOptions("NumVariables", 2);
         opts.DataLines = [2 inf];
         opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "string", "string", "double", "double"];
@@ -154,10 +157,10 @@ switch datasetStr
         metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60, 'ContentReader', myreadtable));
 
     case 'EXPORTS_2021'
-        resultpath = '\\sosiknas1\IFCB_products\EXPORTS\summary\';
-        %classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20220209_Jan2022_NES_2.4_RELABELED\';
-        classpath_generic = '\\sosiknas1\IFCB_products\EXPORTS\class\v3\20230821_NEAtlantic_3.1\';
-        feapath_generic = '\\sosiknas1\IFCB_products\EXPORTS\features\';
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\EXPORTS\summary\';
+        %classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\EXPORTS\class\v3\20220209_Jan2022_NES_2.4_RELABELED\';
+        classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\EXPORTS\class\v3\20230821_NEAtlantic_3.1\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\EXPORTS\features\';
         opts = delimitedTextImportOptions("NumVariables", 22);
         opts.DataLines = [2 inf];
         opts.VariableTypes = ["string", "string", "string", "double", "double", "double", "double", "double", "string", "string", "double", "string", "double", "string", "string", "string", "string", "string", "string", "string", "double", "double"];
@@ -167,39 +170,59 @@ switch datasetStr
         metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/EXPORTS', weboptions('Timeout', 60, 'ContentReader', myreadtable));
 
     case 'SIO_Delmar_mooring'
-        resultpath = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\summary\';
-        classpath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\class\v3\20220416_Delmar_NES_1\';
-        feapath_generic = '\\sosiknas1\IFCB_products\SIO_Delmar_mooring\features_v4\';
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\SIO_Delmar_mooring\summary\';
+        classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\SIO_Delmar_mooring\class\v3\20220416_Delmar_NES_1\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\SIO_Delmar_mooring\features_v4\';
         metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/SIO_Delmar_mooring', weboptions('Timeout', 30));
 
     case 'bodega-marine-lab'
-        resultpath = '\\sosiknas1\IFCB_products\bodega-marine-lab\summary\';
-        classpath_generic = '\\sosiknas1\IFCB_products\bodega-marine-lab\class\v3\20220209_Jan2022_NES_2.4_RELABELED\';
-        feapath_generic = '\\sosiknas1\IFCB_products\bodega-marine-lab\features\';
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\bodega-marine-lab\summary\';
+        classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\bodega-marine-lab\class\v3\20220209_Jan2022_NES_2.4_RELABELED\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\bodega-marine-lab\features\';
         metaT =  webread('https://ifcb.caloos.org/api/export_metadata/bodega-marine-lab', weboptions('Timeout', 30));
     
     case 'NBP2202'
-        resultpath = '\\sosiknas1\IFCB_products\NBP2202_holiver\summary\';
-        classpath_generic = '\\sosiknas1\IFCB_products\NBP2202_holiver\class\v3\20230330_Jan2022_NES_forNBP2022_1.0\';
-        feapath_generic = '\\sosiknas1\IFCB_products\NBP2202_holiver\features\';
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\NBP2202_holiver\summary\';
+        classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\NBP2202_holiver\class\v3\20230330_Jan2022_NES_forNBP2022_1.0\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\NBP2202_holiver\features\';
         metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/NBP2202', weboptions('Timeout', 30));
     case 'Oleander'
-        resultpath = '\\sosiknas1\IFCB_products\Oleander\summary\';
-        classpath_generic = '\\sosiknas1\IFCB_products\Oleander\class\v3\20220209_Jan2022_NES_2.4\';
-        feapath_generic = '\\sosiknas1\IFCB_products\Oleander\features\';
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\Oleander\summary\';
+        classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\Oleander\class\v3\20220209_Jan2022_NES_2.4\';
+        classpath_generic = '\\vast.whoi.edu\proj\sosiklab\IFCB_products\Oleander\class\v3\20220209_Jan2022_NES_2.4\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\Oleander\features\';
         metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/Oleander', weboptions('Timeout', 30));
     case 'PioneerMAB' %PioneerMAB  %%FIX THIS IS ONLY THE CRUISE DATA APPARENTLY
-        resultpath = '\\sosiknas1\IFCB_products\ooi\pioneer_mooring\summary\';
-        classpath_generic = '\\sosiknas1\IFCB_products\ooi\pioneer_mooring\class\v3\20220209_Jan2022_NES_2.4\';
-        feapath_generic = '\\sosiknas1\IFCB_products\ooi\pioneer_mooring\features\';
-        metaT =  webread('https://ifcb-data.oceanobservatories.org/api/export_metadata/PioneerMAB', weboptions('Timeout', 30));  
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\ooi\pioneer_mooring\summary\';
+        classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\ooi\pioneer_mooring\class\v3\20220209_Jan2022_NES_2.4\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\ooi\pioneer_mooring\features\';
+        %metaT =  webread('https://ifcb-data.oceanobservatories.org/api/export_metadata/PioneerMAB', weboptions('Timeout', 30));  
+        metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/PioneerMABShipboard', weboptions('Timeout', 30));  
     case 'pioneer_mooring'
-        resultpath = '\\sosiknas1\IFCB_products\ooi\pioneer_mooring\summary\';
-        classpath_generic = '\\sosiknas1\IFCB_products\ooi\pioneer_mooring\class\v3\20220209_Jan2022_NES_2.4\';
-        feapath_generic = '\\sosiknas1\IFCB_products\ooi\pioneer_mooring\features\';
-        load('\\sosiknas1\IFCB_products\ooi\pioneer_mooring\summary\meta_data')
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\ooi\pioneer_mooring\summary\';
+        classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\ooi\pioneer_mooring\class\v3\20220209_Jan2022_NES_2.4\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\ooi\pioneer_mooring\features\';
+        %load('\\sosiknas1.whoi.edu\IFCB_products\ooi\pioneer_mooring\summary\meta_data')
+        %metaT = meta_data; clear meta_data
         %metaT =  webread('https://ifcb-data.oceanobservatories.org/api/export_metadata/oo', weboptions('Timeout', 30));
-        
+        metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/PioneerMABMoored', weboptions('Timeout', 30));
+    case 'pioneer_cruises'
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\ooi\pioneer_cruises\summary\';
+        classpath_generic = '\\sosiknas1.whoi.edu\IFCB_products\ooi\pioneer_cruises\class\v3\20220209_Jan2022_NES_2.4\';
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\ooi\pioneer_cruises\features\';
+        %metaT =  webread('https://ifcb-data.oceanobservatories.org/api/export_metadata/PioneerMABShipboard', weboptions('Timeout', 30));        
+        metaT =  webread('https://ifcb-data.whoi.edu/api/export_metadata/PioneerMABShipboard', weboptions('Timeout', 30));        
+    case 'URI_ecomon'
+        pidlist_flag = 0;  %% CHANGE LATER IF DESIRED
+        resultpath = '\\sosiknas1.whoi.edu\IFCB_products\URI_ecomon\summary\';
+        classpath_generic = '\\sosiknas1\IFCB_products\URI_ecomon\class\v3\20220209_Jan2022_NES_2.4_RELABELED\';        
+        feapath_generic = '\\sosiknas1.whoi.edu\IFCB_products\URI_ecomon\features\';
+        hdrpath = 'https://ifcb-data.whoi.edu/URI_ecomon/';
+        opts = detectImportOptions("https://ifcb-dashboard.gso.uri.edu/api/export_metadata/ECOMON");
+        opts = setvartype(opts,{'cruise'},'string');
+        opts = setvartype(opts,{'latitude' 'longitude'}, 'double');
+        metaT =  readtable('https://ifcb-dashboard.gso.uri.edu/api/export_metadata/ECOMON', opts)
+        metaT.km2coast = dist2coast(metaT.latitude, metaT.longitude);
     otherwise
         disp('Missing dataset case: check the m-file cases')
         return
@@ -212,7 +235,7 @@ adhocthresh = 0.5;
 % classes not specified here are set to use 'prec-rec' below...
 classXstat = {};
 % load up the optthreshXstatXclass:
-load("\\sosiknas1\Lab_data\dylan_working\cnn_score_data_byClass\opt_threshXstatisticXclass.mat")
+load("\\sosiknas1.whoi.edu\Lab_data\dylan_working\cnn_score_data_byClass\opt_threshXstatisticXclass.mat")
 for yr = year_range(1):year_range(end)
     ystr = ['D' num2str(yr)];
     classpath = [classpath_generic filesep ystr filesep];
@@ -237,7 +260,11 @@ for yr = year_range(1):year_range(end)
     classfiles = strcat(pathall, names);
    % pathall = strcat(feapath_generic, names(:,1:5), filesep, names(:,1:9), filesep);
     if ~mvco_flag
-        feafiles = strcat(pathall2, regexprep(names, '_class.h5', '_fea_v4.csv'));
+        feafiles = regexprep(names, '_class.h5', '_fea_v4.csv');
+        feafiles = regexprep(feafiles, '.h5', '_fea_v4.csv'); %handle new case without _class from onnx model
+        feafiles = strcat(pathall2, feafiles);
+        %feafiles = strcat(pathall2, regexprep(names, '_class.h5', '_fea_v4.csv'));
+
         %xall = repmat('_fea_v4.csv', length(names),1);
         %ii = strmatch('D', names);
         %feafiles(ii) = strcat(pathall(ii,:), regexprep(names(ii), '_class.h5', '_fea_v4.csv'));
@@ -268,6 +295,7 @@ for yr = year_range(1):year_range(end)
     %clear temp
 
     filelist = regexprep(cellstr(names), '_class.h5', '');
+    filelist = regexprep(cellstr(names), '.h5', ''); %case for prefect / onnx output
     clear names
     
     [~,a,b] = intersect(filelist, metaT.pid);
@@ -395,7 +423,7 @@ for yr = year_range(1):year_range(end)
     classFeaList = array2table(classFeaList, 'VariableNames', class2use);
     groupFeaList = array2table(groupFeaList, 'VariableNames', group2use);
 
-    val_stats = get_val_stat_tables('\\sosiknas1\Lab_data\dylan_working\cnn_score_data_byClass\',...
+    val_stats = get_val_stat_tables('\\sosiknas1.whoi.edu\Lab_data\dylan_working\cnn_score_data_byClass\',...
         class2use, group2use, table2array(optthresh), table2array(optthresh_group));
     %save([resultpath 'summary_biovol_allTB' num2str(yr)] , 'class2useTB', 'classcountTB', 'classbiovolTB', 'ml_analyzedTB', 'mdateTB', 'filelistTB', 'classpath_generic', 'feapath_generic')
     %save([resultpath 'summary_biovol_allHDF_min20_' num2str(yr)] , 'class2use', 'classcount*', 'classbiovol*', 'classC*', 'ml_analyzed', 'mdate', 'filelist', 'classpath_generic', 'feapath_generic')
