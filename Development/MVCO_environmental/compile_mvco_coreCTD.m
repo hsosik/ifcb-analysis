@@ -1,4 +1,4 @@
-yr = 2021:2025;
+yr = 2022:2025;
 
 base_bottom = "\\sosiknas1\Lab_data\MVCO\EnvironmentalData\asit.ctd_YYYY.csv";
 base_beam = "\\sosiknas1\Lab_data\MVCO\EnvironmentalData\asit.beam.ctd_YYYY.csv";
@@ -6,14 +6,13 @@ base_beam = "\\sosiknas1\Lab_data\MVCO\EnvironmentalData\asit.beam.ctd_YYYY.csv"
 ctdTable_beam = timetable;
 ctdTable_bot = timetable;
 
-for ii = 2:numel(yr)
+for ii = 1:numel(yr)
     Ystr = num2str(yr(ii));
     T = readtimetable(regexprep(base_bottom, 'YYYY' , Ystr));
     ctdTable_bot = [ctdTable_bot; T];
     T = readtimetable(regexprep(base_beam, 'YYYY' , Ystr));
     ctdTable_beam = [ctdTable_beam; T];
 end
-
 
 beam_day = retime(ctdTable_beam, 'daily', 'mean');
 bot_day = retime(ctdTable_bot, 'daily', 'mean');
@@ -33,9 +32,9 @@ Notes = {'Compiled from MVCO core CTDs at ASIT, beam CTD when available, gap fil
     'Produced with \ifcb-analysis\Development\MVCO_environmental\compile_mvco_coreCTD.m';...
     'Heidi M. Sosik, Woods Hole Oceanographic Institution, Nov 2025'};
 
-%save('\\sosiknas1\Lab_data\MVCO\EnvironmentalData\MVCO_Daily_CTD_post2022.mat', 'CTD_day', 'Notes')
-%disp('Results saved:')
-%disp('\\sosiknas1\Lab_data\MVCO\EnvironmentalData\MVCO_Daily_CTD_post2022.mat')
+save('\\sosiknas1\Lab_data\MVCO\EnvironmentalData\MVCO_Daily_CTD_post2022.mat', 'CTD_day', 'Notes')
+disp('Results saved:')
+disp('\\sosiknas1\Lab_data\MVCO\EnvironmentalData\MVCO_Daily_CTD_post2022.mat')
 
 
 

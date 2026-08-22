@@ -45,7 +45,9 @@ for count = 1:length(IFCB_mdate)
             it2 = round((IFCB_mdate(count)-uw_mdate(it))/(uw_mdate(it+1)-uw_mdate(it))*step); %index of closest interpolated minute
             IFCB_match.lat(count) = lat(it2);
             IFCB_match.lon(count) = lon(it2);
-            IFCB_match(count,1:end-2) = array2table(interp1(uw_mdate, uw{:,:}, IFCB_mdate(count)),'VariableNames', uw.Properties.VariableNames);            
+            ind = strcmp(uw.Properties.VariableTypes, 'double');
+            IFCB_match(count,ind) = array2table(interp1(uw_mdate, uw{:,ind}, IFCB_mdate(count)),'VariableNames', uw.Properties.VariableNames(ind));            
+%            IFCB_match(count,1:end-2) = array2table(interp1(uw_mdate, uw{:,:}, IFCB_mdate(count)),'VariableNames', uw.Properties.VariableNames);            
             disp('CHECK interpolation')
             %keyboard
             disp('Consider keyboard here')
